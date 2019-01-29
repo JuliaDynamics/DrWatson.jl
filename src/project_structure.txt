@@ -1,0 +1,31 @@
+projectdir
+│
+├── _research          <- empty folder for WIP scripts, code, and anything in an alpha state
+│
+├── data               <- Folder that contains all data. It is immutable and add-only
+│   ├── simulations          <- Data resulting directly from simulations
+│   ├── exp_proc             <- Data from processing experiments
+│   └── exp_raw              <- Raw experimental data
+│
+├── notebooks          <- For Jupyter notebooks
+|
+├── visualizations     <- Title is quite self-explanatory
+│   ├── videos
+│   └── figures
+│
+├── docs               <- A default documenter directory
+│
+├── papers             <- Scientific papers resulting from the project
+│
+|
+├── scripts            <- Various scripts that may e.g. produce simulations, figures, analyze experiments, etc. The scripts use the src folder for their base code!
+│
+├── src                <- Source code for use in this project. Starts empty, as users may want to add files OR packages at will.
+│   └── introduction.jl  <- simple file that uses DrWatson and says hello.
+│
+│
+├── LICENSE            <- Optional license file
+├── README.md          <- The top-level README for anyone using this project.
+├── .gitignore         <- by default ignores data, docs, visualizations, notebooks, _research. in addition it ignores all latex related stuff
+├── Manifest.toml      <- (Created by Julia) Contains full list of exact package versions used currently
+└── Project.toml       <- Main project file, allows activation and installation
