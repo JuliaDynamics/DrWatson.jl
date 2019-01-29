@@ -8,6 +8,7 @@ Contents:
 * [Introduction](#introduction)
 * [Part 1](#part-1)
 * [Part 2](#part-2)
+* [Inspirations](#inspirations)
 
 ---
 
@@ -68,3 +69,17 @@ The naming scheme integrates perfectly with Parameters.jl.
 This scheme also allows incrementing the parameters: Let's say you have a simulation setup but now you want to produce more simulations with one extra parameter. But you want to be able to create a list of the simulations both with and without the extra parameter. *You can.*
 
 THIS IS WIP, MORE STUFF/DOCS INCOMING.
+
+## Inspirations
+
+https://drivendata.github.io/cookiecutter-data-science/#cookiecutter-data-science
+
+https://discourse.julialang.org/t/computational-experiments-organising-different-algorithms-their-parameters-and-results/10774/7
+
+http://neuralensemble.org/sumatra/
+
+https://github.com/mohamed82008/ComputExp.jl
+
+https://sacred.readthedocs.io/en/latest/index.html
+
+https://experimentator.readthedocs.io/en/latest/
