@@ -1,4 +1,4 @@
-projectdir
+projectdir    <- Your project main folder. It is initialized as a GIT repository
 │
 ├── _research          <- empty folder for WIP scripts, code, and anything in an alpha state
 │
@@ -26,6 +26,6 @@ projectdir
 │
 ├── LICENSE            <- Optional license file
 ├── README.md          <- The top-level README for anyone using this project.
-├── .gitignore         <- by default ignores data, docs, visualizations, notebooks, _research. in addition it ignores all latex related stuff
+├── .gitignore         <- by default ignores data, docs, visualizations, notebooks, _research, Manifest.toml (all configurable). In addition it ignores all latex files noone cares about.
 ├── Manifest.toml      <- (Created by Julia) Contains full list of exact package versions used currently
 └── Project.toml       <- Main project file, allows activation and installation

@@ -43,7 +43,7 @@ The functionality of DrWatson is composed of two main parts that are independent
 
 ## Part 1
 
-DrWatson creates a specific project structure through the function `makeproject(path, projectname)`. This project structure is always the same, see below.
+DrWatson creates a specific project structure through the function `makeproject(path, projectname)`. This project structure is always the same (see below) and is also a git repository.
 
 You scientific project is a ["Julia Environment"](https://julialang.github.io/Pkg.jl/v1/environments/), in the sense described in the documentation of the package manager. In short, your project is identified uniquely with a `Project.toml` file that contains your project's name and all the dependencies of your project (in the form of Julia packages).
 
