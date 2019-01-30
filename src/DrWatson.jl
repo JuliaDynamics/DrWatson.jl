@@ -7,7 +7,7 @@ projectdir() = dirname(Base.active_project())*"/"
 datadir() = projectdir()*"data/"
 srcdir() = projectdir()*"src/"
 projectname() = Pkg.REPLMode.promptf()[1:end-6]
-visdir() = projectdir()*"visualizations/"
+plotsdir() = projectdir()*"plots/"
 
 
 ##########################################################################################

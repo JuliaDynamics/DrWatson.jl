@@ -1,19 +1,18 @@
 projectdir    <- Your project main folder. It is initialized as a GIT repository
 │
-├── _research          <- empty folder for WIP scripts, code, and anything in an alpha state
+├── _research          <- folder for WIP scripts, code, and anything in an alpha state
 │
-├── data               <- Folder that contains all data. It is immutable and add-only
-│   ├── simulations          <- Data resulting directly from simulations
-│   ├── exp_proc             <- Data from processing experiments
-│   └── exp_raw              <- Raw experimental data
-│
-├── notebooks          <- For Jupyter notebooks
 |
-├── visualizations     <- Title is quite self-explanatory
-│   ├── videos
-│   └── figures
+├── data               <- Folder that contains all data. It is immutable and add-only
+│   ├── simulations    <- Data resulting directly from simulations
+│   ├── exp_proc       <- Data from processing experiments
+│   └── exp_raw        <- Raw experimental data
 │
-├── docs               <- A default documenter directory
+|
+├── notebooks          <- For Jupyter notebooks
+├── videos             <- Title is quite self-explanatory
+├── plots              <- Title is quite self-explanatory
+│
 │
 ├── papers             <- Scientific papers resulting from the project
 │
@@ -21,9 +20,12 @@ projectdir    <- Your project main folder. It is initialized as a GIT repository
 ├── scripts            <- Various scripts that may e.g. produce simulations, figures, analyze experiments, etc. The scripts use the src folder for their base code!
 │
 ├── src                <- Source code for use in this project. Starts empty, as users may want to add files OR packages at will.
-│   └── introduction.jl  <- simple file that uses DrWatson and says hello.
+│   └── intro.jl       <- simple file that uses DrWatson and says hello.
 │
 │
+├── docs               <- A default documenter directory
+|
+|
 ├── LICENSE            <- Optional license file
 ├── README.md          <- The top-level README for anyone using this project.
 ├── .gitignore         <- by default ignores data, docs, visualizations, notebooks, _research, Manifest.toml (all configurable). In addition it ignores all latex files noone cares about.
