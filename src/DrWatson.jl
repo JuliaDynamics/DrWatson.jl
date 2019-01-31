@@ -1,17 +1,22 @@
 module DrWatson
 using Pkg
 
-export projectdir, datadir, srcdir, projectname, visdir
+##########################################################################################
+# Project directory and setup management
+##########################################################################################
+export projectdir, datadir, srcdir, plotsdir
+export projectname
 
 projectdir() = dirname(Base.active_project())*"/"
 datadir() = projectdir()*"data/"
 srcdir() = projectdir()*"src/"
-projectname() = Pkg.REPLMode.promptf()[1:end-6]
 plotsdir() = projectdir()*"plots/"
+
+projectname() = Pkg.REPLMode.promptf()[2:end-7]
 
 
 ##########################################################################################
-# Namings
+# Naming Schemes
 ##########################################################################################
 export savename, @dict
 
