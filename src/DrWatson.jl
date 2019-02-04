@@ -110,12 +110,12 @@ end
 """
     @dict vars...
 Create a dictionary out of the given variables that has as keys the variable names
-(symbols) and as values their values.
+(as strings) and as values their values.
 """
 macro dict(vars...)
     expr = Expr(:call, :Dict)
     for i in 1:length(vars)
-        push!(expr.args, :($(QuoteNode(vars[i])) => $(esc(vars[i]))))
+        push!(expr.args, :(string($(QuoteNode(vars[i]))) => $(esc(vars[i]))))
     end
     return expr
 end
