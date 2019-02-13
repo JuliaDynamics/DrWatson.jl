@@ -1,0 +1,14 @@
+data
+videos
+plots
+notebooks
+_research
+*.pdf
+*.aux
+*.bbl
+*.blg
+*.log
+*.synctex.gz
+*.synctex.gz(buzy)
+*.out
+Manifest.toml

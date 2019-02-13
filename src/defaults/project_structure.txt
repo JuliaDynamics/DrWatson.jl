@@ -11,7 +11,7 @@ projectdir             <- Your project main folder. It is initialized as a GIT r
 |
 ├── videos             <- self-explanatory
 ├── plots              <- self-explanatory
-│
+├── notebooks          <- Jupyter, Weave or any other mixed media notebooks
 │
 ├── papers             <- Scientific papers resulting from the project
 │
@@ -21,10 +21,8 @@ projectdir             <- Your project main folder. It is initialized as a GIT r
 |
 ├── src                <- Source code for use in this project. Contains functions/modules used throughout the project and in multiple scripts.
 │
-│
 |
-⋱…… LICENSE            <- Optional license file
 ⋱…… README.md          <- Optional top-level README for anyone using this project.
-├── .gitignore         <- by default ignores data, docs, plots, videos, notebooks, _research, Manifest.toml (all configurable). In addition it ignores all latex files none cares about.
+├── .gitignore         <- by default ignores data, plots, videos, notebooks, _research, Manifest.toml (all configurable). In addition it ignores all latex files produced during latex compilation.
 ├── Manifest.toml      <- (Created by Julia) Contains full list of exact package versions used currently
 └── Project.toml       <- Main project file, allows activation and installation. Comes with DrWatson added and other optional packages
