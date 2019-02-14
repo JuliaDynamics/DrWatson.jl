@@ -9,7 +9,7 @@ For this to work, you only need to follow these rules:
    * by doing `Pkg.activate("path/to/project")` programmatically
    * by using the startup flag `--project path` when starting Julia
    * by setting the [`JULIA_PROJECT`](https://docs.julialang.org/en/latest/manual/environment-variables/#JULIA_PROJECT-1) environment variable
-3. **You do `using DrWatson` and use the functions `scriptdir`, `datadir`, etc.** (see [Navigating the Project](@ref)
+3. **You use the functions `scriptdir`, `datadir`, etc. from DrWatson** (see [Navigating the Project](@ref))
 
 ## Default Project Setup
 
