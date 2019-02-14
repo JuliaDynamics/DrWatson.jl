@@ -18,10 +18,7 @@ access(d::AbstractDict, key) = getindex(d, key)
 access(d, key) = getproperty(d, key)
 
 """
-```julia
-savename(d, allowedtypes = (Real, String, Symbol);
-         accesses = allaccess(d), digits = 3)
-```
+    savename(d; kwargs...)
 Create a shorthand name, commonly used for saving a file, based on the parameters
 in the container `d` (`Dict`, `NamedTuple` or any other Julia composite type, e.g.
 created with Parameters.jl).
@@ -34,16 +31,23 @@ while the keys are always sorted alphabetically.
 
 `savename` can be very conveniently combined with [`@dict`](@ref).
 
-## Details
-Only values of type in `allowedtypes` are used in the name. You can also specify
-which keys you want to use with the keyword `accesses`. By default this is all possible
+## Keywords
+* `allowedtypes = (Real, String, Symbol)`
+Only values of type subtyping `allowedtypes` are used in the name.
+
+* `accesses = allaccess(d)`
+You can also specify which specific keys you want to use with the keyword
+`accesses`. By default this is all possible
 keys `d` can be accessed with, see [`allaccess`](@ref).
 
+* `digits = 3`
 Floating point values are rounded to `digits`. In addition if the following holds:
 ```julia
 round(val; digits = digits) == round(Int, val)
 ```
 then the integer value is used in the name instead.
+
+* `connector = "_"` : string used to connect the various entries.
 
 ## Examples
 ```jldoctest; setup = :(using DrWatson)
@@ -62,8 +66,9 @@ julia> savename(rick) # keys are always sorted
   "give=you_never=gonna_up=!"
 ```
 """
-function savename(d, allowedtypes = (Real, String, Symbol);
-                  accesses = allaccess(d), digits = 3)
+function savename(d; allowedtypes = (Real, String, Symbol),
+                  accesses = allaccess(d), digits = 3,
+                  connector = "_")
 
     labels = [string(a) for a in accesses]
     p = sortperm(labels)
@@ -74,7 +79,7 @@ function savename(d, allowedtypes = (Real, String, Symbol);
         label = labels[j]
         t = typeof(val)
         if any(x -> (t <: x), allowedtypes)
-            !first && (s *= "_")
+            !first && (s *= connector)
             if t <: AbstractFloat
                 if round(val; digits = digits) == round(Int, val)
                     val = round(Int, val)
