@@ -51,7 +51,7 @@ The new project remains activated for you to immidiately add packages.
   Project.toml file.
 * `force = false` : If the `path` is _not_ empty then throw an error. If however `force`
   is `true` then recursively delete everything in the path and create the project.
-* `git = true` : Make the project a GIT repository.
+* `git = true` : Make the project a Git repository.
 """
 function initialize_project(path, name = basename(path);
     force = false, readme = true, authors = nothing,

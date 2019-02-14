@@ -33,6 +33,8 @@ build_script:
 
 test_script:
   - echo "%JL_TEST_SCRIPT%"
+  - git config --global user.name "AppVeyor"
+  - git config --global user.email "app@vey.or"
   - C:\julia\bin\julia -e "%JL_TEST_SCRIPT%"
 
 # # Uncomment to support code coverage upload. Should only be enabled for packages
