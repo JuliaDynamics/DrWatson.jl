@@ -5,7 +5,8 @@ os:
 
 julia:
   - 1.1
-  - nightly
+  - 1.0
+  # - nightly
 
 matrix:
   allow_failures:
@@ -22,6 +23,6 @@ jobs:
       julia: 1.1
       os: linux
       script:
-        - julia -e 'using Pkg; Pkg.add("Documenter")'
+        - julia -e 'using Pkg; Pkg.add("Documenter"); pkg"add https://github.com/JuliaDynamics/DrWatson.jl"'
         - julia docs/make.jl
       after_success: skip
