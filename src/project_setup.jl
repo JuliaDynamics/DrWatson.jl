@@ -51,9 +51,11 @@ The new project remains activated for you to immidiately add packages.
   Project.toml file.
 * `force = false` : If the `path` is _not_ empty then throw an error. If however `force`
   is `true` then recursively delete everything in the path and create the project.
+* `git = true` : Make the project a GIT repository.
 """
 function initialize_project(path, name = basename(path);
-    force = false, readme = true, authors = nothing)
+    force = false, readme = true, authors = nothing,
+    git = true)
 
     mkpath(path)
     rd = readdir(path)
@@ -67,8 +69,8 @@ function initialize_project(path, name = basename(path);
         end
     end
 
-    repo = LibGit2.init(path)
-    LibGit2.commit(repo, "Initial commit")
+    if git; repo = LibGit2.init(path); end
+    git && LibGit2.commit(repo, "Initial commit")
     Pkg.activate(path)
     # Pkg.add("DrWatson")#Uncomment when the package is released
     Pkg.add("Pkg")
@@ -78,9 +80,9 @@ function initialize_project(path, name = basename(path);
         mkpath(joinpath(path, p))
     end
 
-    LibGit2.add!(repo, "Project.toml")
-    LibGit2.add!(repo, DEFAULT_PATHS...)
-    LibGit2.commit(repo, "Folder setup by DrWatson")
+    git && LibGit2.add!(repo, "Project.toml")
+    git && LibGit2.add!(repo, DEFAULT_PATHS...)
+    git && LibGit2.commit(repo, "Folder setup by DrWatson")
 
     # Default files
     cp(joinpath(@__DIR__, "defaults", "gitignore.txt"), joinpath(path, ".gitignore"))
@@ -98,8 +100,8 @@ function initialize_project(path, name = basename(path);
     write(joinpath(path, "Project.toml"), w, pro)
     push!(files, "Project.toml")
 
-    LibGit2.add!(repo, files...)
-    LibGit2.commit(repo, "File setup by DrWatson")
+    git && LibGit2.add!(repo, files...)
+    git && LibGit2.commit(repo, "File setup by DrWatson")
     return path
 end
 
