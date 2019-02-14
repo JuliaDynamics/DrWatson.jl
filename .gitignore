@@ -2,5 +2,4 @@
 *.jl.*.cov
 *.jl.mem
 docs/build
-deps/build.log
 Manifest.toml

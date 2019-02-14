@@ -32,6 +32,8 @@ key1=val1_key2=val2_key3=val3....
 ```
 while the keys are always sorted alphabetically.
 
+`savename` can be very conveniently combined with [`@dict`](@ref).
+
 ## Details
 Only values of type in `allowedtypes` are used in the name. You can also specify
 which keys you want to use with the keyword `accesses`. By default this is all possible
@@ -44,7 +46,7 @@ round(val; digits = digits) == round(Int, val)
 then the integer value is used in the name instead.
 
 ## Examples
-```jldoctest
+```jldoctest; setup = :(using DrWatson)
 julia> d = (a = 0.153456453, b = 5.0, mode = "double")
 (a = 0.153456453, b = 5.0, mode = "double")
 
@@ -91,6 +93,17 @@ end
     @dict vars...
 Create a dictionary out of the given variables that has as keys the variable names
 (as strings) and as values their values.
+
+## Examples
+```jldoctest; setup = :(using DrWatson)
+julia> ω = 5; χ = "test"; ζ = π/3;
+
+julia> @dict ω χ ζ
+Dict{String,Any} with 3 entries:
+  "ω" => 5
+  "χ" => "test"
+  "ζ" => 1.0472
+```
 """
 macro dict(vars...)
     expr = Expr(:call, :Dict)
