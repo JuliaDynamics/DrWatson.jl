@@ -1,6 +1,6 @@
 using Test, DrWatson
 
-cd(dirname(pathof(DrWatson)))
+cd()
 
 path = "test project"
 name = "lala"
