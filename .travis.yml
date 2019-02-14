@@ -2,16 +2,26 @@ language: julia
 os:
   - linux
 #  - osx
-# branches:
-#   except:
-#     - 0.7
+
 julia:
   - 1.1
   - nightly
+
 matrix:
   allow_failures:
   - julia: nightly
+
 notifications:
   email:
     on_success: never
     on_failure: never
+
+jobs:
+  include:
+    - stage: "Documentation"
+      julia: 1.1
+      os: linux
+      script:
+        - julia -e 'using Pkg; Pkg.add("Documenter")'
+        - julia docs/make.jl
+      after_success: skip
