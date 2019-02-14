@@ -55,17 +55,18 @@ The new project remains activated for you to immidiately add packages.
 function initialize_project(path, name = basename(path);
     force = false, readme = true, authors = nothing)
 
-    if !isempty(path)
+    mkpath(path)
+    rd = readdir(path)
+    if length(rd) != 0
         if force
-            for d in readdir(path)
-                rm(d, recursive = true, force = true)
+            for d in rd
+                rm(joinpath(path, d), recursive = true, force = true)
             end
         else
             error("Project path is not empty!")
         end
     end
 
-    mkpath(path)
     repo = LibGit2.init(path)
     LibGit2.commit(repo, "Initial commit")
     Pkg.activate(path)
@@ -86,15 +87,15 @@ function initialize_project(path, name = basename(path);
     cp(joinpath(@__DIR__, "defaults", "intro.jl"), joinpath(path, "scripts/intro.jl"))
     files = vcat(".gitignore", "/scripts/intro.jl")
     if readme
-        write("README.md", DEFAULT_README)
+        write(joinpath(path, "README.md"), DEFAULT_README)
         push!(files, "README.md")
     end
-    pro = read("Project.toml", String)
+    pro = read(joinpath(path, "Project.toml"), String)
     w = "name = \"$name\"\n"
     if !isnothing(authors)
             w *= "authors = "*sprint(show, vecstring(authors))*"\n"
     end
-    write("Project.toml", w, pro)
+    write(joinpath(path, "Project.toml"), w, pro)
     push!(files, "Project.toml")
 
     LibGit2.add!(repo, files...)
