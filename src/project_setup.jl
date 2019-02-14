@@ -92,7 +92,7 @@ function initialize_project(path, name = basename(path);
     end
     pro = read(joinpath(path, "Project.toml"), String)
     w = "name = \"$name\"\n"
-    if !isnothing(authors)
+    if !(authors === nothing)
             w *= "authors = "*sprint(show, vecstring(authors))*"\n"
     end
     write(joinpath(path, "Project.toml"), w, pro)
