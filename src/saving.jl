@@ -1,20 +1,27 @@
 """
-    produce_or_load(sname, f, args...; kwargs...) -> file
-If `sname` exists and is a file, load that file using `file = FileIO.load(sname)`
-and return it. If however the file does not exist, produce it by calling
-```julia
-file = f(args...; kwargs...)
-```
-then save it in `sname` and then return `file`.
+    produce_or_load(c, f [,path]; suffix = "jld2", kwargs...) -> file
+Let `s = savename(c; kwargs...)`. If a file named `s.suffix` exists in the
+given `path` (by default `""`) load it using `FileIO.load` and return it.
+
+If the file does not exist then call `file = f(c)`, save the `file` in
+`path` using `FileIO.save` and name `s.suffix`. Then return the `file`.
+
+To play well with `FileIO` the function `f` should return a dictionary
+with `String` as key type. The macro [`@dict`](@ref) can help with that.
+
+See also [`savename`](@ref).
 """
-function produce_or_load(sname, f, args...; kwargs...)
-    if isfile(sname)
-        file = FileIO.load(sname)
+function produce_or_load(c, f, path = ""; suffix = "jld2" kwargs...)
+
+    s = savename(c; kwargs...)*"."*suffix
+    spath = joinpath(path, s)
+    if isfile(spath)
+        file = FileIO.load(spath)
         return file
     else
-        @info "File $sname does not exist. Producing it now..."
-        file = f(args...; kwargs...)
-        FileIO.save(sname, file)
+        @info "File $s does not exist. Producing it now..."
+        file = f(c)
+        FileIO.save(spath, file)
         return file
     end
 end
