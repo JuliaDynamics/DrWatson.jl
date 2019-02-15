@@ -1,4 +1,4 @@
-export savename, @dict
+export savename, @dict, @ntuple
 
 """
     allaccess(d)
@@ -25,11 +25,12 @@ created with Parameters.jl).
 
 The function chains keys and values into a string of the form:
 ```julia
-key1=val1_key2=val2_key3=val3....
+key1=val1_key2=val2_key3=val3...
 ```
 while the keys are always sorted alphabetically.
 
-`savename` can be very conveniently combined with [`@dict`](@ref).
+`savename` can be very conveniently combined with
+[`@dict`](@ref) or [`@ntuple`](@ref).
 
 ## Keywords
 * `allowedtypes = (Real, String, Symbol)`
