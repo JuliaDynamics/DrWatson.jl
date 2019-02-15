@@ -96,8 +96,8 @@ end
 
 """
     @dict vars...
-Create a dictionary out of the given variables that has as keys the variable names
-(as strings) and as values their values.
+Create a dictionary out of the given variables that has as keys the variable
+names (as strings) and as values their values.
 
 ## Examples
 ```jldoctest; setup = :(using DrWatson)
@@ -117,3 +117,27 @@ macro dict(vars...)
     end
     return expr
 end
+
+
+"""
+    @ntuple vars...
+Create a `NamedTuple` out of the given variables that has as keys the variable
+names and as values their values.
+
+## Examples
+```jldoctest; setup = :(using DrWatson)
+julia> ω = 5; χ = "test"; ζ = 3.14;
+
+julia> @ntuple ω χ ζ
+(ω = 5, χ = "test", ζ = 3.14)
+```
+"""
+macro ntuple(vars...)
+   args = Any[]
+   for i in 1:length(vars)
+       push!(args, Expr(:(=), esc(vars[i]), :($(esc(vars[i])))))
+   end
+   expr = Expr(:tuple, args...)
+   return expr
+end
+# Credit of `ntuple` macro goes to Sebastian Pfitzner, @pfitzseb
