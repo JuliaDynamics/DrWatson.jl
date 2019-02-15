@@ -9,14 +9,20 @@ rick = (never = "gonna", give = "you", up = "!");
 
 x = 3; y = 5.0;
 d = Dict("x" => x, "y" => y)
+n = (x = x, y = y)
 
 @test d == @dict x y
+@test n == @ntuple x y
 
 z = "lala"
 d2 = Dict("x" => x, "y" => y, "z" => z)
+n2 = (x = x, y = y, z= z)
 
 @test d2 == @dict x y z
+@test n2 == @ntuple x y z
 
 @test savename(@dict x y) == "x=3_y=5"
+@test savename(@ntuple x y) == "x=3_y=5"
 w = rand(50)
 @test savename(@dict x y w) == savename(@dict x y)
+@test savename(@ntuple x y w) == savename(@dict x y)
