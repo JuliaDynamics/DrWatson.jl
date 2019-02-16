@@ -7,6 +7,7 @@ A robust naming scheme allows you to create quick names for simulations, create 
 ```@docs
 savename
 @dict
+@strdict
 @ntuple
 ```
 

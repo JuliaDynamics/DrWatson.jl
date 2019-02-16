@@ -1,4 +1,4 @@
-export savename, @dict, @ntuple
+export savename, @dict, @ntuple, @strdict
 export ntuple2dict, dict2ntuple
 
 """

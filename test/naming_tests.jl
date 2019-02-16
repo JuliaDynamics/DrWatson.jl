@@ -1,5 +1,4 @@
 using DrWatson, Test
-using DrWatson: @strdict
 
 d = (a = 0.153456453, b = 5.0, mode = "double")
 @test savename(d; digits = 4) == "a=0.1535_b=5_mode=double"
