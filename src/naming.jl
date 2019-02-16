@@ -26,12 +26,12 @@ access(c, key) = getproperty(c, key)
 Create a shorthand name, commonly used for saving a file, based on the
 parameters in the container `c` (`Dict`, `NamedTuple` or any other Julia
 composite type, e.g. created with Parameters.jl). If provided use
-the `prefix` end end the file with `.suffix` (i.e. you don't have to include
+the `prefix` and end the file with `.suffix` (i.e. you don't have to include
 the `.` in your `suffix`).
 
 The function chains keys and values into a string of the form:
 ```julia
-key1=val1_key2=val2_key3=val3...
+key1=val1_key2=val2_key3=val3
 ```
 while the keys are **always sorted alphabetically.** If you provide
 the prefix/suffix the function will do:

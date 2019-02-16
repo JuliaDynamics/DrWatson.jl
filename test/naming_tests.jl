@@ -2,6 +2,9 @@ using DrWatson, Test
 
 d = (a = 0.153456453, b = 5.0, mode = "double")
 @test savename(d; digits = 4) == "a=0.1535_b=5_mode=double"
+@test savename("n", d; digits = 4) == "n_a=0.1535_b=5_mode=double"
+@test savename(d, "n"; digits = 4) == "a=0.1535_b=5_mode=double.n"
+@test savename("n", d, "n"; digits = 4) == "n_a=0.1535_b=5_mode=double.n"
 @test savename(d, allowedtypes = (String,)) == "mode=double"
 
 rick = (never = "gonna", give = "you", up = "!");
