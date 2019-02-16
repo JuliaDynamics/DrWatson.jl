@@ -1,7 +1,7 @@
 ##########################################################################################
 # Project directory and setup management
 ##########################################################################################
-export projectdir, datadir, srcdir, plotsdir
+export projectdir, datadir, srcdir, plotsdir, scriptdir
 export projectname
 
 """
@@ -24,7 +24,6 @@ projectname() = Pkg.REPLMode.promptf()[2:end-7]
 # Project directory and setup management
 ##########################################################################################
 export initialize_project
-import Pkg, LibGit2
 
 const DEFAULT_PATHS = [
 "_reserach", "src/", "scripts/",

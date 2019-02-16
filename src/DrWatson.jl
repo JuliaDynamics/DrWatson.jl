@@ -1,6 +1,6 @@
 "The perfect sidekick to your scientific inquiries"
 module DrWatson
-using Pkg
+import Pkg, LibGit2
 
 include("project_setup.jl")
 include("naming.jl")
