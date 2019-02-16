@@ -11,7 +11,7 @@ allaccess(d::AbstractDict) = collect(keys(d))
 allaccess(d::NamedTuple) = keys(d)
 allaccess(d::Any) = fieldnames(typeof(d))
 allaccess(d::DataType) = fieldnames(d)
-
+allaccess(d::String) = error("`d` must be a container, not a string!")
 
 """
     access(d, key)
@@ -22,16 +22,22 @@ access(d::AbstractDict, key) = getindex(d, key)
 access(d, key) = getproperty(d, key)
 
 """
-    savename(d; kwargs...)
-Create a shorthand name, commonly used for saving a file, based on the parameters
-in the container `d` (`Dict`, `NamedTuple` or any other Julia composite type, e.g.
-created with Parameters.jl).
+    savename([prefix,], d [, suffix]; kwargs...)
+Create a shorthand name, commonly used for saving a file, based on the
+parameters in the container `d` (`Dict`, `NamedTuple` or any other Julia
+composite type, e.g. created with Parameters.jl). If provided use
+the `prefix` end end the file with `.suffix` (i.e. you don't have to include
+the `.` in your `suffix`).
 
 The function chains keys and values into a string of the form:
 ```julia
 key1=val1_key2=val2_key3=val3...
 ```
-while the keys are always sorted alphabetically.
+while the keys are **always sorted alphabetically.** If you provide
+the prefix/suffix the function will do:
+```julia
+prefix_key1=val1_key2=val2_key3=val3.suffix
+```
 
 `savename` can be very conveniently combined with
 [`@dict`](@ref) or [`@ntuple`](@ref).
@@ -67,14 +73,18 @@ julia> savename(rick) # keys are always sorted
   "give=you_never=gonna_up=!"
 ```
 """
-function savename(d; allowedtypes = (Real, String, Symbol),
+savename(d; kwargs...) = savename("", d, ""; kwargs...)
+savename(d::Any, suffix::String; kwargs...) = savename("", d, suffix; kwargs...)
+savename(prefix::String, d::Any; kwargs...) = savename(prefix, d, ""; kwargs...)
+function savename(prefix::String, d, suffix::String;
+                  allowedtypes = (Real, String, Symbol),
                   accesses = allaccess(d), digits = 3,
                   connector = "_")
 
     labels = vecstring(accesses) # make it vector of strings
     p = sortperm(labels)
-    s = ""
-    first = true
+    first = prefix == ""
+    s = prefix
     for j ∈ p
         val = access(d, accesses[j])
         label = labels[j]
@@ -92,6 +102,7 @@ function savename(d; allowedtypes = (Real, String, Symbol),
             first = false
         end
     end
+    suffix != "" && (s *= "."*suffix)
     return s
 end
 
