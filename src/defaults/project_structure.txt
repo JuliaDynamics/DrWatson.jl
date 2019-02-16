@@ -4,7 +4,7 @@
 ├── _research        <- folder for WIP scripts, code, notes, comments,
 |                       to-dos and anything in an alpha state
 │
-├── data             <- Folder that contains all data. **immutable and add-only!**
+├── data             <- Folder that contains all data. **Immutable and add-only!**
 │   ├── simulations  <- Data resulting directly from simulations
 │   ├── exp_pro      <- Data from processing experiments
 │   └── exp_raw      <- Raw experimental data
@@ -27,8 +27,9 @@
 │
 |
 ├── README.md        <- Optional top-level README for anyone using this project.
-├── .gitignore       <- by default ignores data, plots, videos, notebooks, _research,
-|                        Manifest.toml, latex-compilation related files.
+├── .gitignore       <- by default ignores _research, data, plots, videos,
+|                       notebooks and latex-compilation related files.
+|
 ├── Manifest.toml    <- Contains full list of exact package versions used currently.
 └── Project.toml     <- Main project file, allows activation and installation.
                         Includes DrWatson by default.

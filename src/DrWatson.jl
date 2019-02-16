@@ -16,4 +16,8 @@ include("saving.jl")
 # end
 
 
+function greet()
+    "DrWatson is currently in alpha. More coolness coming soon!"
+end
+
 end

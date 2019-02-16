@@ -11,4 +11,3 @@ _research
 *.synctex.gz
 *.synctex.gz(buzy)
 *.out
-Manifest.toml
