@@ -2,29 +2,29 @@ export savename, @dict, @ntuple
 export ntuple2dict, dict2ntuple
 
 """
-    allaccess(d)
-Return all the keys `d` can be accessed using [`access`](@ref).
-For dictionaries/named tuples this is `keys(d)`,
-for everything else it is `fieldnames(typeof(d))`.
+    allaccess(c)
+Return all the keys `c` can be accessed using [`access`](@ref).
+For dictionaries/named tuples this is `keys(c)`,
+for everything else it is `fieldnames(typeof(c))`.
 """
-allaccess(d::AbstractDict) = collect(keys(d))
-allaccess(d::NamedTuple) = keys(d)
-allaccess(d::Any) = fieldnames(typeof(d))
-allaccess(d::DataType) = fieldnames(d)
-allaccess(d::String) = error("`d` must be a container, not a string!")
+allaccess(c::AbstractDict) = collect(keys(c))
+allaccess(c::NamedTuple) = keys(c)
+allaccess(c::Any) = fieldnames(typeof(c))
+allaccess(c::DataType) = fieldnames(c)
+allaccess(c::String) = error("`c` must be a container, not a string!")
 
 """
-    access(d, key)
-Access `d` with given key. For `AbstractDict` this is `getindex`,
+    access(c, key)
+Access `c` with given key. For `AbstractDict` this is `getindex`,
 for anything else it is `getproperty`.
 """
-access(d::AbstractDict, key) = getindex(d, key)
-access(d, key) = getproperty(d, key)
+access(c::AbstractDict, key) = getindex(c, key)
+access(c, key) = getproperty(c, key)
 
 """
-    savename([prefix,], d [, suffix]; kwargs...)
+    savename([prefix,], c [, suffix]; kwargs...)
 Create a shorthand name, commonly used for saving a file, based on the
-parameters in the container `d` (`Dict`, `NamedTuple` or any other Julia
+parameters in the container `c` (`Dict`, `NamedTuple` or any other Julia
 composite type, e.g. created with Parameters.jl). If provided use
 the `prefix` end end the file with `.suffix` (i.e. you don't have to include
 the `.` in your `suffix`).
@@ -45,9 +45,9 @@ prefix_key1=val1_key2=val2_key3=val3.suffix
 ## Keywords
 * `allowedtypes = (Real, String, Symbol)` : Only values of type subtyping
   anything in `allowedtypes` are used in the name.
-* `accesses = allaccess(d)` : You can also specify which specific keys you want
+* `accesses = allaccess(c)` : You can also specify which specific keys you want
   to use with the keyword `accesses`. By default this is all possible
-  keys `d` can be accessed with, see [`allaccess`](@ref).
+  keys `c` can be accessed with, see [`allaccess`](@ref).
 * `digits = 3` : Floating point values are rounded to `digits`.
   In addition if the following holds:
   ```julia
@@ -58,13 +58,13 @@ prefix_key1=val1_key2=val2_key3=val3.suffix
 
 ## Examples
 ```jldoctest; setup = :(using DrWatson)
-julia> d = (a = 0.153456453, b = 5.0, mode = "double")
+julia> c = (a = 0.153456453, b = 5.0, mode = "double")
 (a = 0.153456453, b = 5.0, mode = "double")
 
-julia> savename(d; digits = 4)
+julia> savename(c; digits = 4)
 "a=0.1535_b=5_mode=double"
 
-julia> savename(d, (String,))
+julia> savename(c, (String,))
 "mode=double"
 
 julia> rick = (never = "gonna", give = "you", up = "!");
@@ -73,12 +73,12 @@ julia> savename(rick) # keys are always sorted
   "give=you_never=gonna_up=!"
 ```
 """
-savename(d; kwargs...) = savename("", d, ""; kwargs...)
-savename(d::Any, suffix::String; kwargs...) = savename("", d, suffix; kwargs...)
-savename(prefix::String, d::Any; kwargs...) = savename(prefix, d, ""; kwargs...)
-function savename(prefix::String, d, suffix::String;
+savename(c; kwargs...) = savename("", c, ""; kwargs...)
+savename(c::Any, suffix::String; kwargs...) = savename("", c, suffix; kwargs...)
+savename(prefix::String, c::Any; kwargs...) = savename(prefix, c, ""; kwargs...)
+function savename(prefix::String, c, suffix::String;
                   allowedtypes = (Real, String, Symbol),
-                  accesses = allaccess(d), digits = 3,
+                  accesses = allaccess(c), digits = 3,
                   connector = "_")
 
     labels = vecstring(accesses) # make it vector of strings
@@ -86,7 +86,7 @@ function savename(prefix::String, d, suffix::String;
     first = prefix == ""
     s = prefix
     for j ∈ p
-        val = access(d, accesses[j])
+        val = access(c, accesses[j])
         label = labels[j]
         t = typeof(val)
         if any(x -> (t <: x), allowedtypes)
