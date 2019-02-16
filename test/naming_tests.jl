@@ -26,3 +26,6 @@ n2 = (x = x, y = y, z= z)
 w = rand(50)
 @test savename(@dict x y w) == savename(@dict x y)
 @test savename(@ntuple x y w) == savename(@dict x y)
+
+@test ntuple2dict(@ntuple x y) == @dict x y
+@test dict2ntuple(@dict x y) == @ntuple x y

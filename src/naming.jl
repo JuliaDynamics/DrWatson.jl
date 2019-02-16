@@ -1,10 +1,14 @@
 export savename, @dict, @ntuple
+export ntuple2dict, dict2ntuple
 
 """
     allaccess(d)
 Return all the keys `d` can be accessed using [`access`](@ref).
+For dictionaries/named tuples this is `keys(d)`,
+for everything else it is `fieldnames(typeof(d))`.
 """
-allaccess(d::AbstractDict) = sort!(collect(keys(d)))
+allaccess(d::AbstractDict) = collect(keys(d))
+allaccess(d::NamedTuple) = keys(d)
 allaccess(d::Any) = fieldnames(typeof(d))
 allaccess(d::DataType) = fieldnames(d)
 
@@ -33,21 +37,17 @@ while the keys are always sorted alphabetically.
 [`@dict`](@ref) or [`@ntuple`](@ref).
 
 ## Keywords
-* `allowedtypes = (Real, String, Symbol)`
-Only values of type subtyping `allowedtypes` are used in the name.
-
-* `accesses = allaccess(d)`
-You can also specify which specific keys you want to use with the keyword
-`accesses`. By default this is all possible
-keys `d` can be accessed with, see [`allaccess`](@ref).
-
-* `digits = 3`
-Floating point values are rounded to `digits`. In addition if the following holds:
-```julia
-round(val; digits = digits) == round(Int, val)
-```
-then the integer value is used in the name instead.
-
+* `allowedtypes = (Real, String, Symbol)` : Only values of type subtyping
+  anything in `allowedtypes` are used in the name.
+* `accesses = allaccess(d)` : You can also specify which specific keys you want
+  to use with the keyword `accesses`. By default this is all possible
+  keys `d` can be accessed with, see [`allaccess`](@ref).
+* `digits = 3` : Floating point values are rounded to `digits`.
+  In addition if the following holds:
+  ```julia
+  round(val; digits = digits) == round(Int, val)
+  ```
+  then the integer value is used in the name instead.
 * `connector = "_"` : string used to connect the various entries.
 
 ## Examples
@@ -71,7 +71,7 @@ function savename(d; allowedtypes = (Real, String, Symbol),
                   accesses = allaccess(d), digits = 3,
                   connector = "_")
 
-    labels = [string(a) for a in accesses]
+    labels = vecstring(accesses) # make it vector of strings
     p = sortperm(labels)
     s = ""
     first = true
@@ -142,3 +142,21 @@ macro ntuple(vars...)
    return expr
 end
 # Credit of `ntuple` macro goes to Sebastian Pfitzner, @pfitzseb
+
+"""
+    ntuple2dict(nt) -> dict
+Convert a `NamedTuple` to a dictionary with `String` as key type
+"""
+ntuple2dict(nt::NamedTuple) = Dict(string(k) => nt[k] for k in keys(nt))
+
+"""
+    dict2ntuple(dict) -> ntuple
+Convert a dictionary (with `Symbol` or `String` as key type) to
+a `NamedTuple`.
+"""
+function dict2ntuple(dict::Dict{String, T}) where T
+    NamedTuple{Tuple(Symbol.(keys(dict)))}(values(dict))
+end
+function dict2ntuple(dict::Dict{Symbol, T}) where T
+    NamedTuple{Tuple(keys(dict))}(values(dict))
+end
