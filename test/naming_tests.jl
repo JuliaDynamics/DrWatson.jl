@@ -6,6 +6,7 @@ d = (a = 0.153456453, b = 5.0, mode = "double")
 @test savename("n", d; digits = 4) == "n_a=0.1535_b=5_mode=double"
 @test savename(d, "n"; digits = 4) == "a=0.1535_b=5_mode=double.n"
 @test savename("n", d, "n"; digits = 4) == "n_a=0.1535_b=5_mode=double.n"
+@test savename("n", d, "n"; digits = 4, connector = "-") == "n-a=0.1535-b=5-mode=double.n"
 @test savename(d, allowedtypes = (String,)) == "mode=double"
 
 rick = (never = "gonna", give = "you", up = "!");
@@ -33,5 +34,4 @@ w = rand(50)
 @test savename(@ntuple x y w) == savename(@dict x y)
 
 @test ntuple2dict(@ntuple x y) == @dict x y
-@test sort(collect(keys(dict2ntuple(@dict x y)))) ==
-      sort(collect(keys(@ntuple x y)))
+@test sort(collect(keys(dict2ntuple(@dict x y)))) == sort(collect(keys(@ntuple x y)))
