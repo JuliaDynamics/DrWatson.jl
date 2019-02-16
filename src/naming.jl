@@ -1,37 +1,44 @@
-export savename, @dict, @ntuple
+export savename, @dict, @ntuple, @strdict
 export ntuple2dict, dict2ntuple
 
 """
-    allaccess(d)
-Return all the keys `d` can be accessed using [`access`](@ref).
-For dictionaries/named tuples this is `keys(d)`,
-for everything else it is `fieldnames(typeof(d))`.
+    allaccess(c)
+Return all the keys `c` can be accessed using [`access`](@ref).
+For dictionaries/named tuples this is `keys(c)`,
+for everything else it is `fieldnames(typeof(c))`.
 """
-allaccess(d::AbstractDict) = collect(keys(d))
-allaccess(d::NamedTuple) = keys(d)
-allaccess(d::Any) = fieldnames(typeof(d))
-allaccess(d::DataType) = fieldnames(d)
-
+allaccess(c::AbstractDict) = collect(keys(c))
+allaccess(c::NamedTuple) = keys(c)
+allaccess(c::Any) = fieldnames(typeof(c))
+allaccess(c::DataType) = fieldnames(c)
+allaccess(c::String) = error("`c` must be a container, not a string!")
 
 """
-    access(d, key)
-Access `d` with given key. For `AbstractDict` this is `getindex`,
+    access(c, key)
+Access `c` with given key. For `AbstractDict` this is `getindex`,
 for anything else it is `getproperty`.
 """
-access(d::AbstractDict, key) = getindex(d, key)
-access(d, key) = getproperty(d, key)
+access(c::AbstractDict, key) = getindex(c, key)
+access(c, key) = getproperty(c, key)
 
 """
-    savename(d; kwargs...)
-Create a shorthand name, commonly used for saving a file, based on the parameters
-in the container `d` (`Dict`, `NamedTuple` or any other Julia composite type, e.g.
-created with Parameters.jl).
+    savename([prefix,], c [, suffix]; kwargs...)
+Create a shorthand name, commonly used for saving a file, based on the
+parameters in the container `c` (`Dict`, `NamedTuple` or any other Julia
+composite type, e.g. created with Parameters.jl). If provided use
+the `prefix` and end the name with `.suffix` (i.e. you don't have to include
+the `.` in your `suffix`).
 
 The function chains keys and values into a string of the form:
 ```julia
-key1=val1_key2=val2_key3=val3...
+key1=val1_key2=val2_key3=val3
 ```
-while the keys are always sorted alphabetically.
+while the keys are **always sorted alphabetically.** If you provide
+the prefix/suffix the function will do:
+```julia
+prefix_key1=val1_key2=val2_key3=val3.suffix
+```
+(assuming you chose the default `connector`, see below)
 
 `savename` can be very conveniently combined with
 [`@dict`](@ref) or [`@ntuple`](@ref).
@@ -39,9 +46,9 @@ while the keys are always sorted alphabetically.
 ## Keywords
 * `allowedtypes = (Real, String, Symbol)` : Only values of type subtyping
   anything in `allowedtypes` are used in the name.
-* `accesses = allaccess(d)` : You can also specify which specific keys you want
+* `accesses = allaccess(c)` : You can also specify which specific keys you want
   to use with the keyword `accesses`. By default this is all possible
-  keys `d` can be accessed with, see [`allaccess`](@ref).
+  keys `c` can be accessed with, see [`allaccess`](@ref).
 * `digits = 3` : Floating point values are rounded to `digits`.
   In addition if the following holds:
   ```julia
@@ -52,13 +59,13 @@ while the keys are always sorted alphabetically.
 
 ## Examples
 ```jldoctest; setup = :(using DrWatson)
-julia> d = (a = 0.153456453, b = 5.0, mode = "double")
+julia> c = (a = 0.153456453, b = 5.0, mode = "double")
 (a = 0.153456453, b = 5.0, mode = "double")
 
-julia> savename(d; digits = 4)
+julia> savename(c; digits = 4)
 "a=0.1535_b=5_mode=double"
 
-julia> savename(d, (String,))
+julia> savename(c, (String,))
 "mode=double"
 
 julia> rick = (never = "gonna", give = "you", up = "!");
@@ -67,16 +74,20 @@ julia> savename(rick) # keys are always sorted
   "give=you_never=gonna_up=!"
 ```
 """
-function savename(d; allowedtypes = (Real, String, Symbol),
-                  accesses = allaccess(d), digits = 3,
+savename(c; kwargs...) = savename("", c, ""; kwargs...)
+savename(c::Any, suffix::String; kwargs...) = savename("", c, suffix; kwargs...)
+savename(prefix::String, c::Any; kwargs...) = savename(prefix, c, ""; kwargs...)
+function savename(prefix::String, c, suffix::String;
+                  allowedtypes = (Real, String, Symbol),
+                  accesses = allaccess(c), digits = 3,
                   connector = "_")
 
     labels = vecstring(accesses) # make it vector of strings
     p = sortperm(labels)
-    s = ""
-    first = true
+    first = prefix == ""
+    s = prefix
     for j ∈ p
-        val = access(d, accesses[j])
+        val = access(c, accesses[j])
         label = labels[j]
         t = typeof(val)
         if any(x -> (t <: x), allowedtypes)
@@ -92,26 +103,39 @@ function savename(d; allowedtypes = (Real, String, Symbol),
             first = false
         end
     end
+    suffix != "" && (s *= "."*suffix)
     return s
 end
 
 """
     @dict vars...
 Create a dictionary out of the given variables that has as keys the variable
-names (as strings) and as values their values.
+names and as values their values.
 
 ## Examples
 ```jldoctest; setup = :(using DrWatson)
 julia> ω = 5; χ = "test"; ζ = π/3;
 
 julia> @dict ω χ ζ
-Dict{String,Any} with 3 entries:
-  "ω" => 5
-  "χ" => "test"
-  "ζ" => 1.0472
+Dict{Symbol,Any} with 3 entries:
+  :ω => 5
+  :χ => "test"
+  :ζ => 1.0472
 ```
 """
 macro dict(vars...)
+    expr = Expr(:call, :Dict)
+    for i in 1:length(vars)
+        push!(expr.args, :($(QuoteNode(vars[i])) => $(esc(vars[i]))))
+    end
+    return expr
+end
+
+"""
+    @strdict vars...
+Same as [`@dict`](@ref) but the key type is `String`.
+"""
+macro strdict(vars...)
     expr = Expr(:call, :Dict)
     for i in 1:length(vars)
         push!(expr.args, :(string($(QuoteNode(vars[i]))) => $(esc(vars[i]))))
@@ -145,9 +169,9 @@ end
 
 """
     ntuple2dict(nt) -> dict
-Convert a `NamedTuple` to a dictionary with `String` as key type
+Convert a `NamedTuple` to a dictionary.
 """
-ntuple2dict(nt::NamedTuple) = Dict(string(k) => nt[k] for k in keys(nt))
+ntuple2dict(nt::NamedTuple) = Dict(k => nt[k] for k in keys(nt))
 
 """
     dict2ntuple(dict) -> ntuple

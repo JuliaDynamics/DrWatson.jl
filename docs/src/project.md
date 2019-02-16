@@ -33,7 +33,7 @@ Seems like `src` and `scripts` folders have pretty similar functionality. Howeve
 
 1. If upon `include("file.jl")` there is _anything_ being produced, be it data files, plots or even output to the console, then it should be in `scripts`.
 2. If it is functionality used across multiple files or pipelines, it should be in `src`.
-3. `src` should only contain files the define functions or modules but not output anything. You can also organize `src` to be a Julia package, or contain multiple Julia packages.
+3. `src` should only contain files that define functions or types but not output anything. You can also organize `src` to be a Julia package, or contain multiple Julia packages.
 
 ## Initializing a Project
 
