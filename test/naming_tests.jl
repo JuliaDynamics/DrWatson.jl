@@ -1,4 +1,5 @@
 using DrWatson, Test
+using DrWatson: @strdict
 
 d = (a = 0.153456453, b = 5.0, mode = "double")
 @test savename(d; digits = 4) == "a=0.1535_b=5_mode=double"
@@ -32,4 +33,5 @@ w = rand(50)
 @test savename(@ntuple x y w) == savename(@dict x y)
 
 @test ntuple2dict(@ntuple x y) == @dict x y
-@test dict2ntuple(@dict x y) == @ntuple x y
+@test sort(collect(keys(dict2ntuple(@dict x y)))) ==
+      sort(collect(keys(@ntuple x y)))

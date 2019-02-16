@@ -116,10 +116,10 @@ names and as values their values.
 julia> ω = 5; χ = "test"; ζ = π/3;
 
 julia> @dict ω χ ζ
-Dict{String,Any} with 3 entries:
-  "ω" => 5
-  "χ" => "test"
-  "ζ" => 1.0472
+Dict{Symbol,Any} with 3 entries:
+  :ω => 5
+  :χ => "test"
+  :ζ => 1.0472
 ```
 """
 macro dict(vars...)
@@ -168,9 +168,9 @@ end
 
 """
     ntuple2dict(nt) -> dict
-Convert a `NamedTuple` to a dictionary with `String` as key type
+Convert a `NamedTuple` to a dictionary.
 """
-ntuple2dict(nt::NamedTuple) = Dict(string(k) => nt[k] for k in keys(nt))
+ntuple2dict(nt::NamedTuple) = Dict(k => nt[k] for k in keys(nt))
 
 """
     dict2ntuple(dict) -> ntuple
