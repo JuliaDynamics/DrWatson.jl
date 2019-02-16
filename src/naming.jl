@@ -109,7 +109,7 @@ end
 """
     @dict vars...
 Create a dictionary out of the given variables that has as keys the variable
-names (as strings) and as values their values.
+names and as values their values.
 
 ## Examples
 ```jldoctest; setup = :(using DrWatson)
@@ -123,6 +123,18 @@ Dict{String,Any} with 3 entries:
 ```
 """
 macro dict(vars...)
+    expr = Expr(:call, :Dict)
+    for i in 1:length(vars)
+        push!(expr.args, :($(QuoteNode(vars[i])) => $(esc(vars[i]))))
+    end
+    return expr
+end
+
+"""
+    @strdict vars...
+Same as [`@dict`](@ref) but the key type is `String`.
+"""
+macro strdict(vars...)
     expr = Expr(:call, :Dict)
     for i in 1:length(vars)
         push!(expr.args, :(string($(QuoteNode(vars[i]))) => $(esc(vars[i]))))

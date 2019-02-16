@@ -11,14 +11,15 @@ rick = (never = "gonna", give = "you", up = "!");
 @test savename(rick) == "give=you_never=gonna_up=!"
 
 x = 3; y = 5.0;
-d = Dict("x" => x, "y" => y)
+d = Dict(:x => x, :y => y)
 n = (x = x, y = y)
 
 @test d == @dict x y
+@test Dict("x" => x, "y" => y) == @strdict x y
 @test n == @ntuple x y
 
 z = "lala"
-d2 = Dict("x" => x, "y" => y, "z" => z)
+d2 = Dict(:x => x, :y => y, :z => z)
 n2 = (x = x, y = y, z= z)
 
 @test d2 == @dict x y z
