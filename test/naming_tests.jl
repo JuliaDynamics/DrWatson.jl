@@ -2,10 +2,13 @@ using DrWatson, Test
 
 d = (a = 0.153456453, b = 5.0, mode = "double")
 @test savename(d; digits = 4) == "a=0.1535_b=5_mode=double"
-@test savename("n", d; digits = 4) == "n_a=0.1535_b=5_mode=double"
-@test savename(d, "n"; digits = 4) == "a=0.1535_b=5_mode=double.n"
-@test savename("n", d, "n"; digits = 4) == "n_a=0.1535_b=5_mode=double.n"
-@test savename("n", d, "n"; digits = 4, connector = "-") == "n-a=0.1535-b=5-mode=double.n"
+@test savename("n", d) == "n_a=0.153_b=5_mode=double"
+@test savename("n/", d) == "n/a=0.153_b=5_mode=double"
+@test savename("n/", d; connector = "-") == "n/a=0.153-b=5-mode=double"
+@test savename("n\\", d) == "n\\a=0.153_b=5_mode=double"
+@test savename(d, "n") == "a=0.153_b=5_mode=double.n"
+@test savename("n", d, "n") == "n_a=0.153_b=5_mode=double.n"
+@test savename("n", d, "n"; connector = "-") == "n-a=0.153-b=5-mode=double.n"
 @test savename(d, allowedtypes = (String,)) == "mode=double"
 
 rick = (never = "gonna", give = "you", up = "!");

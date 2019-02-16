@@ -38,7 +38,8 @@ the prefix/suffix the function will do:
 ```julia
 prefix_key1=val1_key2=val2_key3=val3.suffix
 ```
-(assuming you chose the default `connector`, see below)
+assuming you chose the default `connector`, see below. Notice
+that if `prefix` ends as a path (`/` or `\\`) then the `connector` is ommited.
 
 `savename` can be very conveniently combined with
 [`@dict`](@ref) or [`@ntuple`](@ref).
@@ -58,20 +59,18 @@ prefix_key1=val1_key2=val2_key3=val3.suffix
 * `connector = "_"` : string used to connect the various entries.
 
 ## Examples
-```jldoctest; setup = :(using DrWatson)
-julia> c = (a = 0.153456453, b = 5.0, mode = "double")
-(a = 0.153456453, b = 5.0, mode = "double")
+```julia
+d = (a = 0.153456453, b = 5.0, mode = "double")
+savename(d; digits = 4) == "a=0.1535_b=5_mode=double"
+savename("n", d) == "n_a=0.153_b=5_mode=double"
+savename("n/", d) == "n/a=0.153_b=5_mode=double"
+savename(d, "n") == "a=0.153_b=5_mode=double.n"
+savename("n", d, "n") == "n_a=0.153_b=5_mode=double.n"
+savename("n", d, "n"; connector = "-") == "n-a=0.153-b=5-mode=double.n"
+savename(d, allowedtypes = (String,)) == "mode=double"
 
-julia> savename(c; digits = 4)
-"a=0.1535_b=5_mode=double"
-
-julia> savename(c, (String,))
-"mode=double"
-
-julia> rick = (never = "gonna", give = "you", up = "!");
-
-julia> savename(rick) # keys are always sorted
-  "give=you_never=gonna_up=!"
+rick = (never = "gonna", give = "you", up = "!");
+savename(rick) == "give=you_never=gonna_up=!" # keys are sorted!
 ```
 """
 savename(c; kwargs...) = savename("", c, ""; kwargs...)
@@ -84,7 +83,7 @@ function savename(prefix::String, c, suffix::String;
 
     labels = vecstring(accesses) # make it vector of strings
     p = sortperm(labels)
-    first = prefix == ""
+    first = prefix == "" || prefix[end] == '\\' || prefix[end] == '/'
     s = prefix
     for j ∈ p
         val = access(c, accesses[j])
