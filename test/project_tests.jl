@@ -32,11 +32,13 @@ z = read((path*"/Project.toml"), String)
 @test occursin("[\"George\", \"Nick\"]", z)
 
 initialize_project(path, name; force = true, authors = "Sophia", git = false)
+@test !isdir(joinpath(path, ".git"))
 z = read((path*"/Project.toml"), String)
 @test occursin("[\"Sophia\"]", z)
 
 cd(path)
 @test findproject(pwd()) == pwd()
+cd()
 
 rm(path, recursive = true, force = true)
 @test !isdir(path)
