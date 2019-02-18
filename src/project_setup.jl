@@ -3,6 +3,7 @@
 ##########################################################################################
 export projectdir, datadir, srcdir, plotsdir, scriptdir
 export projectname
+export findproject, quickactivate
 
 """
     projectdir()
@@ -19,6 +20,59 @@ scriptdir() = projectdir()*"scripts/"
 Return the name of the currently active project.
 """
 projectname() = Pkg.REPLMode.promptf()[2:end-7]
+
+"""
+    findproject(path = pwd()) -> project_path
+Recursively search `path` and its parents for a valid Julia project file.
+If it is found return its path, otherwise issue a warning and return
+`nothing`.
+
+The function stops searching if it hits either the home directory or
+the root directory.
+"""
+function findproject(dir::AbstractString = pwd())
+    # look for project file in current dir and parents
+    home = homedir()
+    while true
+        for proj in Base.project_names
+            file = joinpath(dir, proj)
+            Base.isfile_casesensitive(file) && return dir
+        end
+        # bail at home directory
+        dir == home && break
+        # bail at root directory
+        old, dir = dir, dirname(dir)
+        dir == old && break
+    end
+    @warn "Could not find find a project file by recursively checking "*
+    "given `path` and its parents. Returning `nothing` instead."
+    return nothing
+end
+
+"""
+    quickactivate(path [, name::String])
+Activate the project found by [`findproject`](@ref) of the `path`.
+Optionally check if `name` is the same as the activated project's name.
+If it is not, throw an error.
+
+This function is _first_ activating the project and _then_ checking if
+it matches the `name`.
+"""
+function quickactivate(path, name = nothing)
+    projectpath = findproject(path)
+    projectpath === nothing && return nothing
+    Pkg.activate(projectpath)
+    if !(name === nothing) && projectname() != name
+        error(
+        "The activated project did not match asserted name. Current project "*
+        "name is $(projectname()) while the asserted name is $name."
+        )
+    end
+    return nothing
+end
+
+
+
 
 ##########################################################################################
 # Project directory and setup management
@@ -71,8 +125,7 @@ function initialize_project(path, name = basename(path);
     if git; repo = LibGit2.init(path); end
     git && LibGit2.commit(repo, "Initial commit")
     Pkg.activate(path)
-    # Pkg.add("DrWatson")#Uncomment when the package is released
-    Pkg.add("Pkg")
+    Pkg.add("DrWatson")
 
     # Default folders
     for p in DEFAULT_PATHS
