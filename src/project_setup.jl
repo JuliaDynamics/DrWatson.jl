@@ -60,6 +60,7 @@ it matches the `name`.
 """
 function quickactivate(path, name = nothing)
     projectpath = findproject(path)
+    projectpath === nothing && return nothing
     Pkg.activate(projectpath)
     if !(name === nothing) && projectname() != name
         error(
