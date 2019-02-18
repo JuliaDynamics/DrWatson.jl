@@ -1,8 +1,12 @@
 function addrun! end
 
-function commitid(path = projectdir())
+function current_commit(path = projectdir())
     # Here we test if the path is a git repository.
-    if !ispath(joinpath(path, ".git"))
+    try
+        repo = LibGit2.GitRepo(path)
+    catch er
+        @warn "The current project directory is not a Git repository, "*
+        "returning `nothing` instead of the commit id."
         return nothing
     end
     # then we return the current commit
