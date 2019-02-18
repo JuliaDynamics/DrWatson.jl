@@ -8,6 +8,7 @@ name = "lala"
 initialize_project(path)
 
 @test projectname() == path
+@test findproject(@__DIR__) === nothing
 for p in DrWatson.DEFAULT_PATHS
     @test ispath(joinpath(path, p))
 end
@@ -33,6 +34,9 @@ z = read((path*"/Project.toml"), String)
 initialize_project(path, name; force = true, authors = "Sophia", git = false)
 z = read((path*"/Project.toml"), String)
 @test occursin("[\"Sophia\"]", z)
+
+cd(path)
+@test findproject(pwd()) == pwd()
 
 rm(path, recursive = true, force = true)
 @test !isdir(path)

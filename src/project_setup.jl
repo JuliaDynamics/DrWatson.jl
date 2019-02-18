@@ -125,8 +125,7 @@ function initialize_project(path, name = basename(path);
     if git; repo = LibGit2.init(path); end
     git && LibGit2.commit(repo, "Initial commit")
     Pkg.activate(path)
-    # Pkg.add("DrWatson")#Uncomment when the package is released
-    Pkg.add("Pkg")
+    Pkg.add("DrWatson")
 
     # Default folders
     for p in DEFAULT_PATHS
