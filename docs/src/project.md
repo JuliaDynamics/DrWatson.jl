@@ -61,6 +61,10 @@ quickactivate
 findproject
 ```
 
+Notice that to get the current project's name you can use:
+```@docs
+projectname
+```
 ## Navigating a Project
 To be able to navigate the project consistently, DrWatson provides the following functions:
 ```julia
@@ -73,14 +77,13 @@ scriptdir() = projectdir()*"scripts/"
 while as you can see all of them use `projectdir`:
 ```@docs
 projectdir
-projectname
 ```
 
 In addition, all these functions end with `/` by default. This means that you can directly chain them with a file name. E.g. you could do
 ```julia
-using DrWatson, FileIO
+using DrWatson, BSON
 file = makesimulation()
-FileIO.save(datadir()*"simulations/test.jld2", file)
+BSON.bson(datadir()*"simulations/test.bson", file)
 ```
 
 ## Reproducibility
