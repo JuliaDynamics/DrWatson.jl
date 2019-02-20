@@ -12,7 +12,7 @@ with `Symbol` as key type. The macro [`@dict`](@ref) can help with that.
 Notice that this function requires you to be `using BSON`.
 See also [`savename`](@ref).
 """
-produce_or_load(c, f; kwarg...) = produce_or_load("", c, f; kwargs...)
+produce_or_load(c, f; kwargs...) = produce_or_load("", c, f; kwargs...)
 function produce_or_load(prefix::String, c, f; suffix = "bson", kwargs...)
     s = savename(prefix, c, suffix; kwargs...)
     if isfile(s)

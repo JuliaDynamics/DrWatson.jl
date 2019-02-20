@@ -23,3 +23,7 @@ sim = produce_or_load(simulation, f)
 
 sim = produce_or_load(simulation, f)
 @test sim["simulation"].T == T
+
+rm(savename(simulation, "jld2"))
+
+@test !isfile(savename(simulation, "jld2"))
