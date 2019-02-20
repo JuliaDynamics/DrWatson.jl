@@ -6,18 +6,20 @@ include("project_setup.jl")
 include("naming.jl")
 include("saving.jl")
 
-# Functionality that requires FileIO:
-# using Requires
-# function __init__()
-#     @require FileIO = "5789e2e9-d7fb-5bc7-8068-2c6fae9b9549" begin
-#         import .FileIO: load, save
-#         include("saving_fileio.jl")
-#     end
-# end
+# Functionality that requires Optional Packages:
+using Requires
+function __init__()
+    # @require BSON = "fbb218c0-5317-5bc6-957e-2ee96dd4b1f0" begin
+    #     include("saving_bson.jl")
+    # end
+    @require FileIO = "5789e2e9-d7fb-5bc7-8068-2c6fae9b9549" begin
+        include("saving_jld2.jl")
+    end
+end
 
 
 function greet()
-    "DrWatson is currently in alpha. More coolness coming soon!"
+    println("DrWatson is currently in alpha. More coolness coming soon!")
 end
 
 end

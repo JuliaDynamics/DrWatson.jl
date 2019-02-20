@@ -30,11 +30,11 @@ DrWatson follows these simple principles:
 2. **Consistent.** The functionality is identical across all projects and DrWatson offers (and parts of it assume) a universal base project structure.
 3. **Allows increments.** You didn't plan your project well enough? Want to add more folders, more files, more variables to your simulations? It's fine.
 4. **Helpful.** DrWatson has been beta tested in real-world scientific projects and has matured based on feedback from scientists.
-5. **Reproducible.** DrWatson aims to make your projects fully reproducible using Julia's package manager and consistent naming schemes.
+5. **Reproducible.** DrWatson aims to make your projects fully reproducible using Git, Julia's package manager and consistent naming schemes.
 
 ## Functionality
 
-The functionality of DrWatson is composed of two main parts that are independent of each other (and you don't have to use both of them).
+The functionality of DrWatson is composed of the following core parts, each being independent from each other:
 
 * [Project Setup](@ref) : A universal project structure and functions that allow you to consistently and robustly navigate through your project, no matter where it is located on your hard drive.
 * [Handling Simulations](@ref) : A robust scheme for saving your data, naming files, finding out if a simulation already exists, producing tables of existing simulations/data.
