@@ -26,7 +26,8 @@ function produce_or_load(prefix::String, c, f; suffix = "bson", kwargs...)
             BSON.bson(s, copy(file))
         catch er
             @warn "Could not save file, got error $er. "*
-            "\n Returning the file nontheless."
+            "\nReturning the file nontheless."
+            isfile(s) && rm(s)
         end
         return file
     end
