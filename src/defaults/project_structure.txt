@@ -5,7 +5,7 @@
 |                       to-dos and anything in an alpha state
 │
 ├── data             <- Folder that contains all data. **Immutable and add-only!**
-│   ├── simulations  <- Data resulting directly from simulations
+│   ├── sims         <- Data resulting directly from simulations
 │   ├── exp_pro      <- Data from processing experiments
 │   └── exp_raw      <- Raw experimental data
 │

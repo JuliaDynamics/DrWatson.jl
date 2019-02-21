@@ -72,6 +72,8 @@ datadir() = projectdir()*"data/"
 srcdir() = projectdir()*"src/"
 plotsdir() = projectdir()*"plots/"
 scriptdir() = projectdir()*"scripts/"
+papersdir() = projectdir()*"papers/"
+videosdir() = projectdir()*"videos/"
 ```
 
 while as you can see all of them use `projectdir`:
@@ -83,7 +85,7 @@ In addition, all these functions end with `/` by default. This means that you ca
 ```julia
 using DrWatson, BSON
 file = makesimulation()
-BSON.bson(datadir()*"simulations/test.bson", file)
+BSON.bson(datadir()*"sims/test.bson", file)
 ```
 
 ## Reproducibility

@@ -1,7 +1,7 @@
 ##########################################################################################
 # Project directory and setup management
 ##########################################################################################
-export projectdir, datadir, srcdir, plotsdir, scriptdir
+export projectdir, datadir, srcdir, plotsdir, scriptdir, papersdir
 export projectname
 export findproject, quickactivate
 
@@ -14,6 +14,8 @@ datadir() = projectdir()*"data/"
 srcdir() = projectdir()*"src/"
 plotsdir() = projectdir()*"plots/"
 scriptdir() = projectdir()*"scripts/"
+papersdir() = projectdir()*"papers/"
+videosdir() = projectdir()*"videos/"
 
 """
     projectname()
@@ -82,7 +84,7 @@ export initialize_project
 const DEFAULT_PATHS = [
 "_reserach", "src/", "scripts/",
 "plots/", "videos/", "notebooks/",
-"data/simulations/",
+"data/sims/",
 "data/exp_raw/",
 "data/exp_pro/",
 ]
