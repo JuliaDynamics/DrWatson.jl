@@ -10,7 +10,9 @@ in `path`, which by default is the project path. If the repository
 is dirty when this function is called the string will end
 with `"_dirty"`.
 
-For example:
+See also [`tag`](@ref).
+
+## Examples
 ```julia
 julia> current_commit()
 "96df587e45b29e7a46348a3d780db1f85f41de04"
@@ -43,7 +45,7 @@ end
     tag(d::Dict, path = projectdir()) -> d
 Tag `d` by adding an extra field `commit` which will have as value
 the [`current_commit`](@ref) of the repository at `path` (by default
-the project's path).
+the project's path). Does not operate if a key `commit` already exists.
 
 Notice that if `String` is not a subtype of the value type of `d` then
 a new dictionary is created and returned. Otherwise the operation
@@ -69,6 +71,7 @@ function tag(d::Dict{K, T}, path = projectdir()) where {K, T}
     if haskey(d, K("commit"))
         @warn "The dictionary already has a key named `commit`. We won't "
         "overwrite it with the commit id."
+        return d
     end
     if String <: T
         d[K("commit")] = c
@@ -100,27 +103,27 @@ julia> dict_list(c)
  Dict(:a=>1,:b=>4)
  Dict(:a=>2,:b=>4)
 
-julia> c[:c] = "test"; c[:d] = ["lala", "lulu"];
+julia> c[:model] = "linear"; c[:mode] = ["bi", "tri"];
 
 julia> dict_list(c)
 4-element Array{Dict{Symbol,Any},1}:
- Dict(:a=>1,:b=>4,:d=>"lala",:c=>"test")
- Dict(:a=>2,:b=>4,:d=>"lala",:c=>"test")
- Dict(:a=>1,:b=>4,:d=>"lulu",:c=>"test")
- Dict(:a=>2,:b=>4,:d=>"lulu",:c=>"test")
+ Dict(:a=>1,:b=>4,:mode=>"bi",:model=>"linear")
+ Dict(:a=>2,:b=>4,:mode=>"bi",:model=>"linear")
+ Dict(:a=>1,:b=>4,:mode=>"tri",:model=>"linear")
+ Dict(:a=>2,:b=>4,:mode=>"tri",:model=>"linear")
 
 julia> c[:e] = [[1, 2], [3, 5]];
 
 julia> dict_list(c)
 8-element Array{Dict{Symbol,Any},1}:
- Dict(:a=>1,:b=>4,:d=>"lala",:e=>[1, 2],:c=>"test")
- Dict(:a=>2,:b=>4,:d=>"lala",:e=>[1, 2],:c=>"test")
- Dict(:a=>1,:b=>4,:d=>"lulu",:e=>[1, 2],:c=>"test")
- Dict(:a=>2,:b=>4,:d=>"lulu",:e=>[1, 2],:c=>"test")
- Dict(:a=>1,:b=>4,:d=>"lala",:e=>[3, 5],:c=>"test")
- Dict(:a=>2,:b=>4,:d=>"lala",:e=>[3, 5],:c=>"test")
- Dict(:a=>1,:b=>4,:d=>"lulu",:e=>[3, 5],:c=>"test")
- Dict(:a=>2,:b=>4,:d=>"lulu",:e=>[3, 5],:c=>"test")
+ Dict(:a=>1,:b=>4,:mode=>"bi",:e=>[1, 2],:model=>"linear")
+ Dict(:a=>2,:b=>4,:mode=>"bi",:e=>[1, 2],:model=>"linear")
+ Dict(:a=>1,:b=>4,:mode=>"tri",:e=>[1, 2],:model=>"linear")
+ Dict(:a=>2,:b=>4,:mode=>"tri",:e=>[1, 2],:model=>"linear")
+ Dict(:a=>1,:b=>4,:mode=>"bi",:e=>[3, 5],:model=>"linear")
+ Dict(:a=>2,:b=>4,:mode=>"bi",:e=>[3, 5],:model=>"linear")
+ Dict(:a=>1,:b=>4,:mode=>"tri",:e=>[3, 5],:model=>"linear")
+ Dict(:a=>2,:b=>4,:mode=>"tri",:e=>[3, 5],:model=>"linear")
 """
 function dict_list(c)
     iterable_fields = filter(k -> typeof(c[k]) <: Vector, keys(c))
@@ -145,7 +148,8 @@ end
 #     iterable_tuple = NamedTuple{tuple(iterable_fields), iterable_vals}
 #
 #     Dict(iterable_fields .=> getindex.(Ref(c), iterable_fields))
-#     non_iterable_tuple = Dict(non_iterables .=> getindex.(Ref(c), non_iterables))
+#     non_iterable_tuple = Dict(
+#         non_iterables .=> getindex.(Ref(c), non_iterables))
 #
 #     vec(
 #         map(Iterators.product(values(iterable_dict)...)) do vals

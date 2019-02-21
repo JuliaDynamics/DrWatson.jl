@@ -39,6 +39,7 @@ The functionality of DrWatson is composed of the following core parts, each bein
 * [Project Setup](@ref) : A universal project structure and functions that allow you to consistently and robustly navigate through your project, no matter where it is located on your hard drive.
 * [Handling Simulations](@ref) : A robust scheme for saving your data, naming files, finding out if a simulation already exists, producing tables of existing simulations/data.
 
+This core functionality is also demonstrated in the [`Real World Examples`](@ref) page in various examples. All of these examples are directly copied from code of real scientific projects that use DrWatson.
 
 ## Inspirations
 
