@@ -10,7 +10,10 @@ c = Dict(:a => [1, 2], :b => 4);
 c1 = [ Dict(:a=>1,:b=>4)
  Dict(:a=>2,:b=>4)]
 
-@test dict_list(c) == c1
+v1 = dict_list(c)
+for el in c1
+    @test el ∈ v1
+end
 
 c[:c] = "test"; c[:d] = ["lala", "lulu"];
 c2 = [ Dict(:a=>1,:b=>4,:d=>"lala",:c=>"test")
@@ -18,7 +21,11 @@ c2 = [ Dict(:a=>1,:b=>4,:d=>"lala",:c=>"test")
  Dict(:a=>1,:b=>4,:d=>"lulu",:c=>"test")
  Dict(:a=>2,:b=>4,:d=>"lulu",:c=>"test")]
 
-@test dict_list(c) == c2
+v2 = dict_list(c)
+for el in c2
+    @test el ∈ v2
+end
+
 
 c[:e] = [[1, 2], [3, 5]];
 c3 = [
@@ -32,4 +39,7 @@ Dict(:a=>1,:b=>4,:d=>"lulu",:e=>[3, 5],:c=>"test")
 Dict(:a=>2,:b=>4,:d=>"lulu",:e=>[3, 5],:c=>"test")
 ]
 
-@test dict_list(c) == c3
+v3 = dict_list(c)
+for el in c3
+    @test el ∈ v3
+end
