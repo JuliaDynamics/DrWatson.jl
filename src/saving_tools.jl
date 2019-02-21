@@ -1,8 +1,17 @@
-export current_commit
+export current_commit, tag!
 export dict_list, ntuple_list
 
 function addrun! end
 
+"""
+    current_commit(path = projectdir()) -> commit
+Return the current active commit id of the Git repository present
+in `path`, which by default is the project path. For example:
+```julia
+julia> current_commit()
+"96df587e45b29e7a46348a3d780db1f85f41de04"
+```
+"""
 function current_commit(path = projectdir())
     # Here we test if the path is a git repository.
     try
@@ -16,6 +25,47 @@ function current_commit(path = projectdir())
     repo = LibGit2.GitRepo(path)
     return string(LibGit2.head_oid(repo))
 end
+
+"""
+    tag!(d::Dict, path = projectdir()) -> d
+Tag `d` by adding an extra field `commit` which will have as value
+the [`current_commit`](@ref) of the repository at `path` (by default
+the project's path).
+
+Notice that if `String` is not a subtype of the value type of `d` then
+a new dictionary is created and returned. Otherwise the operation
+is inplace (and the dictionary is returned again).
+
+## Examples
+```julia
+julia> d = Dict(:x => 3, :y => 4)
+Dict{Symbol,Int64} with 2 entries:
+  :y => 4
+  :x => 3
+
+julia> tag!(d)
+Dict{Symbol,Any} with 3 entries:
+  :y      => 4
+  :commit => "96df587e45b29e7a46348a3d780db1f85f41de04"
+  :x      => 3
+```
+"""
+function tag!(d::Dict{K, T}, path = projectdir()) where {K, T}
+    c = current_commit(path)
+    c === nothing && return d
+    if haskey(d, K("commit"))
+        @warn "The dictionary already has a key named `commit`. We won't "
+        "overwrite it with the commit id."
+    end
+    if String <: T
+        d[K("commit")] = c
+    else
+        d = Dict{K, promote_type(T, String)}(d)
+        d[K("commit")] = c
+    end
+    return d
+end
+
 
 """
     dict_list(c)
