@@ -40,6 +40,7 @@ Dict(:a=>2,:b=>4,:d=>"lulu",:e=>[3, 5],:c=>"test")
 ]
 
 v3 = dict_list(c)
+@test dict_list_count(c) == length(c3) == length(v3)
 for el in c3
     @test el ∈ v3
 end
@@ -48,7 +49,7 @@ end
 d1 = Dict(:x => 3, :y => 4)
 d2 = Dict("x" => 3, "y" => 4)
 for d in (d1, d2)
-    d = tag(d, dirname(@__DIR__))
+    d = tag!(d, dirname(@__DIR__))
 
     @test haskey(d, keytype(d)(:commit))
     @test d[keytype(d)(:commit)] |> typeof == String
