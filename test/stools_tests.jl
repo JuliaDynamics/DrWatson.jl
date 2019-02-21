@@ -40,6 +40,7 @@ Dict(:a=>2,:b=>4,:d=>"lulu",:e=>[3, 5],:c=>"test")
 ]
 
 v3 = dict_list(c)
+@test dict_list_count(c) == length(c3) == length(v3)
 for el in c3
     @test el ∈ v3
 end

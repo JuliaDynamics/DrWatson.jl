@@ -1,5 +1,5 @@
 export current_commit, tag!
-export dict_list, ntuple_list
+export dict_list, dict_list_count
 
 function addrun! end
 
@@ -93,7 +93,8 @@ for all possibilities. The keys of the entries are the same.
 Whether the values of `c` are iterable or not is of no concern;
 the function considers as "iterable" only subtypes of `Vector`.
 
-See also [`ntuple_list`](@ref).
+Use the function [`dict_list_count`](@ref) to get an estimate of
+how many dictionaries will `dict_list` produce.
 
 ## Examples
 julia> c = Dict(:a => [1, 2], :b => 4);
@@ -138,6 +139,16 @@ function dict_list(c)
             merge(non_iterable_dict, dd)
         end
     )
+end
+
+"""
+    dict_list_count(c) -> N
+Return the number of dictionaries that will be created by
+calling `dict_list(c)`.
+"""
+function dict_list_count(c)
+    iterable_fields = filter(k -> typeof(c[k]) <: Vector, keys(c))
+    prod(length(c[i]) for i in iterable_fields)
 end
 
 # function ntuple_list(c)
