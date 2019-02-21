@@ -22,13 +22,12 @@ values of the dictionary while the non-`Vector` values are kept constant
 for all possibilities. The keys of the entries are the same.
 
 ## Examples
-julia> d = Dict(:a => [1, 2, 3], :b => 4);
+julia> d = Dict(:a => [1, 2], :b => 4);
 
 julia> dict_list(d)
 3-element Array{Dict{Symbol,Int64},1}:
  Dict(:a=>1,:b=>4)
  Dict(:a=>2,:b=>4)
- Dict(:a=>3,:b=>4)
 
 julia> d[:c] = "test"; d[:d] = ["lala", "lulu"];
 
@@ -36,21 +35,21 @@ julia> dict_list(d)
 6-element Array{Dict{Symbol,Any},1}:
  Dict(:a=>1,:b=>4,:d=>"lala",:c=>"test")
  Dict(:a=>2,:b=>4,:d=>"lala",:c=>"test")
- Dict(:a=>3,:b=>4,:d=>"lala",:c=>"test")
  Dict(:a=>1,:b=>4,:d=>"lulu",:c=>"test")
  Dict(:a=>2,:b=>4,:d=>"lulu",:c=>"test")
- Dict(:a=>3,:b=>4,:d=>"lulu",:c=>"test")
 
-julia> d[:e] = [[0.1, 0.2]]; # final result retains the inner vector
+julia> d[:e] = [[0.1, 0.2], [0.1, 0.3]];
 
 julia> dict_list(d)
-6-element Array{Dict{Symbol,Any},1}:
+8-element Array{Dict{Symbol,Any},1}:
  Dict(:a=>1,:b=>4,:d=>"lala",:e=>[0.1, 0.2],:c=>"test")
  Dict(:a=>2,:b=>4,:d=>"lala",:e=>[0.1, 0.2],:c=>"test")
- Dict(:a=>3,:b=>4,:d=>"lala",:e=>[0.1, 0.2],:c=>"test")
  Dict(:a=>1,:b=>4,:d=>"lulu",:e=>[0.1, 0.2],:c=>"test")
  Dict(:a=>2,:b=>4,:d=>"lulu",:e=>[0.1, 0.2],:c=>"test")
- Dict(:a=>3,:b=>4,:d=>"lulu",:e=>[0.1, 0.2],:c=>"test")
+ Dict(:a=>1,:b=>4,:d=>"lala",:e=>[0.1, 0.3],:c=>"test")
+ Dict(:a=>2,:b=>4,:d=>"lala",:e=>[0.1, 0.3],:c=>"test")
+ Dict(:a=>1,:b=>4,:d=>"lulu",:e=>[0.1, 0.3],:c=>"test")
+ Dict(:a=>2,:b=>4,:d=>"lulu",:e=>[0.1, 0.3],:c=>"test")
 """
 function dict_list(d)
     vec(map(Iterators.product(values(d)...)) do vals
