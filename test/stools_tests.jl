@@ -43,3 +43,13 @@ v3 = dict_list(c)
 for el in c3
     @test el ∈ v3
 end
+
+# tag!
+d1 = Dict(:x => 3, :y => 4)
+d2 = Dict("x" => 3, "y" => 4)
+for d in (d1, d2)
+    d = tag(d)
+
+    @test haskey(d, keytype(d)(:commit))
+    @test d[ keytype(d)(:commit)] |> typeof == String
+end
