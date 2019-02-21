@@ -28,6 +28,8 @@ DrWatson.allaccess
 DrWatson.access
 ```
 
+## Tagging a run using Git
+For reproducibility reasons (and also to not go insane when asking "HOW DID I GET THOSE RESUUUULTS") it is useful to "tag" any simulation/result/process with the Git commit of the repository.
 ## Creating Run Tables
 
 WIP. (Adding simulation runs to a table/csv/dataframe)

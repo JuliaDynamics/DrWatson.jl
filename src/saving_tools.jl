@@ -6,10 +6,17 @@ function addrun! end
 """
     current_commit(path = projectdir()) -> commit
 Return the current active commit id of the Git repository present
-in `path`, which by default is the project path. For example:
+in `path`, which by default is the project path. If the repository
+is dirty when this function is called the string will end
+with `"_dirty"`.
+
+For example:
 ```julia
 julia> current_commit()
 "96df587e45b29e7a46348a3d780db1f85f41de04"
+
+julia> current_commit(path_to_dirty_repo)
+"3bf684c6a115e3dce484b7f200b66d3ced8b0832_dirty"
 ```
 """
 function current_commit(path = projectdir())
@@ -23,7 +30,13 @@ function current_commit(path = projectdir())
     end
     # then we return the current commit
     repo = LibGit2.GitRepo(path)
-    return string(LibGit2.head_oid(repo))
+    c = string(LibGit2.head_oid(repo))
+    if LibGit2.isdirty(repo)
+        @warn "The Git repository is dirty! Adding appropriate comment to "*
+        "commit id..."
+        return c*"_dirty"
+    end
+    return c
 end
 
 """
