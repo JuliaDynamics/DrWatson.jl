@@ -1,4 +1,4 @@
-export current_commit, tag
+export current_commit, tag!
 export dict_list, ntuple_list
 
 function addrun! end
@@ -10,7 +10,7 @@ in `path`, which by default is the project path. If the repository
 is dirty when this function is called the string will end
 with `"_dirty"`.
 
-See also [`tag`](@ref).
+See also [`tag!`](@ref).
 
 ## Examples
 ```julia
@@ -42,7 +42,7 @@ function current_commit(path = projectdir())
 end
 
 """
-    tag(d::Dict, path = projectdir()) -> d
+    tag!(d::Dict, path = projectdir()) -> d
 Tag `d` by adding an extra field `commit` which will have as value
 the [`current_commit`](@ref) of the repository at `path` (by default
 the project's path). Does not operate if a key `commit` already exists.
@@ -58,14 +58,14 @@ Dict{Symbol,Int64} with 2 entries:
   :y => 4
   :x => 3
 
-julia> tag(d)
+julia> tag!(d)
 Dict{Symbol,Any} with 3 entries:
   :y      => 4
   :commit => "96df587e45b29e7a46348a3d780db1f85f41de04"
   :x      => 3
 ```
 """
-function tag(d::Dict{K, T}, path = projectdir()) where {K, T}
+function tag!(d::Dict{K, T}, path = projectdir()) where {K, T}
     c = current_commit(path)
     c === nothing && return d
     if haskey(d, K("commit"))

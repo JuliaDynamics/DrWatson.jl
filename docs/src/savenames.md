@@ -31,20 +31,20 @@ DrWatson.access
 ```
 
 ## Tagging a run using Git
-For reproducibility reasons (and also to not go insane when asking "HOW DID I GET THOSE RESUUUULTS") it is useful to "tag" any simulation/result/process with the Git commit of the repository.
+For reproducibility reasons (and also to not go insane when asking "HOW DID I GET THOSE RESUUUULTS") it is useful to "tag!" any simulation/result/process with the Git commit of the repository.
 
 To this end there are two functions that can be used to ensure reproducibility:
 
 ```@docs
 current_commit
-tag
+tag!
 ```
 
-Please notice that `tag` will operate in place (if-possible) even if its name does not end with `!`. Also (importantly) these functions will **never error** as they are most commonly used when saving simulations and this could risk data not being saved.
+Please notice that `tag!` will operate in place only when possible. If not possible then a new dictionary is returned. Also (importantly) these functions will **never error** as they are most commonly used when saving simulations and this could risk data not being saved.
 
 ### Automatic Tagging during Saving
 
-WIP. (adding the `tag` functionality automatically with a `save` call)
+WIP. (adding the `tag!` functionality automatically with a `save` call)
 
 ## Preparing Simulation Runs
 It is very often the case that you want to run "batch simulations", i.e. just submit a bunch of different simulations, all using same algorithms and code but just different parameters. This scenario always requires the user to prepare a set of simulation parameter containers which are then passed into some kind of "main" function that starts the simulation.
