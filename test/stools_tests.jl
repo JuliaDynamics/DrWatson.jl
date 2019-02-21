@@ -48,8 +48,8 @@ end
 d1 = Dict(:x => 3, :y => 4)
 d2 = Dict("x" => 3, "y" => 4)
 for d in (d1, d2)
-    d = tag(d)
+    d = tag(d, dirname(@__DIR__))
 
     @test haskey(d, keytype(d)(:commit))
-    @test d[ keytype(d)(:commit)] |> typeof == String
+    @test d[keytype(d)(:commit)] |> typeof == String
 end
