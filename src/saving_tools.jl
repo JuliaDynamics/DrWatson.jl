@@ -18,35 +18,37 @@ function current_commit(path = projectdir())
 end
 
 """
-    dict_list(d)
-Expand the dictionary `d` into a vector of dictionaries.
+    dict_list(c)
+Expand the dictionary `c` into a vector of dictionaries.
 Each entry has a unique combination from the product of the `Vector`
 values of the dictionary while the non-`Vector` values are kept constant
 for all possibilities. The keys of the entries are the same.
 
-Whether the values of `d` are iterable or not is of no concern;
+Whether the values of `c` are iterable or not is of no concern;
 the function considers as "iterable" only subtypes of `Vector`.
 
-## Examples
-julia> d = Dict(:a => [1, 2], :b => 4);
+See also [`ntuple_list`](@ref).
 
-julia> dict_list(d)
+## Examples
+julia> c = Dict(:a => [1, 2], :b => 4);
+
+julia> dict_list(c)
 3-element Array{Dict{Symbol,Int64},1}:
  Dict(:a=>1,:b=>4)
  Dict(:a=>2,:b=>4)
 
-julia> d[:c] = "test"; d[:d] = ["lala", "lulu"];
+julia> c[:c] = "test"; c[:d] = ["lala", "lulu"];
 
-julia> dict_list(d)
+julia> dict_list(c)
 4-element Array{Dict{Symbol,Any},1}:
  Dict(:a=>1,:b=>4,:d=>"lala",:c=>"test")
  Dict(:a=>2,:b=>4,:d=>"lala",:c=>"test")
  Dict(:a=>1,:b=>4,:d=>"lulu",:c=>"test")
  Dict(:a=>2,:b=>4,:d=>"lulu",:c=>"test")
 
-julia> d[:e] = [[1, 2], [3, 5]];
+julia> c[:e] = [[1, 2], [3, 5]];
 
-julia> dict_list(d)
+julia> dict_list(c)
 8-element Array{Dict{Symbol,Any},1}:
  Dict(:a=>1,:b=>4,:d=>"lala",:e=>[1, 2],:c=>"test")
  Dict(:a=>2,:b=>4,:d=>"lala",:e=>[1, 2],:c=>"test")
@@ -57,12 +59,12 @@ julia> dict_list(d)
  Dict(:a=>1,:b=>4,:d=>"lulu",:e=>[3, 5],:c=>"test")
  Dict(:a=>2,:b=>4,:d=>"lulu",:e=>[3, 5],:c=>"test")
 """
-function dict_list(d)
-    iterable_fields = filter(k -> typeof(d[k]) <: Vector, keys(d))
-    non_iterables = setdiff(keys(d), iterable_fields)
+function dict_list(c)
+    iterable_fields = filter(k -> typeof(c[k]) <: Vector, keys(c))
+    non_iterables = setdiff(keys(c), iterable_fields)
 
-    iterable_dict = Dict(iterable_fields .=> getindex.(Ref(d), iterable_fields))
-    non_iterable_dict = Dict(non_iterables .=> getindex.(Ref(d), non_iterables))
+    iterable_dict = Dict(iterable_fields .=> getindex.(Ref(c), iterable_fields))
+    non_iterable_dict = Dict(non_iterables .=> getindex.(Ref(c), non_iterables))
 
     vec(
         map(Iterators.product(values(iterable_dict)...)) do vals
@@ -72,25 +74,20 @@ function dict_list(d)
     )
 end
 
-# function namedtuple_list(d::NamedTuple)
-#     vec(map(Iterators.product(values(d)...)) do vals
-#         s = tuple(keys(d)...)
-#         NamedTuple{s,typeof(vals)}(vals)
-#     end)
+# function ntuple_list(c)
+#     iterable_fields = filter(k -> typeof(c[k]) <: Vector, collect(keys(c)))
+#     non_iterables = setdiff(keys(c), iterable_fields)
+#
+#     iterable_vals = Tuple(collect((typeof(c[i]) for i in iterable_fields)))
+#     iterable_tuple = NamedTuple{tuple(iterable_fields), iterable_vals}
+#
+#     Dict(iterable_fields .=> getindex.(Ref(c), iterable_fields))
+#     non_iterable_tuple = Dict(non_iterables .=> getindex.(Ref(c), non_iterables))
+#
+#     vec(
+#         map(Iterators.product(values(iterable_dict)...)) do vals
+#             dd = Dict(keys(iterable_dict) .=> vals)
+#             merge(non_iterable_dict, dd)
+#         end
+#     )
 # end
-
-
-# function prepare(cs...)
-#     allkeys = [allaccess(c) for c in cs]
-#
-#     if !allunique(Iterators.flatten(allkeys))
-#         error("The keys of the given containers are not all unique.")
-#     end
-#
-#     # Key type of the final dictionary:
-#     K = promote_type([eltype(k) for k in allkeys]...)
-#     total = Dict{K, Any}()
-#     for (i, acc) in enumerate(allkeys)
-#         c = cs[i]
-#         for k in acc
-#             if eltype(c[k]) <: Vector # Expand
