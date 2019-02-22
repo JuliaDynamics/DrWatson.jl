@@ -100,3 +100,5 @@ pkg> instantiate
 All required packages and dependencies will be installed and then any script that was running in your computer will also be running in their computer **in the same way!**
 
 In addition, with DrWatson you have the possibility of "tagging" each simulation created with the commit id, see the discussion around [`current_commit`](@ref) and [`tag!`](@ref).
+
+Notice that for full reproducibility it is advised to **never add `Manifest.toml`** to your `.gitignore` file! 
