@@ -8,14 +8,20 @@ export findproject, quickactivate
 """
     projectdir()
 Return the directory of the currently active project. Ends with `"/"`.
+
+```julia
+projectdir(folder::String) = joinpath(projectdir(), folder)*"/"
+```
+Return the directory of the `folder` in the active project.
 """
 projectdir() = dirname(Base.active_project())*"/"
+projectdir(folder::String) = joinpath(projectdir(), folder)*"/"
+
 datadir() = projectdir()*"data/"
 srcdir() = projectdir()*"src/"
 plotsdir() = projectdir()*"plots/"
 scriptdir() = projectdir()*"scripts/"
 papersdir() = projectdir()*"papers/"
-videosdir() = projectdir()*"videos/"
 
 """
     projectname()

@@ -12,6 +12,9 @@ initialize_project(path)
 for p in DrWatson.DEFAULT_PATHS
     @test ispath(joinpath(path, p))
 end
+
+@test ispath(projectdir("data"))
+
 @test isfile(joinpath(path, ".gitignore"))
 @test isfile(joinpath(path, "README.md"))
 @test isfile(joinpath(path, "Project.toml"))

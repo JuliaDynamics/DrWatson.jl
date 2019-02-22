@@ -65,21 +65,22 @@ Notice that to get the current project's name you can use:
 ```@docs
 projectname
 ```
-## Navigating a Project
-To be able to navigate the project consistently, DrWatson provides the following functions:
-```julia
-datadir() = projectdir()*"data/"
-srcdir() = projectdir()*"src/"
-plotsdir() = projectdir()*"plots/"
-scriptdir() = projectdir()*"scripts/"
-papersdir() = projectdir()*"papers/"
-videosdir() = projectdir()*"videos/"
-```
 
-while as you can see all of them use `projectdir`:
+## Navigating a Project
+To be able to navigate the project consistently, DrWatson provides the core function
 ```@docs
 projectdir
 ```
+
+Besides the above, the shortcut functions:
+```julia
+datadir()
+srcdir()
+plotsdir()
+scriptdir()
+papersdir()
+```
+immediately return the appropriate subdirectory. These are also defined due to the frequent use of these subdirectories.
 
 In addition, all these functions end with `/` by default. This means that you can directly chain them with a file name. E.g. you could do
 ```julia
@@ -101,4 +102,4 @@ All required packages and dependencies will be installed and then any script tha
 
 In addition, with DrWatson you have the possibility of "tagging" each simulation created with the commit id, see the discussion around [`current_commit`](@ref) and [`tag!`](@ref).
 
-Notice that for full reproducibility it is advised to **never add `Manifest.toml`** to your `.gitignore` file! 
+Notice that for full reproducibility it is advised to **never add `Manifest.toml`** to your `.gitignore` file!
