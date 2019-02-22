@@ -22,6 +22,13 @@ access(c::AbstractDict, key) = getindex(c, key)
 access(c, key) = getproperty(c, key)
 
 """
+    default_allowed(c) = (Real, String, Symbol)
+Return the (super-)Types that will be used as `allowedtypes`
+in [`savename`](@ref) or other similar functions.
+"""
+default_allowed(c) = (Real, String, Symbol)
+
+"""
     savename([prefix,], c [, suffix]; kwargs...)
 Create a shorthand name, commonly used for saving a file, based on the
 parameters in the container `c` (`Dict`, `NamedTuple` or any other Julia
@@ -46,8 +53,9 @@ it ends as a path (`/` or `\\`) then the `connector` is ommited.
 [`@dict`](@ref) or [`@ntuple`](@ref).
 
 ## Keywords
-* `allowedtypes = (Real, String, Symbol)` : Only values of type subtyping
-  anything in `allowedtypes` are used in the name.
+* `allowedtypes = default_allowed(c)` : Only values of type subtyping
+  anything in `allowedtypes` are used in the name. By default
+  this is `(Real, String, Symbol)`.
 * `accesses = allaccess(c)` : You can also specify which specific keys you want
   to use with the keyword `accesses`. By default this is all possible
   keys `c` can be accessed with, see [`allaccess`](@ref).
@@ -78,7 +86,7 @@ savename(c; kwargs...) = savename("", c, ""; kwargs...)
 savename(c::Any, suffix::String; kwargs...) = savename("", c, suffix; kwargs...)
 savename(prefix::String, c::Any; kwargs...) = savename(prefix, c, ""; kwargs...)
 function savename(prefix::String, c, suffix::String;
-                  allowedtypes = (Real, String, Symbol),
+                  allowedtypes = default_allowed(c),
                   accesses = allaccess(c), digits = 3,
                   connector = "_")
 

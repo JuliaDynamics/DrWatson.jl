@@ -22,12 +22,13 @@ dict2ntuple
 ```
 
 ### Customizing `savename`
-You can customize [`savename`](@ref) for your own Types. For example you could make it so that it only uses some specific keys instead of all of them, or you could make it access data in a different way (maybe even loading files!).
+You can customize [`savename`](@ref) for your own Types. For example you could make it so that it only uses some specific keys instead of all of them, only specific types, or you could make it access data in a different way (maybe even loading files!).
 
-To do that you need to extend the following two functions:
+To do that you need to extend the following functions:
 ```@docs
 DrWatson.allaccess
 DrWatson.access
+DrWatson.default_allowed
 ```
 
 ## Tagging a run using Git
