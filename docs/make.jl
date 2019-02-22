@@ -11,7 +11,7 @@ pages = [
     "Introduction" => "index.md",
     "Project Setup" => "project.md",
     "Handling Simulations" => "savenames.md",
-    "Real Wolrd Examples" => "real_world.md"
+    "Real World Examples" => "real_world.md"
     ]
 )
 

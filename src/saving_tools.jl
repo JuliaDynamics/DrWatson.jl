@@ -97,6 +97,7 @@ Use the function [`dict_list_count`](@ref) to get an estimate of
 how many dictionaries will `dict_list` produce.
 
 ## Examples
+```julia
 julia> c = Dict(:a => [1, 2], :b => 4);
 
 julia> dict_list(c)
@@ -125,6 +126,7 @@ julia> dict_list(c)
  Dict(:a=>2,:b=>4,:mode=>"bi",:e=>[3, 5],:model=>"linear")
  Dict(:a=>1,:b=>4,:mode=>"tri",:e=>[3, 5],:model=>"linear")
  Dict(:a=>2,:b=>4,:mode=>"tri",:e=>[3, 5],:model=>"linear")
+```
 """
 function dict_list(c)
     iterable_fields = filter(k -> typeof(c[k]) <: Vector, keys(c))
