@@ -65,6 +65,31 @@ If it is not, throw an error.
 
 This function is _first_ activating the project and _then_ checking if
 it matches the `name`.
+
+!!! warning
+    Note that to access `quickactivate` you need to be `using DrWatson`.
+    For this to be possible `DrWatson` must be already in added in the
+    existing global environment. The version of `DrWatson` loaded therefore
+    will be the one of the global environment, and not of the activated project.
+    Therefore take care so that these two versions coincide, to not encounter
+    unexpected behavior.
+
+    **In addition please be very careful to not write:**
+    ```julia
+    using DrWatson, Package1, Package2
+    quickactivate(@__DIR__)
+    # do stuff
+    ```
+    **but instead load packages after activating the project:**
+    ```julia
+    using DrWatson
+    quickactivate(@__DIR__)
+    using Package1, Package2
+    # do stuff
+    ```
+    This ensures that the packages you use will all have the versions dictated
+    by your activated project (besides `DrWatson`, since this is impossible
+    to do using `quickactivate`).
 """
 function quickactivate(path, name = nothing)
     projectpath = findproject(path)
