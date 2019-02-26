@@ -17,7 +17,13 @@ allaccess(c::String) = error("`c` must be a container, not a string!")
     access(c, key)
 Access `c` with given key. For `AbstractDict` this is `getindex`,
 for anything else it is `getproperty`.
+    
+    access(c, keys...)
+When given multiple keys, `access` is called recursively, i.e.
+`access(c, key1, key2) = access(access(c, key1), key2)` and so on.
+Notice that the leftmost key is also the innermost in the nested calls.
 """
+access(c, keys...) = access(access(c, keys[1]), Base.tail(keys)...)
 access(c::AbstractDict, key) = getindex(c, key)
 access(c, key) = getproperty(c, key)
 
