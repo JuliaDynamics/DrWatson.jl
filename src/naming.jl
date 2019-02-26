@@ -21,7 +21,8 @@ for anything else it is `getproperty`.
     access(c, keys...)
 When given multiple keys, `access` is called recursively, i.e.
 `access(c, key1, key2) = access(access(c, key1), key2)` and so on.
-Notice that the leftmost key is also the innermost in the nested calls.
+For example, if `c` is a `NamedTuple` then
+`access(c, k1, k2) == ntuple.k1.k2`.
 
 !!! note
     Please only extend the single key method when customizing `access`
@@ -67,7 +68,7 @@ that `prefix` can be any path and in addition if
 it ends as a path (`/` or `\\`) then the `connector` is ommited.
 
 `savename` can be very conveniently combined with
-[`@dict`](@ref) or [`@ntuple`](@ref). 
+[`@dict`](@ref) or [`@ntuple`](@ref).
 
 ## Keywords
 * `allowedtypes = default_allowed(c)` : Only values of type subtyping

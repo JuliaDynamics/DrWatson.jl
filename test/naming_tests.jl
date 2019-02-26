@@ -39,9 +39,10 @@ w = rand(50)
 @test sort(collect(keys(dict2ntuple(@dict x y)))) == sort(collect(keys(@ntuple x y)))
 
 a = 3; b = 4
-c = @dict a b
+c = @ntuple a b
 d = 5; e = @dict c d
 
 @test DrWatson.access(e, :c, :a) == a
 f = dict2ntuple(e)
 @test DrWatson.access(f, :c, :a) == a
+@test f.c.a == a 
