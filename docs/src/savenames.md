@@ -21,14 +21,16 @@ ntupled2dict
 dict2ntuple
 ```
 
-### Customizing `savename`
-You can customize [`savename`](@ref) for your own Types. For example you could make it so that it only uses some specific keys instead of all of them, only specific types, or you could make it access data in a different way (maybe even loading files!).
+## Customizing `savename`
+You can customize [`savename`](@ref) for your own Types. For example you could make it so that it only uses some specific keys instead of all of them, only specific types, or you could make it access data in a different way (maybe even loading files!). You can even make it have
+a custom `prefix`!
 
-To do that you need to extend the following functions:
+To do that you may extend the following functions:
 ```@docs
 DrWatson.allaccess
 DrWatson.access
 DrWatson.default_allowed
+DrWatson.default_prefix
 ```
 
 ## Tagging a run using Git
