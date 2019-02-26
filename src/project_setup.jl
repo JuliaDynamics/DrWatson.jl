@@ -59,7 +59,10 @@ end
 
 """
     quickactivate(path [, name::String])
-Activate the project found by [`findproject`](@ref) of the `path`.
+Activate the project found by [`findproject`](@ref) of the `path`, which
+recursively searches the `path` and its parents for a valid Julia
+project file.
+
 Optionally check if `name` is the same as the activated project's name.
 If it is not, throw an error.
 
@@ -68,11 +71,10 @@ it matches the `name`.
 
 !!! warning
     Note that to access `quickactivate` you need to be `using DrWatson`.
-    For this to be possible `DrWatson` must be already in added in the
+    For this to be possible `DrWatson` must be already added in the
     existing global environment. The version of `DrWatson` loaded therefore
     will be the one of the global environment, and not of the activated project.
-    Therefore take care so that these two versions coincide, to not encounter
-    unexpected behavior.
+    To avoid unexpected behavior take care so that these two versions coincide.
 
     **In addition please be very careful to not write:**
     ```julia
