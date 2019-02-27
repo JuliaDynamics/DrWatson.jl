@@ -17,7 +17,7 @@ Notice that this naming scheme integrates perfectly with Parameters.jl.
 
 Two convenience functions are also provided to easily switch between named tuples and dictionaries:
 ```@docs
-ntupled2dict
+ntuple2dict
 dict2ntuple
 ```
 
