@@ -37,3 +37,12 @@ w = rand(50)
 
 @test ntuple2dict(@ntuple x y) == @dict x y
 @test sort(collect(keys(dict2ntuple(@dict x y)))) == sort(collect(keys(@ntuple x y)))
+
+a = 3; b = 4
+c = @ntuple a b
+d = 5; e = @dict c d
+
+@test DrWatson.access(e, :c, :a) == a
+ff = dict2ntuple(e)
+@test DrWatson.access(ff, :c, :a) == a
+@test ff.c.a == a 

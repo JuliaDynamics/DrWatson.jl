@@ -17,7 +17,18 @@ allaccess(c::String) = error("`c` must be a container, not a string!")
     access(c, key)
 Access `c` with given key. For `AbstractDict` this is `getindex`,
 for anything else it is `getproperty`.
+
+    access(c, keys...)
+When given multiple keys, `access` is called recursively, i.e.
+`access(c, key1, key2) = access(access(c, key1), key2)` and so on.
+For example, if `c` is a `NamedTuple` then
+`access(c, k1, k2) == ntuple.k1.k2`.
+
+!!! note
+    Please only extend the single key method when customizing `access`
+    for your own Types.
 """
+access(c, keys...) = access(access(c, keys[1]), Base.tail(keys)...)
 access(c::AbstractDict, key) = getindex(c, key)
 access(c, key) = getproperty(c, key)
 
@@ -27,6 +38,13 @@ Return the (super-)Types that will be used as `allowedtypes`
 in [`savename`](@ref) or other similar functions.
 """
 default_allowed(c) = (Real, String, Symbol)
+
+"""
+    default_prefix(c) = ""
+Return the `prefix` that will be used by default
+in [`savename`](@ref) or other similar functions.
+"""
+default_prefix(c) = ""
 
 """
     savename([prefix,], c [, suffix]; kwargs...)
@@ -46,7 +64,7 @@ the prefix/suffix the function will do:
 prefix_key1=val1_key2=val2_key3=val3.suffix
 ```
 assuming you chose the default `connector`, see below. Notice
-that if `prefix` can be any path and in addition if
+that `prefix` can be any path and in addition if
 it ends as a path (`/` or `\\`) then the `connector` is ommited.
 
 `savename` can be very conveniently combined with
@@ -82,8 +100,9 @@ rick = (never = "gonna", give = "you", up = "!");
 savename(rick) == "give=you_never=gonna_up=!" # keys are sorted!
 ```
 """
-savename(c; kwargs...) = savename("", c, ""; kwargs...)
-savename(c::Any, suffix::String; kwargs...) = savename("", c, suffix; kwargs...)
+savename(c; kwargs...) = savename(default_prefix(c), c, ""; kwargs...)
+savename(c::Any, suffix::String; kwargs...) =
+    savename(default_prefix(c), c, suffix; kwargs...)
 savename(prefix::String, c::Any; kwargs...) = savename(prefix, c, ""; kwargs...)
 function savename(prefix::String, c, suffix::String;
                   allowedtypes = default_allowed(c),
