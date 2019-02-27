@@ -43,6 +43,6 @@ c = @ntuple a b
 d = 5; e = @dict c d
 
 @test DrWatson.access(e, :c, :a) == a
-f = dict2ntuple(e)
-@test DrWatson.access(f, :c, :a) == a
-@test f.c.a == a 
+ff = dict2ntuple(e)
+@test DrWatson.access(ff, :c, :a) == a
+@test ff.c.a == a 
