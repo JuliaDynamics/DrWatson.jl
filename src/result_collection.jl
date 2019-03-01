@@ -1,7 +1,18 @@
 using DataFrames
 using BSON
 
-function merge_df(df1, df2)
+"""
+    merge_dataframes(df, df_new)
+Merge two dataframes `df` and `df_new`. If the `names` of the dataframes
+are the same this is just `vcat`.
+
+If `df_new` is missing keys that are already columns in `df`,
+they will set as `missing` in `df`.
+If on the other hand new keys are encountered, existing in `df_new`
+but not `df`, a new column will be added and filled with `missing`
+in `df`. Then `df` and `df_new` are concatenated.
+"""
+function merge_dataframes(df1, df2)
     if names(df1) == names(df2)
         return vcat(df1, df2)
     else
@@ -14,7 +25,9 @@ function merge_df(df1, df2)
         return vcat(df1,df2)
     end
 end
-is_valid_file(file, valid_filetypes) = any(endswith.(Ref(file),valid_filetypes))
+
+is_valid_file(file, valid_filetypes) =
+    any(endswith.(Ref(file),valid_filetypes))
 
 function to_data_row(data,
         white_list = collect(keys(data)),
@@ -39,20 +52,24 @@ end
 
 Walks the data directory for new result-files and adds them
 to a `DataFrame` containing all attributes relevant for evaluation.
-Files already included in the resulting `DataFrame` are skipped in subsequent calls
-to `collect_results`.
+Files already included in the resulting `DataFrame` are skipped in
+subsequent calls to `collect_results`.
 
 If a result file is missing keys that are already columns in the `DataFrame`,
 they will set as `missing`. If on the other hand new keys are encountered,
 a new column will be added and filled with `missing` for all previous entries.
 
 ## Keyword Arguments
- * `data_folder = joinpath(datadir(), "results")`: Folder that is scanned for result files
- * `filename = joinpath(datadir(),"results_dataframe.bson")`: Path to the file the DataFrame should be saved to
- * `valid_filetypes = [".bson", ".jld2", ".jld"]`: File types to be interpreted as result files. Other files are skipped.
- * `white_list=keys(data)`: List of keys to use from result file
- * `black_list=[]`: List of keys not to include from result file
- * `special_list=[]`: List of additional (derived) key-value pairs to put in `DataFrame` as explained below.
+ * `data_folder = joinpath(datadir(), "results")`: Folder that is scanned for
+   result files.
+ * `filename = joinpath(datadir(),"results_dataframe.bson")`: Path to the file
+   the DataFrame should be saved to.
+ * `valid_filetypes = [".bson", ".jld2", ".jld"]`: File types to be
+   interpreted as result files. Other files are skipped.
+ * `white_list=keys(data)`: List of keys to use from result file.
+ * `black_list=[]`: List of keys not to include from result file.
+ * `special_list=[]`: List of additional (derived) key-value pairs
+   to put in `DataFrame` as explained below.
 
 
 `special_list` is a `Vector{Pair{Symbol, Function}}` where each entry
@@ -64,7 +81,7 @@ To do just this, pass: `black_list = [:longvector]` and
 
     special_list = [ :lv_mean => data -> mean(data[:longvector]),
                      :lv_lar  => data -> var(data[:longvector])]
-In case this operation fails the values will be treated as `missing`.                       
+In case this operation fails the values will be treated as `missing`.
 """
 function collect_results(;
     data_folder = joinpath(datadir(), "results"),
@@ -85,7 +102,7 @@ function collect_results(;
             #add filename
             df_new[:path] = joinpath(root, file)
 
-            df = merge_df(df, df_new)
+            df = merge_dataframes(df, df_new)
         end
     end
     BSON.@save filename df
