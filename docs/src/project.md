@@ -47,14 +47,15 @@ This can be done in multiple ways:
    3. by setting the [`JULIA_PROJECT`](https://docs.julialang.org/en/latest/manual/environment-variables/#JULIA_PROJECT-1) environment variable
    4. using the functions [`quickctivate`](@ref) and [`findproject`](@ref) offered by DrWatson.
 
-We highly recommend the fourth approach. Here is how it works: the function [`quickactivate`](@ref) activates a project given some path by recursively searching the path and its parents for a valid `Project.toml` file. Typically you put this function in your script files like so:
+We recommend the fourth approach, although it does come with a caveat (see the docstring of [`quickactivate`](@ref)).
+
+Here is how it works: the function [`quickactivate`](@ref) activates a project given some path by recursively searching the path and its parents for a valid `Project.toml` file. Typically you put this function in your script files like so:
 ```julia
-using DrWatson # and any other package you use
-quickactivate(@__DIR__)
-# or
-quickactivate(@__DIR__, "Best project in the WORLLDD")
+using DrWatson # DONT USE OTHER PACKAGES HERE!
+quickactivate(@__DIR__, "Best project in the WOLLRDD")
+# Now you should start using other packages
 ```
-where the second optional argument can assert if the activated project matches the name you provided, see below for more.
+where the second optional argument can assert if the activated project matches the name you provided. If not the function will throw an error.
 
 ```@docs
 quickactivate

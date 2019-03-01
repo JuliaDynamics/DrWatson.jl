@@ -29,7 +29,7 @@ DrWatson follows these simple principles:
 1. **Basic.** The functionality offered is something simple, a baseline from where you handle your project as you wish.
 2. **Consistent.** The functionality is identical across all projects and DrWatson offers (and parts of it assume) a universal base project structure.
 3. **Allows increments.** You didn't plan your project well enough? Want to add more folders, more files, more variables to your simulations? It's fine.
-4. **Helpful.** DrWatson has been beta tested in real-world scientific projects and has matured based on feedback from scientists.
+4. **Helpful.** DrWatson has been beta tested in real-world scientific projects and has matured based on feedback from scientists. The entirety of DrWatson's functionality comes from answering questions of the type "This would be helpful for my science project".
 5. **Reproducible.** DrWatson aims to make your projects fully reproducible using Git, Julia's package manager and consistent naming schemes.
 
 ## Functionality
@@ -37,9 +37,10 @@ DrWatson follows these simple principles:
 The functionality of DrWatson is composed of the following core parts, each being independent from each other:
 
 * [Project Setup](@ref) : A universal project structure and functions that allow you to consistently and robustly navigate through your project, no matter where it is located on your hard drive.
-* [Handling Simulations](@ref) : A robust scheme for saving your data, naming files, finding out if a simulation already exists, producing tables of existing simulations/data.
+* [Naming & Saving Simulations](@ref) : A robust scheme for saving your data, naming files, finding out if a simulation already exists, tagging the git commit ID, and more.
+* [Running & Listing Simulations](@ref): Tools for producing tables of existing simulations/data, adding runs to such tables, preparing batch parameter containers, and more.
 
-This core functionality is also demonstrated in the [`Real World Examples`](@ref) page in various examples. All of these examples are directly copied from code of real scientific projects that use DrWatson.
+Applications of DrWatson are demonstrated the [`Real World Examples`](@ref) page. All of these examples are directly copied from code of real scientific projects that use DrWatson.
 
 ## Inspirations
 
