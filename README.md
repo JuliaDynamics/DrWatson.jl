@@ -1,4 +1,4 @@
-# DrWatson - The perfect sidekick to your scientific inquiries
+![DrWatson](https://github.com/JuliaDynamics/JuliaDynamics/blob/master/videos/drwatson/DrWatson-banner-nobg.png?raw=true)
 
 | **Documentation**   |  **Travis**     | **AppVeyor** | **Gitter** |
 |:--------:|:---------------:|:-----:|:-----:|
