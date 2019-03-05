@@ -40,7 +40,7 @@ The functionality of DrWatson is composed of the following core parts, each bein
 * [Naming & Saving Simulations](@ref) : A robust scheme for saving your data, naming files, finding out if a simulation already exists, tagging the git commit ID, and more.
 * [Running & Listing Simulations](@ref): Tools for producing tables of existing simulations/data, adding runs to such tables, preparing batch parameter containers, and more.
 
-Applications of DrWatson are demonstrated the [`Real World Examples`](@ref) page. All of these examples are directly copied from code of real scientific projects that use DrWatson.
+Applications of DrWatson are demonstrated the [Real World Examples](@ref) page. All of these examples are directly copied from code of real scientific projects that use DrWatson.
 
 ## Inspirations
 

@@ -45,7 +45,7 @@ This can be done in multiple ways:
    1. doing `Pkg.activate("path/to/project")` programmatically
    2. using the startup flag `--project path` when starting Julia
    3. by setting the [`JULIA_PROJECT`](https://docs.julialang.org/en/latest/manual/environment-variables/#JULIA_PROJECT-1) environment variable
-   4. using the functions [`quickctivate`](@ref) and [`findproject`](@ref) offered by DrWatson.
+   4. using the functions [`quickactivate`](@ref) and [`findproject`](@ref) offered by DrWatson.
 
 We recommend the fourth approach, although it does come with a caveat (see the docstring of [`quickactivate`](@ref)).
 
