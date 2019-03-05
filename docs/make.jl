@@ -5,7 +5,7 @@ sitename= "DrWatson",
 authors = "George Datseris and contributors.",
 doctest = true,
 format = Documenter.HTML(
-    prettyurls = get(ENV, "CI", nothing) == "true"
+    prettyurls = get(ENV, "CI", nothing) == "true",
     ),
 pages = [
     "Introduction" => "index.md",
@@ -13,10 +13,11 @@ pages = [
     "Naming & Saving Simulations" => "savenames.md",
     "Running & Listing Simulations" => "addrun.md",
     "Real World Examples" => "real_world.md"
-    ]
+    ],
+assets = ["assets/logo.ico"],
 )
 
-if !Sys.iswindows()
+if get(ENV, "CI", nothing) == "true"
     deploydocs(repo = "github.com/JuliaDynamics/DrWatson.jl.git",
                target = "build")
 end
