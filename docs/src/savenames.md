@@ -1,6 +1,6 @@
 # Naming & Saving Simulations
 
-This page discusses numerous tools that make life easier for handling simulations. Most (if not all) of these tools are also used in the examples demonstrated in the [`Real World Examples`](@ref) page. After reading the proper documentation here it might be worth it to have a look there as well!
+This page discusses numerous tools that make life easier for handling simulations. Most (if not all) of these tools are also used in the examples demonstrated in the [Real World Examples](@ref) page. After reading the proper documentation here it might be worth it to have a look there as well!
 
 ## Naming Schemes
 
