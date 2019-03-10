@@ -5,6 +5,8 @@ import Pkg, LibGit2
 include("project_setup.jl")
 include("naming.jl")
 include("saving_tools.jl")
+include("result_collection.jl")
+
 
 # Functionality that requires Optional Packages:
 using Requires

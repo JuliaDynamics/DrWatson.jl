@@ -1,6 +1,7 @@
 using DataFrames
 using BSON
-
+using FileIO
+export collect_results
 """
     merge_dataframes(df, df_new)
 Merge two dataframes `df` and `df_new`. If the `names` of the dataframes
@@ -29,17 +30,17 @@ end
 is_valid_file(file, valid_filetypes) =
     any(endswith.(Ref(file),valid_filetypes))
 
-function to_data_row(data,
+function to_data_row(data;
         white_list = collect(keys(data)),
         black_list = [],
         special_list = [])
     cnames = setdiff!(white_list, black_list)
-    df = DataFrame( (Symbol.(cnames) .=> getindex.(Ref(data),cnames))...)
+    df = DataFrame( (Symbol.(cnames) .=> (x->[x]).(getindex.(Ref(data),cnames)))...)
     #Add special things here
     for (ename, func) in special_list
-        try df_new[ename] = func(data)
+        try df[ename] = func(data)
         catch e
-            df_new[ename] = missing
+            df[ename] = missing
             @warn e
         end
     end
@@ -93,12 +94,12 @@ function collect_results(;
 
     for (root, dirs, files) in walkdir(data_folder)
         for file in files
-            is_valid_file(file, valid_filetypes) && continue
+            #is_valid_file(file, valid_filetypes) && continue
             #already added?
             joinpath(root,file) in get(df,:path,[]) && continue
 
             data = load(joinpath(root,file))
-            df_new = to_data_row(data, kwargs...)
+            df_new = to_data_row(data; kwargs...)
             #add filename
             df_new[:path] = joinpath(root, file)
 
