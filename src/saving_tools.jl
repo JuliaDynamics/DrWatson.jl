@@ -1,8 +1,6 @@
 export current_commit, tag!
 export dict_list, dict_list_count
 
-function addrun! end
-
 """
     current_commit(path = projectdir()) -> commit
 Return the current active commit id of the Git repository present
@@ -93,8 +91,8 @@ for all possibilities. The keys of the entries are the same.
 Whether the values of `c` are iterable or not is of no concern;
 the function considers as "iterable" only subtypes of `Vector`.
 
-Use the function [`dict_list_count`](@ref) to get an estimate of
-how many dictionaries will `dict_list` produce.
+Use the function [`dict_list_count`](@ref) to get the number of
+dictionaries that `dict_list` will produce.
 
 ## Examples
 ```julia
@@ -105,27 +103,27 @@ julia> dict_list(c)
  Dict(:a=>1,:b=>4)
  Dict(:a=>2,:b=>4)
 
-julia> c[:model] = "linear"; c[:mode] = ["bi", "tri"];
+julia> c[:model] = "linear"; c[:run] = ["bi", "tri"];
 
 julia> dict_list(c)
 4-element Array{Dict{Symbol,Any},1}:
- Dict(:a=>1,:b=>4,:mode=>"bi",:model=>"linear")
- Dict(:a=>2,:b=>4,:mode=>"bi",:model=>"linear")
- Dict(:a=>1,:b=>4,:mode=>"tri",:model=>"linear")
- Dict(:a=>2,:b=>4,:mode=>"tri",:model=>"linear")
+ Dict(:a=>1,:b=>4,:run=>"bi",:model=>"linear")
+ Dict(:a=>2,:b=>4,:run=>"bi",:model=>"linear")
+ Dict(:a=>1,:b=>4,:run=>"tri",:model=>"linear")
+ Dict(:a=>2,:b=>4,:run=>"tri",:model=>"linear")
 
 julia> c[:e] = [[1, 2], [3, 5]];
 
 julia> dict_list(c)
 8-element Array{Dict{Symbol,Any},1}:
- Dict(:a=>1,:b=>4,:mode=>"bi",:e=>[1, 2],:model=>"linear")
- Dict(:a=>2,:b=>4,:mode=>"bi",:e=>[1, 2],:model=>"linear")
- Dict(:a=>1,:b=>4,:mode=>"tri",:e=>[1, 2],:model=>"linear")
- Dict(:a=>2,:b=>4,:mode=>"tri",:e=>[1, 2],:model=>"linear")
- Dict(:a=>1,:b=>4,:mode=>"bi",:e=>[3, 5],:model=>"linear")
- Dict(:a=>2,:b=>4,:mode=>"bi",:e=>[3, 5],:model=>"linear")
- Dict(:a=>1,:b=>4,:mode=>"tri",:e=>[3, 5],:model=>"linear")
- Dict(:a=>2,:b=>4,:mode=>"tri",:e=>[3, 5],:model=>"linear")
+ Dict(:a=>1,:b=>4,:run=>"bi",:e=>[1, 2],:model=>"linear")
+ Dict(:a=>2,:b=>4,:run=>"bi",:e=>[1, 2],:model=>"linear")
+ Dict(:a=>1,:b=>4,:run=>"tri",:e=>[1, 2],:model=>"linear")
+ Dict(:a=>2,:b=>4,:run=>"tri",:e=>[1, 2],:model=>"linear")
+ Dict(:a=>1,:b=>4,:run=>"bi",:e=>[3, 5],:model=>"linear")
+ Dict(:a=>2,:b=>4,:run=>"bi",:e=>[3, 5],:model=>"linear")
+ Dict(:a=>1,:b=>4,:run=>"tri",:e=>[3, 5],:model=>"linear")
+ Dict(:a=>2,:b=>4,:run=>"tri",:e=>[3, 5],:model=>"linear")
 ```
 """
 function dict_list(c)

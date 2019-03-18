@@ -83,11 +83,11 @@ papersdir()
 ```
 immediately return the appropriate subdirectory. These are also defined due to the frequent use of these subdirectories.
 
-In addition all these functions end with `/`. This means that you can directly chain them with a file name using just `*`. E.g. you could do
+In addition, the return value of all these functions ends with `/`. This means that you can directly chain them with a file name using just `*`. E.g. you could do
 ```julia
-using DrWatson, BSON
+using DrWatson
 file = makesimulation()
-BSON.bson(datadir()*"sims/test.bson", file)
+tagsave(datadir()*"sims/test.bson", file)
 ```
 
 ## Reproducibility
@@ -102,5 +102,3 @@ pkg> instantiate
 All required packages and dependencies will be installed and then any script that was running in your computer will also be running in their computer **in the same way!**
 
 In addition, with DrWatson you have the possibility of "tagging" each simulation created with the commit id, see the discussion around [`current_commit`](@ref) and [`tag!`](@ref).
-
-Notice that for full reproducibility it is advised to **never add `Manifest.toml`** to your `.gitignore` file!

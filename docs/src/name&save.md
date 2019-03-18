@@ -47,7 +47,16 @@ Please notice that `tag!` will operate in place only when possible. If not possi
 
 ### Automatic Tagging during Saving
 
-WIP. (adding the `tag!` functionality automatically with a `save` call)
+If you don't want to always call `tag!` before saving a file, you can just use the function `tagsave`:
+```@docs
+tagsave
+```
 
 ## Produce or Load
-WIP. (loading a simulation or producing it if it doesn't exist)
+`produce_or_load` is a function that very conveniently integrates with [`savename`](@ref) to either load a file if it exists, or if it doesn't to produce it, save it and then return it!
+
+This saves you the effort of checking if a file exists and then loading, or then running some code and saving, or writing a bunch of `if` clauses in your code! `produce_or_load` really shines when used in interactive sessions where some results require a couple of minutes to complete.
+
+```@docs
+produce_or_load
+```
