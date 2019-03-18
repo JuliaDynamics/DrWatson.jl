@@ -1,3 +1,5 @@
+using BSON
+
 """
     produce_or_load([prefix="",] c, f; suffix="bson", kwargs...) -> file
 Let `s = savename(prefix, c, suffix; kwargs...)`.
