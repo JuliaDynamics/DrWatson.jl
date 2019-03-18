@@ -47,6 +47,7 @@ subfolders = true, special_list=special_list, black_list = black_list)
 for n in (:a, :b, :lv_mean)
     @test n ∈ names(cres)
 end
+@test :c ∉ names(cres)
 
 ###############################################################################
 #                           Add another file in a sub sub folder              #
