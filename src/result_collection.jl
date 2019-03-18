@@ -29,7 +29,7 @@ end
 is_valid_file(file, valid_filetypes) =
     any(endswith(file, v) for v in valid_filetypes)
 
-function to_data_row(data;
+function to_data_row(data, file;
         white_list = collect(keys(data)),
         black_list = [],
         special_list = [])
@@ -43,9 +43,8 @@ function to_data_row(data;
         try df[ename] = func(data)
         catch e
             df[ename] = missing
-            # This is obscure. A better error message should be thrown,
-            # possible including the filename.
-            @warn e
+            @warn "While applying function $(nameof(func)) to file "*
+            "$(file), got error $e. Using value `missing` instead."
         end
     end
     return df
@@ -127,7 +126,7 @@ function collect_results(folder;
         file ∈ get(df, :path, ()) && continue
 
         data = BSON.load(file)
-        df_new = to_data_row(data; kwargs...)
+        df_new = to_data_row(data, file; kwargs...)
         #add filename
         df_new[:path] = file
 
