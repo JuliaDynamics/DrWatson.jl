@@ -60,7 +60,7 @@ each result-file. `BSON` is used for both
 loading and saving, until `FileIO` interface includes `BSON`.
 
 If a result-file is missing keys that are already columns in `df`,
-they will set as `missing`. If on the other hand new keys are encountered,
+they will be set as `missing`. If on the other hand new keys are encountered,
 a new column will be added and filled with `missing` for all previous entries.
 
 You can re-use an existing `df` that has some results already collected.
@@ -85,7 +85,7 @@ are skipped in subsequent calls to `collect_results` (see keywords).
   interpreted as result-files. Other files are skipped.
 * `white_list = keys(data)`: List of keys to use from result file. By default
   uses all keys from all loaded result-files.
-* `black_list=[]`: List of keys not to include from result file.
+* `black_list=[]`: List of keys not to include from result-file.
 * `special_list=[]`: List of additional (derived) key-value pairs
   to put in `df` as explained below.
 
@@ -99,7 +99,7 @@ To have these values in your results first use `black_list = [:longvector]`
 and then define
 
     special_list = [ :lv_mean => data -> mean(data[:longvector]),
-                     :lv_lar  => data -> var(data[:longvector])]
+                     :lv_lar  => data -> var(data[:longvector]) ]
 
 In case this operation fails the values will be treated as `missing`.
 """

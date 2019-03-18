@@ -6,23 +6,22 @@ Let `s = savename(prefix, c, suffix)`.
 If a file named `s` exists then load it and return it.
 
 If the file does not exist then call `file = f(c)`, save `file` as
-`s` and then return the `file`. If `tag` is true the saved file includes
-the git commit of the repo
+`s` and then return the `file`.
 
 To play well with `BSON` the function `f` should return a dictionary
 with `Symbol` as key type. The macro [`@dict`](@ref) can help with that.
 
 ## Keywords
-* `tag = true` : Add the Git commit of the project in saved file.
+* `tag = false` : Add the Git commit of the project in the saved file.
 * `projectpath = projectdir()` : Path to search for a Git repo.
 * `suffix = "bson"` : Used in `savename`.
 * `kwargs...` : All other keywords are propagated to `savename`.
 
-See also [`savename`](@ref).
+See also [`savename`](@ref) and [`tag!`](@ref).
 """
 produce_or_load(c, f; kwargs...) = produce_or_load("", c, f; kwargs...)
 function produce_or_load(prefix::String, c, f;
-    tag::Bool = true, projectpath = projectdir(),
+    tag::Bool = false, projectpath = projectdir(),
     suffix = "bson", kwargs...)
     s = savename(prefix, c, suffix; kwargs...)
     if isfile(s)

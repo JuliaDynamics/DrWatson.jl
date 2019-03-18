@@ -11,8 +11,8 @@ format = Documenter.HTML(
 pages = [
     "Introduction" => "index.md",
     "Project Setup" => "project.md",
-    "Naming & Saving Simulations" => "savenames.md",
-    "Running & Listing Simulations" => "addrun.md",
+    "Naming & Saving Simulations" => "name&save.md",
+    "Running & Listing Simulations" => "run&list.md",
     "Real World Examples" => "real_world.md"
     ],
 assets = ["assets/logo.ico"],
