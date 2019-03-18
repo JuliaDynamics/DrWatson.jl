@@ -1,7 +1,7 @@
 using DataFrames
-using BSON
-using FileIO
+import BSON
 export collect_results
+
 """
     merge_dataframes(df, df_new)
 Merge two dataframes `df` and `df_new`. If the `names` of the dataframes
@@ -28,19 +28,24 @@ function merge_dataframes(df1, df2)
 end
 
 is_valid_file(file, valid_filetypes) =
-    any(endswith.(Ref(file),valid_filetypes))
+    any(endswith(file, v) for v in valid_filetypes)
 
 function to_data_row(data;
         white_list = collect(keys(data)),
         black_list = [],
         special_list = [])
     cnames = setdiff!(white_list, black_list)
-    df = DataFrame( (Symbol.(cnames) .=> (x->[x]).(getindex.(Ref(data),cnames)))...)
+    df = DataFrame(
+        (Symbol.(cnames) .=> (x->[x]).(getindex.(Ref(data),cnames)))...
+        )
+
     #Add special things here
     for (ename, func) in special_list
         try df[ename] = func(data)
         catch e
             df[ename] = missing
+            # This is obscure. A better error message should be thrown,
+            # possible including the filename.
             @warn e
         end
     end
@@ -49,62 +54,84 @@ end
 
 
 """
-    collect_results(; kwargs...)
+    collect_results(folder; kwargs...) -> `df`
 
-Walks the data directory for new result-files and adds them
-to a `DataFrame` containing all attributes relevant for evaluation.
-Files already included in the resulting `DataFrame` are skipped in
-subsequent calls to `collect_results`.
+Search the `folder` (and possibly all subfolders) for new result-files and add
+them to `df` which is a `DataFrame` containing all the information from
+each result-file. Files already included in the resulting `DataFrame` are
+skipped in subsequent calls to `collect_results`. `BSON` is used for both
+loading and saving, until `FileIO` interface includes `BSON`.
 
-If a result file is missing keys that are already columns in the `DataFrame`,
+If a result-file is missing keys that are already columns in `df`,
 they will set as `missing`. If on the other hand new keys are encountered,
 a new column will be added and filled with `missing` for all previous entries.
 
-## Keyword Arguments
- * `data_folder = joinpath(datadir(), "results")`: Folder that is scanned for
-   result files.
- * `filename = joinpath(datadir(),"results_dataframe.bson")`: Path to the file
-   the DataFrame should be saved to.
- * `valid_filetypes = [".bson", ".jld2", ".jld"]`: File types to be
-   interpreted as result files. Other files are skipped.
- * `white_list=keys(data)`: List of keys to use from result file.
- * `black_list=[]`: List of keys not to include from result file.
- * `special_list=[]`: List of additional (derived) key-value pairs
-   to put in `DataFrame` as explained below.
+!!! warning
+    `df` contains a column `:path` which saves the path where each result-file
+    is saved to. This is used to not re-load and re-process files already
+    present in `df` when searching for new ones.
 
+    If you have an entry `:path` in your saved result-files this will probably
+    break `collect_results` (untested).
+
+## Keyword Arguments
+* `subfolders::Bool = false` : If `true` also scan all subfolders of `folder`
+  for result-files.
+* `filename = joinpath(dirname(folder), "results_\$(basename(folder)).bson"`:
+  Path to save `df` to. If given the empty string `""`
+  then `df` is not saved (it is always returned).
+* `valid_filetypes = [".bson"]`: Only files that have these endings are
+  interpreted as result-files. Other files are skipped.
+* `white_list = keys(data)`: List of keys to use from result file. By default
+  uses all keys from all loaded result-files.
+* `black_list=[]`: List of keys not to include from result file.
+* `special_list=[]`: List of additional (derived) key-value pairs
+  to put in `df` as explained below.
 
 `special_list` is a `Vector{Pair{Symbol, Function}}` where each entry
-is a derived quantity to be included in the `DataFrame`.
-As an example consider that each results-file (which is a dictionary)
-contains a field `:longvector` too large to be included in the `DataFrame`.
+is a derived quantity to be included in `df`.
+As an example consider that each result-file (which is a dictionary)
+contains a field `:longvector` too large to be included in the `df`.
 The quantity of interest is the mean and the variance of said field.
 To do just this, pass: `black_list = [:longvector]` and
 
     special_list = [ :lv_mean => data -> mean(data[:longvector]),
                      :lv_lar  => data -> var(data[:longvector])]
+
 In case this operation fails the values will be treated as `missing`.
 """
-function collect_results(;
-    data_folder = joinpath(datadir(), "results"),
-    filename = joinpath(datadir(),"results_dataframe.bson"),
-    valid_filetypes = [".bson", ".jld2", ".jld"],
+function collect_results(folder;
+    filename = joinpath(dirname(folder), "results_$(basename(folder)).bson"),
+    valid_filetypes = [".bson"],
+    subfolders = false,
     kwargs...)
 
     df = isfile(filename) ? BSON.load(filename)[:df] : DataFrame()
 
-    for (root, dirs, files) in walkdir(data_folder)
-        for file in files
-            #is_valid_file(file, valid_filetypes) && continue
-            #already added?
-            joinpath(root,file) in get(df,:path,[]) && continue
-
-            data = load(joinpath(root,file))
-            df_new = to_data_row(data; kwargs...)
-            #add filename
-            df_new[:path] = joinpath(root, file)
-
-            df = merge_dataframes(df, df_new)
+    if subfolders
+        allfiles = String[]
+        for (root, dirs, files) in walkdir(folder)
+            for file in files
+                push!(allfiles, joinpath(root,file))
+            end
         end
+    else
+        allfiles = joinpath.(Ref(folder), readdir(folder))
     end
-    BSON.@save filename df
+
+    for file ∈ allfiles
+        is_valid_file(file, valid_filetypes) || continue
+        #already added?
+        file ∈ get(df, :path, ()) && continue
+
+        data = BSON.load(file)
+        df_new = to_data_row(data; kwargs...)
+        #add filename
+        df_new[:path] = file
+
+        df = merge_dataframes(df, df_new)
+    end
+
+    filename != "" && (BSON.@save filename df)
+    return df
 end
