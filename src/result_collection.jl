@@ -58,16 +58,19 @@ end
 
 Search the `folder` (and possibly all subfolders) for new result-files and add
 them to `df` which is a `DataFrame` containing all the information from
-each result-file. Files already included in the resulting `DataFrame` are
-skipped in subsequent calls to `collect_results`. `BSON` is used for both
+each result-file. `BSON` is used for both
 loading and saving, until `FileIO` interface includes `BSON`.
 
 If a result-file is missing keys that are already columns in `df`,
 they will set as `missing`. If on the other hand new keys are encountered,
 a new column will be added and filled with `missing` for all previous entries.
 
+You can re-use an existing `df` that has some results already collected.
+Files already included in `df`
+are skipped in subsequent calls to `collect_results` (see keywords).
+
 !!! warning
-    `df` contains a column `:path` which saves the path where each result-file
+    `df` contains a column `:path` which is the path where each result-file
     is saved to. This is used to not re-load and re-process files already
     present in `df` when searching for new ones.
 
@@ -78,8 +81,8 @@ a new column will be added and filled with `missing` for all previous entries.
 * `subfolders::Bool = false` : If `true` also scan all subfolders of `folder`
   for result-files.
 * `filename = joinpath(dirname(folder), "results_\$(basename(folder)).bson"`:
-  Path to save `df` to. If given the empty string `""`
-  then `df` is not saved (it is always returned).
+  Path to load `df` from and to save it to. If given the empty string `""`
+  then `df` is not loaded/saved (it is always returned).
 * `valid_filetypes = [".bson"]`: Only files that have these endings are
   interpreted as result-files. Other files are skipped.
 * `white_list = keys(data)`: List of keys to use from result file. By default
