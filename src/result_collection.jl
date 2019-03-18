@@ -90,11 +90,13 @@ are skipped in subsequent calls to `collect_results` (see keywords).
   to put in `df` as explained below.
 
 `special_list` is a `Vector{Pair{Symbol, Function}}` where each entry
-is a derived quantity to be included in `df`.
-As an example consider that each result-file (which is a dictionary)
+is a derived quantity to be included in `df`. The function entry always
+takes a single argument, which is the loaded the result-file (a dictionary).
+As an example consider that each result-file
 contains a field `:longvector` too large to be included in the `df`.
 The quantity of interest is the mean and the variance of said field.
-To do just this, pass: `black_list = [:longvector]` and
+To have these values in your results first use `black_list = [:longvector]`
+and then define
 
     special_list = [ :lv_mean => data -> mean(data[:longvector]),
                      :lv_lar  => data -> var(data[:longvector])]
