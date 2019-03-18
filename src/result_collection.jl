@@ -1,4 +1,3 @@
-using DataFrames
 import BSON
 export collect_results
 
@@ -35,7 +34,7 @@ function to_data_row(data;
         black_list = [],
         special_list = [])
     cnames = setdiff!(white_list, black_list)
-    df = DataFrame(
+    df = DataFrames.DataFrame(
         (Symbol.(cnames) .=> (x->[x]).(getindex.(Ref(data),cnames)))...
         )
 
@@ -109,7 +108,7 @@ function collect_results(folder;
     subfolders = false,
     kwargs...)
 
-    df = isfile(filename) ? BSON.load(filename)[:df] : DataFrame()
+    df = isfile(filename) ? BSON.load(filename)[:df] : DataFrames.DataFrame()
 
     if subfolders
         allfiles = String[]
