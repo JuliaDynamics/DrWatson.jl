@@ -1,10 +1,12 @@
+using BSON
+
 """
     produce_or_load([prefix="",] c, f; suffix="bson", kwargs...) -> file
 Let `s = savename(prefix, c, suffix; kwargs...)`.
 If a file named `s` exists load it using `BSON.load` and return it.
 
-If the file does not exist then call `file = f(c)`, save a copy of `file` as
-`s` using `BSON.bson`. Then return the `file`.
+If the file does not exist then call `file = f(c)`, save `file` as
+`s` using `BSON.bson` and then return the `file`.
 
 To play well with `BSON` the function `f` should return a dictionary
 with `Symbol` as key type. The macro [`@dict`](@ref) can help with that.

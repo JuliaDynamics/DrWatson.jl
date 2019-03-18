@@ -1,4 +1,4 @@
-using FileIO, JLD2
+using DrWatson, Test, BSON
 
 T = 1000
 N = 50 # spatial extent
@@ -14,16 +14,16 @@ function f(simulation)
     return @strdict a b simulation
 end
 
-@test !isfile(savename(simulation, "jld2"))
+@test !isfile(savename(simulation, "bson"))
 
 sim = produce_or_load(simulation, f)
 
-@test isfile(savename(simulation, "jld2"))
+@test isfile(savename(simulation, "bson"))
 @test sim["simulation"].T == T
 
 sim = produce_or_load(simulation, f)
 @test sim["simulation"].T == T
 
-rm(savename(simulation, "jld2"))
+rm(savename(simulation, "bson"))
 
-@test !isfile(savename(simulation, "jld2"))
+@test !isfile(savename(simulation, "bson"))
