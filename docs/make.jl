@@ -1,4 +1,5 @@
 using Documenter, DrWatson
+using BSON, DataFrames
 
 makedocs(modules = [DrWatson],
 sitename= "DrWatson",
