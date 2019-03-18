@@ -1,4 +1,3 @@
-import BSON
 export collect_results
 
 """
@@ -109,7 +108,7 @@ function collect_results(folder;
     subfolders = false,
     kwargs...)
 
-    df = isfile(filename) ? BSON.load(filename)[:df] : DataFrames.DataFrame()
+    df = isfile(filename) ? wload(filename)[:df] : DataFrames.DataFrame()
 
     if subfolders
         allfiles = String[]
@@ -127,7 +126,7 @@ function collect_results(folder;
         #already added?
         file ∈ get(df, :path, ()) && continue
 
-        data = BSON.load(file)
+        data = wload(file)
         df_new = to_data_row(data, file; kwargs...)
         #add filename
         df_new[:path] = file
@@ -135,6 +134,6 @@ function collect_results(folder;
         df = merge_dataframes(df, df_new)
     end
 
-    filename != "" && (BSON.@save filename df)
+    filename != "" && wsave(filename, df = df)
     return df
 end

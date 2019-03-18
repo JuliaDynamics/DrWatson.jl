@@ -9,9 +9,9 @@ include("saving_tools.jl")
 
 # Functionality that saves/loads
 import BSON
-wsave = BSON.save
-wload = BSON.bson
-include("saving_bson.jl")
+wsave = BSON.bson
+wload = BSON.load
+include("saving_files.jl")
 
 # Functionality that requires Dataframes and other heavy dependencies:
 using Requires
