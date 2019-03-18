@@ -1,31 +1,30 @@
-using BSON
+export produce_or_load, tagsave
 
 """
     produce_or_load([prefix="",] c, f; suffix="bson", kwargs...) -> file
 Let `s = savename(prefix, c, suffix; kwargs...)`.
-If a file named `s` exists load it using `BSON.load` and return it.
+If a file named `s` exists load it and return it.
 
 If the file does not exist then call `file = f(c)`, save `file` as
-`s` using `BSON.bson` and then return the `file`.
+`s` and then return the `file`.
 
 To play well with `BSON` the function `f` should return a dictionary
 with `Symbol` as key type. The macro [`@dict`](@ref) can help with that.
 
-Notice that this function requires you to be `using BSON`.
 See also [`savename`](@ref).
 """
 produce_or_load(c, f; kwargs...) = produce_or_load("", c, f; kwargs...)
 function produce_or_load(prefix::String, c, f; suffix = "bson", kwargs...)
     s = savename(prefix, c, suffix; kwargs...)
     if isfile(s)
-        file = BSON.load(s)
+        file = wload(s)
         return file
     else
         @info "File $s does not exist. Producing it now..."
         file = f(c)
         try
             mkpath(dirname(s))
-            BSON.bson(s, copy(file))
+            wsave(s, copy(file))
         catch er
             @warn "Could not save file, got error $er. "*
             "\nReturning the file nontheless."
@@ -35,4 +34,13 @@ function produce_or_load(prefix::String, c, f; suffix = "bson", kwargs...)
     end
 end
 
-export produce_or_load
+"""
+    tagsave(file::String, d::Dict [, path = projectdir()])
+First [`tag!`](@ref) dictionary `d` using the project in `path`,
+and then save `d` in `file`.
+"""
+function tagsave(file, d, path = projectdir())
+    d2 = tag!(d, path)
+    wsave(copy(d2))
+    return d2
+end

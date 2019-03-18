@@ -4,7 +4,7 @@ using BSON, DataFrames
 makedocs(modules = [DrWatson],
 sitename= "DrWatson",
 authors = "George Datseris and contributors.",
-doctest = true,
+doctest = false,
 format = Documenter.HTML(
     prettyurls = get(ENV, "CI", nothing) == "true",
     ),

@@ -1,8 +1,6 @@
 export current_commit, tag!
 export dict_list, dict_list_count
 
-function addrun! end
-
 """
     current_commit(path = projectdir()) -> commit
 Return the current active commit id of the Git repository present
