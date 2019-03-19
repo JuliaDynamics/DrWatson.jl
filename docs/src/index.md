@@ -6,6 +6,9 @@ DrWatson is a Julia package created to help people "deal" with their simulations
 
 **DrWatson is currently in alpha and under development!**
 
+!!! info "JuliaDynamics"
+    DrWatson is part of [JuliaDynamics](https://juliadynamics.github.io/JuliaDynamics/), check out our [website](https://juliadynamics.github.io/JuliaDynamics/) for more cool stuff!
+
 ## Rationale
 Have you thought things like:
 

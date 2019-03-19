@@ -1,5 +1,5 @@
 using Documenter, DrWatson
-using BSON, DataFrames
+using BSON, DataFrames, Parameters, Dates
 
 makedocs(modules = [DrWatson],
 sitename= "DrWatson",
