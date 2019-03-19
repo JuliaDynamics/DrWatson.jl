@@ -24,6 +24,6 @@ jobs:
       os: linux
       script:
         - julia -e 'using Pkg; Pkg.add("Documenter"); pkg"add https://github.com/JuliaDynamics/DrWatson.jl"'
-        - julia -e 'using Pkg; Pkg.add("BSON"); Pkg.add("DataFrames")'
+        - julia -e 'using Pkg; Pkg.add("BSON"); Pkg.add("DataFrames"); Pkg.add("Parameters")'
         - julia docs/make.jl
       after_success: skip

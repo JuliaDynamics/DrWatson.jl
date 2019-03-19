@@ -33,6 +33,8 @@ DrWatson.default_allowed
 DrWatson.default_prefix
 ```
 
+See [Real World Examples](@ref) for an example of customizing `savename`.
+
 ## Tagging a run using Git
 For reproducibility reasons (and also to not go insane when asking "HOW DID I GET THOSE RESUUUULTS") it is useful to "tag!" any simulation/result/process with the Git commit of the repository.
 
