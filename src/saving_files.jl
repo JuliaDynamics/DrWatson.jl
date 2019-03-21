@@ -27,11 +27,16 @@ function produce_or_load(prefix::String, c, f;
     suffix = "bson", force = false, kwargs...)
 
     s = savename(prefix, c, suffix; kwargs...)
+
     if !force && isfile(s)
         file = wload(s)
         return file
     else
-        @info "File $s does not exist. Producing it now..."
+        if force
+            @info "Producing file $s now..."
+        else
+            @info "File $s does not exist. Producing it now..."
+        end
         file = f(c)
         try
             mkpath(dirname(s))
