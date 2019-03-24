@@ -1,5 +1,69 @@
 # Real World Examples
 
+## Easy local directories
+I setup all my science projects using DrWatson's suggested setup, using [`initialize_project`](@ref). Then, every file in every project has a start that looks like this:
+```julia
+using DrWatson
+quickactivate(@__DIR__, "MagneticBilliardsLyapunovs")
+using DynamicalBilliards, PyPlot, LinearAlgebra
+
+include(srcdir()*"plot_perturbationgrowth.jl")
+include(srcdir()*"unitcells.jl")
+```
+In all projects I save data using `datadir()`:
+```julia
+using BSON
+
+bson(datadir()*"mushrooms/Λ_N=$N.bson", (@dict Λ Λσ ws hs description))
+```
+
+Here is an example from another project:
+```julia
+using DrWatson
+quickactivate(@__DIR__, "EmbeddingResearch")
+using FileIO, Parameters
+using TimeseriesPrediction, LinearAlgebra, Statistics
+
+include(srcdir()*"systems/barkley.jl")
+include(srcdir()*"nrmse.jl")
+```
+that ends with
+```julia
+FileIO.save(
+    savename(datadir()*"sim/bk", simulation, "jld2"),
+    @strdict U V simulation
+)
+```
+
+## `savename` and tagging
+The combination of using [`savename`](@ref) and [`tagsave`](@ref) makes it easy and fast to save output in a way that is consistent, robust and reproducible. Here is an example from a project:
+```julia
+using DrWatson
+quickactivate(@__DIR__, "EmbeddingResearch")
+using TimeseriesPrediction, LinearAlgebra, Statistics
+include(srcdir()*"systems/barkley.jl")
+
+ΔTs = [1.0, 0.5, 0.1] # resolution of the saved data
+Ns = [50, 150] # spatial extent
+for N ∈ Ns, ΔT ∈ ΔTs
+    T = 10050 # we can offset up to 1000 units
+    every = round(Int, ΔT/barkley_Δt)
+    seed = 1111
+
+    simulation = @ntuple T N ΔT seed
+    U, V = barkley(T, N, every; seed = seed)
+
+    tagsave(
+        savename(datadir()*"sim/bk", simulation, "bson"),
+        @dict U V simulation
+    )
+end
+```
+This saves files that look like:
+```
+path/to/project/data/sim/bk_N=50_T=10050_seed=1111_ΔT=1.bson
+```
+and each file is a dictionary with four fields: `:U, :V, :simulation, :commit`. When I read this file I know exactly what was the source code that produced it (provided that I am not sloppy and commit code changes regularly :P).
 
 ## Customizing `savename`
 Here is an example for customizing [`savename`](@ref). We are using a common struct `Experiment` across different experiments with cats and mice.
