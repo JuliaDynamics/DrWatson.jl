@@ -122,3 +122,67 @@ so that only those four fields will be used (notice that the `date` field is any
 println( savename(e1) )
 println( savename(e2) )
 ```
+
+## Stopping "Did I run this?"
+It can become very tedious to have a piece of code that you may or may not have saved and you constantly ask yourself "Did I run this?". Typically one uses `isfile` and an `if` clause to either load a file or run some code. Especially in the cases where the code takes only a couple of minutes to finish you are left in a dilemma "Is it even worth it to save?".
+
+This is the dilemma that [`produce_or_load`](@ref) resolves. You can wrap your code in a function and then [`produce_or_load`](@ref) will take care of the rest for you! I found it especially useful in scripts that generate figures for a publication.
+
+Here is an example; originally I had this piece of code:
+```julia
+WTEST = HTEST = 0.1:0.1:2.0
+HS = WS = [0.5, 1.0, 1.5]
+N = 10000; T = 10000.0
+
+toypar_w = [[] for l in HS]
+for (z, h) in enumerate(HS)
+    println("h = $h")
+    for (i, w) in enumerate(WTEST)
+        toyp = toyparameters(h, w, N, T)
+        push!(toypar_w[z], toyp)
+    end
+end
+toypar_h = [[] for l in HS]
+for (wi, w) in enumerate(WS)
+    println("w = $w")
+    for h in HTEST
+        toyp = toyparameters(h, w, N, T)
+        push!(toypar_h[wi], toyp)
+    end
+end
+```
+that was taking some minutes to run. To use the function [`produce_or_load`](@ref) I first have to wrap this code in a high level function like so:
+```julia
+WTEST = HTEST = 0.1:0.1:2.0
+HS = WS = [0.5, 1.0, 1.5]
+
+function g(d)
+    @unpack N, T = d
+
+    toypar_w = [[] for l in HS]
+    for (z, h) in enumerate(HS)
+        println("h = $h")
+        for (i, w) in enumerate(WTEST)
+            toyp = toyparameters(h, w, N, T)
+            push!(toypar_w[z], toyp)
+        end
+    end
+    toypar_h = [[] for l in HS]
+    for (wi, w) in enumerate(WS)
+        println("w = $w")
+        for h in HTEST
+            toyp = toyparameters(h, w, N, T)
+            push!(toypar_h[wi], toyp)
+        end
+    end
+
+    return @dict toypar_w toypar_h
+end
+
+N = 2000; T = 2000.0
+file = produce_or_load(datadir()*"mushrooms/toytest", @dict(N, T), g; force = true)
+@unpack toypar_w, toypar_h = file
+```
+Now every time I run this code block the function tests automatically whether the file exists and only if it does not the code is run.
+
+The extra step is that I have to extract the useful data I need from the container `file`. Thankfully the `@unpack` macro from [Parameters.jl](https://mauro3.github.io/Parameters.jl/stable/manual.html) makes this super easy.
