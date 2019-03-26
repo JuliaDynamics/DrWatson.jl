@@ -1,4 +1,5 @@
 using Documenter, DrWatson
+quickactivate(@__DIR__, "docs")
 using BSON, DataFrames, Parameters, Dates
 
 makedocs(modules = [DrWatson],
