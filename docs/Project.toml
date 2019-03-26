@@ -1,0 +1,7 @@
+[deps]
+BSON = "fbb218c0-5317-5bc6-957e-2ee96dd4b1f0"
+DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
+Dates = "ade2ca70-3891-5945-98fb-dc099432e06a"
+Documenter = "e30172f5-a6a5-5a46-863b-614d45cd2de4"
+DrWatson = "634d3b9d-ee7a-5ddf-bec9-22491ea816e1"
+Parameters = "d96e819e-fc66-5662-9728-84c9c7592b0a"
