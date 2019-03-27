@@ -90,7 +90,7 @@ are skipped in subsequent calls to `collect_results` (see keywords).
 
 `special_list` is a `Vector{Pair{Symbol, Function}}` where each entry
 is a derived quantity to be included in `df`. The function entry always
-takes a single argument, which is the loaded the result-file (a dictionary).
+takes a single argument, which is the loaded result-file (a dictionary).
 As an example consider that each result-file
 contains a field `:longvector` too large to be included in the `df`.
 The quantity of interest is the mean and the variance of said field.

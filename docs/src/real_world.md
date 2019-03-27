@@ -255,7 +255,8 @@ Continuing from the above example, we now want to collect the results of all the
 It is quite simple actually:
 ```@example customizing
 using DataFrames # this is necessary to access collect_results!
-res = collect_results(datadir()*"results")
+black_list = ["error"]
+res = collect_results(datadir()*"results"; black_list = black_list)
 ```
 (unfortunately for now the type of all columns is `Any` due to bugs in `BSON`)
 ```@example customizing
@@ -264,11 +265,10 @@ names(res)
 
 The dataframe has the `error` column, each being a vector of numbers. We can take advantage of the basic processing functionality of [`collect_results`](@ref) to replace this column with the average error instead.
 ```@example customizing
-blacklist = ["error"]
 special_list = [:avrg_error => data -> mean(data["error"])]
 res = collect_results(
       datadir()*"results",
-      blacklist = blacklist,
+      black_list = black_list,
       special_list = special_list
 )
 ```
