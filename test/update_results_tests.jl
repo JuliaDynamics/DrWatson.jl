@@ -3,7 +3,6 @@ using BSON, DataFrames
 ###############################################################################
 #                        Setup Folder structure                               #
 ###############################################################################
-
 cd(@__DIR__)
 isdir("testdir") && rm("testdir", recursive=true)
 mkdir("testdir")
