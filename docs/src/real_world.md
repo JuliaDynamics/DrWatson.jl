@@ -250,4 +250,28 @@ file = BSON.load(datadir()*"results/"*filename)
 ```
 
 ## Listing completed runs
-Continuing from the above example, we now want to collect the results of all these simulations into a single `DataFrame`. We will do that with the function [`collect_results`](@ref). Here is how:
+Continuing from the above example, we now want to collect the results of all these simulations into a single `DataFrame`. We will do that with the function [`collect_results`](@ref).
+
+It is quite simple actually:
+```@example customizing
+using DataFrames # this is necessary to access collect_results!
+res = collect_results(datadir()*"results")
+```
+(unfortunately for now the type of all columns is `Any` due to bugs in `BSON`)
+```@example customizing
+names(res)
+```
+
+The dataframe has the `error` column, each being a vector of numbers. We can take advantage of the basic processing functionality of [`collect_results`](@ref) to replace this column with the average error instead.
+```@example customizing
+blacklist = ["error"]
+special_list = [:avrg_error => data -> mean(data["error"])]
+res = collect_results(
+      datadir()*"results",
+      blacklist = blacklist,
+      special_list = special_list
+)
+```
+```@example customizing
+names(res)
+```
