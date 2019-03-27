@@ -2,6 +2,8 @@ using Documenter, DrWatson
 quickactivate(@__DIR__, "docs")
 using BSON, DataFrames, Parameters, Dates
 
+isdir(datadir()) && rm(datadir())
+
 makedocs(modules = [DrWatson],
 sitename= "DrWatson",
 authors = "George Datseris and contributors.",

@@ -41,9 +41,9 @@ function to_data_row(data, file;
     for (ename, func) in special_list
         try df[ename] = func(data)
         catch e
-            df[ename] = missing
             @warn "While applying function $(nameof(func)) to file "*
             "$(file), got error $e. Using value `missing` instead."
+            df[ename] = missing
         end
     end
     return df
