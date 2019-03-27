@@ -223,7 +223,7 @@ function cross_estimation(data)
     N = data["N"]
     # add fake results:
     data["x"] = rand()
-    data["error"] = rand(100)
+    data["error"] = rand(10)
     # Save data:
     prefix = datadir()*"results/$(data["model"])"
     data["noisy_training"] && (prefix *= "noisy")
