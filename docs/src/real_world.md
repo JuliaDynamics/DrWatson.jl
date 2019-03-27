@@ -258,20 +258,21 @@ using DataFrames # this is necessary to access collect_results!
 black_list = ["error"]
 res = collect_results(datadir()*"results"; black_list = black_list)
 ```
-(unfortunately for now the type of all columns is `Any` due to bugs in `BSON`)
-```@example customizing
-names(res)
-```
 
-The dataframe has the `error` column, each being a vector of numbers. We can take advantage of the basic processing functionality of [`collect_results`](@ref) to replace this column with the average error instead.
+We can take also advantage of the basic processing functionality of [`collect_results`](@ref) to use the excluded `"error"` column, replacing it with its average value:
 ```@example customizing
+rm(datadir()*"results_results.bson") # delete existing dataframe
+
+using Statistics: mean
 special_list = [:avrg_error => data -> mean(data["error"])]
 res = collect_results(
       datadir()*"results",
       black_list = black_list,
       special_list = special_list
 )
+
+delete!(res, :path) # don't show path this time
 ```
-```@example customizing
-names(res)
-```
+(unfortunately for now the type of all columns for the loaded `bson` file is `Any`. This is due to bugs in `BSON`)
+
+We had to do `rm("results_results.bson")` because the files that have already been processed (in our case _all_ of them) would not have been processed a second time.
