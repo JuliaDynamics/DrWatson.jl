@@ -82,6 +82,7 @@ are skipped in subsequent calls to `collect_results` (see keywords).
   then `df` is not loaded/saved (it is always returned).
 * `valid_filetypes = [".bson"]`: Only files that have these endings are
   interpreted as result-files. Other files are skipped.
+* `verbose = true` : Print (using `@info`) information about the process.
 * `white_list = keys(data)`: List of keys to use from result file. By default
   uses all keys from all loaded result-files.
 * `black_list=[]`: List of keys not to include from result-file.
@@ -106,9 +107,17 @@ function collect_results(folder;
     filename = joinpath(dirname(folder), "results_$(basename(folder)).bson"),
     valid_filetypes = [".bson"],
     subfolders = false,
+    verbose = true,
     kwargs...)
 
-    df = isfile(filename) ? wload(filename)[:df] : DataFrames.DataFrame()
+    @info "Scanning folder $folder for result files."
+    if isfile(filename)
+        verbose && @info "Loading existing result collection..."
+        df = wload(filename)[:df]
+    else
+        verbose && @info "Starting a new result collection..."
+        df = DataFrames.DataFrame()
+    end
 
     if subfolders
         allfiles = String[]
@@ -121,6 +130,7 @@ function collect_results(folder;
         allfiles = joinpath.(Ref(folder), readdir(folder))
     end
 
+    n = 0 # new entries added
     for file ∈ allfiles
         is_valid_file(file, valid_filetypes) || continue
         #already added?
@@ -132,8 +142,9 @@ function collect_results(folder;
         df_new[:path] = file
 
         df = merge_dataframes(df, df_new)
+        n += 1
     end
-
+    verbose && @info "Added $n entries."
     filename != "" && wsave(filename, df = df)
     return df
 end

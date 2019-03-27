@@ -252,7 +252,7 @@ file = BSON.load(datadir()*"results/"*filename)
 ## Listing completed runs
 Continuing from the above example, we now want to collect the results of all these simulations into a single `DataFrame`. We will do that with the function [`collect_results`](@ref).
 
-It is quite simple actually:
+It is quite simple actually! But because we don't want to include the error, we have to black-list it:
 ```@example customizing
 using DataFrames # this is necessary to access collect_results!
 black_list = ["error"]
