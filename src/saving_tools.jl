@@ -171,3 +171,40 @@ end
 #         end
 #     )
 # end
+
+################################################################################
+#                          Backup files before saving                          #
+################################################################################
+
+# Implementation inspired by behavior of GROMACS
+#take a path of a results file and increment its prefix backup number
+function increment_backup_num(filepath)
+    path, fname = splitdir(filepath)
+    m = match(r"^#([0-9]+)#_(.*)", fname)
+    if m == nothing
+        return joinpath(path, "#1#_$fname")
+    end
+    newnum = string(parse(Int, m.captures[1]) +1)
+    return joinpath(path, "#$newnum#_$(m.captures[2])")
+end
+
+#recursively move files to increased backup number
+function recursively_clear_path(cur_path)
+    isfile(cur_path) || return
+    new_path=increment_backup_num(cur_path)
+    if isfile(new_path)
+        recursively_clear_path(new_path)
+    end
+    run(`mv $cur_path $new_path`)
+end
+
+
+#save file using fileio but clear path first by making a backup
+function save_safely(f, data)
+    recursively_clear_path(f)
+    save(f,data)
+end
+
+#filepath = "/home/jonas/Documents/CodeProjects/save_files_wo_replace/test.bson"
+#data = Dict( :a => 1, :b => rand(rand(1:10)))
+#save_safely(filepath, data)
