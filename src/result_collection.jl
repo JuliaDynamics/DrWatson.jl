@@ -145,6 +145,6 @@ function collect_results(folder;
         n += 1
     end
     verbose && @info "Added $n entries."
-    filename != "" && wsave(filename, df = df)
+    filename != "" && wsave(filename, Dict(:df => df))
     return df
 end
