@@ -51,7 +51,7 @@ end
 
 
 """
-    collect_results(folder; kwargs...) -> `df`
+    collect_results(folder; kwargs...) -> df
 
 Search the `folder` (and possibly all subfolders) for new result-files and add
 them to `df` which is a `DataFrame` containing all the information from
