@@ -1,8 +1,9 @@
 using DrWatson, Test
-using BSON, DataFrames
+using BSON, DataFrames, JLD2
 ###############################################################################
 #                        Setup Folder structure                               #
 ###############################################################################
+# %%
 cd(@__DIR__)
 isdir("testdir") && rm("testdir", recursive=true)
 mkdir("testdir")
@@ -16,16 +17,19 @@ mkdir(datadir()*"results")
 cd(datadir()*"results")
 
 d = Dict("a" => 1, "b" => "2", "c" => rand(10))
-BSON.bson(savename(d)*".bson", d)
+DrWatson.wsave(savename(d)*".bson", d)
 
 d = Dict("a" => 3, "b" => "4", "c" => rand(10), "d" => Float64)
-BSON.bson(savename(d)*".bson", d)
+DrWatson.wsave(savename(d)*".bson", d)
+
+d = Dict("a" => 3, "b" => "5", "c" => rand(10), "d" => Float64)
+DrWatson.wsave(savename(d)*".jld2", d)
 
 mkdir("subfolder")
 cd("subfolder/")
 
 d = Dict("a" => 4., "b" => "twenty" , "d" => Int)
-BSON.bson(savename(d)*".bson", d)
+DrWatson.wsave(savename(d)*".bson", d)
 
 ###############################################################################
 #                           Collect Data Into DataFrame                       #
@@ -39,10 +43,10 @@ black_list = ["c"]
 folder = datadir()*"results"
 defaultname = joinpath(dirname(folder), "results_$(basename(folder)).bson")
 isfile(defaultname) && rm(defaultname)
-cres = collect_results(folder;
+cres = collect_results(folder; filename = defaultname,
 subfolders = true, special_list=special_list, black_list = black_list)
 
-@test size(cres) == (3, 6)
+@test size(cres) == (4, 6)
 for n in (:a, :b, :lv_mean)
     @test n ∈ names(cres)
 end
@@ -51,22 +55,24 @@ end
 ###############################################################################
 #                           Add another file in a sub sub folder              #
 ###############################################################################
+@test isfile(defaultname)
+
 mkdir("subsubfolder")
 cd("subsubfolder")
 d = Dict("a" => 7, "b" => 35. , "d" => Number, "c" => rand(5))
-BSON.bson(savename(d)*".bson", d)
+DrWatson.wsave(savename(d)*".bson", d)
+DrWatson.wsave(savename(d)*".jld2", d)
 
-cres2 = collect_results(folder;
+cres2 = collect_results(folder; filename = defaultname,
 subfolders = true, special_list=special_list, black_list = black_list)
 
-@test size(cres2) == (4, 6)
+@test size(cres2) == (6, 6)
 @test sort(names(cres)) == sort(names(cres2))
 
 ###############################################################################
 #                           Load and analyze  DataFrame                       #
 ###############################################################################
 
-@test isfile(defaultname)
 df = BSON.load(defaultname)[:df]
 @test size(df) == size(cres2)
 @test sort(names(df)) == sort(names(cres2))
