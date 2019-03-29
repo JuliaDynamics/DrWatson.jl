@@ -8,9 +8,9 @@ include("naming.jl")
 include("saving_tools.jl")
 
 # Functionality that saves/loads
-import BSON
-wsave = BSON.bson
-wload = BSON.load
+import FileIO
+wsave = FileIO.save
+wload = FileIO.load
 include("saving_files.jl")
 
 # Functionality that requires Dataframes and other heavy dependencies:
