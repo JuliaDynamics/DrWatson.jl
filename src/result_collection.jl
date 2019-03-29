@@ -80,13 +80,13 @@ are skipped in subsequent calls to `collect_results` (see keywords).
 * `filename = joinpath(dirname(folder), "results_\$(basename(folder)).bson"`:
   Path to load `df` from and to save it to. If given the empty string `""`
   then `df` is not loaded/saved (it is always returned).
-* `valid_filetypes = [".bson"]`: Only files that have these endings are
-  interpreted as result-files. Other files are skipped.
+* `valid_filetypes = [".bson", ".jld", ".jld2"]`: Only files that have these
+  endings are interpreted as result-files. Other files are skipped.
 * `verbose = true` : Print (using `@info`) information about the process.
-* `white_list = keys(data)`: List of keys to use from result file. By default
+* `white_list` : List of keys to use from result file. By default
   uses all keys from all loaded result-files.
-* `black_list=[]`: List of keys not to include from result-file.
-* `special_list=[]`: List of additional (derived) key-value pairs
+* `black_list = []`: List of keys not to include from result-file.
+* `special_list = []`: List of additional (derived) key-value pairs
   to put in `df` as explained below.
 
 `special_list` is a `Vector{Pair{Symbol, Function}}` where each entry
@@ -105,7 +105,7 @@ In case this operation fails the values will be treated as `missing`.
 """
 function collect_results(folder;
     filename = joinpath(dirname(folder), "results_$(basename(folder)).bson"),
-    valid_filetypes = [".bson"],
+    valid_filetypes = [".bson", "jld", ".jld2"],
     subfolders = false,
     verbose = true,
     kwargs...)
@@ -145,6 +145,6 @@ function collect_results(folder;
         n += 1
     end
     verbose && @info "Added $n entries."
-    filename != "" && wsave(filename, df = df)
+    filename != "" && wsave(filename, Dict(:df => df))
     return df
 end

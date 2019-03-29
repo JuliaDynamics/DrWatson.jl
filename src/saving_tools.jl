@@ -8,6 +8,8 @@ in `path`, which by default is the project path. If the repository
 is dirty when this function is called the string will end
 with `"_dirty"`.
 
+Return `nothing` if `path` is not a Git repository.
+
 See also [`tag!`](@ref).
 
 ## Examples

@@ -7,9 +7,8 @@ If a file named `s` exists then load it and return it.
 
 If the file does not exist then call `file = f(c)`, save `file` as
 `s` and then return the `file`.
-
-To play well with `BSON` the function `f` should return a dictionary
-with `Symbol` as key type. The macro [`@dict`](@ref) can help with that.
+The function `f` must return a dictionary.
+The macros [`@dict`](@ref) and [`strdict`](@ref) can help with that.
 
 ## Keywords
 * `tag = false` : Add the Git commit of the project in the saved file.
@@ -48,7 +47,6 @@ function produce_or_load(prefix::String, c, f;
         catch er
             @warn "Could not save file, got error $er. "*
             "\nReturning the file nontheless."
-            isfile(s) && rm(s)
         end
         return file
     end
