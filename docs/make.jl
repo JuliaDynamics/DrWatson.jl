@@ -1,22 +1,27 @@
 using Documenter, DrWatson
+quickactivate(@__DIR__, "docs")
+using BSON, DataFrames, Parameters, Dates
+
+isdir(datadir()) && rm(datadir())
 
 makedocs(modules = [DrWatson],
 sitename= "DrWatson",
 authors = "George Datseris and contributors.",
-doctest = true,
+doctest = false,
 format = Documenter.HTML(
-    prettyurls = get(ENV, "CI", nothing) == "true"
+    prettyurls = get(ENV, "CI", nothing) == "true",
     ),
 pages = [
     "Introduction" => "index.md",
     "Project Setup" => "project.md",
-    "Naming & Saving Simulations" => "savenames.md",
-    "Running & Listing Simulations" => "addrun.md",
+    "Naming & Saving Simulations" => "name&save.md",
+    "Running & Listing Simulations" => "run&list.md",
     "Real World Examples" => "real_world.md"
-    ]
+    ],
+assets = ["assets/logo.ico"],
 )
 
-if !Sys.iswindows()
+if get(ENV, "CI", nothing) == "true"
     deploydocs(repo = "github.com/JuliaDynamics/DrWatson.jl.git",
                target = "build")
 end

@@ -11,8 +11,17 @@ dict_list_count
 
 Using the above function means that you can write your "preparation" step into a single dictionary and then let it automatically expand into many parameter containers. This keeps the code cleaner but also consistent, provided that it follows one rule: **Anything that is a `Vector` has many parameters, otherwise it is one parameter**. [`dict_list`](@ref) considers this true irrespectively of what the `Vector` contains. This allows users to use any iterable custom type as a single "parameter" of a simulation.
 
-See the [`Real World Examples`](@ref) for a very convenient application!
+See the [Real World Examples](@ref) for a very convenient application!
 
-## Simulation Tables
+## Collecting Results
+!!! note "Requires `DataFrames`"
+    The function `collect_results` is only available if you do
+    `using DataFrames` in your Julia session.
 
-WIP. (Adding simulation runs to a table/csv/dataframe)
+There are cases where you have saved a bunch of simulation results in a bunch of different files in a folder. It is useful to be able to collect all of these results into a single table, in this case a `DataFrame`. The function [`collect_results`](@ref) provides this functionality. Importantly, the function is "future-proof" which means that it works nicely even if you add new parameters or remove old parameters from your results as your project progresses!
+
+```@docs
+collect_results
+```
+
+For an example of using this functionality please have a look at the [Real World Examples](@ref) page!

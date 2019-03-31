@@ -45,7 +45,7 @@ This can be done in multiple ways:
    1. doing `Pkg.activate("path/to/project")` programmatically
    2. using the startup flag `--project path` when starting Julia
    3. by setting the [`JULIA_PROJECT`](https://docs.julialang.org/en/latest/manual/environment-variables/#JULIA_PROJECT-1) environment variable
-   4. using the functions [`quickctivate`](@ref) and [`findproject`](@ref) offered by DrWatson.
+   4. using the functions [`quickactivate`](@ref) and [`findproject`](@ref) offered by DrWatson.
 
 We recommend the fourth approach, although it does come with a caveat (see the docstring of [`quickactivate`](@ref)).
 
@@ -83,11 +83,11 @@ papersdir()
 ```
 immediately return the appropriate subdirectory. These are also defined due to the frequent use of these subdirectories.
 
-In addition all these functions end with `/`. This means that you can directly chain them with a file name using just `*`. E.g. you could do
+In addition, the return value of all these functions ends with `/`. This means that you can directly chain them with a file name using just `*`. E.g. you could do
 ```julia
-using DrWatson, BSON
+using DrWatson
 file = makesimulation()
-BSON.bson(datadir()*"sims/test.bson", file)
+tagsave(datadir()*"sims/test.bson", file)
 ```
 
 ## Reproducibility
@@ -102,5 +102,3 @@ pkg> instantiate
 All required packages and dependencies will be installed and then any script that was running in your computer will also be running in their computer **in the same way!**
 
 In addition, with DrWatson you have the possibility of "tagging" each simulation created with the commit id, see the discussion around [`current_commit`](@ref) and [`tag!`](@ref).
-
-Notice that for full reproducibility it is advised to **never add `Manifest.toml`** to your `.gitignore` file!

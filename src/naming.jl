@@ -21,8 +21,8 @@ for anything else it is `getproperty`.
     access(c, keys...)
 When given multiple keys, `access` is called recursively, i.e.
 `access(c, key1, key2) = access(access(c, key1), key2)` and so on.
-For example, if `c` is a `NamedTuple` then
-`access(c, k1, k2) == ntuple.k1.k2`.
+For example, if `c, c.k1` are `NamedTuple`s then
+`access(c, k1, k2) == c.k1.k2`.
 
 !!! note
     Please only extend the single key method when customizing `access`

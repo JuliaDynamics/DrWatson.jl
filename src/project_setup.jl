@@ -31,7 +31,8 @@ projectname() = Pkg.REPLMode.promptf()[2:end-7]
 
 """
     findproject(path = pwd()) -> project_path
-Recursively search `path` and its parents for a valid Julia project file.
+Recursively search `path` and its parents for a valid Julia project file
+(anything in `Base.project_names`).
 If it is found return its path, otherwise issue a warning and return
 `nothing`.
 
