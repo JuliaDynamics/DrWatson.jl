@@ -14,6 +14,7 @@ function __init__()
     # end
     @require FileIO = "5789e2e9-d7fb-5bc7-8068-2c6fae9b9549" begin
         include("saving_jld2.jl")
+        include("safesaving.jl")
     end
 end
 

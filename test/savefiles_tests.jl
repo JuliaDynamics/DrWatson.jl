@@ -27,3 +27,21 @@ sim = produce_or_load(simulation, f)
 rm(savename(simulation, "jld2"))
 
 @test !isfile(savename(simulation, "jld2"))
+
+
+################################################################################
+#                          Backup files before saving                          #
+################################################################################
+using FileIO
+data = [Dict( "a" => i, "b" => rand(rand(1:10))) for i = 1:3]
+filepath = "test.#backup.jld2"
+for i = 1:3
+    safesave(filepath, data[i])
+    @test data[i] == load(filepath)
+end
+@test data[1] == load("test.#backup_#2.jld2")
+@test data[2] == load("test.#backup_#1.jld2")
+@test data[3] == load("test.#backup.jld2")
+rm("test.#backup.jld2")
+rm("test.#backup_#1.jld2")
+rm("test.#backup_#2.jld2")
