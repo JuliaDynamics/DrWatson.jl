@@ -124,7 +124,7 @@ println( savename(e2) )
 ```
 
 ## Stopping "Did I run this?"
-It can become very tedious to have a piece of code that you may or may not have saved and you constantly ask yourself "Did I run this?". Typically one uses `isfile` and an `if` clause to either load a file or run some code. Especially in the cases where the code takes only a couple of minutes to finish you are left in a dilemma "Is it even worth it to save?".
+It can become very tedious to have a piece of code that you may or may not have run and may or may not have saved the produced data. You then constantly ask yourself "Did I run this?". Typically one uses `isfile` and an `if` clause to either load a file or run some code. Especially in the cases where the code takes only a couple of minutes to finish you are left in a dilemma "Is it even worth it to save?".
 
 This is the dilemma that [`produce_or_load`](@ref) resolves. You can wrap your code in a function and then [`produce_or_load`](@ref) will take care of the rest for you! I found it especially useful in scripts that generate figures for a publication.
 
@@ -273,6 +273,5 @@ res = collect_results(
 
 delete!(res, :path) # don't show path this time
 ```
-(unfortunately for now the type of all columns for the loaded `bson` file is `Any`. This is due to bugs in `BSON`)
 
 We had to do `rm("results_results.bson")` because the files that have already been processed (in our case _all_ of them) would not have been processed a second time.
