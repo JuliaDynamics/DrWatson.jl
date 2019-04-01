@@ -38,8 +38,16 @@ DrWatson.default_prefix
 
 See [Real World Examples](@ref) for an example of customizing `savename`.
 
+## Safely saving data
+Almost all packages that save data by default overwrite existing files (if given a save name of an existing file). This is the default behavior because often it is desired.
+
+Sometimes it is not though! And the consequences of overwritten data can be from irrelevant to catastrophic. To avoid such an event we provide an alternative way to save data that will never overwrite existing files:
+```@docs
+safesave
+```
+
 ## Tagging a run using Git
-For reproducibility reasons (and also to not go insane when asking "HOW DID I GET THOSE RESUUUULTS") it is useful to "tag!" any simulation/result/process with the Git commit of the repository.
+For reproducibility reasons (and also to not go insane when asking "HOW DID I GET THOSE RESUUUULTS") it is useful to "tag" any simulation/result/process with the Git commit of the repository.
 
 To this end there are two functions that can be used to ensure reproducibility:
 
@@ -48,11 +56,11 @@ current_commit
 tag!
 ```
 
-Please notice that `tag!` will operate in place only when possible. If not possible then a new dictionary is returned. Also (importantly) these functions will **never error** as they are most commonly used when saving simulations and this could risk data not being saved.
+Please notice that `tag!` will operate in place only when possible. If not possible then a new dictionary is returned. Also (importantly) these functions will **never error** as they are most commonly used when saving simulations and this could risk data not being saved!
 
 ### Automatic Tagging during Saving
 
-If you don't want to always call `tag!` before saving a file, you can just use the function `tagsave`:
+If you don't want to always call `tag!` before saving a file, you can just use the function `tagsave`, which can also nicely incorporate [`safesave`](@ref) if need be!
 ```@docs
 tagsave
 ```

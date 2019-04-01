@@ -11,7 +11,7 @@ The function `f` must return a dictionary.
 The macros [`@dict`](@ref) and [`strdict`](@ref) can help with that.
 
 ## Keywords
-* `tag = false` : Add the Git commit of the project in the saved file.
+* `tag = true` : Add the Git commit of the project in the saved file.
 * `projectpath = projectdir()` : Path to search for a Git repo.
 * `suffix = "bson"` : Used in `savename`.
 * `force = false` : If `true` then don't check if file `s` exists and produce
@@ -22,7 +22,7 @@ See also [`savename`](@ref) and [`tag!`](@ref).
 """
 produce_or_load(c, f; kwargs...) = produce_or_load("", c, f; kwargs...)
 function produce_or_load(prefix::String, c, f;
-    tag::Bool = false, projectpath = projectdir(),
+    tag::Bool = true, projectpath = projectdir(),
     suffix = "bson", force = false, kwargs...)
 
     s = savename(prefix, c, suffix; kwargs...)
@@ -53,13 +53,20 @@ function produce_or_load(prefix::String, c, f;
 end
 
 """
-    tagsave(file::String, d::Dict [, path = projectdir()])
-First [`tag!`](@ref) dictionary `d` using the project in `path`,
-and then save `d` in `file`.
+    tagsave(file::String, d::Dict; projectpath, safe)
+First [`tag!`](@ref) dictionary `d` and then save `d` in `file`.
+
+## Keywords
+* `projectpath = projectdir()` : Path of the Git repository.
+* `safe = false` : Save the file using [`safesave`](@ref).
 """
-function tagsave(file, d, path = projectdir())
-    d2 = tag!(d, path)
-    wsave(copy(d2))
+function tagsave(file, d; projectpath = projectdir(), safe = false)
+    d2 = tag!(d, projectpath)
+    if safe
+        safesave(file, copy(d2))
+    else
+        wsave(file, copy(d2))
+    end
     return d2
 end
 
@@ -84,6 +91,8 @@ If a backup file already exists then its backup-number is incremented
 will rename the old `test_#1.bson` to `test_#2.bson`, rename the old
 `test.bson` to `test_#1.bson` and then save a new `test.bson` with the latest
 `data`.
+
+See also [`tagsave`](@ref).
 """
 function safesave(f, data)
     recursively_clear_path(f)
