@@ -45,7 +45,8 @@ end
     tag!(d::Dict, path = projectdir()) -> d
 Tag `d` by adding an extra field `commit` which will have as value
 the [`current_commit`](@ref) of the repository at `path` (by default
-the project's path). Does not operate if a key `commit` already exists.
+the project's path). Do nothing if a key `commit` already exists or
+if the Git repository is not found.
 
 Notice that if `String` is not a subtype of the value type of `d` then
 a new dictionary is created and returned. Otherwise the operation
