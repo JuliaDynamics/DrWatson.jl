@@ -69,6 +69,27 @@ end
 ################################################################################
 
 # Implementation inspired by behavior of GROMACS
+"""
+    safesave(filename, data)
+
+Safely save `data` in `filename` by ensuring that no existing files
+are overwritten. Do this by renaming already existing data with a backup-number
+ending like `#1, #2, ...`. For example if `filename = test.bson`, the first
+time you `safesave` it, the file is saved normally. The second time
+the existing save is renamed to `test_#1.bson` and a new file `test.bson`
+is then saved.
+
+If a backup file already exists then its backup-number is incremented
+(e.g. going from `#2` to `#3`). For example safesaving `test.bson` a third time
+will rename the old `test_#1.bson` to `test_#2.bson`, rename the old
+`test.bson` to `test_#1.bson` and then save a new `test.bson` with the latest
+`data`.
+"""
+function safesave(f, data)
+    recursively_clear_path(f)
+    FileIO.save(f, data)
+end
+
 #take a path of a results file and increment its prefix backup number
 function increment_backup_num(filepath)
     path, filename = splitdir(filepath)
@@ -89,20 +110,4 @@ function recursively_clear_path(cur_path)
         recursively_clear_path(new_path)
     end
     mv(cur_path, new_path)
-end
-
-"""
-    safesave(filename, data)
-
-A wrapper around FileIO.save that ensures no existing files are overwritten.
-If a file with name `filename` such as `test.bson` already exists
-it will be renamed to `test_#1.bson` before the new data is written
-to `test.bson`.
-It recursively makes sure that no existing backups are overwritten
-by increasing the backup-number:
-`test.bson → test_#1.bson → test_#2.bson → ...`
-"""
-function safesave(f, data)
-    recursively_clear_path(f)
-    FileIO.save(f,data)
 end
