@@ -40,7 +40,7 @@ function produce_or_load(prefix::String, c, f;
         try
             mkpath(dirname(s))
             if tag
-                tagsave(s, file, projectpath)
+                tagsave(s, file; projectpath = projectpath)
             else
             wsave(s, copy(file))
         end
