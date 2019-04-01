@@ -31,8 +31,8 @@ end
 ################################################################################
 filepath = "test.#backup.jld2"
 data = [Dict( "a" => i, "b" => rand(rand(1:10))) for i = 1:3]
-    safesave(filepath, data[i])
 for i = 1:3
+    safesave(filepath, data[i])
     @test data[i] == load(filepath)
 end
 @test data[2] == load("test.#backup_#1.jld2")
