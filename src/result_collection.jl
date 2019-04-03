@@ -164,4 +164,4 @@ load (or later save) an existing dataframe. Thus _all_ found results files
 are processed.
 """
 collect_results(folder; kwargs...) =
-collect_results!("", folder; newfile = true)
+collect_results!("", folder; newfile = true, kwargs...)
