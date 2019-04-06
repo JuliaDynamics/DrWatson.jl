@@ -5,10 +5,10 @@ cd()
 path = "test project"
 name = "lala"
 
-initialize_project(path)
+initialize_project(path, force = true)
 
 @test projectname() == path
-@test findproject(@__DIR__) === nothing
+@test typeof(findproject(@__DIR__)) == String
 for p in DrWatson.DEFAULT_PATHS
     @test ispath(joinpath(path, p))
 end
