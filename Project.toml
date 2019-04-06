@@ -4,7 +4,6 @@ repo = "https://github.com/JuliaDynamics/DrWatson.jl.git"
 version = "0.0.9"
 
 [deps]
-Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 Pkg = "44cfe95a-1eb2-52ea-b672-e2afdf69b78f"
 LibGit2 = "76f85450-5226-5b5a-8eaa-529ad045b433"
 FileIO = "5789e2e9-d7fb-5bc7-8068-2c6fae9b9549"
@@ -14,3 +13,13 @@ Requires = "ae029012-a4dd-5104-9daa-d747884805df"
 julia = "1.0"
 FileIO = "1.0.6"
 Requires = "0.5.2, 1"
+
+[extras]
+Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+BSON = "fbb218c0-5317-5bc6-957e-2ee96dd4b1f0"
+Parameters = "d96e819e-fc66-5662-9728-84c9c7592b0a"
+DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
+JLD2 = "033835bb-8acc-5ee8-8aae-3f567f8a3819"
+
+[targets]
+test = ["Test", "BSON", "Parameters", "DataFrames", "JLD2"]
