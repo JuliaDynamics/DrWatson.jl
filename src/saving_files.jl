@@ -96,7 +96,7 @@ See also [`tagsave`](@ref).
 """
 function safesave(f, data)
     recursively_clear_path(f)
-    FileIO.save(f, data)
+    wsave(f, data)
 end
 
 #take a path of a results file and increment its prefix backup number

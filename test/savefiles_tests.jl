@@ -1,4 +1,4 @@
-using DrWatson, Test, BSON, JLD2, FileIO
+using DrWatson, Test
 
 T = 1000
 N = 50 # spatial extent
