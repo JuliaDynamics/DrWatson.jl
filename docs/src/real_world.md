@@ -250,16 +250,16 @@ file = BSON.load(datadir()*"results/"*filename)
 ```
 
 ## Listing completed runs
-Continuing from the above example, we now want to collect the results of all these simulations into a single `DataFrame`. We will do that with the function [`collect_results`](@ref).
+Continuing from the above example, we now want to collect the results of all these simulations into a single `DataFrame`. We will do that with the function [`collect_results!`](@ref).
 
 It is quite simple actually! But because we don't want to include the error, we have to black-list it:
 ```@example customizing
 using DataFrames # this is necessary to access collect_results!
 black_list = ["error"]
-res = collect_results(datadir()*"results"; black_list = black_list)
+res = collect_results!(datadir()*"results"; black_list = black_list)
 ```
 
-We can take also advantage of the basic processing functionality of [`collect_results`](@ref) to use the excluded `"error"` column, replacing it with its average value:
+We can take also advantage of the basic processing functionality of [`collect_results!`](@ref) to use the excluded `"error"` column, replacing it with its average value:
 ```@example customizing
 rm(datadir()*"results_results.bson") # delete existing dataframe
 
@@ -274,4 +274,4 @@ res = collect_results(
 delete!(res, :path) # don't show path this time
 ```
 
-We had to do `rm("results_results.bson")` because the files that have already been processed (in our case _all_ of them) would not have been processed a second time.
+We had to do `rm("results_results.bson")` because the files that have already been processed (in our case _all_ of them) would not have been processed a second time. Of course, we could have used [`collect_results`](@ref) *(notice the missing `!`)* instead for an equivalent result.

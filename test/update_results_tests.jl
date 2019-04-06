@@ -43,7 +43,7 @@ black_list = ["c"]
 folder = datadir()*"results"
 defaultname = joinpath(dirname(folder), "results_$(basename(folder)).bson")
 isfile(defaultname) && rm(defaultname)
-cres = collect_results(folder; filename = defaultname,
+cres = collect_results!(defaultname, folder;
 subfolders = true, special_list=special_list, black_list = black_list)
 
 @test size(cres) == (4, 6)
@@ -63,7 +63,7 @@ d = Dict("a" => 7, "b" => 35. , "d" => Number, "c" => rand(5))
 DrWatson.wsave(savename(d)*".bson", d)
 DrWatson.wsave(savename(d)*".jld2", d)
 
-cres2 = collect_results(folder; filename = defaultname,
+cres2 = collect_results!(defaultname, folder;
 subfolders = true, special_list=special_list, black_list = black_list)
 
 @test size(cres2) == (6, 6)
@@ -76,6 +76,17 @@ subfolders = true, special_list=special_list, black_list = black_list)
 df = BSON.load(defaultname)[:df]
 @test size(df) == size(cres2)
 @test sort(names(df)) == sort(names(cres2))
+
+###############################################################################
+#                           test out-of-place form                            #
+###############################################################################
+cd(@__DIR__)
+
+cres3 = collect_results(folder;
+subfolders = true, special_list=special_list, black_list = black_list)
+
+@test sort(names(cres3)) == sort(names(cres2))
+@test size(cres3) == size(cres2)
 
 ###############################################################################
 #                                 Delete Folders                              #
