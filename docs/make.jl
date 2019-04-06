@@ -18,7 +18,8 @@ format = Documenter.HTML(
 pages = [
     "Introduction" => "index.md",
     "Project Setup" => "project.md",
-    "Naming & Saving Simulations" => "name&save.md",
+    "Naming Simulations" => "name.md",
+    "Saving Tools" => "save.md",
     "Running & Listing Simulations" => "run&list.md",
     "Real World Examples" => "real_world.md"
     ],

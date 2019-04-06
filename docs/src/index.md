@@ -27,20 +27,21 @@ DrWatson tries to eradicate such bad thoughts and bedtime nightmares.
 
 DrWatson follows these simple principles:
 
-0. **Minimally Invasive Workflow.** DrWatson does not require you to follow strict guidelines or change the way you work and do science.
-1. **Basic.** The functionality offered is something simple, a baseline from where you handle your project as you wish.
+0. **Non-Invasive.** DrWatson does not require you to follow strict rules or change the way you work and do science in order to use it.
+1. **Simple.** The functionality offered is a baseline from where you handle your project as you wish. This makes it more likely to be of general use.
 2. **Consistent.** The functionality is identical across all projects and DrWatson offers a universal base project structure.
 3. **Allows increments.** You didn't plan your project well enough? Want to add more folders, more files, more variables to your simulations? It's fine.
-4. **Helpful.** DrWatson has been beta tested in real-world scientific projects and has matured based on feedback from scientists.
+4. **Useful.** DrWatson has been beta tested in real-world scientific projects and has matured based on feedback from scientists.
 5. **Reproducible.** DrWatson aims to make your projects fully reproducible using Git, Julia's package manager and consistent naming schemes.
-6. **Modular.** DrWatson has a flexible design (see [Functionality](@ref)) which means you only have to use what fits _your project_.
+6. **Modular.** DrWatson has a flexible modular design (see [Functionality](@ref)) which means you only have to use what fits _your project_.
 
 ## Functionality
 
-The core aspects of DrWatson are completely independent of each other. If you don't like the approach of one of them you can just not use it!
+Think of the core aspects of DrWatson as independent islands connected by bridges. If you don't like the approach of one of the islands, you don't have to use it to take advantage of DrWatson!
 
 * [Project Setup](@ref) : A universal project structure and functions that allow you to consistently and robustly navigate through your project, no matter where it is located on your hard drive.
-* [Naming & Saving Simulations](@ref) : A robust scheme for saving your data, naming files, tagging the Git commit ID to your saved files, and more.
+* [Naming Simulations](@ref) : A robust and deterministic scheme for naming and handling your containers.
+* [Saving Tools](@ref) : Tools for safely saving and loading your data, tagging the Git commit ID to your saved files, and more.
 * [Running & Listing Simulations](@ref): Tools for producing tables of existing simulations/data, adding runs to such tables, preparing batch parameter containers, and more.
 
 Applications of DrWatson are demonstrated the [Real World Examples](@ref) page. All of these examples are directly copied from code of real scientific projects that use DrWatson.
