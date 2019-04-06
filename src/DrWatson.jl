@@ -8,9 +8,11 @@ include("naming.jl")
 include("saving_tools.jl")
 
 # Functionality that saves/loads
-import FileIO
-wsave = FileIO.save
-wload = FileIO.load
+using FileIO: save, load
+export save, load
+wsave = save
+wload = load
+
 include("saving_files.jl")
 
 # Functionality that requires Dataframes and other heavy dependencies:
@@ -25,8 +27,11 @@ end
 function greet()
     println(
     """
-    DrWatson is currently in beta. Help us make it better by opening
+    DrWatson is currently in beta.
+    Help us make it better by opening
     issues on GitHub or submitting feature requests!
+
+    Currently active project is: $(projectname())
 
     Have fun with your new project!
     """

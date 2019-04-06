@@ -8,7 +8,7 @@ If a file named `s` exists then load it and return it.
 If the file does not exist then call `file = f(c)`, save `file` as
 `s` and then return the `file`.
 The function `f` must return a dictionary.
-The macros [`@dict`](@ref) and [`strdict`](@ref) can help with that.
+The macros [`@dict`](@ref) and [`@strdict`](@ref) can help with that.
 
 ## Keywords
 * `tag = true` : Add the Git commit of the project in the saved file.

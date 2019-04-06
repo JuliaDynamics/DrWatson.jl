@@ -1,8 +1,11 @@
-using Documenter, DrWatson
-quickactivate(@__DIR__, "docs")
-using BSON, DataFrames, Parameters, Dates
+using Pkg
+Pkg.activate(@__DIR__)
 
-isdir(datadir()) && rm(datadir())
+using DrWatson
+using Documenter, DataFrames, Parameters, Dates, BSON, JLD2
+
+# %%
+isdir(datadir()) && rm(datadir(); force = true, recursive = true)
 
 makedocs(modules = [DrWatson],
 sitename= "DrWatson",
@@ -10,6 +13,7 @@ authors = "George Datseris and contributors.",
 doctest = false,
 format = Documenter.HTML(
     prettyurls = get(ENV, "CI", nothing) == "true",
+    assets = ["assets/logo.ico"],
     ),
 pages = [
     "Introduction" => "index.md",
@@ -18,7 +22,6 @@ pages = [
     "Running & Listing Simulations" => "run&list.md",
     "Real World Examples" => "real_world.md"
     ],
-assets = ["assets/logo.ico"],
 )
 
 if get(ENV, "CI", nothing) == "true"

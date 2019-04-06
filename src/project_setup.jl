@@ -117,7 +117,7 @@ export initialize_project
 
 const DEFAULT_PATHS = [
 "_reserach", "src/", "scripts/",
-"plots/", "videos/", "notebooks/",
+"plots/", "notebooks/",
 "data/sims/",
 "data/exp_raw/",
 "data/exp_pro/",

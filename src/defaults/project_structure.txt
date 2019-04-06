@@ -4,18 +4,15 @@
 ├── _research        <- folder for WIP scripts, code, notes, comments,
 |                       to-dos and anything in an alpha state
 │
-├── data             <- Folder that contains all data. **Immutable and add-only!**
+├── data             <- **Immutable and add-only!**
 │   ├── sims         <- Data resulting directly from simulations
 │   ├── exp_pro      <- Data from processing experiments
 │   └── exp_raw      <- Raw experimental data
 │
-|
-├── videos           <- self-explanatory
 ├── plots            <- self-explanatory
 ├── notebooks        <- Jupyter, Weave or any other mixed media notebooks.
 │
 ├── papers           <- Scientific papers resulting from the project.
-│
 |
 ├── scripts          <- Various scripts, e.g. simulations, plotting, analysis,
 |   |                   The scripts use the `src` folder for their base code.
@@ -25,7 +22,6 @@
 |                       structures and modules that are used throughout
 |                       the project and in multiple scripts.
 │
-|
 ├── README.md        <- Optional top-level README for anyone using this project.
 ├── .gitignore       <- by default ignores _research, data, plots, videos,
 |                       notebooks and latex-compilation related files.

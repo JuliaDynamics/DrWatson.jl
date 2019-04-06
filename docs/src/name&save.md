@@ -5,6 +5,8 @@ This page discusses numerous tools that make life easier for handling simulation
 !!! info "We use `FileIO`"
     For saving and loading files we use `FileIO.save` and `FileIO.load`. This means that you have to install yourself whatever saving backend you want to use. `FileIO` by itself does _not_ install a package that saves data, it only provides the interface!
 
+    In addition, DrWatson re-exports `FileIO.save` and `FileIO.load` for convenience!
+
 ## Naming Schemes
 
 A robust naming scheme allows you to create quick names for simulations, create lists of simulations, check existing simulations, etc. More importantly it allows you to easily read and write simulations using a consistent naming scheme.
