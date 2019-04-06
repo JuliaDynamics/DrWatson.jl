@@ -18,7 +18,7 @@ new result-files are simply appended in the dataframe.
 
 `filename` defaults to:
 ```julia
-filename = joinpath(dirname(folder), "results_\$(basename(folder)).bson"
+filename = joinpath(dirname(folder), "results_\$(basename(folder)).bson")
 ```
 
 See also [`collect_results`](@ref).
