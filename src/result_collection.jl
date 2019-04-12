@@ -159,7 +159,7 @@ end
 
 """
     collect_results(folder; kwargs...) -> df
-Do exactly the same as [`collect_results`](@ref) but don't care to
+Do exactly the same as [`collect_results!`](@ref) but don't care to
 load (or later save) an existing dataframe. Thus _all_ found results files
 are processed.
 """
