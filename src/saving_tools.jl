@@ -85,7 +85,7 @@ end
 
 
 """
-    dict_list(c)
+    dict_list(c::Dict)
 Expand the dictionary `c` into a vector of dictionaries.
 Each entry has a unique combination from the product of the `Vector`
 values of the dictionary while the non-`Vector` values are kept constant
@@ -129,7 +129,7 @@ julia> dict_list(c)
  Dict(:a=>2,:b=>4,:run=>"tri",:e=>[3, 5],:model=>"linear")
 ```
 """
-function dict_list(c)
+function dict_list(c::Dict)
     iterable_fields = filter(k -> typeof(c[k]) <: Vector, keys(c))
     non_iterables = setdiff(keys(c), iterable_fields)
 

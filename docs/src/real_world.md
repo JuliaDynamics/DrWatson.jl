@@ -258,7 +258,7 @@ As you see here we used [`collect_results`](@ref) instead of the in-place versio
 ## Adapting to new data/parameters
 We once again continue from the above example. But we suddenly realize that we need to run some new simulations with some new parameters that _do not exist_ in the old simulations... Well, DrWatson says "no problemo!" :)
 
-Let's save these new parameters in a different subfolder, to have neatly organized project:
+Let's save these new parameters in a different subfolder, to have a neatly organized project:
 ```@example customizing
 general_args_new = Dict(
     "model" => ["bocf"],

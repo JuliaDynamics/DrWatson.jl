@@ -28,7 +28,7 @@ DrWatson tries to eradicate such bad thoughts and bedtime nightmares.
 DrWatson follows these simple principles:
 
 0. **Non-Invasive.** DrWatson does not require you to follow strict rules or change the way you work and do science in order to use it. In addition DrWatson is function-based: you only have to call a function and everything else just works; you *do not* have to create additional special `struct` or other data types.
-1. **Simple.** The functionality offered is a baseline from where you handle your project as you wish. This makes it more likely to be of general use but also means that you don't have to "study" to learn DrWatson: all concepts are simple.
+1. **Simple.** The functionality offered is a baseline from where you handle your project as you wish. This makes it more likely to be of general use but also means that you don't have to "study" to learn DrWatson: all concepts are simple, everything is easy to understand.
 2. **Consistent.** The functionality is identical across all projects and DrWatson offers a universal base project structure.
 3. **Allows increments.** You didn't plan your project well enough? Want to add more folders, more files, more variables to your simulations? It's fine.
 5. **Reproducible.** DrWatson aims to make your projects fully reproducible using Git, Julia's package manager and consistent naming schemes.

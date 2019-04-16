@@ -1,7 +1,7 @@
 # Saving Tools
-This page discusses numerous tools that significantly improve the saving & loading of files, always in a scientific context.
+This page discusses numerous tools that can significantly improve process of saving & loading files, always in a scientific context.
 
-Most (if not all) of these tools are also used in the examples demonstrated in the [Real World Examples](@ref) page. After reading the proper documentation here it might be worth it to have a look there as well!
+These tools are also used in the examples demonstrated in the [Real World Examples](@ref) page. After reading the proper documentation here it might be worth it to have a look there as well!
 
 !!! info "We use `FileIO`"
     For saving and loading files we use `FileIO.save` and `FileIO.load`. This means that you have to install yourself whatever saving backend you want to use. `FileIO` by itself does _not_ install a package that saves data, it only provides the interface!
@@ -12,7 +12,7 @@ Most (if not all) of these tools are also used in the examples demonstrated in t
 ## Safely saving data
 Almost all packages that save data by default overwrite existing files (if given a save name of an existing file). This is the default behavior because often it is desired.
 
-Sometimes it is not though! And the consequences of overwritten data can be from irrelevant to catastrophic. To avoid such an event we provide an alternative way to save data that will never overwrite existing files:
+Sometimes it is not though! And the consequences of overwritten data can range from irrelevant to catastrophic. To avoid such an event we provide an alternative way to save data that will never overwrite existing files:
 ```@docs
 safesave
 ```
