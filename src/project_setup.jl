@@ -1,5 +1,5 @@
 ##########################################################################################
-# Project directory and setup management
+# Project directory
 ##########################################################################################
 export projectdir, datadir, srcdir, plotsdir, scriptdir, papersdir
 export projectname
@@ -111,7 +111,7 @@ end
 
 
 ##########################################################################################
-# Project directory and setup management
+# Project setup
 ##########################################################################################
 export initialize_project
 
@@ -195,4 +195,18 @@ end
 
 vecstring(a::String) = [a]
 vecstring(a::Vector{String}) = a
-vecstring(c) = String[string(a) for a in c]
+vecstring(c) = [string(a) for a in c]
+
+function greet()
+    println(
+    """
+    DrWatson is currently in beta.
+    Help us make it better by opening
+    issues on GitHub or submitting feature requests!
+
+    Currently active project is: $(projectname())
+
+    Have fun with your new project!
+    """
+    )
+end

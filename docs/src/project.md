@@ -2,15 +2,15 @@
 
 Part of the functionality of DrWatson is creating and navigating through a project setup consistently. This works even if you move your project to a different location/computer or send it to a colleague with a different Julia installation. In addition, the navigation process is identical across any project that uses DrWatson.
 
-For this to work, you only need to follow these "rules":
+This can "just work" (TM) because of the following principles:
 
-1. **Your science project is also a Julia project defined by a `Project.toml` file.**
-2. **You first activate this project environment before running any code.** See [Activating a Project](@ref) for ways to do this.
-3. **You use the functions `scriptdir`, `datadir`, etc. from DrWatson** (see [Navigating a Project](@ref))
+1. **Your science project is also a Julia project defined by a `Project.toml` file.** This way the project tracks the used packages (and their versions) and can be shared with any other Julia user.
+2. **You first activate this project environment before running any code.** This way you ensure that your project run on the specified package installation (instead of the global one)See [Activating a Project](@ref) for ways to do this.
+3. **You use the functions `scriptdir`, `datadir`, etc. from DrWatson** to navigate your project (see [Navigating a Project](@ref)).
 
 ## Default Project Setup
 
-Here is the default project setup that DrWatson suggests (and assumes, for the functionality of this page):
+DrWatson suggests a universal project structure for any scientific project, which is the following:
 
 ```@setup project
 using DrWatson

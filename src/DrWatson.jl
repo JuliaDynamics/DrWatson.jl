@@ -24,18 +24,4 @@ function __init__()
 end
 
 
-function greet()
-    println(
-    """
-    DrWatson is currently in beta.
-    Help us make it better by opening
-    issues on GitHub or submitting feature requests!
-
-    Currently active project is: $(projectname())
-
-    Have fun with your new project!
-    """
-    )
-end
-
 end
