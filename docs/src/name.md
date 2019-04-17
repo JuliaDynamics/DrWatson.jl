@@ -3,7 +3,7 @@ Here we overview functionality that help you quickly produce containers of param
 
 ## Naming Schemes
 
-A robust naming scheme allows you to create quick names for simulations, create lists of simulations, check existing simulations, etc. More importantly it allows you to easily read and write simulations using **consistently** and **deterministically**.
+A robust naming scheme allows you to create quick names for simulations, create lists of simulations, check existing simulations, etc. More importantly it allows you to easily create simulation-based names **consistently** and **deterministically**.
 
 This is what the function [`savename`](@ref) does. Of course, you don't have to use it only for using names to save files. You could use it for anything that fits you (like e.g. adding identifiers to tabular data).
 
