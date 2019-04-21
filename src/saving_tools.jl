@@ -66,7 +66,8 @@ Dict{Symbol,Any} with 3 entries:
   :x      => 3
 ```
 """
-function tag!(d::Dict{K, T}, path = projectdir()) where {K, T}
+function tag!(d::Dict{K, T}, path = projectdir(), source = nothing) where {K, T}
+
     c = current_commit(path)
     c === nothing && return d
     if haskey(d, K("commit"))
@@ -80,9 +81,37 @@ function tag!(d::Dict{K, T}, path = projectdir()) where {K, T}
         d = Dict{K, promote_type(T, String)}(d)
         d[K("commit")] = c
     end
+    if source != nothing
+        if haskey(d, K("script"))
+            @warn "The dictionary already has a key named `script`. We won't "
+            "overwrite it with the script name."
+        else
+            d[K("script")] = relative_to_project(source, path)
+        end
+    end
     return d
 end
 
+function relative_to_project(s, path)
+    s = sourcename(s)
+    f = setdiff!(splitpath(s), splitpath(path))
+    return joinpath(f...)
+end
+
+sourcename(s) = string(s)
+sourcename(s::LineNumberNode) = string(s.file)*"#"*string(s.line)
+
+export @tag!
+
+"""
+    @tag!(d, path = projectdir()) -> d
+Do the same as [`tag`](@ref) but also add another field `script` that has
+the path of the script that called `@tag!`, relative with respect to `path`.
+"""
+macro tag!(d, path = projectdir())
+    s = QuoteNode(__source__)
+    :(tag!($(esc(d)), $(esc(path)), $s))
+end
 
 """
     dict_list(c::Dict)
