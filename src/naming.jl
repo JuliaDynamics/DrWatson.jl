@@ -139,6 +139,9 @@ end
 Create a dictionary out of the given variables that has as keys the variable
 names and as values their values.
 
+Notice: `@dict a b` is the correct way to call the macro. `@dict a, b`
+is incorrect. If you want to use commas you have to do `@dict(a, b)`.
+
 ## Examples
 ```jldoctest; setup = :(using DrWatson)
 julia> ω = 5; χ = "test"; ζ = π/3;
