@@ -2,13 +2,13 @@ export current_commit, tag!
 export dict_list, dict_list_count
 
 """
-    current_commit(path = projectdir()) -> commit
+    current_commit(gitpath = projectdir()) -> commit
 Return the current active commit id of the Git repository present
-in `path`, which by default is the project path. If the repository
+in `gitpath`, which by default is the project gitpath. If the repository
 is dirty when this function is called the string will end
 with `"_dirty"`.
 
-Return `nothing` if `path` is not a Git repository.
+Return `nothing` if `gitpath` is not a Git repository.
 
 See also [`tag!`](@ref).
 
@@ -21,17 +21,17 @@ julia> current_commit(path_to_dirty_repo)
 "3bf684c6a115e3dce484b7f200b66d3ced8b0832_dirty"
 ```
 """
-function current_commit(path = projectdir())
-    # Here we test if the path is a git repository.
+function current_commit(gitpath = projectdir())
+    # Here we test if the gitpath is a git repository.
     try
-        repo = LibGit2.GitRepo(path)
+        repo = LibGit2.GitRepo(gitpath)
     catch er
         @warn "The current project directory is not a Git repository, "*
         "returning `nothing` instead of the commit id."
         return nothing
     end
     # then we return the current commit
-    repo = LibGit2.GitRepo(path)
+    repo = LibGit2.GitRepo(gitpath)
     c = string(LibGit2.head_oid(repo))
     if LibGit2.isdirty(repo)
         @warn "The Git repository is dirty! Adding appropriate comment to "*
@@ -42,10 +42,10 @@ function current_commit(path = projectdir())
 end
 
 """
-    tag!(d::Dict, path = projectdir()) -> d
+    tag!(d::Dict, gitpath = projectdir()) -> d
 Tag `d` by adding an extra field `commit` which will have as value
-the [`current_commit`](@ref) of the repository at `path` (by default
-the project's path). Do nothing if a key `commit` already exists or
+the [`current_commit`](@ref) of the repository at `gitpath` (by default
+the project's gitpath). Do nothing if a key `commit` already exists or
 if the Git repository is not found.
 
 Notice that if `String` is not a subtype of the value type of `d` then
@@ -66,9 +66,9 @@ Dict{Symbol,Any} with 3 entries:
   :x      => 3
 ```
 """
-function tag!(d::Dict{K, T}, path = projectdir(), source = nothing) where {K, T}
+function tag!(d::Dict{K, T}, gitpath = projectdir(), source = nothing) where {K, T}
 
-    c = current_commit(path)
+    c = current_commit(gitpath)
     c === nothing && return d
     if haskey(d, K("commit"))
         @warn "The dictionary already has a key named `commit`. We won't "
@@ -86,15 +86,15 @@ function tag!(d::Dict{K, T}, path = projectdir(), source = nothing) where {K, T}
             @warn "The dictionary already has a key named `script`. We won't "
             "overwrite it with the script name."
         else
-            d[K("script")] = relative_to_project(source, path)
+            d[K("script")] = relative_to_project(source, gitpath)
         end
     end
     return d
 end
 
-function relative_to_project(s, path)
+function relative_to_project(s, gitpath)
     s = sourcename(s)
-    f = setdiff!(splitpath(s), splitpath(path))
+    f = setdiff!(splitpath(s), splitpath(gitpath))
     return joinpath(f...)
 end
 
@@ -104,13 +104,28 @@ sourcename(s::LineNumberNode) = string(s.file)*"#"*string(s.line)
 export @tag!
 
 """
-    @tag!(d, path = projectdir()) -> d
+    @tag!(d, gitpath = projectdir()) -> d
 Do the same as [`tag`](@ref) but also add another field `script` that has
-the path of the script that called `@tag!`, relative with respect to `path`.
+the gitpath of the script that called `@tag!`, relative with respect to `gitpath`.
+The gitpath ends with `#line_number`, which indicates the line number within the
+script that `@tag!` was called at.
+
+## Examples
+```julia
+julia> d = Dict(:x => 3)Dict{Symbol,Int64} with 1 entry:
+  :x => 3
+
+julia> @tag!(d) # running from a script or inline evaluation of Juno
+Dict{Symbol,Any} with 3 entries:
+  :commit => "618b72bc0936404ab6a4dd8d15385868b8299d68"
+  :script => "test\\stools_tests.jl#10"
+  :x      => 3
+```
+
 """
-macro tag!(d, path = projectdir())
+macro tag!(d, gitpath = projectdir())
     s = QuoteNode(__source__)
-    :(tag!($(esc(d)), $(esc(path)), $s))
+    :(tag!($(esc(d)), $(esc(gitpath)), $s))
 end
 
 """
