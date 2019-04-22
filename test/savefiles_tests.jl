@@ -32,6 +32,7 @@ file = load(savename(simulation, "bson"))
 @test file["commit"] |> typeof == String
 @test "script" ∈ keys(file)
 @test file["script"] |> typeof == String
+@test file["script"] == joinpath("test", "savefiles_tests.jl#29")
 
 t = f(simulation)
 @tagsave(savename(simulation, "bson"), t, true, findproject())

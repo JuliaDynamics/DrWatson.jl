@@ -86,16 +86,10 @@ function tag!(d::Dict{K, T}, gitpath = projectdir(), source = nothing) where {K,
             @warn "The dictionary already has a key named `script`. We won't "*
             "overwrite it with the script name."
         else
-            d[K("script")] = relative_to_project(source, gitpath)
+            d[K("script")] = relpath(sourcename(source), gitpath)
         end
     end
     return d
-end
-
-function relative_to_project(s, gitpath)
-    s = sourcename(s)
-    f = setdiff!(splitpath(s), splitpath(gitpath))
-    return joinpath(f...)
 end
 
 sourcename(s) = string(s)
@@ -105,8 +99,8 @@ sourcename(s::LineNumberNode) = string(s.file)*"#"*string(s.line)
     @tag!(d, gitpath = projectdir()) -> d
 Do the same as [`tag!`](@ref) but also add another field `script` that has
 the path of the script that called `@tag!`, relative with respect to `gitpath`.
-The path ends with `#line_number`, which indicates the line number within the
-script that `@tag!` was called at.
+The saved string ends with `#line_number`, which indicates the line number
+within the script that `@tag!` was called at.
 
 ## Examples
 ```julia
