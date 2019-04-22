@@ -1,5 +1,5 @@
 using DrWatson, Test
-
+cd(@__DIR__)
 T = 1000
 N = 50 # spatial extent
 Δt = 0.05 # resolution of integration
@@ -14,6 +14,37 @@ function f(simulation)
     return @strdict a b simulation
 end
 
+
+################################################################################
+#                                 tagsave                                      #
+################################################################################
+t = f(simulation)
+tagsave(savename(simulation, "bson"), t, findproject())
+file = load(savename(simulation, "bson"))
+@test "commit" ∈ keys(file)
+@test file["commit"] |> typeof == String
+rm(savename(simulation, "bson"))
+
+t = f(simulation)
+@tagsave(savename(simulation, "bson"), t, false, findproject())
+file = load(savename(simulation, "bson"))
+@test "commit" ∈ keys(file)
+@test file["commit"] |> typeof == String
+@test "script" ∈ keys(file)
+@test file["script"] |> typeof == String
+@test file["script"] == joinpath("test", "savefiles_tests.jl#29")
+
+t = f(simulation)
+@tagsave(savename(simulation, "bson"), t, true, findproject())
+sn = savename(simulation, "bson")[1:end-5]*"_#1"*".bson"
+@test isfile(sn)
+rm(savename(simulation, "bson"))
+rm(sn)
+@test !isfile(savename(simulation, "bson"))
+
+################################################################################
+#                              produce or load                                 #
+################################################################################
 for ending ∈ ("bson", "jld2")
     @test !isfile(savename(simulation, "bson"))
     sim = produce_or_load(simulation, f; suffix = ending)
@@ -24,7 +55,6 @@ for ending ∈ ("bson", "jld2")
     rm(savename(simulation, ending))
     @test !isfile(savename(simulation, ending))
 end
-
 
 ################################################################################
 #                          Backup files before saving                          #

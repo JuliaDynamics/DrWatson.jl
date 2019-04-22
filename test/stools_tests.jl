@@ -1,9 +1,32 @@
 using DrWatson, Test
 
 # Test commit function
+com = current_commit(@__DIR__)
+@test com === nothing
+
 com = current_commit(dirname(@__DIR__))
 @test com !== nothing
 @test typeof(com) == String
+
+# tag!
+d1 = Dict(:x => 3, :y => 4)
+d2 = Dict("x" => 3, "y" => 4)
+for d in (d1, d2)
+    d = tag!(d, dirname(@__DIR__))
+
+    @test haskey(d, keytype(d)(:commit))
+    @test d[keytype(d)(:commit)] |> typeof == String
+end
+
+# @tag!
+for d in (d1, d2)
+    d = @tag!(d, @__DIR__)
+    @test !haskey(d, keytype(d)(:commit))
+
+    d = @tag!(d, dirname(@__DIR__))
+    @test d[keytype(d)(:commit)] |> typeof == String
+    @test d[keytype(d)(:script)][1:4] == "test"
+end
 
 # Test dictionary expansion
 c = Dict(:a => [1, 2], :b => 4);
@@ -43,14 +66,4 @@ v3 = dict_list(c)
 @test dict_list_count(c) == length(c3) == length(v3)
 for el in c3
     @test el ∈ v3
-end
-
-# tag!
-d1 = Dict(:x => 3, :y => 4)
-d2 = Dict("x" => 3, "y" => 4)
-for d in (d1, d2)
-    d = tag!(d, dirname(@__DIR__))
-
-    @test haskey(d, keytype(d)(:commit))
-    @test d[keytype(d)(:commit)] |> typeof == String
 end
