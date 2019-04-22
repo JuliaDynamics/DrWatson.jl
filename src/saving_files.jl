@@ -1,4 +1,4 @@
-export produce_or_load, tagsave, safesave
+export produce_or_load, tagsave, @tagsave, safesave
 
 """
     produce_or_load([prefix="",] c, f; kwargs...) -> file
@@ -40,7 +40,7 @@ function produce_or_load(prefix::String, c, f;
         try
             mkpath(dirname(s))
             if tag
-                tagsave(s, file; gitpath = gitpath)
+                tagsave(s, file, false, gitpath)
             else
             wsave(s, copy(file))
         end
@@ -53,15 +53,13 @@ function produce_or_load(prefix::String, c, f;
 end
 
 """
-    tagsave(file::String, d::Dict; gitpath, safe)
+    tagsave(file::String, d::Dict [, safe = false, gitpath = projectdir()])
 First [`tag!`](@ref) dictionary `d` and then save `d` in `file`.
-
-## Keywords
-* `gitpath = projectdir()` : Path of the Git repository.
-* `safe = false` : Save the file using [`safesave`](@ref).
+If `safe = true` save the file using [`safesave`](@ref).
 """
-function tagsave(file, d; gitpath = projectdir(), safe = false)
-    d2 = tag!(d, gitpath)
+tagsave(file, d, p::String) = tagsave(file, d, false, p)
+function tagsave(file, d, safe = false, gitpath = projectdir(), s = nothing)
+    d2 = tag!(d, gitpath, s)
     if safe
         safesave(file, copy(d2))
     else
@@ -70,6 +68,15 @@ function tagsave(file, d; gitpath = projectdir(), safe = false)
     return d2
 end
 
+"""
+    @tagsave(file::String, d::Dict [, safe = false, gitpath = projectdir()])
+Same as [`tagsave`](@ref) but also add a field `script` that records
+the local path of the script that called `@tagsave`, see [`@tag!`](@ref).
+"""
+macro tagsave(file, d, safe::Bool = false, gitpath = projectdir())
+    s = QuoteNode(__source__)
+    :(tagsave($(esc(file)), $(esc(d)), $(esc(safe)), $(esc(gitpath)), $s))
+end
 
 ################################################################################
 #                          Backup files before saving                          #

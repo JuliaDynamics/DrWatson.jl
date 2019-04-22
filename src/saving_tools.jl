@@ -1,4 +1,4 @@
-export current_commit, tag!
+export current_commit, tag!, @tag!
 export dict_list, dict_list_count
 
 """
@@ -71,8 +71,8 @@ function tag!(d::Dict{K, T}, gitpath = projectdir(), source = nothing) where {K,
     c = current_commit(gitpath)
     c === nothing && return d
     if haskey(d, K("commit"))
-        @warn "The dictionary already has a key named `commit`. We won't "
-        "overwrite it with the commit id."
+        @warn "The dictionary already has a key named `commit`. We won't "*
+        "add any Git information."
         return d
     end
     if String <: T
@@ -83,7 +83,7 @@ function tag!(d::Dict{K, T}, gitpath = projectdir(), source = nothing) where {K,
     end
     if source != nothing
         if haskey(d, K("script"))
-            @warn "The dictionary already has a key named `script`. We won't "
+            @warn "The dictionary already has a key named `script`. We won't "*
             "overwrite it with the script name."
         else
             d[K("script")] = relative_to_project(source, gitpath)
@@ -101,13 +101,11 @@ end
 sourcename(s) = string(s)
 sourcename(s::LineNumberNode) = string(s.file)*"#"*string(s.line)
 
-export @tag!
-
 """
     @tag!(d, gitpath = projectdir()) -> d
-Do the same as [`tag`](@ref) but also add another field `script` that has
-the gitpath of the script that called `@tag!`, relative with respect to `gitpath`.
-The gitpath ends with `#line_number`, which indicates the line number within the
+Do the same as [`tag!`](@ref) but also add another field `script` that has
+the path of the script that called `@tag!`, relative with respect to `gitpath`.
+The path ends with `#line_number`, which indicates the line number within the
 script that `@tag!` was called at.
 
 ## Examples
@@ -121,7 +119,6 @@ Dict{Symbol,Any} with 3 entries:
   :script => "test\\stools_tests.jl#10"
   :x      => 3
 ```
-
 """
 macro tag!(d, gitpath = projectdir())
     s = QuoteNode(__source__)
