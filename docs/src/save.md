@@ -20,20 +20,22 @@ safesave
 ## Tagging a run using Git
 For reproducibility reasons (and also to not go insane when asking "HOW DID I GET THOSE RESUUUULTS") it is useful to "tag" any simulation/result/process with the Git commit of the repository.
 
-To this end there are two functions that can be used to ensure reproducibility:
+To this end we have some functions that can be used to ensure reproducibility:
 
 ```@docs
 current_commit
 tag!
+@tag!
 ```
 
 Please notice that `tag!` will operate in place only when possible. If not possible then a new dictionary is returned. Also (importantly) these functions will **never error** as they are most commonly used when saving simulations and this could risk data not being saved!
 
 ### Automatic Tagging during Saving
 
-If you don't want to always call `tag!` before saving a file, you can just use the function `tagsave`, which can also nicely incorporate [`safesave`](@ref) if need be!
+If you don't want to always call `tag!` before saving a file, you can just use `tagsave` or `@tagsave`, which can also nicely incorporate [`safesave`](@ref) if need be!
 ```@docs
 tagsave
+@tagsave
 ```
 
 ## Produce or Load

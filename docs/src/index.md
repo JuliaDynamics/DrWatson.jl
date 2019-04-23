@@ -3,6 +3,7 @@
 ---
 
 DrWatson is a Julia package created to help people "deal" with their simulations, simulation parameters, where are files saved, experimental data, scripts, existing simulations, project source code and in general their scientific projects.
+See the [Functionality](@ref) section to get an impression of what you can do with DrWatson.
 
 **DrWatson is currently in beta and under development! Please join us in making this package more useful and more robust!**
 
@@ -39,13 +40,12 @@ What should become clear from the above principles, is that **DrWatson is not a 
 
 
 ## Functionality
-
-Think of the core aspects of DrWatson as independent islands connected by bridges. If you don't like the approach of one of the islands, you don't have to use it to take advantage of DrWatson!
-
 * [Project Setup](@ref) : A universal project structure and functions that allow you to consistently and robustly navigate through your project, no matter where it is located on your hard drive.
 * [Naming Simulations](@ref) : A robust and deterministic scheme for naming and handling your containers.
-* [Saving Tools](@ref) : Tools for safely saving and loading your data, tagging the Git commit ID to your saved files, and more.
+* [Saving Tools](@ref) : Tools for safely saving and loading your data, tagging the Git commit ID to your saved files, safety when tagging with dirty repos, and more.
 * [Running & Listing Simulations](@ref): Tools for producing tables of existing simulations/data, adding runs to such tables, preparing batch parameter containers, and more.
+
+Think of these core aspects of DrWatson as independent islands connected by bridges. If you don't like the approach of one of the islands, you don't have to use it to take advantage of DrWatson!
 
 Applications of DrWatson are demonstrated the [Real World Examples](@ref) page. All of these examples are taken from code of real scientific projects that use DrWatson.
 

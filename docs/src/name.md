@@ -1,5 +1,5 @@
 # Naming Simulations
-Here we overview functionality that help you quickly produce containers of parameters and name them using a consistent and intuitive naming scheme.
+Here we overview functionality that helps you quickly produce containers of parameters and name them using a consistent and intuitive naming scheme.
 
 ## Naming Schemes
 
