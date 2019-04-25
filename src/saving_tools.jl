@@ -174,7 +174,13 @@ function dict_list(c::Dict)
     vec(
         map(Iterators.product(values(iterable_dict)...)) do vals
             dd = Dict(keys(iterable_dict) .=> vals)
-            merge(non_iterable_dict, dd)
+            if isempty(non_iterable_dict)
+                dd
+            elseif isempty(iterable_dict)
+                non_iterable_dict
+            else
+                merge(non_iterable_dict, dd)
+            end
         end
     )
 end

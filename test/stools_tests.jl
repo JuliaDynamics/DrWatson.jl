@@ -37,6 +37,7 @@ v1 = dict_list(c)
 for el in c1
     @test el ∈ v1
 end
+@test keytype(eltype(v1)) == Symbol
 
 c[:c] = "test"; c[:d] = ["lala", "lulu"];
 c2 = [ Dict(:a=>1,:b=>4,:d=>"lala",:c=>"test")
@@ -48,7 +49,7 @@ v2 = dict_list(c)
 for el in c2
     @test el ∈ v2
 end
-
+@test keytype(eltype(v2)) == Symbol
 
 c[:e] = [[1, 2], [3, 5]];
 c3 = [
@@ -67,3 +68,13 @@ v3 = dict_list(c)
 for el in c3
     @test el ∈ v3
 end
+@test keytype(eltype(v3)) == Symbol
+
+v4 = dict_list(Dict(:a => 1, :b => 2.0)) # both non-iterable
+@test keytype(eltype(v4)) == Symbol
+
+v5 = dict_list(Dict(:a => [1], :b => 2.0)) # one non-iterable
+@test keytype(eltype(v5)) == Symbol
+
+v6 = dict_list(Dict(:a => [1], :b => [2.0])) # both iterable
+@test keytype(eltype(v6)) == Symbol
