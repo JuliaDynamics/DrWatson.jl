@@ -1,3 +1,5 @@
+# 0.2.1
+* Improve type-stability of return value of `dict_list` (#41)
 # 0.2.0
 * Changed `path` and `projectpath` arguments of various functions (e.g. `tagsave`, `current_commit`) to `gitpath` universally.
 * make keyword arguments of `tagsave` positional arguments instead (to work with the macros)
