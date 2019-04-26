@@ -138,8 +138,8 @@ is_valid_file(file, valid_filetypes) =
 
 function to_data_row(data, file;
         white_list = collect(keys(data)),
-        black_list = [],
-        special_list = [])
+        black_list = keytype(data)[],
+        special_list = keytype(data)[])
     cnames = setdiff!(white_list, black_list)
     df = DataFrames.DataFrame(
         (Symbol.(cnames) .=> (x->[x]).(getindex.(Ref(data),cnames)))...
