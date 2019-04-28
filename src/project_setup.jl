@@ -22,6 +22,7 @@ srcdir() = projectdir()*"src/"
 plotsdir() = projectdir()*"plots/"
 scriptdir() = projectdir()*"scripts/"
 papersdir() = projectdir()*"papers/"
+testdir() = projectdir()*"test/"
 
 """
     projectname()
@@ -118,6 +119,7 @@ export initialize_project
 const DEFAULT_PATHS = [
 "_reserach", "src/", "scripts/",
 "plots/", "notebooks/",
+"test",
 "data/sims/",
 "data/exp_raw/",
 "data/exp_pro/",
@@ -175,7 +177,8 @@ function initialize_project(path, name = basename(path);
     # Default files
     cp(joinpath(@__DIR__, "defaults", "gitignore.txt"), joinpath(path, ".gitignore"))
     cp(joinpath(@__DIR__, "defaults", "intro.jl"), joinpath(path, "scripts/intro.jl"))
-    files = vcat(".gitignore", "/scripts/intro.jl")
+    cp(joinpath(@__DIR__, "defaults", "runtests.jl"), joinpath(path, "test/runtests.jl"))
+    files = vcat(".gitignore", "/scripts/intro.jl","/test/runtests.jl")
     if readme
         write(joinpath(path, "README.md"), DEFAULT_README)
         push!(files, "README.md")
