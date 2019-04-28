@@ -1,7 +1,7 @@
 name = "DrWatson"
 uuid = "634d3b9d-ee7a-5ddf-bec9-22491ea816e1"
 repo = "https://github.com/JuliaDynamics/DrWatson.jl.git"
-version = "0.2.1"
+version = "0.3.0"
 
 [deps]
 Pkg = "44cfe95a-1eb2-52ea-b672-e2afdf69b78f"
