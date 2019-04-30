@@ -13,6 +13,16 @@ Using the above function means that you can write your "preparation" step into a
 
 See the [Real World Examples](@ref) for a very convenient application!
 
+## Saving Temporary Dictionaries
+The functionality of [`dict_list`](@ref) is great, but can fall short in cases of submitting jobs to a computer cluster. For serial clusters, each run is submitted to a different Julia process and thus one cannot propagate a Julia in-memory `Dict` (for parallel clusters using `pmap` is fine).
+
+To balance this, we have here some simple functionality that stores the result of [`dict_list`](@ref) (or any other dictionary collection, really) to files with temporary names. The names are returned and can then be propagated into a `main`-like Julia process that can take the temp-name as an input, load the dictionary and then extract the data.
+```@docs
+tmpsave
+cleartmp
+```
+An example usage is shown in [Using a Serial Cluster](@ref).
+
 ## Collecting Results
 !!! note "Requires `DataFrames`"
     The function `collect_results!` is only available if you do

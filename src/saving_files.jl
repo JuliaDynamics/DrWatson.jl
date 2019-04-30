@@ -149,7 +149,7 @@ See also [`dict_list`](@ref), [`cleartmp`](@ref).
 function tmpsave(dicts, tmp = datadir()*"tmp/";
     l = 12, suffix = "bson", prefix = "")
 
-    !isdir(tmp) && mkpath(tmp)
+    mkpath(tmp)
     n = length(dicts)
     existing = readdir(tmp)
     r = String[]
