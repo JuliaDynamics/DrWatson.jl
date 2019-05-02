@@ -60,6 +60,7 @@ If `safe = true` save the file using [`safesave`](@ref).
 tagsave(file, d, p::String) = tagsave(file, d, false, p)
 function tagsave(file, d, safe = false, gitpath = projectdir(), s = nothing)
     d2 = tag!(d, gitpath, s)
+    mkpath(dirname(file))
     if safe
         safesave(file, copy(d2))
     else
@@ -103,6 +104,7 @@ See also [`tagsave`](@ref).
 """
 function safesave(f, data)
     recursively_clear_path(f)
+    mkpath(dirname(f))
     wsave(f, data)
 end
 
