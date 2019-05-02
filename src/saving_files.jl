@@ -131,22 +131,24 @@ end
 ################################################################################
 #                    Compliment to dict_list: tmpsave                          #
 ################################################################################
-export tmpsave, cleartmp
+export tmpsave
 using Random
 """
-    tmpsave(dicts::Vector{Dict}, tmp = datadir()*"tmp/"; kwargs...) -> r
+    tmpsave(dicts::Vector{Dict} [, tmp]; kwargs...) -> r
 Save each entry in `dicts` into a unique temporary file in the directory `tmp`.
 Then return the list of file names (relative to `tmp`) that were used
 for saving each dictionary.
 
-See also [`dict_list`](@ref), [`cleartmp`](@ref).
+`tmp` defaults to `projectdir()*"_research/tmp/"`.
+
+See also [`dict_list`](@ref).
 
 ## Keywords
 * `l = 12` : number of characters in the random string.
 * `prefix = ""` : prefix each temporary name with this.
 * `suffix = "bson"` : ending of the temporary names (no need for the dot).
 """
-function tmpsave(dicts, tmp = datadir()*"tmp/";
+function tmpsave(dicts, tmp = projectdir()*"_research/tmp/";
     l = 12, suffix = "bson", prefix = "")
 
     mkpath(tmp)
@@ -164,15 +166,4 @@ function tmpsave(dicts, tmp = datadir()*"tmp/";
         save(joinpath(tmp, x), copy(dicts[i]))
     end
     r
-end
-
-"""
-    cleartmp(tmp = datadir()*"tmp/")
-Clear the `tmp` by removing all files, folders and subfolders in it
-(but not removing the top level directory).
-"""
-function cleartmp(tmp = datadir()*"tmp/")
-    for f in readdir(tmp)
-        rm(joinpath(tmp, f), force = true, recursive = true)
-    end
 end

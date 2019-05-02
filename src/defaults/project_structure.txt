@@ -2,7 +2,8 @@
 │                       repository with a reasonable .gitignore file.
 │
 ├── _research        <- WIP scripts, code, notes, comments,
-│                       to-dos and anything in an alpha state.
+│   |                   to-dos and anything in an alpha state.
+│   └── tmp          <- Temporary data folder.
 │
 ├── data             <- **Immutable and add-only!**
 │   ├── sims         <- Data resulting directly from simulations.
@@ -22,7 +23,7 @@
 │                       structures and modules that are used throughout
 │                       the project and in multiple scripts.
 │
-├── test             <- Tests for code in src. 
+├── test             <- Tests for code in src.
 │   └── runtests.jl  <- Script to run all tests.
 │
 ├── README.md        <- Optional top-level README for anyone using this project.
