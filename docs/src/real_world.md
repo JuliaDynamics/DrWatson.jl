@@ -238,7 +238,7 @@ file = load(datadir()*"results/"*filename)
 In case that I can't store the results of `dict_list` in memory, I have to
 change my approach and load them from disk. This is easy with the function [`tmpsave`](@ref).
 
-Instead of using Julia to run all jobs from one process with `map, pmap` one can use Julia to submit many jobs. For our example above, the Julia program that does this would look like this:
+Instead of using Julia to run all jobs from one process with `map/pmap` one can use Julia to submit many jobs to a cluster que. For our example above, the Julia program that does this would look like this:
 
 ```julia
 dicts = dict_list(general_args)

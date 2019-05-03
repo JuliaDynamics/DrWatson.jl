@@ -19,7 +19,6 @@ The functionality of [`dict_list`](@ref) is great, but can fall short in cases o
 To balance this, we have here some simple functionality that stores the result of [`dict_list`](@ref) (or any other dictionary collection, really) to files with temporary names. The names are returned and can then be propagated into a `main`-like Julia process that can take the temp-name as an input, load the dictionary and then extract the data.
 ```@docs
 tmpsave
-cleartmp
 ```
 An example usage is shown in [Using a Serial Cluster](@ref).
 
