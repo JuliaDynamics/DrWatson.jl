@@ -17,7 +17,7 @@ Have you thought things like:
 * Duuuude, have I run this simulation already?
 * Do I have to produce a dataframe of my finished simulations AGAIN?!
 * Wait, are those experiments already processed?
-* PFfffff I am tired of typing `savename = "w=$w_f=$f_x=$x.jld2`, can't I do it automatically?
+* PFfffff I am tired of typing `savename = "w=$w_f=$f_x=$x.jld2"`, can't I do it automatically?
 * I wish I could just use Parameters.jl and just translate my simulations into a dataframe.
 * Yeah you've sent me your project but none of the scripts work...
 
