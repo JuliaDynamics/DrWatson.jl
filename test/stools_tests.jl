@@ -87,7 +87,5 @@ for r in ret
     a = load(joinpath(tmpdir, r))
     @test a ∈ v3
 end
-cleartmp(tmpdir)
-@test length(readdir(tmpdir)) == 0
 rm(tmpdir, force = true, recursive = true)
 @test !isdir(tmpdir)
