@@ -3,7 +3,8 @@
 ---
 
 DrWatson is a Julia package created to help people "deal" with their simulations, simulation parameters, where are files saved, experimental data, scripts, existing simulations, project source code and in general their scientific projects.
-See the [Functionality](@ref) section to get an impression of what you can do with DrWatson.
+
+See the [Functionality](@ref) section to get an impression of what you can do with DrWatson. To install, simply type `] add DrWatson` in your Julia session.
 
 **DrWatson is currently in beta and under development! Please join us in making this package more useful and more robust!**
 
