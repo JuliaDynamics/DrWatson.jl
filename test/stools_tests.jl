@@ -78,3 +78,14 @@ v5 = dict_list(Dict(:a => [1], :b => 2.0)) # one non-iterable
 
 v6 = dict_list(Dict(:a => [1], :b => [2.0])) # both iterable
 @test keytype(eltype(v6)) == Symbol
+
+### tmpsave ###
+tmpdir = joinpath(@__DIR__, "tmp")
+ret = tmpsave(v3, tmpdir)
+for r in ret
+    @test isfile(joinpath(tmpdir, r))
+    a = load(joinpath(tmpdir, r))
+    @test a ∈ v3
+end
+rm(tmpdir, force = true, recursive = true)
+@test !isdir(tmpdir)

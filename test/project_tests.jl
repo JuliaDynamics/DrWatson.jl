@@ -1,7 +1,6 @@
 using Test, DrWatson
 
 cd()
-
 path = "test project"
 name = "lala"
 
@@ -14,11 +13,9 @@ for p in DrWatson.DEFAULT_PATHS
 end
 
 @test ispath(projectdir("data"))
-
 @test isfile(joinpath(path, ".gitignore"))
 @test isfile(joinpath(path, "README.md"))
 @test isfile(joinpath(path, "Project.toml"))
-
 
 @test_throws ErrorException initialize_project(path, name)
 

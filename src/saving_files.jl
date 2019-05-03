@@ -60,6 +60,7 @@ If `safe = true` save the file using [`safesave`](@ref).
 tagsave(file, d, p::String) = tagsave(file, d, false, p)
 function tagsave(file, d, safe = false, gitpath = projectdir(), s = nothing)
     d2 = tag!(d, gitpath, s)
+    mkpath(dirname(file))
     if safe
         safesave(file, copy(d2))
     else
@@ -103,6 +104,7 @@ See also [`tagsave`](@ref).
 """
 function safesave(f, data)
     recursively_clear_path(f)
+    mkpath(dirname(f))
     wsave(f, data)
 end
 
@@ -126,4 +128,44 @@ function recursively_clear_path(cur_path)
         recursively_clear_path(new_path)
     end
     mv(cur_path, new_path)
+end
+
+################################################################################
+#                    Compliment to dict_list: tmpsave                          #
+################################################################################
+export tmpsave
+using Random
+"""
+    tmpsave(dicts::Vector{Dict} [, tmp]; kwargs...) -> r
+Save each entry in `dicts` into a unique temporary file in the directory `tmp`.
+Then return the list of file names (relative to `tmp`) that were used
+for saving each dictionary.
+
+`tmp` defaults to `projectdir("_research/tmp")`.
+
+See also [`dict_list`](@ref).
+
+## Keywords
+* `l = 8` : number of characters in the random string.
+* `prefix = ""` : prefix each temporary name with this.
+* `suffix = "bson"` : ending of the temporary names (no need for the dot).
+"""
+function tmpsave(dicts, tmp = projectdir("_research/tmp");
+    l = 8, suffix = "bson", prefix = "")
+
+    mkpath(tmp)
+    n = length(dicts)
+    existing = readdir(tmp)
+    r = String[]
+    i = 0
+    while i < n
+        x = prefix*randstring(l)*"."*suffix
+        while x ∈ r || x ∈ existing
+            x = prefix*randstring(l)*"."*suffix
+        end
+        i += 1
+        push!(r, x)
+        wsave(joinpath(tmp, x), copy(dicts[i]))
+    end
+    r
 end

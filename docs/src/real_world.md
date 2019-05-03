@@ -174,7 +174,8 @@ Now, every time I run this code block the function tests automatically whether t
 
 The extra step is that I have to extract the useful data I need from the container `file`. Thankfully the `@unpack` macro from [Parameters.jl](https://mauro3.github.io/Parameters.jl/stable/manual.html) makes this super easy.
 
-## Preparing runs
+## Preparing & running jobs
+### Preparing the dictionaries
 Here is a shortened script from a project that uses [`dict_list`](@ref):
 ```@example customizing
 using DrWatson
@@ -194,7 +195,7 @@ dicts = dict_list(general_args)
 println("Total dictionaries made: ", length(dicts))
 dicts[1]
 ```
-Now how you use these dictionaries is up to you. Here we will use `map` (identical process for using `pmap`) but in other scenarios you might want to submit many individual jobs to a computer cluster.
+Now how you use these dictionaries is up to you. Typically each dictionary is given to a `main`-like Julia function which extracts the necessary data and calls the necessary functions.
 
 Let's say I have written a function that takes in one of these dictionaries and saves the file somewhere locally:
 ```@example customizing
@@ -219,19 +220,46 @@ function cross_estimation(data)
 end
 ```
 
+### Using map and pmap
+
+One way to run many simulations is with `map` (identical process for using `pmap`).
 To run all my simulations I just do:
 ```@example customizing
 mkpath(datadir()*"results")
 dicts = dict_list(general_args)
-map(cross_estimation, dicts)
+map(cross_estimation, dicts) # or pmap
 
 # load one of the files to be sure everything is ok:
 filename = readdir(datadir()*"results")[1]
 file = load(datadir()*"results/"*filename)
 ```
 
+### Using a Serial Cluster
+In case that I can't store the results of `dict_list` in memory, I have to
+change my approach and load them from disk. This is easy with the function [`tmpsave`](@ref).
+
+Instead of using Julia to run all jobs from one process with `map/pmap` one can use Julia to submit many jobs to a cluster que. For our example above, the Julia program that does this would look like this:
+
+```julia
+dicts = dict_list(general_args)
+res = tmpsave(dicts)
+for r in res
+    submit = `qsub -q queuename julia runjob.jl $r`
+    run(submit)
+end
+```
+Now the file `runjob.jl` would have contents that look like:
+```julia
+f = ARGS[1]
+dict = load(projectdir("_research/tmp/")*f)
+cross_estimation(dict)
+```
+i.e. it just loads the `dict` and straightforwardly uses the "main" function `cross_estimation`. Remember to routinely clear the `tmp` directory!
+You could do that by e.g. adding a line `rm(projectdir("_research/tmp/")*f)`
+at the end of the `runjob.jl` script.
+
 ## Listing completed runs
-Continuing from the above example, we now want to collect the results of all these simulations into a single `DataFrame`. We will do that with the function [`collect_results!`](@ref).
+Continuing from the [Preparing & running jobs](@ref) section, we now want to collect the results of all these simulations into a single `DataFrame`. We will do that with the function [`collect_results!`](@ref).
 
 It is quite simple actually! But because we don't want to include the error, we have to black-list it:
 ```@example customizing
@@ -253,10 +281,10 @@ res = collect_results(
 deletecols!(res, :path) # don't show path this time
 ```
 
-As you see here we used [`collect_results`](@ref) instead of the in-place version, since there already exists a dataframe with all results processed (and thus everything would be skipped).
+As you see here we used [`collect_results`](@ref) instead of the in-place version, since there already exists a `DataFrame` with all results processed (and thus everything would be skipped).
 
 ## Adapting to new data/parameters
-We once again continue from the above example. But we suddenly realize that we need to run some new simulations with some new parameters that _do not exist_ in the old simulations... Well, DrWatson says "no problemo!" :)
+We once again continue from the above example. But we suddenly realize that we need to run some new simulations with some new parameters that _do not exist_ in the old simulations... Well, DrWatson says "no problem!" :)
 
 Let's save these new parameters in a different subfolder, to have a neatly organized project:
 ```@example customizing

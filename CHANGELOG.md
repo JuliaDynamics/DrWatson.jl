@@ -1,5 +1,7 @@
 # 0.3.0
 * Added `test` as a directory of the default project (#43)
+* Added `tmpsave` functionality: save the result of `dict_list` in temporary files and conveniently work with sequential clusters (#45)
+* Now all saving related functions of DrWatson first `mkpath` of the path to save at and then save (#45)
 # 0.2.1
 * Improve type-stability of return value of `dict_list` (#41)
 # 0.2.0

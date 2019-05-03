@@ -11,7 +11,16 @@ dict_list_count
 
 Using the above function means that you can write your "preparation" step into a single dictionary and then let it automatically expand into many parameter containers. This keeps the code cleaner but also consistent, provided that it follows one rule: **Anything that is a `Vector` has many parameters, otherwise it is one parameter**. [`dict_list`](@ref) considers this true irrespectively of what the `Vector` contains. This allows users to use any iterable custom type as a single "parameter" of a simulation.
 
-See the [Real World Examples](@ref) for a very convenient application!
+See the [Preparing & running jobs](@ref) for a very convenient application!
+
+## Saving Temporary Dictionaries
+The functionality of [`dict_list`](@ref) is great, but can fall short in cases of submitting jobs to a computer cluster. For serial clusters, each run is submitted to a different Julia process and thus one cannot propagate a Julia in-memory `Dict` (for parallel clusters using `pmap` is fine).
+
+To balance this, we have here some simple functionality that stores the result of [`dict_list`](@ref) (or any other dictionary collection, really) to files with temporary names. The names are returned and can then be propagated into a `main`-like Julia process that can take the temp-name as an input, load the dictionary and then extract the data.
+```@docs
+tmpsave
+```
+An example usage is shown in [Using a Serial Cluster](@ref).
 
 ## Collecting Results
 !!! note "Requires `DataFrames`"
