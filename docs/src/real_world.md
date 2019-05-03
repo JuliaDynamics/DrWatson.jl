@@ -251,14 +251,15 @@ end
 Now the file `runjob.jl` would have contents that look like:
 ```julia
 f = ARGS[1]
-dict = load(datadir()*"tmp/"*f)
+dict = load(projectdir("_research/tmp/")*f)
 cross_estimation(dict)
-rm(datadir()*"tmp/"*f)
 ```
-i.e. it just loads the `dict` and straightforwardly uses the "main" function `cross_estimation`. The last step is optional but it is good practice to clean after ourselves ;).
+i.e. it just loads the `dict` and straightforwardly uses the "main" function `cross_estimation`. Remember to routinely clear the `tmp` directory!
+You could do that by e.g. adding a line `rm(projectdir("_research/tmp/")*f)`
+at the end of the `runjob.jl` script.
 
 ## Listing completed runs
-Continuing from the above example, we now want to collect the results of all these simulations into a single `DataFrame`. We will do that with the function [`collect_results!`](@ref).
+Continuing from the [Preparing & running jobs](@ref) section, we now want to collect the results of all these simulations into a single `DataFrame`. We will do that with the function [`collect_results!`](@ref).
 
 It is quite simple actually! But because we don't want to include the error, we have to black-list it:
 ```@example customizing
