@@ -9,7 +9,7 @@ These tools are also used in the examples demonstrated in the [Real World Exampl
     In addition, DrWatson re-exports `FileIO.save` and `FileIO.load` for convenience!
 
 !!! info "We always call `mkpath`"
-    All functions of DrWatson that save things, e.g. [`tagsave`](@ref), [`safesave`](@ref), etc. always call `mkpath` first on the directory the file needs to be saved at.
+    All functions of DrWatson that save things, e.g. [`tagsave`](@ref), [`safesave`](@ref), [`tmpsave`](@ref) etc. always call `mkpath` first on the directory the file needs to be saved at. This is not the case for the standard `save` function, as it comes from `FileIO`.
 
 ## Safely saving data
 Almost all packages that save data by default overwrite existing files (if given a save name of an existing file). This is the default behavior because often it is desired.

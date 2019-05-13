@@ -11,6 +11,9 @@ See the [Functionality](@ref) section to get an impression of what you can do wi
 !!! info "JuliaDynamics"
     DrWatson is part of [JuliaDynamics](https://juliadynamics.github.io/JuliaDynamics/), check out our [website](https://juliadynamics.github.io/JuliaDynamics/) for more cool stuff!
 
+!!! info "Poster for DrWatson"
+    If you prefer having a concise and visual summary of DrWatson we have prepared a poster for it! Check out the [Poster](@ref) section!
+
 ## Rationale
 Have you thought things like:
 
@@ -52,6 +55,11 @@ DrWatson follows these simple principles:
 4. **Scientific.** DrWatson has been beta tested in real-world scientific projects and has matured based on feedback from scientists.
 
 This is why we believe DrWatson can help you focus on the science and not worry about project code management.
+
+## Poster
+Click [here](https://github.com/JuliaDynamics/JuliaDynamics/blob/master/videos/drwatson/DrWatson-poster-0.3.0.pdf?raw=true) for the pdf file or just download the following figure:
+
+![poster DrWatson](https://github.com/JuliaDynamics/JuliaDynamics/blob/master/videos/drwatson/DrWatson-poster-0.3.0.jpg?raw=true)
 
 ## Inspirations
 
