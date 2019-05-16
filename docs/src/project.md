@@ -5,8 +5,10 @@ Part of the functionality of DrWatson is creating and navigating through a proje
 This can "just work" (TM) because of the following principles:
 
 1. **Your science project is also a [Julia project](https://julialang.github.io/Pkg.jl/v1/environments/) defined by a `Project.toml` file.** This way the project tracks the used packages (and their versions) and can be shared with any other Julia user.
-2. **You first activate this project environment before running any code.** This way you ensure that your project run on the specified package installation (instead of the global one)See [Activating a Project](@ref) for ways to do this.
+2. **You first activate this project environment before running any code.** This way you ensure that your project runs on the specified package installation (instead of the global one). See [Activating a Project](@ref) for ways to do this.
 3. **You use the functions `scriptdir`, `datadir`, etc. from DrWatson** to navigate your project (see [Navigating a Project](@ref)).
+
+Importantly, our suggested project setup was designed to be fully reproducible, see [Reproducibility](@ref).
 
 ## Default Project Setup
 
@@ -92,7 +94,7 @@ tagsave(datadir()*"sims/test.bson", file)
 
 ## Reproducibility
 The project setup approach that DrWatson suggests is designed to work flawlessly with Julia standards, to be easy to share and to be fully reproducible. There are three reasons that **true** reproducibility is possible:
-1. The project's used packages are embedded in the project because of `Project.toml`
+1. The project's used packages are embedded in the project because of `Manifest.toml`
 2. The navigation around the folders of the project uses local directories.
 3. The project is a Git repository, which means that it has a detailed (and re-traceable) history of all changes and additions.
 
