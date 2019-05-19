@@ -46,6 +46,9 @@ in [`savename`](@ref) or other similar functions.
 """
 default_prefix(c) = ""
 
+
+default_expand(c) = String[]
+
 """
     savename([prefix,], c [, suffix]; kwargs...)
 Create a shorthand name, commonly used for saving a file, based on the
@@ -84,6 +87,10 @@ it ends as a path (`/` or `\\`) then the `connector` is ommited.
   ```
   then the integer value is used in the name instead.
 * `connector = "_"` : string used to connect the various entries.
+* `expand::Vector{String} = default_expand` : keys that will be expanded
+  to the `savename` of their contents, to allow for nested containers.
+  By default is empty. Notice that the type of the container must also be
+  allowed for `expand` to take effect!
 
 ## Examples
 ```julia
@@ -107,7 +114,7 @@ savename(prefix::String, c::Any; kwargs...) = savename(prefix, c, ""; kwargs...)
 function savename(prefix::String, c, suffix::String;
                   allowedtypes = default_allowed(c),
                   accesses = allaccess(c), digits = 3,
-                  connector = "_")
+                  connector = "_", expand::Vector{String} = default_expand(c))
 
     labels = vecstring(accesses) # make it vector of strings
     p = sortperm(labels)
@@ -120,13 +127,14 @@ function savename(prefix::String, c, suffix::String;
         if any(x -> (t <: x), allowedtypes)
             !first && (s *= connector)
             if t <: AbstractFloat
-                if round(val; digits = digits) == round(Int, val)
-                    val = round(Int, val)
-                else
-                    val = round(val; digits = digits)
-                end
+                x = round(val; digits = digits); y = round(Int, val)
+                val = x == y ? y : x
             end
-            s *= label*"="*string(val);
+            if label ∈ expand
+                s *= label*"="*'('*savename(val;connector=",")*')'
+            else
+                s *= label*"="*string(val)
+            end
             first = false
         end
     end
