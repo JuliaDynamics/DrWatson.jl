@@ -1,4 +1,5 @@
 # 0.4.0
+* Add expand functionality to `savename`, which handles better containers with nested containers (#50)
 * `produce_or_load` now allows the possibility of not loading the file
 * New function `struct2dict` that converts a struct to a dictionary (for saving)
 # 0.3.0
