@@ -55,6 +55,9 @@ for ending ∈ ("bson", "jld2")
     rm(savename(simulation, ending))
     @test !isfile(savename(simulation, ending))
 end
+@test produce_or_load(simulation, f; loadfile = false) == nothing
+rm(savename(simulation, "bson"))
+@test !isfile(savename(simulation, "bson"))
 
 ################################################################################
 #                          Backup files before saving                          #

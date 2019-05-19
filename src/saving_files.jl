@@ -3,7 +3,7 @@ export produce_or_load, tagsave, @tagsave, safesave
 """
     produce_or_load([prefix="",] c, f; kwargs...) -> file
 Let `s = savename(prefix, c, suffix)`.
-If a file named `s` exists then load it and return it.
+If a file named `s` exists then load it and return it (default behavior).
 
 If the file does not exist then call `file = f(c)`, save `file` as
 `s` and then return the `file`.
@@ -16,25 +16,33 @@ The macros [`@dict`](@ref) and [`@strdict`](@ref) can help with that.
 * `suffix = "bson"` : Used in `savename`.
 * `force = false` : If `true` then don't check if file `s` exists and produce
   it and save it anyway.
+* `loadfile = true` : If `false`, this function does not actually load the
+  file, but only checks if it exists. The return value in this case is always
+  `nothing`, regardless of whether the file must be produced or not.
+* `verbose = true` : print info about the process.
 * `kwargs...` : All other keywords are propagated to `savename`.
 
 See also [`savename`](@ref) and [`tag!`](@ref).
 """
 produce_or_load(c, f; kwargs...) = produce_or_load("", c, f; kwargs...)
 function produce_or_load(prefix::String, c, f;
-    tag::Bool = true, gitpath = projectdir(),
-    suffix = "bson", force = false, kwargs...)
+    tag::Bool = true, gitpath = projectdir(), loadfile = true,
+    suffix = "bson", force = false, verbose = true, kwargs...)
 
     s = savename(prefix, c, suffix; kwargs...)
 
     if !force && isfile(s)
-        file = wload(s)
-        return file
+        if loadfile
+            file = wload(s)
+            return file
+        else
+            return nothing
+        end
     else
         if force
-            @info "Producing file $s now..."
+            verbose && @info "Producing file $s now..."
         else
-            @info "File $s does not exist. Producing it now..."
+            verbose && @info "File $s does not exist. Producing it now..."
         end
         file = f(c)
         try
@@ -46,9 +54,13 @@ function produce_or_load(prefix::String, c, f;
         end
         catch er
             @warn "Could not save file, got error $er. "*
-            "\nReturning the file nontheless."
+            "\nReturning the file if `loadfile=true`."
         end
-        return file
+        if loadfile
+            return file
+        else
+            return nothing
+        end
     end
 end
 
