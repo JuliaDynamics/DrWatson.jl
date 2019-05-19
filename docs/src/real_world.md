@@ -122,6 +122,56 @@ println( savename(e1) )
 println( savename(e2) )
 ```
 
+## `savename` and nested containers
+In the case of user-defined structs and projects of significant complexity, it is often necessary that your "main" container has other containers as subfields.
+`savename` can adapt to these situations as well.
+Consider the following example, where I need a core struct that represents a spatio temporal system, and its simulation:
+```@example customizing
+struct SpatioTemporalSystem
+    model::String # system codeword
+    N        # Integer or Tuple of integers: spatial extent
+    Δt::Real # sampling time in real time units
+    p        # parameters. nothing or Dict{Symbol}
+end
+const STS = SpatioTemporalSystem
+
+struct SpatioTemporalTimeseries
+    sts::STS
+    T::Int       # total frame amount
+    ic           # initial condition (matrix, string, seed)
+    fields::Dict # resulting timeseries, dictionary of string to vector
+end
+const STT = SpatioTemporalTimeseries
+```
+For my use case, `p` can be `nothing` or it can be a dictionary itself, containing the possible parameters the spatiotemporal systems can have.
+To adapt `savename` to situations like this, we use the functionality surrounding [`DrWatson.default_expand`](@ref).
+
+Expanding the necessary methods allows me to do:
+```@example customizing
+DrWatson.allaccess(c::STS) = (:N, :Δt, :p)
+DrWatson.default_prefix(c::STS) = c.model
+DrWatson.default_allowed(c::STS) = (Real, Tuple, Dict, String)
+DrWatson.default_expand(c::STS) = ["p"]
+
+bk = STS("barkley", 60, 0.1, nothing)
+savename(bk)
+```
+and when I do want to use different parameters than the default:
+```@example customizing
+a = 0.3; b = 0.5
+bk = STS("barkley", 60, 0.1, @dict a b)
+savename(bk)
+```
+
+Expanding to the second struct is also fine:
+```@example customizing
+DrWatson.default_prefix(c::STT) = savename(c.sts)
+stt = STT(bk, 1000, nothing, Dict("U"=>rand(100), "V"=>rand(100)))
+savename(stt)
+```
+
+
+
 ## Stopping "Did I run this?"
 It can become very tedious to have a piece of code that you may or may not have run and may or may not have saved the produced data. You then constantly ask yourself "Did I run this?". Typically one uses `isfile` and an `if` clause to either load a file or run some code. Especially in the cases where the code takes only a couple of minutes to finish you are left in a dilemma "Is it even worth it to save?".
 

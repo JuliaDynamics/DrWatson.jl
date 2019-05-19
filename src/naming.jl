@@ -2,6 +2,99 @@ export savename, @dict, @ntuple, @strdict
 export ntuple2dict, dict2ntuple
 
 """
+    savename([prefix,], c [, suffix]; kwargs...)
+Create a shorthand name, commonly used for saving a file, based on the
+parameters in the container `c` (`Dict`, `NamedTuple` or any other Julia
+composite type, e.g. created with Parameters.jl). If provided use
+the `prefix` and end the name with `.suffix` (i.e. you don't have to include
+the `.` in your `suffix`).
+
+The function chains keys and values into a string of the form:
+```julia
+key1=val1_key2=val2_key3=val3
+```
+while the keys are **always sorted alphabetically.** If you provide
+the prefix/suffix the function will do:
+```julia
+prefix_key1=val1_key2=val2_key3=val3.suffix
+```
+assuming you chose the default `connector`, see below. Notice
+that `prefix` can be any path and in addition if
+it ends as a path (`/` or `\\`) then the `connector` is ommited.
+
+`savename` can be very conveniently combined with
+[`@dict`](@ref) or [`@ntuple`](@ref).
+
+## Keywords
+* `allowedtypes = default_allowed(c)` : Only values of type subtyping
+  anything in `allowedtypes` are used in the name. By default
+  this is `(Real, String, Symbol)`.
+* `accesses = allaccess(c)` : You can also specify which specific keys you want
+  to use with the keyword `accesses`. By default this is all possible
+  keys `c` can be accessed with, see [`allaccess`](@ref).
+* `digits = 3` : Floating point values are rounded to `digits`.
+  In addition if the following holds:
+  ```julia
+  round(val; digits = digits) == round(Int, val)
+  ```
+  then the integer value is used in the name instead.
+* `connector = "_"` : string used to connect the various entries.
+* `expand::Vector{String} = default_expand` : keys that will be expanded
+  to the `savename` of their contents, to allow for nested containers.
+  By default is empty. Notice that the type of the container must also be
+  allowed for `expand` to take effect!
+
+## Examples
+```julia
+d = (a = 0.153456453, b = 5.0, mode = "double")
+savename(d; digits = 4) == "a=0.1535_b=5_mode=double"
+savename("n", d) == "n_a=0.153_b=5_mode=double"
+savename("n/", d) == "n/a=0.153_b=5_mode=double"
+savename(d, "n") == "a=0.153_b=5_mode=double.n"
+savename("data/n", d, "n") == "data/n_a=0.153_b=5_mode=double.n"
+savename("n", d, "n"; connector = "-") == "n-a=0.153-b=5-mode=double.n"
+savename(d, allowedtypes = (String,)) == "mode=double"
+
+rick = (never = "gonna", give = "you", up = "!");
+savename(rick) == "give=you_never=gonna_up=!" # keys are sorted!
+```
+"""
+savename(c; kwargs...) = savename(default_prefix(c), c, ""; kwargs...)
+savename(c::Any, suffix::String; kwargs...) =
+    savename(default_prefix(c), c, suffix; kwargs...)
+savename(prefix::String, c::Any; kwargs...) = savename(prefix, c, ""; kwargs...)
+function savename(prefix::String, c, suffix::String;
+                  allowedtypes = default_allowed(c),
+                  accesses = allaccess(c), digits = 3,
+                  connector = "_", expand::Vector{String} = default_expand(c))
+
+    labels = vecstring(accesses) # make it vector of strings
+    p = sortperm(labels)
+    first = prefix == "" || prefix[end] == '\\' || prefix[end] == '/'
+    s = prefix
+    for j ∈ p
+        val = access(c, accesses[j])
+        label = labels[j]
+        t = typeof(val)
+        if any(x -> (t <: x), allowedtypes)
+            !first && (s *= connector)
+            if t <: AbstractFloat
+                x = round(val; digits = digits); y = round(Int, val)
+                val = x == y ? y : x
+            end
+            if label ∈ expand
+                s *= label*"="*'('*savename(val;connector=",")*')'
+            else
+                s *= label*"="*string(val)
+            end
+            first = false
+        end
+    end
+    suffix != "" && (s *= "."*suffix)
+    return s
+end
+
+"""
     allaccess(c)
 Return all the keys `c` can be accessed using [`access`](@ref).
 For dictionaries/named tuples this is `keys(c)`,
@@ -47,92 +140,12 @@ in [`savename`](@ref) or other similar functions.
 default_prefix(c) = ""
 
 """
-    savename([prefix,], c [, suffix]; kwargs...)
-Create a shorthand name, commonly used for saving a file, based on the
-parameters in the container `c` (`Dict`, `NamedTuple` or any other Julia
-composite type, e.g. created with Parameters.jl). If provided use
-the `prefix` and end the name with `.suffix` (i.e. you don't have to include
-the `.` in your `suffix`).
-
-The function chains keys and values into a string of the form:
-```julia
-key1=val1_key2=val2_key3=val3
-```
-while the keys are **always sorted alphabetically.** If you provide
-the prefix/suffix the function will do:
-```julia
-prefix_key1=val1_key2=val2_key3=val3.suffix
-```
-assuming you chose the default `connector`, see below. Notice
-that `prefix` can be any path and in addition if
-it ends as a path (`/` or `\\`) then the `connector` is ommited.
-
-`savename` can be very conveniently combined with
-[`@dict`](@ref) or [`@ntuple`](@ref).
-
-## Keywords
-* `allowedtypes = default_allowed(c)` : Only values of type subtyping
-  anything in `allowedtypes` are used in the name. By default
-  this is `(Real, String, Symbol)`.
-* `accesses = allaccess(c)` : You can also specify which specific keys you want
-  to use with the keyword `accesses`. By default this is all possible
-  keys `c` can be accessed with, see [`allaccess`](@ref).
-* `digits = 3` : Floating point values are rounded to `digits`.
-  In addition if the following holds:
-  ```julia
-  round(val; digits = digits) == round(Int, val)
-  ```
-  then the integer value is used in the name instead.
-* `connector = "_"` : string used to connect the various entries.
-
-## Examples
-```julia
-d = (a = 0.153456453, b = 5.0, mode = "double")
-savename(d; digits = 4) == "a=0.1535_b=5_mode=double"
-savename("n", d) == "n_a=0.153_b=5_mode=double"
-savename("n/", d) == "n/a=0.153_b=5_mode=double"
-savename(d, "n") == "a=0.153_b=5_mode=double.n"
-savename("data/n", d, "n") == "data/n_a=0.153_b=5_mode=double.n"
-savename("n", d, "n"; connector = "-") == "n-a=0.153-b=5-mode=double.n"
-savename(d, allowedtypes = (String,)) == "mode=double"
-
-rick = (never = "gonna", give = "you", up = "!");
-savename(rick) == "give=you_never=gonna_up=!" # keys are sorted!
-```
+    default_expand(c) = String[]
+Keys that should be expanded in their `savename` within [`savename`](@ref).
+Must be `Vector{String}` (as all keys are first translated into strings inside
+`savename`).
 """
-savename(c; kwargs...) = savename(default_prefix(c), c, ""; kwargs...)
-savename(c::Any, suffix::String; kwargs...) =
-    savename(default_prefix(c), c, suffix; kwargs...)
-savename(prefix::String, c::Any; kwargs...) = savename(prefix, c, ""; kwargs...)
-function savename(prefix::String, c, suffix::String;
-                  allowedtypes = default_allowed(c),
-                  accesses = allaccess(c), digits = 3,
-                  connector = "_")
-
-    labels = vecstring(accesses) # make it vector of strings
-    p = sortperm(labels)
-    first = prefix == "" || prefix[end] == '\\' || prefix[end] == '/'
-    s = prefix
-    for j ∈ p
-        val = access(c, accesses[j])
-        label = labels[j]
-        t = typeof(val)
-        if any(x -> (t <: x), allowedtypes)
-            !first && (s *= connector)
-            if t <: AbstractFloat
-                if round(val; digits = digits) == round(Int, val)
-                    val = round(Int, val)
-                else
-                    val = round(val; digits = digits)
-                end
-            end
-            s *= label*"="*string(val);
-            first = false
-        end
-    end
-    suffix != "" && (s *= "."*suffix)
-    return s
-end
+default_expand(c) = String[]
 
 """
     @dict vars...

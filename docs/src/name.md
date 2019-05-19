@@ -9,22 +9,22 @@ This is what the function [`savename`](@ref) does. Of course, you don't have to 
 
 ```@docs
 savename
-@dict
-@strdict
-@ntuple
 ```
 
 Notice that this naming scheme integrates perfectly with Parameters.jl.
 
-Two convenience functions are also provided to easily switch between named tuples and dictionaries:
+## Convenience functions
+Convenience functions are provided to easily create named tuples, dictionaries as well as switch between them:
 ```@docs
+@dict
+@strdict
+@ntuple
 ntuple2dict
 dict2ntuple
 ```
 
 ## Customizing `savename`
-You can customize [`savename`](@ref) for your own Types. For example you could make it so that it only uses some specific keys instead of all of them, only specific types, or you could make it access data in a different way (maybe even loading files!). You can even make it have
-a custom `prefix`!
+You can customize [`savename`](@ref) for your own Types. For example you could make it so that it only uses some specific keys instead of all of them, only specific types, or you could make it access data in a different way (maybe even loading files!). You can even make it have a custom `prefix`!
 
 To do that you may extend the following functions:
 ```@docs
@@ -32,6 +32,8 @@ DrWatson.allaccess
 DrWatson.access
 DrWatson.default_allowed
 DrWatson.default_prefix
+DrWatson.default_expand
 ```
 
 See [Real World Examples](@ref) for an example of customizing `savename`.
+Specifically, have a look at [`savename` and nested containers](@ref) for a way to
