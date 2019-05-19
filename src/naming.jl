@@ -2,54 +2,6 @@ export savename, @dict, @ntuple, @strdict
 export ntuple2dict, dict2ntuple
 
 """
-    allaccess(c)
-Return all the keys `c` can be accessed using [`access`](@ref).
-For dictionaries/named tuples this is `keys(c)`,
-for everything else it is `fieldnames(typeof(c))`.
-"""
-allaccess(c::AbstractDict) = collect(keys(c))
-allaccess(c::NamedTuple) = keys(c)
-allaccess(c::Any) = fieldnames(typeof(c))
-allaccess(c::DataType) = fieldnames(c)
-allaccess(c::String) = error("`c` must be a container, not a string!")
-
-"""
-    access(c, key)
-Access `c` with given key. For `AbstractDict` this is `getindex`,
-for anything else it is `getproperty`.
-
-    access(c, keys...)
-When given multiple keys, `access` is called recursively, i.e.
-`access(c, key1, key2) = access(access(c, key1), key2)` and so on.
-For example, if `c, c.k1` are `NamedTuple`s then
-`access(c, k1, k2) == c.k1.k2`.
-
-!!! note
-    Please only extend the single key method when customizing `access`
-    for your own Types.
-"""
-access(c, keys...) = access(access(c, keys[1]), Base.tail(keys)...)
-access(c::AbstractDict, key) = getindex(c, key)
-access(c, key) = getproperty(c, key)
-
-"""
-    default_allowed(c) = (Real, String, Symbol)
-Return the (super-)Types that will be used as `allowedtypes`
-in [`savename`](@ref) or other similar functions.
-"""
-default_allowed(c) = (Real, String, Symbol)
-
-"""
-    default_prefix(c) = ""
-Return the `prefix` that will be used by default
-in [`savename`](@ref) or other similar functions.
-"""
-default_prefix(c) = ""
-
-
-default_expand(c) = String[]
-
-"""
     savename([prefix,], c [, suffix]; kwargs...)
 Create a shorthand name, commonly used for saving a file, based on the
 parameters in the container `c` (`Dict`, `NamedTuple` or any other Julia
@@ -141,6 +93,59 @@ function savename(prefix::String, c, suffix::String;
     suffix != "" && (s *= "."*suffix)
     return s
 end
+
+"""
+    allaccess(c)
+Return all the keys `c` can be accessed using [`access`](@ref).
+For dictionaries/named tuples this is `keys(c)`,
+for everything else it is `fieldnames(typeof(c))`.
+"""
+allaccess(c::AbstractDict) = collect(keys(c))
+allaccess(c::NamedTuple) = keys(c)
+allaccess(c::Any) = fieldnames(typeof(c))
+allaccess(c::DataType) = fieldnames(c)
+allaccess(c::String) = error("`c` must be a container, not a string!")
+
+"""
+    access(c, key)
+Access `c` with given key. For `AbstractDict` this is `getindex`,
+for anything else it is `getproperty`.
+
+    access(c, keys...)
+When given multiple keys, `access` is called recursively, i.e.
+`access(c, key1, key2) = access(access(c, key1), key2)` and so on.
+For example, if `c, c.k1` are `NamedTuple`s then
+`access(c, k1, k2) == c.k1.k2`.
+
+!!! note
+    Please only extend the single key method when customizing `access`
+    for your own Types.
+"""
+access(c, keys...) = access(access(c, keys[1]), Base.tail(keys)...)
+access(c::AbstractDict, key) = getindex(c, key)
+access(c, key) = getproperty(c, key)
+
+"""
+    default_allowed(c) = (Real, String, Symbol)
+Return the (super-)Types that will be used as `allowedtypes`
+in [`savename`](@ref) or other similar functions.
+"""
+default_allowed(c) = (Real, String, Symbol)
+
+"""
+    default_prefix(c) = ""
+Return the `prefix` that will be used by default
+in [`savename`](@ref) or other similar functions.
+"""
+default_prefix(c) = ""
+
+"""
+    default_expand(c) = String[]
+Keys that should be expanded in their `savename` within [`savename`](@ref).
+Must be `Vector{String}` (as all keys are first translated into strings inside
+`savename`).
+"""
+default_expand(c) = String[]
 
 """
     @dict vars...
