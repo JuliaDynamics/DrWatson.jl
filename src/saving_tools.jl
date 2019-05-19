@@ -195,21 +195,13 @@ function dict_list_count(c)
     prod(length(c[i]) for i in iterable_fields)
 end
 
-# function ntuple_list(c)
-#     iterable_fields = filter(k -> typeof(c[k]) <: Vector, collect(keys(c)))
-#     non_iterables = setdiff(keys(c), iterable_fields)
-#
-#     iterable_vals = Tuple(collect((typeof(c[i]) for i in iterable_fields)))
-#     iterable_tuple = NamedTuple{tuple(iterable_fields), iterable_vals}
-#
-#     Dict(iterable_fields .=> getindex.(Ref(c), iterable_fields))
-#     non_iterable_tuple = Dict(
-#         non_iterables .=> getindex.(Ref(c), non_iterables))
-#
-#     vec(
-#         map(Iterators.product(values(iterable_dict)...)) do vals
-#             dd = Dict(keys(iterable_dict) .=> vals)
-#             merge(non_iterable_dict, dd)
-#         end
-#     )
-# end
+export struct2dict
+
+"""
+    struct2dict(s) -> d
+Convert a Julia struct `s` to a dictionary  `d` with key type `Symbol`
+that maps each field of `s` to its value.
+"""
+function struct2dict(s)
+    Dict(x => getfield(s, x) for x in fieldnames(typeof(s)))
+end

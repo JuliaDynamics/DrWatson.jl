@@ -39,3 +39,9 @@ DrWatson.default_allowed(::Experiment) = (Real, String, Species)
 
 @test savename(e1) == "Experiment_1991-04-13_c=10_n=50_species=mouse_x=0.2"
 @test savename(e2) == "Experiment_1991-04-13_c=10_n=50_species=cat_x=0.2"
+
+d = struct2dict(e1)
+@test keytype(d) == Symbol
+for x in fieldnames(typeof(e1))
+    @test d[x] == getfield(e1, x)
+end

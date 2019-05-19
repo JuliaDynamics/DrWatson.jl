@@ -11,6 +11,12 @@ These tools are also used in the examples demonstrated in the [Real World Exampl
 !!! info "We always call `mkpath`"
     All functions of DrWatson that save things, e.g. [`tagsave`](@ref), [`safesave`](@ref), [`tmpsave`](@ref) etc. always call `mkpath` first on the directory the file needs to be saved at. This is not the case for the standard `save` function, as it comes from `FileIO`.
 
+## Converting a struct to a dictionary
+[`savename`](@ref) gives great support for getting a name out of any Julia struct. To save something though, one always needs a dictionary. So the following function can be conveniently used to directly save a struct using any saving function:
+```@docs
+struct2dict
+```
+
 ## Safely saving data
 Almost all packages that save data by default overwrite existing files (if given a save name of an existing file). This is the default behavior because often it is desired.
 
