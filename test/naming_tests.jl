@@ -45,4 +45,15 @@ d = 5; e = @dict c d
 @test DrWatson.access(e, :c, :a) == a
 ff = dict2ntuple(e)
 @test DrWatson.access(ff, :c, :a) == a
-@test ff.c.a == a 
+@test ff.c.a == a
+
+# Expand tests:
+a = 3; b = 4
+c = @dict a b
+d = 5; e = @dict c d
+
+s = savename(e; allowedtypes = (Any,), expand = ["c"])
+@test '(' ∈ s
+@test ')' ∈ s
+@test occursin("a=3", s)
+@test occursin("b=4", s)
