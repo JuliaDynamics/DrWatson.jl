@@ -199,7 +199,7 @@ export struct2dict
 
 """
     struct2dict(s) -> d
-Convert a Julia composite type `s` to a dictionary  `d` with key type `Symbol`
+Convert a Julia composite type `s` to a dictionary `d` with key type `Symbol`
 that maps each field of `s` to its value. This can be useful in e.g. saving:
 ```
 tagsave(savename(s), struct2dict(s))

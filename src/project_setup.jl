@@ -119,6 +119,7 @@ export initialize_project
 const DEFAULT_PATHS = [
 "_research", "src/", "scripts/",
 "plots/", "notebooks/",
+"papers/",
 "test",
 "data/sims/",
 "data/exp_raw/",
