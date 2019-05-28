@@ -23,5 +23,21 @@ function __init__()
     end
 end
 
+# Update messages
+display_update = true
+update_name = "update_v0.5.0"
+if display_update
+if !isfile(joinpath(@__DIR__, update_name))
+printstyled(stdout,
+"""
+\nUpdate message: DrWatson v0.5.0
+
+Two minor breaking changes take place in this version, that
+improve the functionality of `default_prefix` of `savename`
+as well as `produce_or_load`.\n
+"""; color = :light_magenta)
+touch(joinpath(@__DIR__, update_name))
+end
+end
 
 end
