@@ -1,12 +1,13 @@
 export produce_or_load, tagsave, @tagsave, safesave
 
 """
-    produce_or_load([prefix="",] c, f; kwargs...) -> file
+    produce_or_load([prefix="",] c, f; kwargs...) -> file, path
 Let `s = savename(prefix, c, suffix)`.
-If a file named `s` exists then load it and return it (default behavior).
+If a file named `s` exists then load it and return it, along
+with the path that it is saved at, `s` (default behavior).
 
 If the file does not exist then call `file = f(c)`, save `file` as
-`s` and then return the `file`.
+`s` and then return `file, s`.
 The function `f` must return a dictionary.
 The macros [`@dict`](@ref) and [`@strdict`](@ref) can help with that.
 
@@ -18,7 +19,7 @@ The macros [`@dict`](@ref) and [`@strdict`](@ref) can help with that.
   it and save it anyway.
 * `loadfile = true` : If `false`, this function does not actually load the
   file, but only checks if it exists. The return value in this case is always
-  `nothing`, regardless of whether the file must be produced or not.
+  `nothing, s`, regardless of whether the file must be produced or not.
 * `verbose = true` : print info about the process.
 * `kwargs...` : All other keywords are propagated to `savename`.
 
@@ -34,9 +35,9 @@ function produce_or_load(prefix::String, c, f;
     if !force && isfile(s)
         if loadfile
             file = wload(s)
-            return file
+            return file, s
         else
-            return nothing
+            return nothing, s
         end
     else
         if force
@@ -57,9 +58,9 @@ function produce_or_load(prefix::String, c, f;
             "\nReturning the file if `loadfile=true`."
         end
         if loadfile
-            return file
+            return file, s
         else
-            return nothing
+            return nothing, s
         end
     end
 end

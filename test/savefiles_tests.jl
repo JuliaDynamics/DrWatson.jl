@@ -46,16 +46,17 @@ rm(sn)
 #                              produce or load                                 #
 ################################################################################
 for ending ∈ ("bson", "jld2")
-    @test !isfile(savename(simulation, "bson"))
-    sim = produce_or_load(simulation, f; suffix = ending)
+    @test !isfile(savename(simulation, ending))
+    sim, path = produce_or_load(simulation, f; suffix = ending)
     @test isfile(savename(simulation, ending))
     @test sim["simulation"].T == T
-    sim = produce_or_load(simulation, f; suffix = ending)
+    @test path == savename(simulation, ending)
+    sim, path = produce_or_load(simulation, f; suffix = ending)
     @test sim["simulation"].T == T
     rm(savename(simulation, ending))
     @test !isfile(savename(simulation, ending))
 end
-@test produce_or_load(simulation, f; loadfile = false) == nothing
+@test produce_or_load(simulation, f; loadfile = false)[1] == nothing
 rm(savename(simulation, "bson"))
 @test !isfile(savename(simulation, "bson"))
 
