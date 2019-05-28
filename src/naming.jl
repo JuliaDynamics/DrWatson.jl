@@ -21,6 +21,7 @@ prefix_key1=val1_key2=val2_key3=val3.suffix
 assuming you chose the default `connector`, see below. Notice
 that `prefix` can be any path and in addition if
 it ends as a path (`/` or `\\`) then the `connector` is ommited.
+See [`default_prefix`](@ref) for more.
 
 `savename` can be very conveniently combined with
 [`@dict`](@ref) or [`@ntuple`](@ref).
@@ -67,6 +68,11 @@ function savename(prefix::String, c, suffix::String;
                   allowedtypes = default_allowed(c),
                   accesses = allaccess(c), digits = 3,
                   connector = "_", expand::Vector{String} = default_expand(c))
+
+    # Here take care of extra prefix besides default
+    if prefix != default_prefix(c)
+        prefix = joinpath(prefix, default_prefix(c))
+    end
 
     labels = vecstring(accesses) # make it vector of strings
     p = sortperm(labels)
@@ -139,7 +145,9 @@ in [`savename`](@ref) or other similar functions.
 
 Notice that if `default_prefix` is defined but a prefix is also given
 to [`savename`](@ref) then the two values are merged via `joinpath` for
-convenience. E.g. defining `default_prefix(c::MyType) = "lala"` and
+convenience (if they are not the same of course).
+
+E.g. defining `default_prefix(c::MyType) = "lala"` and
 calling
 ```julia
 savename(dadadir(), mytype)
