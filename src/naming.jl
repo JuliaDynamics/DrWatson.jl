@@ -70,8 +70,9 @@ function savename(prefix::String, c, suffix::String;
                   connector = "_", expand::Vector{String} = default_expand(c))
 
     # Here take care of extra prefix besides default
-    if prefix != default_prefix(c)
-        prefix = joinpath(prefix, default_prefix(c))
+    dpre = default_prefix(c)
+    if dpre != "" && prefix != dpre
+        prefix = joinpath(prefix, dpre)
     end
 
     labels = vecstring(accesses) # make it vector of strings
@@ -143,12 +144,11 @@ default_allowed(c) = (Real, String, Symbol)
 Return the `prefix` that will be used by default
 in [`savename`](@ref) or other similar functions.
 
-Notice that if `default_prefix` is defined but a prefix is also given
+Notice that if `default_prefix` is defined for `c` but a prefix is also given
 to [`savename`](@ref) then the two values are merged via `joinpath` for
 convenience (if they are not the same of course).
 
-E.g. defining `default_prefix(c::MyType) = "lala"` and
-calling
+E.g. defining `default_prefix(c::MyType) = "lala"` and calling
 ```julia
 savename(datadir(), mytype)
 ```
