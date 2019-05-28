@@ -150,7 +150,7 @@ convenience (if they are not the same of course).
 E.g. defining `default_prefix(c::MyType) = "lala"` and
 calling
 ```julia
-savename(dadadir(), mytype)
+savename(datadir(), mytype)
 ```
 will in fact return a string that looks like
 ```julia
