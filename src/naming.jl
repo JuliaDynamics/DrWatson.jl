@@ -136,6 +136,20 @@ default_allowed(c) = (Real, String, Symbol)
     default_prefix(c) = ""
 Return the `prefix` that will be used by default
 in [`savename`](@ref) or other similar functions.
+
+Notice that if `default_prefix` is defined but a prefix is also given
+to [`savename`](@ref) then the two values are merged via `joinpath` for
+convenience. E.g. defining `default_prefix(c::MyType) = "lala"` and
+calling
+```julia
+savename(dadadir(), mytype)
+```
+will in fact return a string that looks like
+```julia
+"path/to/data/lala_p1=..."
+```
+This allows [`savename`](@ref) to nicely inderplay with
+[`produce_or_load`](@ref) as well as paths-as-prefixes.
 """
 default_prefix(c) = ""
 
