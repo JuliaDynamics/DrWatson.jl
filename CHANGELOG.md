@@ -1,3 +1,5 @@
+# 0.5.0
+* The functionality of `default_prefix` has been modified (#51). Now there is a nice interplay between defining a `default_prefix` *and* passing a prefix to `savename`. They are merged like `joinpath(prefix, default_prefix)`. This is valid only when `default_prefix` has a value other than `""` (the default).
 # 0.4.0
 * Add expand functionality to `savename`, which handles better containers with nested containers (#50)
 * `produce_or_load` now allows the possibility of not loading the file

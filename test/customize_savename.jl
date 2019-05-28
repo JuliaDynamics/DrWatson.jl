@@ -45,3 +45,9 @@ d = struct2dict(e1)
 for x in fieldnames(typeof(e1))
     @test d[x] == getfield(e1, x)
 end
+
+# Test extra dir and default_prefix:
+s = savename("path/to/data/", e1)
+@test s[1:4] == "path"
+@test occursin("Experiment", s)
+@test s == "path/to/data/Experiment_1991-04-13_c=10_n=50_species=mouse_x=0.2"

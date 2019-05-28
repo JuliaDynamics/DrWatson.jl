@@ -21,6 +21,7 @@ prefix_key1=val1_key2=val2_key3=val3.suffix
 assuming you chose the default `connector`, see below. Notice
 that `prefix` can be any path and in addition if
 it ends as a path (`/` or `\\`) then the `connector` is ommited.
+See [`default_prefix`](@ref) for more.
 
 `savename` can be very conveniently combined with
 [`@dict`](@ref) or [`@ntuple`](@ref).
@@ -67,6 +68,12 @@ function savename(prefix::String, c, suffix::String;
                   allowedtypes = default_allowed(c),
                   accesses = allaccess(c), digits = 3,
                   connector = "_", expand::Vector{String} = default_expand(c))
+
+    # Here take care of extra prefix besides default
+    dpre = default_prefix(c)
+    if dpre != "" && prefix != dpre
+        prefix = joinpath(prefix, dpre)
+    end
 
     labels = vecstring(accesses) # make it vector of strings
     p = sortperm(labels)
@@ -136,6 +143,21 @@ default_allowed(c) = (Real, String, Symbol)
     default_prefix(c) = ""
 Return the `prefix` that will be used by default
 in [`savename`](@ref) or other similar functions.
+
+Notice that if `default_prefix` is defined for `c` but a prefix is also given
+to [`savename`](@ref) then the two values are merged via `joinpath` for
+convenience (if they are not the same of course).
+
+E.g. defining `default_prefix(c::MyType) = "lala"` and calling
+```julia
+savename(datadir(), mytype)
+```
+will in fact return a string that looks like
+```julia
+"path/to/data/lala_p1=..."
+```
+This allows [`savename`](@ref) to nicely inderplay with
+[`produce_or_load`](@ref) as well as paths-as-prefixes.
 """
 default_prefix(c) = ""
 
