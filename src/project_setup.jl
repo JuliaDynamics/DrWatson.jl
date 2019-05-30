@@ -164,14 +164,19 @@ function initialize_project(path, name = basename(path);
     if git; repo = LibGit2.init(path); end
     git && LibGit2.commit(repo, "Initial commit")
     Pkg.activate(path)
-    Pkg.add("DrWatson")
-
+    try
+        Pkg.add("DrWatson")
+    catch
+        @warn "Could not add DrWatson to project. Adding Pkg instead..."
+        Pkg.add("Pkg")
+    end
     # Default folders
     for p in DEFAULT_PATHS
         mkpath(joinpath(path, p))
     end
 
     git && LibGit2.add!(repo, "Project.toml")
+    git && LibGit2.add!(repo, "Manifest.toml")
     git && LibGit2.add!(repo, DEFAULT_PATHS...)
     git && LibGit2.commit(repo, "Folder setup by DrWatson")
 
