@@ -1,8 +1,11 @@
+# Folders to ignore - files may be too large, too many, etc.
 data
 videos
 plots
 notebooks
 _research
+
+# LaTeX build artifacts
 *.pdf
 *.aux
 *.bbl
@@ -12,4 +15,10 @@ _research
 *.synctex.gz(busy)
 *.synctex.gz(buzy)
 *.out
+*.bcf
+*.fls
+*.fdb_latexmk
+*.run.xml
+
+# MS Word temp files
 ~$*
