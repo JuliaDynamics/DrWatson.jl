@@ -10,5 +10,6 @@ _research
 *.log
 *.synctex.gz
 *.synctex.gz(busy)
+*.synctex.gz(buzy)
 *.out
 ~$*
