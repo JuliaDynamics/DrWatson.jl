@@ -24,7 +24,7 @@ function __init__()
 end
 
 # Update messages
-display_update = true
+display_update = false
 update_name = "update_v0.5.0"
 if display_update
 if !isfile(joinpath(@__DIR__, update_name))

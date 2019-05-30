@@ -1,3 +1,5 @@
+# 0.5.1
+* Improvements to `.gitignore` (#55 , #54)
 # 0.5.0
 This release has **breaking changes**.
 * Adjusted return value of `produce_or_load` (#52). It now always return the file and the path it is saved. If `loadfile = false` it returns `nothing, path`.
