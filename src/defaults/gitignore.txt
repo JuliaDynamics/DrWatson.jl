@@ -9,6 +9,7 @@ _research
 *.blg
 *.log
 *.synctex.gz
+*.synctex.gz(busy)
 *.synctex.gz(buzy)
 *.out
 ~$*
