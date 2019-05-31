@@ -3,7 +3,8 @@ export ntuple2dict, dict2ntuple
 
 """
     savename([prefix,], c [, suffix]; kwargs...)
-Create a shorthand name, commonly used for saving a file, based on the
+Create a shorthand name, commonly used for saving a file or as a figure title,
+based on the
 parameters in the container `c` (`Dict`, `NamedTuple` or any other Julia
 composite type, e.g. created with Parameters.jl). If provided use
 the `prefix` and end the name with `.suffix` (i.e. you don't have to include
