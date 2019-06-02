@@ -34,6 +34,8 @@ Seems like `src` and `scripts` folders have pretty similar functionality. Howeve
 * If it is functionality used across multiple files or pipelines, it should be in `src`.
 * `src` should only contain files that define functions or types but not output anything. You can also organize `src` to be a Julia package, or contain multiple Julia packages.
 
+Notice that it is typically the case that in the `src` folder you will have a full Julia package as a subfolder. In such cases be sure that you add the *relative* path to the package in your `Manifest.toml`, instead of the absolute path. This will ensure reproducibility!
+
 ## Initializing a Project
 
 To initialize a project as described in the [Default Project Setup](@ref) section, we provide the following function:
