@@ -69,7 +69,6 @@ function collect_results!(filename, folder;
     newfile = false, # keyword only for defining collect_results without !
     kwargs...)
 
-    @info "Scanning folder $folder for result files."
     if newfile || !isfile(filename)
         !newfile && verbose && @info "Starting a new result collection..."
         df = DataFrames.DataFrame()
@@ -77,6 +76,7 @@ function collect_results!(filename, folder;
         verbose && @info "Loading existing result collection..."
         df = wload(filename)[:df]
     end
+    @info "Scanning folder $folder for result files."
 
     if subfolders
         allfiles = String[]
