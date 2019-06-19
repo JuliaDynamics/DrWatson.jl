@@ -90,10 +90,11 @@ function collect_results!(filename, folder;
     end
 
     n = 0 # new entries added
+    existing_files = get(df, :path, ())
     for file ∈ allfiles
         is_valid_file(file, valid_filetypes) || continue
         #already added?
-        file ∈ get(df, :path, ()) && continue
+        file ∈ existing_files && continue
 
         data = wload(file)
         df_new = to_data_row(data, file; kwargs...)
