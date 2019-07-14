@@ -35,11 +35,15 @@ printstyled(stdout,
 """
 \nUpdate message: DrWatson v$update_version
 
-A breaking change occurs in this version. The function `projectdir` as well
+[BREAKING] The function `projectdir` as well
 as its derivatives like `datadir` have changed their internals to use
 `joinpath` and in general promote the healthier usage of `joinpath`.
+This means that their return value no longer end in "\"!.
+This will likely break usage of e.g. `datadir` that used `*`, like it was
+suggested in the old (unhealthy) documentation. We are very sorry
+for this inconvenience!
 
-This means that their return value no longer end in "\"!.\n
+\n
 """; color = :light_magenta)
 touch(joinpath(@__DIR__, update_name))
 end

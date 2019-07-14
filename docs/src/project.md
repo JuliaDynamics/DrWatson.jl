@@ -87,7 +87,7 @@ To be able to navigate the project consistently, DrWatson provides the core func
 projectdir
 ```
 
-Besides the above, the shortcut functions:
+Besides the above, the following derivative functions
 ```julia
 datadir()
 srcdir()
@@ -95,9 +95,9 @@ plotsdir()
 scriptsdir()
 papersdir()
 ```
-have as root the appropriate subdirectory. These are also defined due to the frequent use of these subdirectories.
+behave exactly like `projectdir` but have as root the appropriate subdirectory. These are also defined due to the frequent use of these subdirectories.
 
-All of these functions take advantage of `joinpath`, ensuring a error-free path creation. It is heavily advised to uses these functions by giving them the subpaths as arguments, instead of using multiplication between paths:
+All of these functions take advantage of `joinpath`, ensuring an error-free path creation that works across different operating systems. It is heavily advised to use `projectdir` and derivatives by giving them the subpaths as arguments, instead of using multiplication between paths:
 ```julia
 datadir("foo", "test.bson") # preferred
 datadir() * "/foo/test.bson" # not recommended
