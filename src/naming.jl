@@ -275,7 +275,7 @@ function parse_savename(filename::AbstractString;
     # after the last "=".
     last_eq = findlast("=",savename_part)
     last_dot = findlast(".",savename_part)
-    if isnothing(last_dot) || last_eq > last_dot
+    if last_dot == nothing || last_eq > last_dot
         # if no dot is after the last "="
         # there is no suffix
         name, suffix = savename_part,""
@@ -293,7 +293,7 @@ function parse_savename(filename::AbstractString;
     # an "=".
     first_eq = findfirst("=",name)
     first_connector = findfirst(connector,name)
-    if isnothing(first_connector) || first(first_eq) < first(first_connector)
+    if first_connector == nothing || first(first_eq) < first(first_connector)
         prefix, _parameters = "", name
     else
         # There is a connector symbol before, so there might be a connector.
@@ -332,7 +332,7 @@ Fallback is `String` ie. `str` is returned.
 function parse_from_savename_value(types::NTuple{N,<:Type},str::AbstractString) where N
     for t in types
         res = tryparse(t,str)
-        isnothing(res) || return res
+        res == nothing || return res
     end
     return str
 end
