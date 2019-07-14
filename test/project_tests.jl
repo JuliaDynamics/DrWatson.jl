@@ -28,6 +28,13 @@ for dir_type in ("data", "src", "plots", "papers", "test", "scripts")
     end
 end
 
+# backward compatibility (scriptdir == scriptsdir)
+@test scriptdir() == projectdir() * "scripts/"
+@test scriptdir("a") == projectdir() * "scripts/a/"
+@test scriptdir("a/b") == projectdir() * "scripts/a/b/"
+@test scriptdir("a", "b") == projectdir() * "scripts/a/b/"
+@test scriptdir("a", "b", "c/d") == projectdir() * "scripts/a/b/c/d/"
+
 @test_throws ErrorException initialize_project(path, name)
 
 initialize_project(path, name; force = true, authors = ["George", "Nick"])
