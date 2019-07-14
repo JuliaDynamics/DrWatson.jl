@@ -270,8 +270,7 @@ function parse_savename(filename::AbstractString;
     # Prefix can be anything, so it might also contain a folder which's
     # name was generated using savename. Therefore first the path is split
     # into folders and filename.
-    savename_split = splitpath(filename)
-    prefix_part, savename_part = savename_split[1:end-1],savename_split[end]
+    prefix_part, savename_part = dirname(filename),basename(filename)
     # Extract the suffix. A suffix is identified by searching for the last "."
     # after the last "=".
     last_eq = findlast("=",savename_part)
@@ -301,6 +300,8 @@ function parse_savename(filename::AbstractString;
         # Of course the connector symbol could also be part of the variable name.
         prefix, _parameters = name[1:first(first_connector)-1], name[first(first_connector)+1:end]
     end
+    # Add leading directory back to prefix
+    prefix = joinpath(prefix_part,prefix)
     parameters = Dict{String,Any}()
     # Regex that matches smalles possible range between $connector and =.
     # This way it is possible to corretly match something like
