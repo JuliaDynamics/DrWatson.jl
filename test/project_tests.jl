@@ -21,20 +21,20 @@ ps = joinpath("_", "_")[2]  # path separator
 for dir_type in ("data", "src", "plots", "papers", "test", "scripts")
     fn = Symbol(dir_type * "dir")
     @eval begin
-        @test $fn() == projectdir() * $dir_type * ps
-        @test endswith($fn("a"), $dir_type * ("$(ps)a$(ps)"))
-        @test endswith($fn("a$(ps)b"), $dir_type * "$(ps)a$(ps)b$(ps)")
-        @test endswith($fn("a", "b"), $dir_type * "$(ps)a$(ps)b$(ps)")
-        @test endswith($fn("a", "b", "c$(ps)d"), $dir_type * "$(ps)a$(ps)b$(ps)c$(ps)d$(ps)")
+        @test $fn() == joinpath(projectdir(), $dir_type)
+        @test endswith($fn("a"), joinpath($dir_type, "a"))
+        @test endswith($fn(joinpath("a", "b")), joinpath($dir_type, joinpath("a", "b")))
+        @test endswith($fn("a", "b"), joinpath($dir_type, joinpath("a", "b")))
+        @test endswith($fn("a", "b", joinpath("c", "d")), joinpath($dir_type, joinpath("a", "b", "c", "d")))
     end
 end
 
 # backward compatibility (scriptdir == scriptsdir)
-@test scriptdir() == projectdir() * "scripts/"
-@test scriptdir("a") == projectdir() * "scripts/a/"
-@test scriptdir("a/b") == projectdir() * "scripts/a/b/"
-@test scriptdir("a", "b") == projectdir() * "scripts/a/b/"
-@test scriptdir("a", "b", "c/d") == projectdir() * "scripts/a/b/c/d/"
+@test scriptdir() == joinpath(projectdir(), "scripts")
+@test scriptdir("a") == joinpath(projectdir(), joinpath("scripts", "a"))
+@test scriptdir(joinpath("a", "b") == joinpath(projectdir(), joinpath("scripts", "a", "b"))
+@test scriptdir("a", "b") == joinpath(projectdir(), joinpath("scripts", "a", "b"))
+@test scriptdir("a", "b", joinpath("c", "d")) == joinpath(projectdir(), joinpath("scripts", "a", "b", "c", "d"))
 
 @test_throws ErrorException initialize_project(path, name)
 

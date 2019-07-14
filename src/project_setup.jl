@@ -7,15 +7,15 @@ export findproject, quickactivate
 
 """
     projectdir()
-Return the directory of the currently active project. Ends with `"/"`.
+Return the directory of the currently active project.
 
 ```julia
-projectdir(args...) = joinpath(projectdir(), args...)*"/"
+projectdir(args...) = joinpath(projectdir(), args...)
 ```
 Return the directory of the `folder` in the active project.
 """
-projectdir() = dirname(Base.active_project())*"/"
-projectdir(args...) = joinpath(projectdir(), args...)*"/"
+projectdir() = dirname(Base.active_project())
+projectdir(args...) = joinpath(projectdir(), args...)
 
 
 # Generate functions to access the path of default subdirectories.
