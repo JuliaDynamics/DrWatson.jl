@@ -1,28 +1,34 @@
 ##########################################################################################
 # Project directory
 ##########################################################################################
-export projectdir, datadir, srcdir, plotsdir, scriptdir, papersdir
+export projectdir, datadir, srcdir, plotsdir, scriptsdir, papersdir
 export projectname
 export findproject, quickactivate
 
+@deprecate scriptdir scriptsdir #TODO: remove in next release
+
 """
     projectdir()
-Return the directory of the currently active project. Ends with `"/"`.
+Return the directory of the currently active project.
 
 ```julia
-projectdir(folder::String) = joinpath(projectdir(), folder)*"/"
+projectdir(args...) = joinpath(projectdir(), args...)
 ```
-Return the directory of the `folder` in the active project.
+Join the path of the currently active project with `args`
+(typically other subfolders).
 """
-projectdir() = dirname(Base.active_project())*"/"
-projectdir(folder::String) = joinpath(projectdir(), folder)*"/"
+projectdir() = dirname(Base.active_project())
+projectdir(args...) = joinpath(projectdir(), args...)
 
-datadir() = projectdir()*"data/"
-srcdir() = projectdir()*"src/"
-plotsdir() = projectdir()*"plots/"
-scriptdir() = projectdir()*"scripts/"
-papersdir() = projectdir()*"papers/"
-testdir() = projectdir()*"test/"
+
+# Generate functions to access the path of default subdirectories.
+for dir_type ∈ ("data", "src", "plots", "scripts", "papers")
+    function_name = Symbol(dir_type * "dir")
+    @eval begin
+        $function_name() = projectdir($dir_type)
+        $function_name(args...) = projectdir($dir_type, args...)
+    end
+end
 
 """
     projectname()
@@ -117,13 +123,13 @@ end
 export initialize_project
 
 const DEFAULT_PATHS = [
-"_research", "src/", "scripts/",
-"plots/", "notebooks/",
-"papers/",
+"_research", "src", "scripts",
+"plots", "notebooks",
+"papers",
 "test",
-"data/sims/",
-"data/exp_raw/",
-"data/exp_pro/",
+joinpath("data", "sims"),
+joinpath("data", "exp_raw"),
+joinpath("data", "exp_pro"),
 ]
 const DEFAULT_README = """
 This is an awesome new scientific project that uses `DrWatson`!\n
@@ -182,9 +188,9 @@ function initialize_project(path, name = basename(path);
 
     # Default files
     cp(joinpath(@__DIR__, "defaults", "gitignore.txt"), joinpath(path, ".gitignore"))
-    cp(joinpath(@__DIR__, "defaults", "intro.jl"), joinpath(path, "scripts/intro.jl"))
-    cp(joinpath(@__DIR__, "defaults", "runtests.jl"), joinpath(path, "test/runtests.jl"))
-    files = vcat(".gitignore", "/scripts/intro.jl","/test/runtests.jl")
+    cp(joinpath(@__DIR__, "defaults", "intro.jl"), joinpath(path, "scripts", "intro.jl"))
+    cp(joinpath(@__DIR__, "defaults", "runtests.jl"), joinpath(path, "test", "runtests.jl"))
+    files = vcat(".gitignore", joinpath("scripts", "intro.jl"), joinpath("test", "runtests.jl"))
     if readme
         write(joinpath(path, "README.md"), DEFAULT_README)
         push!(files, "README.md")

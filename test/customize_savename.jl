@@ -47,7 +47,7 @@ for x in fieldnames(typeof(e1))
 end
 
 # Test extra dir and default_prefix:
-s = savename("path/to/data/", e1)
+s = savename(joinpath("path", "to", "data"), e1)
 @test s[1:4] == "path"
 @test occursin("Experiment", s)
-@test s == "path/to/data/Experiment_1991-04-13_c=10_n=50_species=mouse_x=0.2"
+@test s == joinpath("path", "to", "data", "Experiment_1991-04-13_c=10_n=50_species=mouse_x=0.2")

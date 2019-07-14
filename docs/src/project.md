@@ -6,7 +6,7 @@ This can "just work" (TM) because of the following principles:
 
 1. **Your science project is also a [Julia project](https://julialang.github.io/Pkg.jl/v1/environments/) defined by a `Project.toml` file.** This way the project tracks the used packages (and their versions) and can be shared with any other Julia user.
 2. **You first activate this project environment before running any code.** This way you ensure that your project runs on the specified package installation (instead of the global one). See [Activating a Project](@ref) for ways to do this.
-3. **You use the functions `scriptdir`, `datadir`, etc. from DrWatson** to navigate your project (see [Navigating a Project](@ref)).
+3. **You use the functions `projectdir`, `datadir`, etc. from DrWatson** to navigate your project (see [Navigating a Project](@ref)).
 
 Importantly, our suggested project setup was designed to be fully reproducible, see [Reproducibility](@ref).
 
@@ -87,21 +87,20 @@ To be able to navigate the project consistently, DrWatson provides the core func
 projectdir
 ```
 
-Besides the above, the shortcut functions:
+Besides the above, the following derivative functions
 ```julia
 datadir()
 srcdir()
 plotsdir()
-scriptdir()
+scriptsdir()
 papersdir()
 ```
-immediately return the appropriate subdirectory. These are also defined due to the frequent use of these subdirectories.
+behave exactly like `projectdir` but have as root the appropriate subdirectory. These are also defined due to the frequent use of these subdirectories.
 
-In addition, the return value of all these functions ends with `/`. This means that you can directly chain them with a file name using just `*`. E.g. you could do
+All of these functions take advantage of `joinpath`, ensuring an error-free path creation that works across different operating systems. It is heavily advised to use `projectdir` and derivatives by giving them the subpaths as arguments, instead of using multiplication between paths:
 ```julia
-using DrWatson
-file = makesimulation()
-tagsave(datadir()*"sims/test.bson", file)
+datadir("foo", "test.bson") # preferred
+datadir() * "/foo/test.bson" # not recommended
 ```
 
 ## Reproducibility

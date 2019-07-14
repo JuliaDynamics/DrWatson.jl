@@ -154,7 +154,7 @@ Save each entry in `dicts` into a unique temporary file in the directory `tmp`.
 Then return the list of file names (relative to `tmp`) that were used
 for saving each dictionary.
 
-`tmp` defaults to `projectdir("_research/tmp")`.
+`tmp` defaults to `projectdir("_research", "tmp")`.
 
 See also [`dict_list`](@ref).
 
@@ -163,7 +163,7 @@ See also [`dict_list`](@ref).
 * `prefix = ""` : prefix each temporary name with this.
 * `suffix = "bson"` : ending of the temporary names (no need for the dot).
 """
-function tmpsave(dicts, tmp = projectdir("_research/tmp");
+function tmpsave(dicts, tmp = projectdir("_research", "tmp");
     l = 8, suffix = "bson", prefix = "")
 
     mkpath(tmp)

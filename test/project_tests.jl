@@ -17,6 +17,17 @@ end
 @test isfile(joinpath(path, "README.md"))
 @test isfile(joinpath(path, "Project.toml"))
 
+for dir_type in ("data", "src", "plots", "papers", "scripts")
+    fn = Symbol(dir_type * "dir")
+    @eval begin
+        @test $fn() == joinpath(projectdir(), $dir_type)
+        @test endswith($fn("a"), joinpath($dir_type, "a"))
+        @test endswith($fn(joinpath("a", "b")), joinpath($dir_type, joinpath("a", "b")))
+        @test endswith($fn("a", "b"), joinpath($dir_type, joinpath("a", "b")))
+        @test endswith($fn("a", "b", joinpath("c", "d")), joinpath($dir_type, joinpath("a", "b", "c", "d")))
+    end
+end
+
 @test_throws ErrorException initialize_project(path, name)
 
 initialize_project(path, name; force = true, authors = ["George", "Nick"])
@@ -28,12 +39,12 @@ end
 @test isfile(joinpath(path, ".gitignore"))
 @test isfile(joinpath(path, "README.md"))
 @test isfile(joinpath(path, "Project.toml"))
-z = read((path*"/Project.toml"), String)
+z = read(joinpath(path, "Project.toml"), String)
 @test occursin("[\"George\", \"Nick\"]", z)
 
 initialize_project(path, name; force = true, authors = "Sophia", git = false)
 @test !isdir(joinpath(path, ".git"))
-z = read((path*"/Project.toml"), String)
+z = read(joinpath(path, "Project.toml"), String)
 @test occursin("[\"Sophia\"]", z)
 
 cd(path)

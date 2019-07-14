@@ -26,7 +26,7 @@ d = Dict("a" => 3, "b" => "5", "c" => rand(10), "d" => Float64)
 DrWatson.wsave(savename(d)*".jld2", d)
 
 mkdir("subfolder")
-cd("subfolder/")
+cd("subfolder")
 
 d = Dict("a" => 4., "b" => "twenty" , "d" => Int)
 DrWatson.wsave(savename(d)*".bson", d)

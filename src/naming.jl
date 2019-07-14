@@ -78,7 +78,7 @@ function savename(prefix::String, c, suffix::String;
 
     labels = vecstring(accesses) # make it vector of strings
     p = sortperm(labels)
-    first = prefix == "" || prefix[end] == '\\' || prefix[end] == '/'
+    first = prefix == "" || endswith(prefix, PATH_SEPARATOR)
     s = prefix
     for j ∈ p
         val = access(c, accesses[j])
