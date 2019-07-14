@@ -1,4 +1,4 @@
-export savename, @dict, @ntuple, @strdict
+export savename, @dict, @ntuple, @strdict, parse_savename
 export ntuple2dict, dict2ntuple
 
 """
@@ -249,4 +249,89 @@ function dict2ntuple(dict::Dict{String, T}) where T
 end
 function dict2ntuple(dict::Dict{Symbol, T}) where T
     NamedTuple{Tuple(keys(dict))}(values(dict))
+end
+
+
+"""
+    parse_savename(filename::AbstractString; kwargs...)
+                        parsetypes = (Int, Float64),
+                        connector = "_")
+Try to convert a shorthand name produced with [`savename`](@ref) into a dictionary 
+containing the parameters, a prefix and suffix string.
+
+## Keywords
+* `connector = "_"` : string used to connect the various entries.
+* `parsetypes = (Int, Float64)` : tuple used to define the types which should
+  be tried when parsing the values given in `filename`. Fallback is `String`.
+"""
+function parse_savename(filename::AbstractString;
+                        parsetypes = (Int, Float64),
+                        connector = "_")
+    # Prefix can be anything, so it might also contain a folder which's
+    # name was generated using savename. Therefore first the path is split
+    # into folders and filename.
+    savename_split = splitpath(filename)
+    prefix_part, savename_part = savename_split[1:end-1],savename_split[end]
+    # Extract the suffix. A suffix is identified by searching for the last "."
+    # after the last "=".
+    last_eq = findlast("=",savename_part)
+    last_dot = findlast(".",savename_part)
+    if isnothing(last_dot) || last_eq > last_dot
+        # if no dot is after the last "="
+        # there is no suffix
+        name, suffix = savename_part,""
+    else
+        # Check if the last dot is part of a float number by parsing it as Int
+        if tryparse(Int,savename_part[first(last_dot)+1:end]) == nothing
+            # no int, so the part after the last dot is the suffix
+            name, suffix = savename_part[1:first(last_dot)-1], savename_part[first(last_dot)+1:end]
+        else
+            # no suffix, because the dot just denotes the decimal places.
+            name, suffix = savename_part, ""
+        end
+    end
+    # Extract the prefix by searching for the first connector that comes before
+    # an "=".
+    first_eq = findfirst("=",name)
+    first_connector = findfirst(connector,name)
+    if isnothing(first_connector) || first(first_eq) < first(first_connector)
+        prefix, _parameters = "", name
+    else
+        # There is a connector symbol before, so there might be a connector.
+        # Of course the connector symbol could also be part of the variable name.
+        prefix, _parameters = name[1:first(first_connector)-1], name[first(first_connector)+1:end]
+    end
+    parameters = Dict{String,Any}()
+    # Regex that matches smalles possible range between $connector and =.
+    # This way it is possible to corretly match something like
+    # string_with_underscore_a=10.1 as the next match for the regex is
+    # string_with[_underscore_a=]10.1
+    name_seperator = Regex("$connector[^$connector]+=")
+    c_idx_last = 1
+    c_idx = findfirst("=",_parameters) |> first
+    # Loop until all connector "=" combinations are found.
+    while (next_range = findnext(name_seperator,_parameters,c_idx)) != nothing
+        value_end, next_start = first(next_range)-1, last(next_range)
+        parameters[_parameters[c_idx_last:c_idx-1]] =
+            parse_from_savename_value(parsetypes,_parameters[c_idx+1:value_end])
+        # Assign the next index
+        c_idx_last,c_idx = value_end+2, next_start
+    end
+    # next_range doesn't find the last parameter, so we need to add it after the loop.
+    parameters[_parameters[c_idx_last:c_idx-1]] =
+        parse_from_savename_value(parsetypes,_parameters[c_idx+1:end])
+    return prefix,parameters,suffix
+end
+
+"""
+    parse_from_savename_value(types,str)
+Try parsing `str` with the types given in `types`. The first working parse is returned.
+Fallback is `String` ie. `str` is returned.
+"""
+function parse_from_savename_value(types::NTuple{N,<:Type},str::AbstractString) where N
+    for t in types
+        res = tryparse(t,str)
+        isnothing(res) || return res
+    end
+    return str
 end
