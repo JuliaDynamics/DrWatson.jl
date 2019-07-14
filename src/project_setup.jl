@@ -10,19 +10,23 @@ export findproject, quickactivate
 Return the directory of the currently active project. Ends with `"/"`.
 
 ```julia
-projectdir(folder::String) = joinpath(projectdir(), folder)*"/"
+projectdir(args...) = joinpath(projectdir(), args...)*"/"
 ```
 Return the directory of the `folder` in the active project.
 """
 projectdir() = dirname(Base.active_project())*"/"
-projectdir(folder::String) = joinpath(projectdir(), folder)*"/"
+projectdir(args...) = joinpath(projectdir(), args...)*"/"
 
-datadir() = projectdir()*"data/"
-srcdir() = projectdir()*"src/"
-plotsdir() = projectdir()*"plots/"
-scriptdir() = projectdir()*"scripts/"
-papersdir() = projectdir()*"papers/"
-testdir() = projectdir()*"test/"
+
+# Generate functions to access the path of default subdirectories.
+for dir_type ∈ ("data", "src", "plots", "scripts", "papers", "test")
+    function_name = Symbol(dir_type * "dir")
+    @eval begin
+        $function_name() = projectdir($dir_type)
+        $function_name(args...) = projectdir($dir_type, args...)
+    end
+end
+
 
 """
     projectname()
