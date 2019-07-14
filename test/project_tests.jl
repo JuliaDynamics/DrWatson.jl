@@ -32,7 +32,7 @@ end
 # backward compatibility (scriptdir == scriptsdir)
 @test scriptdir() == joinpath(projectdir(), "scripts")
 @test scriptdir("a") == joinpath(projectdir(), joinpath("scripts", "a"))
-@test scriptdir(joinpath("a", "b") == joinpath(projectdir(), joinpath("scripts", "a", "b"))
+@test scriptdir(joinpath("a", "b")) == joinpath(projectdir(), joinpath("scripts", "a", "b"))
 @test scriptdir("a", "b") == joinpath(projectdir(), joinpath("scripts", "a", "b"))
 @test scriptdir("a", "b", joinpath("c", "d")) == joinpath(projectdir(), joinpath("scripts", "a", "b", "c", "d"))
 
@@ -47,12 +47,12 @@ end
 @test isfile(joinpath(path, ".gitignore"))
 @test isfile(joinpath(path, "README.md"))
 @test isfile(joinpath(path, "Project.toml"))
-z = read((path*"/Project.toml"), String)
+z = read(joinpath(path, "Project.toml"), String)
 @test occursin("[\"George\", \"Nick\"]", z)
 
 initialize_project(path, name; force = true, authors = "Sophia", git = false)
 @test !isdir(joinpath(path, ".git"))
-z = read((path*"/Project.toml"), String)
+z = read(joinpath(path, "Project.toml"), String)
 @test occursin("[\"Sophia\"]", z)
 
 cd(path)
