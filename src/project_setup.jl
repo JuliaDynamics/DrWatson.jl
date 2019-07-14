@@ -19,7 +19,7 @@ projectdir(args...) = joinpath(projectdir(), args...)*"/"
 
 
 # Generate functions to access the path of default subdirectories.
-for dir_type ∈ ("data", "src", "plots", "scripts", "papers", "test")
+for dir_type ∈ ("data", "src", "plots", "script", "papers", "test")
     function_name = Symbol(dir_type * "dir")
     @eval begin
         $function_name() = projectdir($dir_type)
