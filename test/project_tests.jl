@@ -17,14 +17,15 @@ end
 @test isfile(joinpath(path, "README.md"))
 @test isfile(joinpath(path, "Project.toml"))
 
+ps = joinpath("_", "_")[2]  # path separator
 for dir_type in ("data", "src", "plots", "papers", "test", "scripts")
     fn = Symbol(dir_type * "dir")
     @eval begin
-        @test $fn() == projectdir() * $dir_type * "/"
-        @test endswith($fn("a"), $dir_type * ("/a/"))
-        @test endswith($fn("a/b"), $dir_type * "/a/b/")
-        @test endswith($fn("a", "b"), $dir_type * "/a/b/")
-        @test endswith($fn("a", "b", "c/d"), $dir_type * "/a/b/c/d/")
+        @test $fn() == projectdir() * $dir_type * ps
+        @test endswith($fn("a"), $dir_type * ("$(ps)a$(ps)"))
+        @test endswith($fn("a$(ps)b"), $dir_type * "$(ps)a$(ps)b$(ps)")
+        @test endswith($fn("a", "b"), $dir_type * "$(ps)a$(ps)b$(ps)")
+        @test endswith($fn("a", "b", "c$(ps)d"), $dir_type * "$(ps)a$(ps)b$(ps)c$(ps)d$(ps)")
     end
 end
 
