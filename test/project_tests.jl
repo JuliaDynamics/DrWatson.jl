@@ -17,7 +17,6 @@ end
 @test isfile(joinpath(path, "README.md"))
 @test isfile(joinpath(path, "Project.toml"))
 
-ps = joinpath("_", "_")[2]  # path separator
 for dir_type in ("data", "src", "plots", "papers", "test", "scripts")
     fn = Symbol(dir_type * "dir")
     @eval begin
