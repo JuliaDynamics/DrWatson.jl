@@ -17,6 +17,17 @@ end
 @test isfile(joinpath(path, "README.md"))
 @test isfile(joinpath(path, "Project.toml"))
 
+for dir_type in ("data", "src", "plots", "papers", "test", "scripts")
+    fn = Symbol(dir_type * "dir")
+    @eval begin
+        @test $fn() == projectdir() * $dir_type * "/"
+        @test endswith($fn("a"), $dir_type * ("/a/"))
+        @test endswith($fn("a/b"), $dir_type * "/a/b/")
+        @test endswith($fn("a", "b"), $dir_type * "/a/b/")
+        @test endswith($fn("a", "b", "c/d"), $dir_type * "/a/b/c/d/")
+    end
+end
+
 @test_throws ErrorException initialize_project(path, name)
 
 initialize_project(path, name; force = true, authors = ["George", "Nick"])
