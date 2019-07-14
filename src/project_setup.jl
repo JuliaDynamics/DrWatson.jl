@@ -1,7 +1,7 @@
 ##########################################################################################
 # Project directory
 ##########################################################################################
-export projectdir, datadir, srcdir, plotsdir, scriptdir, papersdir, testdir
+export projectdir, datadir, srcdir, plotsdir, scriptsdir, papersdir, testdir
 export projectname
 export findproject, quickactivate
 
@@ -19,13 +19,17 @@ projectdir(args...) = joinpath(projectdir(), args...)*"/"
 
 
 # Generate functions to access the path of default subdirectories.
-for dir_type ∈ ("data", "src", "plots", "script", "papers", "test")
+for dir_type ∈ ("data", "src", "plots", "scripts", "papers", "test")
     function_name = Symbol(dir_type * "dir")
     @eval begin
         $function_name() = projectdir($dir_type)
         $function_name(args...) = projectdir($dir_type, args...)
     end
 end
+
+# backward compatibility
+scriptdir = scriptsdir
+export scriptdir
 
 
 """
