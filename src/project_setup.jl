@@ -1,7 +1,7 @@
 ##########################################################################################
 # Project directory
 ##########################################################################################
-export projectdir, datadir, srcdir, plotsdir, scriptdir, papersdir
+export projectdir, datadir, srcdir, plotsdir, scriptdir, papersdir, testdir
 export projectname
 export findproject, quickactivate
 
