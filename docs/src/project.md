@@ -97,11 +97,10 @@ papersdir()
 ```
 have as root the appropriate subdirectory. These are also defined due to the frequent use of these subdirectories.
 
-In addition, the return value of all these functions ends with `/`. This means that you can directly chain them with a file name using just `*`. E.g. you could do
+All of these functions take advantage of `joinpath`, ensuring a error-free path creation. It is heavily advised to uses these functions by giving them the subpaths as arguments, instead of using multiplication between paths:
 ```julia
-using DrWatson
-file = makesimulation()
-tagsave(datadir()*"sims/test.bson", file)
+datadir("foo", "test.bson") # preferred
+datadir() * "/foo/test.bson" # not recommended
 ```
 
 ## Reproducibility
