@@ -2,6 +2,8 @@
 module DrWatson
 import Pkg, LibGit2
 
+const PATH_SEPARATOR = joinpath("_", "_")[2]
+
 # Pure Julia implementation
 include("project_setup.jl")
 include("naming.jl")

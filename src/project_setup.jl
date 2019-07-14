@@ -125,13 +125,13 @@ end
 export initialize_project
 
 const DEFAULT_PATHS = [
-"_research", "src/", "scripts/",
-"plots/", "notebooks/",
-"papers/",
+"_research", "src", "scripts",
+"plots", "notebooks",
+"papers",
 "test",
-"data/sims/",
-"data/exp_raw/",
-"data/exp_pro/",
+joinpath("data", "sims"),
+joinpath("data", "exp_raw"),
+joinpath("data", "exp_pro"),
 ]
 const DEFAULT_README = """
 This is an awesome new scientific project that uses `DrWatson`!\n
@@ -190,9 +190,9 @@ function initialize_project(path, name = basename(path);
 
     # Default files
     cp(joinpath(@__DIR__, "defaults", "gitignore.txt"), joinpath(path, ".gitignore"))
-    cp(joinpath(@__DIR__, "defaults", "intro.jl"), joinpath(path, "scripts/intro.jl"))
-    cp(joinpath(@__DIR__, "defaults", "runtests.jl"), joinpath(path, "test/runtests.jl"))
-    files = vcat(".gitignore", "/scripts/intro.jl","/test/runtests.jl")
+    cp(joinpath(@__DIR__, "defaults", "intro.jl"), joinpath(path, "scripts", "intro.jl"))
+    cp(joinpath(@__DIR__, "defaults", "runtests.jl"), joinpath(path, "test", "runtests.jl"))
+    files = vcat(".gitignore", joinpath("scripts", "intro.jl"), joinpath("test", "runtests.jl"))
     if readme
         write(joinpath(path, "README.md"), DEFAULT_README)
         push!(files, "README.md")
