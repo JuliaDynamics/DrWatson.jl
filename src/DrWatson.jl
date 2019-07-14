@@ -26,17 +26,20 @@ function __init__()
 end
 
 # Update messages
-display_update = false
-update_name = "update_v0.5.0"
+display_update = true
+update_version = "0.6.0"
+update_name = "update_v$update_version"
 if display_update
 if !isfile(joinpath(@__DIR__, update_name))
 printstyled(stdout,
 """
-\nUpdate message: DrWatson v0.5.0
+\nUpdate message: DrWatson v$update_version
 
-Two minor breaking changes take place in this version, that
-improve the functionality of `default_prefix` of `savename`
-as well as `produce_or_load`.\n
+A breaking change occurs in this version. The function `projectdir` as well
+as its derivatives like `datadir` have changed their internals to use
+`joinpath` and in general promote the healthier usage of `joinpath`.
+
+This means that their return value no longer end in "\"!.\n
 """; color = :light_magenta)
 touch(joinpath(@__DIR__, update_name))
 end

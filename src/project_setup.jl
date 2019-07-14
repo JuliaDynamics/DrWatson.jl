@@ -1,9 +1,11 @@
 ##########################################################################################
 # Project directory
 ##########################################################################################
-export projectdir, datadir, srcdir, plotsdir, scriptsdir, papersdir, testdir
+export projectdir, datadir, srcdir, plotsdir, scriptsdir, papersdir
 export projectname
 export findproject, quickactivate
+
+@deprecate scriptdir scriptsdir #TODO: remove in next release
 
 """
     projectdir()
@@ -12,25 +14,21 @@ Return the directory of the currently active project.
 ```julia
 projectdir(args...) = joinpath(projectdir(), args...)
 ```
-Return the directory of the `folder` in the active project.
+Join the path of the currently active project with `args`
+(typically other subfolders).
 """
 projectdir() = dirname(Base.active_project())
 projectdir(args...) = joinpath(projectdir(), args...)
 
 
 # Generate functions to access the path of default subdirectories.
-for dir_type ∈ ("data", "src", "plots", "scripts", "papers", "test")
+for dir_type ∈ ("data", "src", "plots", "scripts", "papers")
     function_name = Symbol(dir_type * "dir")
     @eval begin
         $function_name() = projectdir($dir_type)
         $function_name(args...) = projectdir($dir_type, args...)
     end
 end
-
-# backward compatibility
-scriptdir = scriptsdir
-export scriptdir
-
 
 """
     projectname()

@@ -17,7 +17,7 @@ end
 @test isfile(joinpath(path, "README.md"))
 @test isfile(joinpath(path, "Project.toml"))
 
-for dir_type in ("data", "src", "plots", "papers", "test", "scripts")
+for dir_type in ("data", "src", "plots", "papers", "scripts")
     fn = Symbol(dir_type * "dir")
     @eval begin
         @test $fn() == joinpath(projectdir(), $dir_type)
@@ -27,13 +27,6 @@ for dir_type in ("data", "src", "plots", "papers", "test", "scripts")
         @test endswith($fn("a", "b", joinpath("c", "d")), joinpath($dir_type, joinpath("a", "b", "c", "d")))
     end
 end
-
-# backward compatibility (scriptdir == scriptsdir)
-@test scriptdir() == joinpath(projectdir(), "scripts")
-@test scriptdir("a") == joinpath(projectdir(), joinpath("scripts", "a"))
-@test scriptdir(joinpath("a", "b")) == joinpath(projectdir(), joinpath("scripts", "a", "b"))
-@test scriptdir("a", "b") == joinpath(projectdir(), joinpath("scripts", "a", "b"))
-@test scriptdir("a", "b", joinpath("c", "d")) == joinpath(projectdir(), joinpath("scripts", "a", "b", "c", "d"))
 
 @test_throws ErrorException initialize_project(path, name)
 
