@@ -43,6 +43,8 @@ This will likely break usage of e.g. `datadir` that used `*`, like it was
 suggested in the old (unhealthy) documentation. We are very sorry
 for this inconvenience!
 
+[NEW] New funtion `parse_savename` that reverse-engineers the output
+of `savename`!
 \n
 """; color = :light_magenta)
 touch(joinpath(@__DIR__, update_name))

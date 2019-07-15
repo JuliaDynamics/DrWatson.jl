@@ -38,3 +38,8 @@ DrWatson.default_expand
 
 See [Real World Examples](@ref) for an example of customizing `savename`.
 Specifically, have a look at [`savename` and nested containers](@ref) for a way to
+
+## Reverse-engineering `savename`
+```@docs
+parse_savename
+```

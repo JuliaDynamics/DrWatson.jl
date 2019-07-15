@@ -26,6 +26,7 @@ See [`default_prefix`](@ref) for more.
 
 `savename` can be very conveniently combined with
 [`@dict`](@ref) or [`@ntuple`](@ref).
+See also [`parse_savename`](@ref).
 
 ## Keywords
 * `allowedtypes = default_allowed(c)` : Only values of type subtyping
@@ -254,12 +255,13 @@ end
 
 """
     parse_savename(filename::AbstractString; kwargs...)
-Try to convert a shorthand name produced with [`savename`](@ref) into a dictionary 
-containing the parameters, a prefix and suffix string.
+Try to convert a shorthand name produced with [`savename`](@ref) into a dictionary
+containing the parameters and their values, a prefix and suffix string.
+Return `prefix, parameters, suffix`.
 
-Parsing the key-value parts of `fielname` is performed under the assumption that the value
+Parsing the key-value parts of `filename` is performed under the assumption that the value
 is delimited by `=` and the closest `connector`. This allows the user to have `connector`
-(eg. '_') in a key name (variable name) but not in the value part.
+(eg. `_`) in a key name (variable name) but not in the value part.
 
 ## Keywords
 * `connector = "_"` : string used to connect the various entries.
@@ -269,7 +271,10 @@ is delimited by `=` and the closest `connector`. This allows the user to have `c
 function parse_savename(filename::AbstractString;
                         parsetypes = (Int, Float64),
                         connector::AbstractString = "_")
-    @assert length(connector) == 1 "Cannot parse savenames where the 'connector' string consists of more than one character."
+    length(connector) == 1 || error(
+    "Cannot parse savenames where the 'connector'"*
+    " string consists of more than one character.")
+
     # Prefix can be anything, so it might also contain a folder which's
     # name was generated using savename. Therefore first the path is split
     # into folders and filename.
