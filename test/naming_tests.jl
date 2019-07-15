@@ -109,11 +109,11 @@ end
                    "suffix",
                    digits=4)
 @test test_convert("prefix",
-                   Dict("c" => 0.1534, "u" => 5.1, "r"=>101, "mode" => "dou_ble"),
+                   Dict("c" => 0.1534, "u" => 5.1, "r"=>101, "variable_with_underscore" => "double"),
                    "suffix",
                    digits=4)
 @test test_convert("a=10_mode=double/prefix",
-                   Dict("c" => 0.1534, "u" => 5.1, "r"=>101, "mode" => "dou_ble"),
+                   Dict("c" => 0.1534, "u" => 5.1, "r"=>101, "variable_with_underscore" => "double"),
                    "suffix",
                    digits=4)
 @test test_convert(Dict("c" => 0.1534, "u" => 5.1),
@@ -122,8 +122,14 @@ end
 @test test_convert(Dict("c" => 0.1534),
                    digits=4)
 
-b = Dict("c" => 0.1534, "u" => 5.1, "r"=>101, "mode" => "dou_ble")
-name = savename("prefix",b,connector="-",digits=4)
-_prefix, _b, _suffix = DrWatson.parse_savename(name,connector="-")
+b = Dict("c" => 0.1534, "u" => 5.1, "r"=>101, "mo_de" => "double")
+name = savename("prefix",b,connector="_",digits=4)
+_prefix, _b, _suffix = DrWatson.parse_savename(name,connector="_")
 @test dicts_equal(_b,b) && _prefix == "prefix" && _suffix == ""
 
+_prefix, _b, _suffix = DrWatson.parse_savename("some_random_path_a=10.0/prefix_a=10_just_a_string=I'm not allowed to use underscores here_my_value=10.1.suffix_with_underscore-but-don't-use-dots")
+@test _prefix == "some_random_path_a=10.0/prefix" 
+@test _suffix == "suffix_with_underscore-but-don't-use-dots"
+@test _b["a"] == 10.0
+@test _b["just_a_string"] == "I'm not allowed to use underscores here"
+@test _b["my_value"] == 10.1

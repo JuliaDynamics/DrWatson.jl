@@ -257,6 +257,10 @@ end
 Try to convert a shorthand name produced with [`savename`](@ref) into a dictionary 
 containing the parameters, a prefix and suffix string.
 
+Parsing the key-value parts of `fielname` is performed under the assumption that the value
+is delimited by `=` and the closest `connector`. This allows the user to have `connector`
+(eg. '_') in a key name (variable name) but not in the value part.
+
 ## Keywords
 * `connector = "_"` : string used to connect the various entries.
 * `parsetypes = (Int, Float64)` : tuple used to define the types which should
@@ -301,24 +305,23 @@ function parse_savename(filename::AbstractString;
     # Add leading directory back to prefix
     prefix = joinpath(prefix_part,prefix)
     parameters = Dict{String,Any}()
-    # Regex that matches smalles possible range between $connector and =.
-    # This way it is possible to corretly match something like
-    # string_with_underscore_a=10.1 as the next match for the regex is
-    # string_with[_underscore_a=]10.1
-    name_seperator = Regex("$connector[^$connector]+=")
-    c_idx_last = 1
-    c_idx = findfirst("=",_parameters) |> first
-    # Loop until all connector "=" combinations are found.
+    # Regex that matches smalles possible range between = and connector.
+    # This way it is possible to corretly match something where the
+    # connector ("_") was used as a variable name.
+    # var_with_undersocore_1=foo_var=123.32_var_name_with_underscore=4.4
+    # var_with_undersocore_1[=foo_]var[=123.32_]var_name_with_underscore=4.4
+    name_seperator = Regex("=[^$connector]+$connector")
+    c_idx = 1
     while (next_range = findnext(name_seperator,_parameters,c_idx)) != nothing
-        value_end, next_start = first(next_range)-1, last(next_range)
-        parameters[_parameters[c_idx_last:c_idx-1]] =
-            parse_from_savename_value(parsetypes,_parameters[c_idx+1:value_end])
-        # Assign the next index
-        c_idx_last,c_idx = value_end+2, next_start
+        equal_sign, end_of_value = first(next_range), last(next_range)-1
+        parameters[_parameters[c_idx:equal_sign-1]] =
+            parse_from_savename_value(parsetypes,_parameters[equal_sign+1:end_of_value])
+        c_idx = end_of_value+2
     end
-    # next_range doesn't find the last parameter, so we need to add it after the loop.
-    parameters[_parameters[c_idx_last:c_idx-1]] =
-        parse_from_savename_value(parsetypes,_parameters[c_idx+1:end])
+    # The last = cannot be followed by a connector, so it's not captured by the regex.
+    equal_sign = findnext("=",_parameters,c_idx) |> first
+    parameters[_parameters[c_idx:equal_sign-1]] =
+        parse_from_savename_value(parsetypes,_parameters[equal_sign+1:end])
     return prefix,parameters,suffix
 end
 
