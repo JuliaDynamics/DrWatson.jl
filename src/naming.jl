@@ -1,4 +1,4 @@
-export savename, @dict, @ntuple, @strdict
+export savename, @dict, @ntuple, @strdict, parse_savename
 export ntuple2dict, dict2ntuple
 
 """
@@ -26,6 +26,7 @@ See [`default_prefix`](@ref) for more.
 
 `savename` can be very conveniently combined with
 [`@dict`](@ref) or [`@ntuple`](@ref).
+See also [`parse_savename`](@ref).
 
 ## Keywords
 * `allowedtypes = default_allowed(c)` : Only values of type subtyping
@@ -249,4 +250,96 @@ function dict2ntuple(dict::Dict{String, T}) where T
 end
 function dict2ntuple(dict::Dict{Symbol, T}) where T
     NamedTuple{Tuple(keys(dict))}(values(dict))
+end
+
+
+"""
+    parse_savename(filename::AbstractString; kwargs...)
+Try to convert a shorthand name produced with [`savename`](@ref) into a dictionary
+containing the parameters and their values, a prefix and suffix string.
+Return `prefix, parameters, suffix`.
+
+Parsing the key-value parts of `filename` is performed under the assumption that the value
+is delimited by `=` and the closest `connector`. This allows the user to have `connector`
+(eg. `_`) in a key name (variable name) but not in the value part.
+
+## Keywords
+* `connector = "_"` : string used to connect the various entries.
+* `parsetypes = (Int, Float64)` : tuple used to define the types which should
+  be tried when parsing the values given in `filename`. Fallback is `String`.
+"""
+function parse_savename(filename::AbstractString;
+                        parsetypes = (Int, Float64),
+                        connector::AbstractString = "_")
+    length(connector) == 1 || error(
+    "Cannot parse savenames where the 'connector'"*
+    " string consists of more than one character.")
+
+    # Prefix can be anything, so it might also contain a folder which's
+    # name was generated using savename. Therefore first the path is split
+    # into folders and filename.
+    prefix_part, savename_part = dirname(filename),basename(filename)
+    # Extract the suffix. A suffix is identified by searching for the last "."
+    # after the last "=".
+    last_eq = findlast("=",savename_part)
+    last_dot = findlast(".",savename_part)
+    if last_dot == nothing || last_eq > last_dot
+        # if no dot is after the last "="
+        # there is no suffix
+        name, suffix = savename_part,""
+    else
+        # Check if the last dot is part of a float number by parsing it as Int
+        if tryparse(Int,savename_part[first(last_dot)+1:end]) == nothing
+            # no int, so the part after the last dot is the suffix
+            name, suffix = savename_part[1:first(last_dot)-1], savename_part[first(last_dot)+1:end]
+        else
+            # no suffix, because the dot just denotes the decimal places.
+            name, suffix = savename_part, ""
+        end
+    end
+    # Extract the prefix by searching for the first connector that comes before
+    # an "=".
+    first_eq = findfirst("=",name)
+    first_connector = findfirst(connector,name)
+    if first_connector == nothing || first(first_eq) < first(first_connector)
+        prefix, _parameters = "", name
+    else
+        # There is a connector symbol before, so there might be a connector.
+        # Of course the connector symbol could also be part of the variable name.
+        prefix, _parameters = name[1:first(first_connector)-1], name[first(first_connector)+1:end]
+    end
+    # Add leading directory back to prefix
+    prefix = joinpath(prefix_part,prefix)
+    parameters = Dict{String,Any}()
+    # Regex that matches smalles possible range between = and connector.
+    # This way it is possible to corretly match something where the
+    # connector ("_") was used as a variable name.
+    # var_with_undersocore_1=foo_var=123.32_var_name_with_underscore=4.4
+    # var_with_undersocore_1[=foo_]var[=123.32_]var_name_with_underscore=4.4
+    name_seperator = Regex("=[^$connector]+$connector")
+    c_idx = 1
+    while (next_range = findnext(name_seperator,_parameters,c_idx)) != nothing
+        equal_sign, end_of_value = first(next_range), last(next_range)-1
+        parameters[_parameters[c_idx:equal_sign-1]] =
+            parse_from_savename_value(parsetypes,_parameters[equal_sign+1:end_of_value])
+        c_idx = end_of_value+2
+    end
+    # The last = cannot be followed by a connector, so it's not captured by the regex.
+    equal_sign = findnext("=",_parameters,c_idx) |> first
+    parameters[_parameters[c_idx:equal_sign-1]] =
+        parse_from_savename_value(parsetypes,_parameters[equal_sign+1:end])
+    return prefix,parameters,suffix
+end
+
+"""
+    parse_from_savename_value(types,str)
+Try parsing `str` with the types given in `types`. The first working parse is returned.
+Fallback is `String` ie. `str` is returned.
+"""
+function parse_from_savename_value(types::NTuple{N,<:Type},str::AbstractString) where N
+    for t in types
+        res = tryparse(t,str)
+        res == nothing || return res
+    end
+    return str
 end
