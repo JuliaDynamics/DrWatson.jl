@@ -7,12 +7,12 @@ using DrWatson
 quickactivate(@__DIR__, "MagneticBilliardsLyapunovs")
 using DynamicalBilliards, PyPlot, LinearAlgebra
 
-include(srcdir()*"plot_perturbationgrowth.jl")
-include(srcdir()*"unitcells.jl")
+include(srcdir("plot_perturbationgrowth.jl"))
+include(srcdir("unitcells.jl"))
 ```
 In all projects I save data/plots using `datadir/plotdir`:
 ```julia
-tagsave(datadir()*"mushrooms/Λ_N=$N.bson", (@dict Λ Λσ ws hs description))
+tagsave(datadir("mushrooms, "Λ_N=$N.bson"), (@dict Λ Λσ ws hs description))
 ```
 The advantage of this approach is that it will always work regardless of if I move the specific file to a different subfolder (which is very often necessary) or whether I move the entire project folder somewhere else!
 **Please be sure you have understood the caveat of using [`quickactivate`](@ref)!**
@@ -24,13 +24,13 @@ quickactivate(@__DIR__, "EmbeddingResearch")
 using Parameters
 using TimeseriesPrediction, LinearAlgebra, Statistics
 
-include(srcdir()*"systems/barkley.jl")
-include(srcdir()*"nrmse.jl")
+include(srcdir("systems", "barkley.jl"))
+include(srcdir("nrmse.jl")
 ```
 that ends with
 ```julia
 tagsave(
-    savename(datadir()*"sim/bk", simulation, "jld2"),
+    savename(datadir("sim", "bk"), simulation, "jld2"),
     @strdict U V simulation
 )
 ```
@@ -41,7 +41,7 @@ The combination of using [`savename`](@ref) and [`tagsave`](@ref) makes it easy 
 using DrWatson
 quickactivate(@__DIR__, "EmbeddingResearch")
 using TimeseriesPrediction, LinearAlgebra, Statistics
-include(srcdir()*"systems/barkley.jl")
+include(srcdir("systems", "barkley.jl"))
 
 ΔTs = [1.0, 0.5, 0.1] # resolution of the saved data
 Ns = [50, 150] # spatial extent
@@ -54,7 +54,7 @@ for N ∈ Ns, ΔT ∈ ΔTs
     U, V = barkley(T, N, every; seed = seed)
 
     tagsave(
-        savename(datadir()*"sim/bk", simulation, "bson"),
+        savename(datadir("sim", "bk"), simulation, "bson"),
         @dict U V simulation
     )
 end
@@ -214,7 +214,7 @@ end
 
 N = 2000; T = 2000.0
 file = produce_or_load(
-    datadir()*"mushrooms/toy", # prefix
+    datadir("mushrooms", "toy"), # prefix
     @dict(N, T), # container
     g # function
 )
@@ -256,7 +256,7 @@ function cross_estimation(data)
     data["x"] = rand()
     data["error"] = rand(10)
     # Save data:
-    prefix = datadir()*"results/"*data["model"]
+    prefix = datadir("results", data["model"])
     get(data, "noisy_training", false) && (prefix *= "_noisy")
     save(
         savename(
@@ -275,13 +275,13 @@ end
 One way to run many simulations is with `map` (identical process for using `pmap`).
 To run all my simulations I just do:
 ```@example customizing
-mkpath(datadir()*"results")
+mkpath(datadir("results"))
 dicts = dict_list(general_args)
 map(cross_estimation, dicts) # or pmap
 
 # load one of the files to be sure everything is ok:
-filename = readdir(datadir()*"results")[1]
-file = load(datadir()*"results/"*filename)
+filename = readdir(datadir("results"))[1]
+file = load(datadir("results", filename))
 ```
 
 ### Using a Serial Cluster
@@ -301,11 +301,11 @@ end
 Now the file `runjob.jl` would have contents that look like:
 ```julia
 f = ARGS[1]
-dict = load(projectdir("_research/tmp/")*f)
+dict = load(projectdir("_research", "tmp", f))
 cross_estimation(dict)
 ```
 i.e. it just loads the `dict` and straightforwardly uses the "main" function `cross_estimation`. Remember to routinely clear the `tmp` directory!
-You could do that by e.g. adding a line `rm(projectdir("_research/tmp/")*f)`
+You could do that by e.g. adding a line `rm(projectdir("_research", "tmp", f)`
 at the end of the `runjob.jl` script.
 
 ## Listing completed runs
@@ -315,7 +315,7 @@ It is quite simple actually! But because we don't want to include the error, we 
 ```@example customizing
 using DataFrames # this is necessary to access collect_results!
 black_list = ["error"]
-res = collect_results!(datadir()*"results"; black_list = black_list)
+res = collect_results!(datadir("results"); black_list = black_list)
 ```
 
 We can take also advantage of the basic processing functionality of [`collect_results!`](@ref) to use the excluded `"error"` column, replacing it with its average value:
@@ -323,7 +323,7 @@ We can take also advantage of the basic processing functionality of [`collect_re
 using Statistics: mean
 special_list = [:avrg_error => data -> mean(data["error"])]
 res = collect_results(
-      datadir()*"results",
+      datadir("results"),
       black_list = black_list,
       special_list = special_list
 )
@@ -351,7 +351,7 @@ As you can see, there here there are two parameters not existing in previous sim
 
 No problem though, let's run the new simulations:
 ```@example customizing
-mkpath(datadir()*"results/sym")
+mkpath(datadir("results", "sym"))
 
 function cross_estimation_new(data)
     γ, τ, r, c = data["embedding"]
@@ -360,7 +360,7 @@ function cross_estimation_new(data)
     data["x"] = rand()
     data["error"] = rand(10)
     # Save data:
-    prefix = datadir()*"results/sym/"*data["model"]
+    prefix = datadir("results", "sym", data["model"])
     get(data, "symmetric_training", false) && (prefix *= "_symmetric")
     save(
         savename(
@@ -377,13 +377,13 @@ dicts = dict_list(general_args_new)
 map(cross_estimation_new, dicts)
 
 # load one of the files to be sure everything is ok:
-filename = readdir(datadir()*"results/sym")[1]
-file = load(datadir()*"results/sym/"*filename)
+filename = readdir(datadir("results", "sym"))[1]
+file = load(datadir("results", "sym", filename))
 ```
 
 Alright, now we want to _add_ these new runs to our existing dataframe that has collected all previous results. This is straight-forward:
 ```@example customizing
-res = collect_results!(datadir()*"results";
+res = collect_results!(datadir("results"));
       black_list = black_list, subfolders = true)
 
 deletecols!(res, :path) # don't show path

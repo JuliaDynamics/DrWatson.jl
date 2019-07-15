@@ -1,3 +1,5 @@
+# 0.6.0
+* **[BREAKING]** Reworked the way the functions `projectdir` and derivatives work (#47, #64, #66). Now `projectdir(args...)` uses `joinpath` to connect arguments. None of the functions like `projectdir` and derivatives now end in `/` as well, to ensure more stability and motivate users to use `joinpath` or the new functionality of `projectdir(args...)` instead of using string multiplication `*`.
 # 0.5.1
 * Improvements to `.gitignore` (#55 , #54)
 # 0.5.0

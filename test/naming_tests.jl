@@ -1,11 +1,12 @@
 using DrWatson, Test
 
+ps = DrWatson.PATH_SEPARATOR
+
 d = (a = 0.153456453, b = 5.0, mode = "double")
 @test savename(d; digits = 4) == "a=0.1535_b=5_mode=double"
 @test savename("n", d) == "n_a=0.153_b=5_mode=double"
-@test savename("n/", d) == "n/a=0.153_b=5_mode=double"
-@test savename("n/", d; connector = "-") == "n/a=0.153-b=5-mode=double"
-@test savename("n\\", d) == "n\\a=0.153_b=5_mode=double"
+@test savename("n$(ps)", d) == "n$(ps)a=0.153_b=5_mode=double"
+@test savename("n$(ps)", d; connector = "-") == joinpath("n", "a=0.153-b=5-mode=double")
 @test savename(d, "n") == "a=0.153_b=5_mode=double.n"
 @test savename("n", d, "n") == "n_a=0.153_b=5_mode=double.n"
 @test savename("n", d, "n"; connector = "-") == "n-a=0.153-b=5-mode=double.n"
