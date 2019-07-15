@@ -133,3 +133,5 @@ _prefix, _b, _suffix = DrWatson.parse_savename("some_random_path_a=10.0/prefix_a
 @test _b["a"] == 10.0
 @test _b["just_a_string"] == "I'm not allowed to use underscores here"
 @test _b["my_value"] == 10.1
+
+@test_throws AssertionError DrWatson.parse_savename("a=10",connector="__")

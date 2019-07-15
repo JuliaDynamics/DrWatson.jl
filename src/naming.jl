@@ -268,7 +268,8 @@ is delimited by `=` and the closest `connector`. This allows the user to have `c
 """
 function parse_savename(filename::AbstractString;
                         parsetypes = (Int, Float64),
-                        connector = "_")
+                        connector::AbstractString = "_")
+    @assert length(connector) == 1 "Cannot parse savenames where the 'connector' string consists of more than one character."
     # Prefix can be anything, so it might also contain a folder which's
     # name was generated using savename. Therefore first the path is split
     # into folders and filename.
