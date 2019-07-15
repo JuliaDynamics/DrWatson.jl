@@ -254,8 +254,6 @@ end
 
 """
     parse_savename(filename::AbstractString; kwargs...)
-                        parsetypes = (Int, Float64),
-                        connector = "_")
 Try to convert a shorthand name produced with [`savename`](@ref) into a dictionary 
 containing the parameters, a prefix and suffix string.
 
