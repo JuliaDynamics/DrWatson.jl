@@ -62,26 +62,26 @@ s = savename(e; allowedtypes = (Any,), expand = ["c"])
 
 function test_convert(prefix::AbstractString,c;kwargs...)
     name = savename(prefix,c;kwargs...)
-    prefix, _b, suffix = DrWatson.parse_savename(name)
-    dicts_equal(_b,c) && prefix == prefix && suffix == ""
+    _prefix, _b, _suffix = DrWatson.parse_savename(name)
+    dicts_equal(_b,c) && _prefix == prefix && _suffix == ""
 end
 
 function test_convert(c,suffix::AbstractString;kwargs...)
     name = savename(c,suffix;kwargs...)
-    prefix, _b, suffix = DrWatson.parse_savename(name)
-    dicts_equal(_b,c) && suffix == suffix && prefix == ""
+    _prefix, _b, _suffix = DrWatson.parse_savename(name)
+    dicts_equal(_b,c) && _suffix == suffix && _prefix == ""
 end
 
 function test_convert(prefix::AbstractString,c,suffix::AbstractString;kwargs...)
     name = savename(prefix,c,suffix;kwargs...)
-    prefix, _b, suffix = DrWatson.parse_savename(name)
-    dicts_equal(_b,c) && suffix == suffix && prefix == prefix
+    _prefix, _b, _suffix = DrWatson.parse_savename(name)
+    dicts_equal(_b,c) && _suffix == suffix && _prefix == prefix
 end
 
 function test_convert(c;kwargs...)
     name = savename(c;kwargs...)
-    prefix, _b, suffix = DrWatson.parse_savename(name)
-    dicts_equal(_b,c) && prefix == ""
+    _prefix, _b, _suffix = DrWatson.parse_savename(name)
+    dicts_equal(_b,c) && _prefix == "" && _suffix == ""
 end
 
 function dicts_equal(a,b)
@@ -97,11 +97,9 @@ end
 @test test_convert(
     Dict("c" => 0.1534, "u" => 5.1, "r"=>101, "mode" => "double"),
     digits=4)
-
 @test test_convert("prefix",
                    Dict("c" => 0.1534, "u" => 5.1, "r"=>101, "mode" => "double"),
                    digits=4)
-
 @test test_convert(
     Dict("c" => 0.1534, "u" => 5.1, "r"=>101, "mode" => "double"),
     "suffix",
@@ -126,6 +124,6 @@ end
 
 b = Dict("c" => 0.1534, "u" => 5.1, "r"=>101, "mode" => "dou_ble")
 name = savename("prefix",b,connector="-",digits=4)
-prefix, _b, suffix = DrWatson.parse_savename(name,connector="-")
-@test dicts_equal(_b,b) && prefix == "prefix" && suffix == ""
+_prefix, _b, _suffix = DrWatson.parse_savename(name,connector="-")
+@test dicts_equal(_b,b) && _prefix == "prefix" && _suffix == ""
 
