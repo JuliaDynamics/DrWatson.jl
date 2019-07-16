@@ -6,7 +6,7 @@ com = current_commit(@__DIR__)
 
 com = current_commit(dirname(@__DIR__))
 @test com !== nothing
-@test typeof(com) == String
+@test typeof(com) <: String
 
 # tag!
 d1 = Dict(:x => 3, :y => 4)
@@ -15,7 +15,7 @@ for d in (d1, d2)
     d = tag!(d, dirname(@__DIR__))
 
     @test haskey(d, keytype(d)(:commit))
-    @test d[keytype(d)(:commit)] |> typeof == String
+    @test d[keytype(d)(:commit)] |> typeof <: String
 end
 
 # @tag!
@@ -24,7 +24,7 @@ for d in (d1, d2)
     @test !haskey(d, keytype(d)(:commit))
 
     d = @tag!(d, dirname(@__DIR__))
-    @test d[keytype(d)(:commit)] |> typeof == String
+    @test d[keytype(d)(:commit)] |> typeof <: String
     @test d[keytype(d)(:script)][1:4] == "test"
 end
 
