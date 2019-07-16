@@ -30,9 +30,15 @@ function current_commit(gitpath = projectdir())
         "returning `nothing` instead of the commit id."
         return nothing
     end
-    # then we return the current commit
+    # then we return the output of `git describe` or commit if no annotated
+    # tags are available
     repo = LibGit2.GitRepo(gitpath)
-    c = string(LibGit2.head_oid(repo))
+    c = begin try
+            split(string(LibGit2.GitDescribeResult(repo)))[2]
+        catch GitError
+            string(LibGit2.head_oid(repo))
+        end
+    end
     if LibGit2.isdirty(repo)
         @warn "The Git repository is dirty! Adding appropriate comment to "*
         "commit id..."
