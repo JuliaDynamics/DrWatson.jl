@@ -19,6 +19,9 @@ julia> current_commit()
 
 julia> current_commit(path_to_dirty_repo)
 "3bf684c6a115e3dce484b7f200b66d3ced8b0832_dirty"
+
+julia> current_commit(another_path_with_annotated_git_tags)
+"v1.2.3-g7364ab"
 ```
 """
 function current_commit(gitpath = projectdir())
@@ -26,23 +29,25 @@ function current_commit(gitpath = projectdir())
     try
         repo = LibGit2.GitRepo(gitpath)
     catch er
-        @warn "The current project directory is not a Git repository, "*
-        "returning `nothing` instead of the commit id."
+        @warn "The directory ('$gitpath') is not a Git repository, "
+              "returning `nothing` instead of the commit ID."
         return nothing
     end
-    # then we return the output of `git describe` or commit if no annotated
-    # tags are available
+    suffix = ""
+    if LibGit2.isdirty(repo)
+        suffix = "_dirty"
+        @warn "The Git repository is dirty! Appending $(suffix) to the commit ID"
+    end
+    # then we return the output of `git describe` or the latest commit hash
+    # if no annotated tags are available
     repo = LibGit2.GitRepo(gitpath)
     c = begin try
-            split(string(LibGit2.GitDescribeResult(repo)))[2]
+            gdr = LibGit2.GitDescribeResult(repo)
+            fopt = LibGit2.DescribeFormatOptions(dirty_suffix=pointer(suffix))
+            LibGit2.format(gdr, options=fopt)
         catch GitError
-            string(LibGit2.head_oid(repo))
+            string(LibGit2.head_oid(repo)) * suffix
         end
-    end
-    if LibGit2.isdirty(repo)
-        @warn "The Git repository is dirty! Adding appropriate comment to "*
-        "commit id..."
-        return c*"_dirty"
     end
     return c
 end
