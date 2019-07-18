@@ -353,9 +353,12 @@ function parse_savename(filename::AbstractString;
         c_idx = end_of_value+2
     end
     # The last = cannot be followed by a connector, so it's not captured by the regex.
-    equal_sign = findnext("=",_parameters,c_idx) |> first
-    parameters[_parameters[c_idx:equal_sign-1]] =
-        parse_from_savename_value(parsetypes,_parameters[equal_sign+1:end])
+    equal_sign = findnext("=",_parameters,c_idx)
+    equal_sign == nothing && error(
+        "Savename cannot be parsed. There is a '$connector' after the last '='. "*
+        "Values containing '$connector' are not allowed when parsing.")
+    parameters[_parameters[c_idx:first(equal_sign)-1]] =
+        parse_from_savename_value(parsetypes,_parameters[first(equal_sign)+1:end])
     return prefix,parameters,suffix
 end
 
