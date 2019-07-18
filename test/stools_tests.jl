@@ -1,10 +1,10 @@
 using DrWatson, Test
 
 # Test commit function
-com = current_commit(@__DIR__)
+com = gitdescribe(@__DIR__)
 @test com === nothing
 
-com = current_commit(dirname(@__DIR__))
+com = gitdescribe(dirname(@__DIR__))
 @test com !== nothing
 @test typeof(com) <: String
 

@@ -1,9 +1,11 @@
-export current_commit, tag!, @tag!
+export gitdescribe, current_commit, tag!, @tag!
 export dict_list, dict_list_count
 
 """
-    current_commit(gitpath = projectdir()) -> commit
-Return the current active commit id of the Git repository present
+    gitdescribe(gitpath = projectdir()) -> git-description or commit
+
+Return the output of `git describe` if an annotated git tag exists,
+otherwise the current active commit id of the Git repository present
 in `gitpath`, which by default is the project gitpath. If the repository
 is dirty when this function is called the string will end
 with `"_dirty"`.
@@ -11,20 +13,22 @@ with `"_dirty"`.
 Return `nothing` if `gitpath` is not a Git repository.
 
 See also [`tag!`](@ref).
+More information about the `git describe` output can be found on 
+(https://git-scm.com/docs/git-describe)
 
 ## Examples
 ```julia
-julia> current_commit()
+julia> gitdescribe()
+"v1.2.3-g7364ab"
+
+julia> gitdescribe()
 "96df587e45b29e7a46348a3d780db1f85f41de04"
 
-julia> current_commit(path_to_dirty_repo)
+julia> gitdescribe(path_to_a_dirty_repo)
 "3bf684c6a115e3dce484b7f200b66d3ced8b0832_dirty"
-
-julia> current_commit(another_path_with_annotated_git_tags)
-"v1.2.3-g7364ab"
 ```
 """
-function current_commit(gitpath = projectdir())
+function gitdescribe(gitpath = projectdir())
     # Here we test if the gitpath is a git repository.
     try
         repo = LibGit2.GitRepo(gitpath)
@@ -51,10 +55,12 @@ function current_commit(gitpath = projectdir())
     return c
 end
 
+@deprecate current_commit gitdescribe
+
 """
     tag!(d::Dict, gitpath = projectdir()) -> d
 Tag `d` by adding an extra field `commit` which will have as value
-the [`current_commit`](@ref) of the repository at `gitpath` (by default
+the [`gitdescribe`](@ref) of the repository at `gitpath` (by default
 the project's gitpath). Do nothing if a key `commit` already exists or
 if the Git repository is not found.
 
@@ -78,7 +84,7 @@ Dict{Symbol,Any} with 3 entries:
 """
 function tag!(d::Dict{K, T}, gitpath = projectdir(), source = nothing) where {K, T}
 
-    c = current_commit(gitpath)
+    c = gitdescribe(gitpath)
     c === nothing && return d
     if haskey(d, K("commit"))
         @warn "The dictionary already has a key named `commit`. We won't "*
