@@ -15,9 +15,10 @@ savename
 Notice that this naming scheme integrates perfectly with Parameters.jl.
 
 ## Convenience functions
-Convenience functions are provided to easily create named tuples, dictionaries as well as switch between them:
+Convenience functions are provided to shorten common function calls and easily create named tuples, dictionaries as well as switch between them:
 ```@docs
 @dict
+@savename
 @strdict
 @ntuple
 ntuple2dict

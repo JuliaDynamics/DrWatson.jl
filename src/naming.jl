@@ -1,4 +1,4 @@
-export savename, @dict, @ntuple, @strdict, parse_savename
+export savename, @savename, @dict, @ntuple, @strdict, parse_savename
 export ntuple2dict, dict2ntuple
 
 """
@@ -191,6 +191,34 @@ Dict{Symbol,Any} with 3 entries:
 ```
 """
 macro dict(vars...)
+    return esc_dict_expr_from_vars(vars)
+end
+
+"""
+    @savename vars...
+Convenient combination of chaining a call to [`@dict`](@ref) on `vars` and [`savename`](@ref).
+
+## Examples
+```julia
+julia> a = 0.153456453; b = 5.0; mode = "double"
+julia> @savename a b mode
+"a=0.153_b=5_mode=double"
+```
+"""
+macro savename(vars...)
+    expr = esc_dict_expr_from_vars(vars)
+    return :(savename($expr))
+end
+
+"""
+    esc_dict_expr_from_vars(vars)
+Transform a `Tuple` of `Symbol` into a dictionary where each `Symbol` in `vars`
+defines a key-value pair. The value is obtained by evaluating the `Symbol` in
+the macro calling environment.
+
+This should only be called when producing an expression intended to be returned by a macro.
+"""
+function esc_dict_expr_from_vars(vars)
     expr = Expr(:call, :Dict)
     for i in 1:length(vars)
         push!(expr.args, :($(QuoteNode(vars[i])) => $(esc(vars[i]))))
