@@ -29,7 +29,7 @@ function current_commit(gitpath = projectdir())
     try
         repo = LibGit2.GitRepo(gitpath)
     catch er
-        @warn "The directory ('$gitpath') is not a Git repository, "
+        @warn "The directory ('$gitpath') is not a Git repository, "*
               "returning `nothing` instead of the commit ID."
         return nothing
     end
