@@ -41,13 +41,12 @@ function current_commit(gitpath = projectdir())
     # then we return the output of `git describe` or the latest commit hash
     # if no annotated tags are available
     repo = LibGit2.GitRepo(gitpath)
-    c = begin try
-            gdr = LibGit2.GitDescribeResult(repo)
-            fopt = LibGit2.DescribeFormatOptions(dirty_suffix=pointer(suffix))
-            LibGit2.format(gdr, options=fopt)
-        catch GitError
-            string(LibGit2.head_oid(repo)) * suffix
-        end
+    c = try
+        gdr = LibGit2.GitDescribeResult(repo)
+        fopt = LibGit2.DescribeFormatOptions(dirty_suffix=pointer(suffix))
+        LibGit2.format(gdr, options=fopt)
+    catch GitError
+        string(LibGit2.head_oid(repo)) * suffix
     end
     return c
 end
