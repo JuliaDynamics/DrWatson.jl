@@ -12,9 +12,19 @@ with `"_dirty"`.
 
 Return `nothing` if `gitpath` is not a Git repository.
 
-See also [`tag!`](@ref).
+The format of the `git describe` output in general is
+
+    `"TAGNAME-[NUMBER_OF_COMMITS_AHEAD-]gLATEST_COMMIT_HASH[_dirty]"`
+
+If the latest tag is `v1.2.3` and there are 5 additional commits while the
+latest commit hash is 334a0f225d9fba86161ab4c8892d4f023688159c, the output
+will be `v1.2.3-5-g334a0f`. Notice that git will shorten the hash if there
+are no ambiguous commits.
+
 More information about the `git describe` output can be found on 
 (https://git-scm.com/docs/git-describe)
+
+See also [`tag!`](@ref).
 
 ## Examples
 ```julia
