@@ -138,3 +138,5 @@ _prefix, _b, _suffix = DrWatson.parse_savename(joinpath("some_random_path_a=10.0
 @test _b["my_value"] == 10.1
 
 @test_throws ErrorException DrWatson.parse_savename("a=10",connector="__")
+@test_throws ErrorException("Savename cannot be parsed. There is a '_' after the last '='. "*
+        "Values containing '_' are not allowed when parsing.") DrWatson.parse_savename("a=10_1")
