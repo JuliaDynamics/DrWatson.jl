@@ -1,5 +1,10 @@
 # 0.7.0
 * New macro `@savename` that is a shortcut for `savename(@dict vars...)`
+* New function `gitdescribe` (see below)
+* **[DEPRECATED]** `current_commit()` has been deprecated and replaced by
+  `gitdescribe()` which now replaces the output of `git describe` if an
+  annotated tag exists, otherwise it will return the latest commit hash.
+
 # 0.6.0
 * **[BREAKING]** Reworked the way the functions `projectdir` and derivatives work (#47, #64, #66). Now `projectdir(args...)` uses `joinpath` to connect arguments. None of the functions like `projectdir` and derivatives now end in `/` as well, to ensure more stability and motivate users to use `joinpath` or the new functionality of `projectdir(args...)` instead of using string multiplication `*`.
 * New function `parse_savename` that attempts to reverse engineer the result of `savename`.

@@ -1,50 +1,76 @@
-export current_commit, tag!, @tag!
+export gitdescribe, current_commit, tag!, @tag!
 export dict_list, dict_list_count
 
 """
-    current_commit(gitpath = projectdir()) -> commit
-Return the current active commit id of the Git repository present
-in `gitpath`, which by default is the project gitpath. If the repository
+    gitdescribe(gitpath = projectdir()) -> gitstr
+
+Return a string `gitstr` with the output of `git describe` if an annotated git tag exists,
+otherwise the current active commit id of the Git repository present
+in `gitpath`, which by default is the currently active project. If the repository
 is dirty when this function is called the string will end
 with `"_dirty"`.
 
 Return `nothing` if `gitpath` is not a Git repository.
 
+The format of the `git describe` output in general is
+
+    `"TAGNAME-[NUMBER_OF_COMMITS_AHEAD-]gLATEST_COMMIT_HASH[_dirty]"`
+
+If the latest tag is `v1.2.3` and there are 5 additional commits while the
+latest commit hash is 334a0f225d9fba86161ab4c8892d4f023688159c, the output
+will be `v1.2.3-5-g334a0f`. Notice that git will shorten the hash if there
+are no ambiguous commits.
+
+More information about the `git describe` output can be found on
+(https://git-scm.com/docs/git-describe)
+
 See also [`tag!`](@ref).
 
 ## Examples
 ```julia
-julia> current_commit()
+julia> gitdescribe() # a tag exists
+"v1.2.3-g7364ab"
+
+julia> gitdescribe() # a tag doesn't exist
 "96df587e45b29e7a46348a3d780db1f85f41de04"
 
-julia> current_commit(path_to_dirty_repo)
+julia> gitdescribe(path_to_a_dirty_repo)
 "3bf684c6a115e3dce484b7f200b66d3ced8b0832_dirty"
 ```
 """
-function current_commit(gitpath = projectdir())
+function gitdescribe(gitpath = projectdir())
     # Here we test if the gitpath is a git repository.
     try
         repo = LibGit2.GitRepo(gitpath)
     catch er
-        @warn "The current project directory is not a Git repository, "*
-        "returning `nothing` instead of the commit id."
+        @warn "The directory ('$gitpath') is not a Git repository, "*
+              "returning `nothing` instead of the commit ID."
         return nothing
     end
-    # then we return the current commit
-    repo = LibGit2.GitRepo(gitpath)
-    c = string(LibGit2.head_oid(repo))
+    suffix = ""
     if LibGit2.isdirty(repo)
-        @warn "The Git repository is dirty! Adding appropriate comment to "*
-        "commit id..."
-        return c*"_dirty"
+        suffix = "_dirty"
+        @warn "The Git repository is dirty! Appending $(suffix) to the commit ID"
+    end
+    # then we return the output of `git describe` or the latest commit hash
+    # if no annotated tags are available
+    repo = LibGit2.GitRepo(gitpath)
+    c = try
+        gdr = LibGit2.GitDescribeResult(repo)
+        fopt = LibGit2.DescribeFormatOptions(dirty_suffix=pointer(suffix))
+        LibGit2.format(gdr, options=fopt)
+    catch GitError
+        string(LibGit2.head_oid(repo)) * suffix
     end
     return c
 end
 
+@deprecate current_commit gitdescribe
+
 """
     tag!(d::Dict, gitpath = projectdir()) -> d
 Tag `d` by adding an extra field `commit` which will have as value
-the [`current_commit`](@ref) of the repository at `gitpath` (by default
+the [`gitdescribe`](@ref) of the repository at `gitpath` (by default
 the project's gitpath). Do nothing if a key `commit` already exists or
 if the Git repository is not found.
 
@@ -68,7 +94,7 @@ Dict{Symbol,Any} with 3 entries:
 """
 function tag!(d::Dict{K, T}, gitpath = projectdir(), source = nothing) where {K, T}
 
-    c = current_commit(gitpath)
+    c = gitdescribe(gitpath)
     c === nothing && return d
     if haskey(d, K("commit"))
         @warn "The dictionary already has a key named `commit`. We won't "*

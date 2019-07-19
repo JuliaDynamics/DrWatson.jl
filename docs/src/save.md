@@ -31,7 +31,7 @@ For reproducibility reasons (and also to not go insane when asking "HOW DID I GE
 To this end we have some functions that can be used to ensure reproducibility:
 
 ```@docs
-current_commit
+gitdescribe
 tag!
 @tag!
 ```
