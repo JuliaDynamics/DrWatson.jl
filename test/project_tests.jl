@@ -31,6 +31,9 @@ end
 @test_throws ErrorException initialize_project(path, name)
 
 initialize_project(path, name; force = true, authors = ["George", "Nick"])
+# test gitdescribe:
+com = gitdescribe(path)
+@test !occursin('-', com) # no dashes = no git describe
 
 @test projectname() == name
 for p in DrWatson.DEFAULT_PATHS

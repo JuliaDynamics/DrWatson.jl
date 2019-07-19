@@ -2,11 +2,11 @@ export gitdescribe, current_commit, tag!, @tag!
 export dict_list, dict_list_count
 
 """
-    gitdescribe(gitpath = projectdir()) -> git-description or commit
+    gitdescribe(gitpath = projectdir()) -> gitstr
 
-Return the output of `git describe` if an annotated git tag exists,
+Return a string `gitstr` with the output of `git describe` if an annotated git tag exists,
 otherwise the current active commit id of the Git repository present
-in `gitpath`, which by default is the project gitpath. If the repository
+in `gitpath`, which by default is the currently active project. If the repository
 is dirty when this function is called the string will end
 with `"_dirty"`.
 
@@ -21,17 +21,17 @@ latest commit hash is 334a0f225d9fba86161ab4c8892d4f023688159c, the output
 will be `v1.2.3-5-g334a0f`. Notice that git will shorten the hash if there
 are no ambiguous commits.
 
-More information about the `git describe` output can be found on 
+More information about the `git describe` output can be found on
 (https://git-scm.com/docs/git-describe)
 
 See also [`tag!`](@ref).
 
 ## Examples
 ```julia
-julia> gitdescribe()
+julia> gitdescribe() # a tag exists
 "v1.2.3-g7364ab"
 
-julia> gitdescribe()
+julia> gitdescribe() # a tag doesn't exist
 "96df587e45b29e7a46348a3d780db1f85f41de04"
 
 julia> gitdescribe(path_to_a_dirty_repo)
