@@ -27,7 +27,7 @@ end
 
 # Update messages
 display_update = true
-update_version = "0.6.0"
+update_version = "0.7.0"
 update_name = "update_v$update_version"
 if display_update
 if !isfile(joinpath(@__DIR__, update_name))
@@ -35,16 +35,11 @@ printstyled(stdout,
 """
 \nUpdate message: DrWatson v$update_version
 
-[BREAKING] The function `projectdir` as well
-as its derivatives like `datadir` have changed their internals to use
-`joinpath` and in general promote the healthier usage of `joinpath`.
-This means that their return value no longer end in "\"!.
-This will likely break usage of e.g. `datadir` that used `*`, like it was
-suggested in the old (unhealthy) documentation. We are very sorry
-for this inconvenience!
+New function `@savename`, `current_commit` deprecated for `gitdescribe`
+(with improved functionality)
 
-[NEW] New funtion `parse_savename` that reverse-engineers the output
-of `savename`!
+Do not forget the BREAKING change regarding `projectdir` that occured
+in v0.6.0!
 \n
 """; color = :light_magenta)
 touch(joinpath(@__DIR__, update_name))
