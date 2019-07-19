@@ -22,6 +22,7 @@ n = (x = x, y = y)
 @test d == @dict x y
 @test Dict("x" => x, "y" => y) == @strdict x y
 @test n == @ntuple x y
+@test (@savename x y) == savename(d)
 
 z = "lala"
 d2 = Dict(:x => x, :y => y, :z => z)
@@ -34,6 +35,7 @@ n2 = (x = x, y = y, z= z)
 @test savename(@ntuple x y) == "x=3_y=5"
 w = rand(50)
 @test savename(@dict x y w) == savename(@dict x y)
+@test (@savename x y w) == savename(@dict x y)
 @test savename(@ntuple x y w) == savename(@dict x y)
 
 @test ntuple2dict(@ntuple x y) == @dict x y
@@ -136,3 +138,5 @@ _prefix, _b, _suffix = DrWatson.parse_savename(joinpath("some_random_path_a=10.0
 @test _b["my_value"] == 10.1
 
 @test_throws ErrorException DrWatson.parse_savename("a=10",connector="__")
+@test_throws ErrorException("Savename cannot be parsed. There is a '_' after the last '='. "*
+        "Values containing '_' are not allowed when parsing.") DrWatson.parse_savename("a=10_1")
