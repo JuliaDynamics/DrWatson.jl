@@ -1,6 +1,6 @@
 # 0.7.0
 * New macro `@savename` that is a shortcut for `savename(@dict vars...)`
-* New function `gitdiscribe` (see below)
+* New function `gitdescribe` (see below)
 * **[DEPRECATED]** `current_commit()` has been deprecated and replaced by
   `gitdescribe()` which now replaces the output of `git describe` if an
   annotated tag exists, otherwise it will return the latest commit hash.
