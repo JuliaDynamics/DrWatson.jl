@@ -90,7 +90,7 @@ function collect_results!(filename, folder;
     end
 
     n = 0 # new entries added
-    existing_files = get(df, :path, ())
+    existing_files = :path in names(df) ? df[:,:path] : ()
     for file ∈ allfiles
         is_valid_file(file, valid_filetypes) || continue
         #already added?
@@ -99,7 +99,7 @@ function collect_results!(filename, folder;
         data = wload(file)
         df_new = to_data_row(data, file; kwargs...)
         #add filename
-        df_new[:path] = file
+        df_new[!, :path] .= file
 
         df = merge_dataframes!(df, df_new)
         n += 1
@@ -125,10 +125,10 @@ function merge_dataframes!(df1, df2)
         return vcat(df1, df2)
     else
         for m ∈ setdiff(names(df1), names(df2))
-            df2[m] = [missing]
+            df2[!, m] .= [missing]
         end
         for m ∈ setdiff(names(df2), names(df1))
-            df1[m] = fill(missing, size(df1,1))
+            DataFrames.insertcols!(df1, length(names(df1))+1, m => fill(missing, size(df1,1)))
         end
         return vcat(df1,df2)
     end
@@ -148,11 +148,11 @@ function to_data_row(data, file;
 
     #Add special things here
     for (ename, func) in special_list
-        try df[ename] = func(data)
+        try df[!, ename] .= [func(data), ]
         catch e
             @warn "While applying function $(nameof(func)) to file "*
             "$(file), got error $e. Using value `missing` instead."
-            df[ename] = missing
+            df[!, ename] .= [missing, ]
         end
     end
     return df
