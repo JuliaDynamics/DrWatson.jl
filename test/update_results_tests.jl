@@ -22,7 +22,7 @@ DrWatson.wsave(savename(d)*".bson", d)
 d = Dict("a" => 3, "b" => "4", "c" => rand(10), "d" => Float64)
 DrWatson.wsave(savename(d)*".bson", d)
 
-d = Dict("a" => 3, "b" => "5", "c" => rand(10), "d" => Float64)
+d = Dict("a" => 3, "c" => rand(10), "d" => Float64)
 DrWatson.wsave(savename(d)*".jld2", d)
 
 mkdir("subfolder")
@@ -44,7 +44,7 @@ folder = datadir()*"results"
 defaultname = joinpath(dirname(folder), "results_$(basename(folder)).bson")
 isfile(defaultname) && rm(defaultname)
 cres = collect_results!(defaultname, folder;
-subfolders = true, special_list=special_list, black_list = black_list)
+    subfolders = true, special_list=special_list, black_list = black_list)
 
 @test size(cres) == (4, 6)
 for n in (:a, :b, :lv_mean)
@@ -59,15 +59,15 @@ end
 
 mkdir("subsubfolder")
 cd("subsubfolder")
-d = Dict("a" => 7, "b" => 35. , "d" => Number, "c" => rand(5))
+d = Dict("b" => 35., "d" => Number, "c" => rand(5), "e" => "new_column")
 DrWatson.wsave(savename(d)*".bson", d)
 DrWatson.wsave(savename(d)*".jld2", d)
 
 cres2 = collect_results!(defaultname, folder;
-subfolders = true, special_list=special_list, black_list = black_list)
+    subfolders = true, special_list=special_list, black_list = black_list)
 
-@test size(cres2) == (6, 6)
-@test sort(names(cres)) == sort(names(cres2))
+@test size(cres2) == (6, 7)
+@test all(names(cres) .∈ Ref(names(cres2)))
 
 ###############################################################################
 #                           Load and analyze  DataFrame                       #
