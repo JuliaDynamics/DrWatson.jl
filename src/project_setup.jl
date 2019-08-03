@@ -27,7 +27,12 @@ projectdir(args...) = joinpath(projectdir(), args...)
 Join the path of the currently active project with `args`
 (typically other subfolders).
 """
-projectdir() = dirname(Base.active_project())
+function projectdir()
+    if is_standard_julia_project()
+        @warn "Using the standard Julia project."
+    end
+    dirname(Base.active_project())
+end
 projectdir(args...) = joinpath(projectdir(), args...)
 
 
