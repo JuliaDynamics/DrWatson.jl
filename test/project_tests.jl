@@ -4,8 +4,6 @@ cd()
 path = "test project"
 name = "lala"
 
-@test DrWatson.is_standard_julia_project()
-
 initialize_project(path, force = true)
 
 @test !DrWatson.is_standard_julia_project()
