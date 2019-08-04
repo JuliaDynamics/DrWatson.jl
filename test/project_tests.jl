@@ -1,8 +1,11 @@
-using Test, DrWatson
+using Pkg, Test, DrWatson
 
 cd()
 path = "test project"
 name = "lala"
+
+Pkg.activate()
+@test DrWatson.is_standard_julia_project()
 
 initialize_project(path, force = true)
 
