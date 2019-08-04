@@ -1,3 +1,7 @@
+# 0.7.1
+* `projectdir()` now warns if no project (other than the standard one) is
+  active
+
 # 0.7.0
 * New macro `@savename` that is a shortcut for `savename(@dict vars...)`
 * New function `gitdescribe` (see below)
