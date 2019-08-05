@@ -5,6 +5,7 @@ path = "test project"
 name = "lala"
 
 Pkg.activate()
+@show Base.active_project()
 @test DrWatson.is_standard_julia_project()
 
 initialize_project(path, force = true)
