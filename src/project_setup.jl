@@ -13,7 +13,7 @@ export findproject, quickactivate
 Returns true if the standard Julia project is active.
 """
 function is_standard_julia_project()
-    Base.active_project() == Base.load_path_expand("@v$(VERSION.major).$(VERSION.minor)")
+    Base.active_project() == Base.load_path_expand("@v#.#")
 end
 
 
