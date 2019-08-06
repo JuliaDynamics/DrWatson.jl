@@ -1,10 +1,17 @@
-using Test, DrWatson
+using Pkg, Test, DrWatson
 
 cd()
 path = "test project"
 name = "lala"
 
+Pkg.activate()
+@show Base.active_project()
+@show Base.load_path_expand("@v$(VERSION.major).$(VERSION.minor)")
+# @test DrWatson.is_standard_julia_project() # we cant test this on CI
+
 initialize_project(path, force = true)
+
+@test !DrWatson.is_standard_julia_project()
 
 @test projectname() == path
 @test typeof(findproject(@__DIR__)) == String

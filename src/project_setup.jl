@@ -8,6 +8,16 @@ export findproject, quickactivate
 @deprecate scriptdir scriptsdir #TODO: remove in next release
 
 """
+    function is_standard_julia_project()
+
+Returns true if the standard Julia project is active.
+"""
+function is_standard_julia_project()
+    Base.active_project() == Base.load_path_expand("@v#.#")
+end
+
+
+"""
     projectdir()
 Return the directory of the currently active project.
 
@@ -17,7 +27,12 @@ projectdir(args...) = joinpath(projectdir(), args...)
 Join the path of the currently active project with `args`
 (typically other subfolders).
 """
-projectdir() = dirname(Base.active_project())
+function projectdir()
+    if is_standard_julia_project()
+        @warn "Using the standard Julia project."
+    end
+    dirname(Base.active_project())
+end
 projectdir(args...) = joinpath(projectdir(), args...)
 
 
