@@ -8,7 +8,11 @@ julia:
   - 1.1
   - 1.0
   # - nightly
-
+  
+before_script:
+  - git config --global user.name "GitUser"
+  - git config --global user.email "git@us.er"
+  
 matrix:
   allow_failures:
   - julia: nightly
@@ -24,8 +28,6 @@ jobs:
       julia: 1.1
       os: linux
       script:
-        - git config --global user.name "GitUser"
-        - git config --global user.email "git@us.er"
         - julia --project=docs/ -e 'using Pkg; Pkg.develop(PackageSpec(path=pwd()));
                                                Pkg.instantiate()'
         - julia --project=docs/ docs/make.jl
