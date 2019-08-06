@@ -339,26 +339,26 @@ function parse_savename(filename::AbstractString;
     # Add leading directory back to prefix
     prefix = joinpath(prefix_part,prefix)
     parameters = Dict{String,Any}()
-    # Regex that matches smalles possible range between = and connector.
+    # Regex that matches smallest possible range between = and connector.
     # This way it is possible to corretly match something where the
     # connector ("_") was used as a variable name.
-    # var_with_undersocore_1=foo_var=123.32_var_name_with_underscore=4.4
-    # var_with_undersocore_1[=foo_]var[=123.32_]var_name_with_underscore=4.4
+    # var_with_underscore_1=foo_var=123.32_var_name_with_underscore=4.4
+    # var_with_underscore_1[=foo_]var[=123.32_]var_name_with_underscore=4.4
     name_seperator = Regex("=[^$connector]+$connector")
     c_idx = 1
     while (next_range = findnext(name_seperator,_parameters,c_idx)) != nothing
-        equal_sign, end_of_value = first(next_range), last(next_range)-1
-        parameters[_parameters[c_idx:equal_sign-1]] =
-            parse_from_savename_value(parsetypes,_parameters[equal_sign+1:end_of_value])
-        c_idx = end_of_value+2
+        equal_sign, end_of_value = first(next_range), prevind(_parameters,last(next_range))
+        parameters[_parameters[c_idx:prevind(_parameters,equal_sign)]] =
+            parse_from_savename_value(parsetypes,_parameters[nextind(_parameters,equal_sign):end_of_value])
+        c_idx = nextind(_parameters,end_of_value,2)
     end
     # The last = cannot be followed by a connector, so it's not captured by the regex.
     equal_sign = findnext("=",_parameters,c_idx)
     equal_sign == nothing && error(
         "Savename cannot be parsed. There is a '$connector' after the last '='. "*
         "Values containing '$connector' are not allowed when parsing.")
-    parameters[_parameters[c_idx:first(equal_sign)-1]] =
-        parse_from_savename_value(parsetypes,_parameters[first(equal_sign)+1:end])
+    parameters[_parameters[c_idx:prevind(_parameters,first(equal_sign))]] =
+        parse_from_savename_value(parsetypes,_parameters[nextind(_parameters,first(equal_sign)):end])
     return prefix,parameters,suffix
 end
 

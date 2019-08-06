@@ -140,3 +140,14 @@ _prefix, _b, _suffix = DrWatson.parse_savename(joinpath("some_random_path_a=10.0
 @test_throws ErrorException DrWatson.parse_savename("a=10",connector="__")
 @test_throws ErrorException("Savename cannot be parsed. There is a '_' after the last '='. "*
         "Values containing '_' are not allowed when parsing.") DrWatson.parse_savename("a=10_1")
+
+unicode_chars_name="3pb_Gc₁=3_Gc₂=0.1_or=T_α₁=4_α₂=1_β=3.vtu"
+
+@test parse_savename(unicode_chars_name) == ("3pb",Dict(
+    "Gc₁"=>3,
+    "Gc₂"=>0.1,
+    "or"=>"T",
+    "α₁"=>4,
+    "α₂"=>1,
+    "β"=>3),"vtu")
+
