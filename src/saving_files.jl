@@ -1,10 +1,10 @@
 export produce_or_load, tagsave, @tagsave, safesave
 
 """
-    produce_or_load([prefix="",] c, f; kwargs...) -> file, path
-Let `s = savename(prefix, c, suffix)`.
+    produce_or_load([path="",] c, f; kwargs...) -> file, s
+Let `s = joinpath(path, savename(c, suffix))`.
 If a file named `s` exists then load it and return it, along
-with the path that it is saved at, `s` (default behavior).
+with the global path that it is saved at (`s`).
 
 If the file does not exist then call `file = f(c)`, save `file` as
 `s` and then return `file, s`.
@@ -12,7 +12,7 @@ The function `f` must return a dictionary.
 The macros [`@dict`](@ref) and [`@strdict`](@ref) can help with that.
 
 ## Keywords
-* `tag = true` : Add the Git commit of the project in the saved file.
+* `tag = true` : Save the file using [`tagsave`](@ref).
 * `gitpath = projectdir()` : Path to search for a Git repo.
 * `suffix = "bson"` : Used in `savename`.
 * `force = false` : If `true` then don't check if file `s` exists and produce
@@ -23,14 +23,14 @@ The macros [`@dict`](@ref) and [`@strdict`](@ref) can help with that.
 * `verbose = true` : print info about the process.
 * `kwargs...` : All other keywords are propagated to `savename`.
 
-See also [`savename`](@ref) and [`tag!`](@ref).
+See also [`savename`](@ref).
 """
 produce_or_load(c, f; kwargs...) = produce_or_load("", c, f; kwargs...)
-function produce_or_load(prefix::String, c, f;
+function produce_or_load(path::String, c, f;
     tag::Bool = true, gitpath = projectdir(), loadfile = true,
     suffix = "bson", force = false, verbose = true, kwargs...)
 
-    s = savename(prefix, c, suffix; kwargs...)
+    s = joinpath(path, savename(c, suffix; kwargs...))
 
     if !force && isfile(s)
         if loadfile

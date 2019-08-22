@@ -1,3 +1,5 @@
+# 0.8.0
+
 # 0.7.1
 * `projectdir()` now warns if no project (other than the standard one) is
   active
