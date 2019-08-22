@@ -20,8 +20,9 @@ the prefix/suffix the function will do:
 prefix_key1=val1_key2=val2_key3=val3.suffix
 ```
 assuming you chose the default `connector`, see below. Notice
-that `prefix` can be any path and in addition if
-it ends as a path (`/` or `\\`) then the `connector` is ommited.
+that `prefix` can be any path, and in addition if
+it ends with `/` or `\\` then the `connector` is ommited.
+It is not recommended however to use paths in `prefix`.
 See [`default_prefix`](@ref) for more.
 
 `savename` can be very conveniently combined with
