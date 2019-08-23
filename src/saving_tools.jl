@@ -65,6 +65,28 @@ function gitdescribe(gitpath = projectdir())
     return c
 end
 
+"""
+    gitpatch(gitpath = projectdir())
+
+Generates a patch describing the changes of a dirty repository
+compared to its last commit; i.e. what `git diff HEAD` produces.
+"""
+function gitpatch(gitpath = projectdir())
+    try
+        repo = LibGit2.GitRepo(gitpath)
+    catch er
+        @warn "The directory ('$gitpath') is not a Git repository, "*
+              "returning `nothing` instead of a patch."
+        return nothing
+    end
+    # tree = LibGit2.GitTree(repo, "HEAD^{tree}")
+    # diff = LibGit2.diff_tree(repo, tree)
+    # now there is no way to generate the patch with LibGit2.jl.
+    # Instead use commands:
+    patch = read(`git --git-dir=$(gitpath)/.git diff HEAD`, String)
+    return patch
+end
+
 @deprecate current_commit gitdescribe
 
 """
@@ -92,10 +114,11 @@ Dict{Symbol,Any} with 3 entries:
   :x      => 3
 ```
 """
-function tag!(d::Dict{K, T}, gitpath = projectdir(), source = nothing) where {K, T}
+function tag!(d::Dict{K, T}, gitpath = projectdir(), source = nothing, storepatch=true) where {K, T}
 
     c = gitdescribe(gitpath)
-    c === nothing && return d
+    patch = gitpatch(gitpath)
+    c === nothing && return d # gitpath is not a git repo
     if haskey(d, K("commit"))
         @warn "The dictionary already has a key named `commit`. We won't "*
         "add any Git information."
@@ -103,9 +126,15 @@ function tag!(d::Dict{K, T}, gitpath = projectdir(), source = nothing) where {K,
     end
     if String <: T
         d[K("commit")] = c
+        if patch!=""
+            d[K("gitpatch")] = patch
+        end
     else
         d = Dict{K, promote_type(T, String)}(d)
         d[K("commit")] = c
+        if patch!=""
+            d[K("gitpatch")] = patch
+        end
     end
     if source != nothing
         if haskey(d, K("script"))
