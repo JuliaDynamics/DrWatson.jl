@@ -20,8 +20,9 @@ the prefix/suffix the function will do:
 prefix_key1=val1_key2=val2_key3=val3.suffix
 ```
 assuming you chose the default `connector`, see below. Notice
-that `prefix` can be any path and in addition if
-it ends as a path (`/` or `\\`) then the `connector` is ommited.
+that `prefix` can be any path, and in addition if
+it ends with `/` or `\\` then the `connector` after `prefix` is ommited
+(although `joinpath` should be preferred instead of putting paths in `prefix`).
 See [`default_prefix`](@ref) for more.
 
 `savename` can be very conveniently combined with
@@ -158,8 +159,8 @@ will in fact return a string that looks like
 ```julia
 "path/to/data/lala_p1=..."
 ```
-This allows [`savename`](@ref) to nicely inderplay with
-[`produce_or_load`](@ref) as well as paths-as-prefixes.
+This allows [`savename`](@ref) to work with paths-as-prefixes
+(even though this is not something recommended).
 """
 default_prefix(c) = ""
 

@@ -55,7 +55,17 @@ for ending ∈ ("bson", "jld2")
     @test sim["simulation"].T == T
     rm(savename(simulation, ending))
     @test !isfile(savename(simulation, ending))
+
+    p = String(@__DIR__)
+    pre = "pre"
+    expected = joinpath(p, savename(pre, simulation, ending))
+    @test !isfile(expected)
+    sim, path = produce_or_load(p, simulation, f; suffix = ending, prefix = pre)
+    @test path == expected
+    @test isfile(path)
+    rm(path)
 end
+
 @test produce_or_load(simulation, f; loadfile = false)[1] == nothing
 rm(savename(simulation, "bson"))
 @test !isfile(savename(simulation, "bson"))
