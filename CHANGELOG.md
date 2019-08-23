@@ -1,4 +1,5 @@
 # 0.8.0
+* **[BREAKING]** : Slightly changed how `produce_or_load` uses `path` and interacts with `savename`, to better incorporate the changes done in version 0.6.0. `prefix` is now also supported.
 
 # 0.7.1
 * `projectdir()` now warns if no project (other than the standard one) is
