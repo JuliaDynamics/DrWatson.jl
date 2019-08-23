@@ -159,7 +159,8 @@ will in fact return a string that looks like
 ```julia
 "path/to/data/lala_p1=..."
 ```
-This allows [`savename`](@ref) to work with paths-as-prefixes.
+This allows [`savename`](@ref) to work with paths-as-prefixes
+(even though this is not something recommended).
 """
 default_prefix(c) = ""
 
