@@ -21,15 +21,15 @@ end
 t = f(simulation)
 tagsave(savename(simulation, "bson"), t, findproject())
 file = load(savename(simulation, "bson"))
-@test "commit" ∈ keys(file)
-@test file["commit"] |> typeof == String
+@test "gitcommit" ∈ keys(file)
+@test file["gitcommit"] |> typeof == String
 rm(savename(simulation, "bson"))
 
 t = f(simulation)
 @tagsave(savename(simulation, "bson"), t, false, findproject())
 file = load(savename(simulation, "bson"))
-@test "commit" ∈ keys(file)
-@test file["commit"] |> typeof == String
+@test "gitcommit" ∈ keys(file)
+@test file["gitcommit"] |> typeof == String
 @test "script" ∈ keys(file)
 @test file["script"] |> typeof == String
 @test file["script"] == joinpath("test", "savefiles_tests.jl#29")

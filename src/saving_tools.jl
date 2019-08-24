@@ -91,9 +91,9 @@ end
 
 """
     tag!(d::Dict, gitpath = projectdir()) -> d
-Tag `d` by adding an extra field `commit` which will have as value
+Tag `d` by adding an extra field `gitcommit` which will have as value
 the [`gitdescribe`](@ref) of the repository at `gitpath` (by default
-the project's gitpath). Do nothing if a key `commit` already exists or
+the project's gitpath). Do nothing if a key `gitcommit` already exists or
 if the Git repository is not found.
 
 Notice that if `String` is not a subtype of the value type of `d` then
@@ -110,7 +110,7 @@ Dict{Symbol,Int64} with 2 entries:
 julia> tag!(d)
 Dict{Symbol,Any} with 3 entries:
   :y      => 4
-  :commit => "96df587e45b29e7a46348a3d780db1f85f41de04"
+  :gitcommit => "96df587e45b29e7a46348a3d780db1f85f41de04"
   :x      => 3
 ```
 """
@@ -119,19 +119,19 @@ function tag!(d::Dict{K, T}, gitpath = projectdir(), source = nothing, storepatc
     c = gitdescribe(gitpath)
     patch = gitpatch(gitpath)
     c === nothing && return d # gitpath is not a git repo
-    if haskey(d, K("commit"))
-        @warn "The dictionary already has a key named `commit`. We won't "*
+    if haskey(d, K("gitcommit"))
+        @warn "The dictionary already has a key named `gitcommit`. We won't "*
         "add any Git information."
         return d
     end
     if String <: T
-        d[K("commit")] = c
+        d[K("gitcommit")] = c
         if patch!=""
             d[K("gitpatch")] = patch
         end
     else
         d = Dict{K, promote_type(T, String)}(d)
-        d[K("commit")] = c
+        d[K("gitcommit")] = c
         if patch!=""
             d[K("gitpatch")] = patch
         end
@@ -164,7 +164,7 @@ julia> d = Dict(:x => 3)Dict{Symbol,Int64} with 1 entry:
 
 julia> @tag!(d) # running from a script or inline evaluation of Juno
 Dict{Symbol,Any} with 3 entries:
-  :commit => "618b72bc0936404ab6a4dd8d15385868b8299d68"
+  :gitcommit => "618b72bc0936404ab6a4dd8d15385868b8299d68"
   :script => "test\\stools_tests.jl#10"
   :x      => 3
 ```
