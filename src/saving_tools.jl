@@ -41,7 +41,7 @@ julia> gitdescribe(path_to_a_dirty_repo)
 function gitdescribe(gitpath = projectdir())
     # Here we test if the gitpath is a git repository.
     try
-        repo = LibGit2.GitRepo(gitpath)
+        repo = LibGit2.GitRepoExt(gitpath)
     catch er
         @warn "The directory ('$gitpath') is not a Git repository, "*
               "returning `nothing` instead of the commit ID."
@@ -54,7 +54,7 @@ function gitdescribe(gitpath = projectdir())
     end
     # then we return the output of `git describe` or the latest commit hash
     # if no annotated tags are available
-    repo = LibGit2.GitRepo(gitpath)
+    repo = LibGit2.GitRepoExt(gitpath)
     c = try
         gdr = LibGit2.GitDescribeResult(repo)
         fopt = LibGit2.DescribeFormatOptions(dirty_suffix=pointer(suffix))
@@ -73,7 +73,7 @@ compared to its last commit; i.e. what `git diff HEAD` produces.
 """
 function gitpatch(gitpath = projectdir())
     try
-        repo = LibGit2.GitRepo(gitpath)
+        repo = LibGit2.GitRepoExt(gitpath)
     catch er
         @warn "The directory ('$gitpath') is not a Git repository, "*
               "returning `nothing` instead of a patch."
@@ -83,7 +83,7 @@ function gitpatch(gitpath = projectdir())
     # diff = LibGit2.diff_tree(repo, tree)
     # now there is no way to generate the patch with LibGit2.jl.
     # Instead use commands:
-    patch = read(`git --git-dir=$(gitpath)/.git diff HEAD`, String)
+    patch = read(`git -C $(gitpath) diff HEAD`, String)
     return patch
 end
 
