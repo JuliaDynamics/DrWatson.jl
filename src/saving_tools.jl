@@ -170,9 +170,9 @@ Dict{Symbol,Any} with 3 entries:
   :x      => 3
 ```
 """
-macro tag!(d, gitpath = projectdir())
+macro tag!(d, gitpath = projectdir(), storepatch = true)
     s = QuoteNode(__source__)
-    :(tag!($(esc(d)), $(esc(gitpath)), $s))
+    :(tag!($(esc(d)), $(esc(gitpath)), $(esc(storepatch)), $s))
 end
 
 """
