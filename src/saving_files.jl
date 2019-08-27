@@ -27,7 +27,7 @@ See also [`savename`](@ref).
 """
 produce_or_load(c, f; kwargs...) = produce_or_load("", c, f; kwargs...)
 function produce_or_load(path::String, c, f;
-    tag::Bool = true, gitpath = projectdir(), loadfile = true,
+    tag::Bool = true, gitpath = projectdir(), storepatch = true, loadfile = true,
     suffix = "bson", prefix = default_prefix(c),
     force = false, verbose = true, kwargs...)
 
@@ -50,7 +50,7 @@ function produce_or_load(path::String, c, f;
         try
             mkpath(dirname(s))
             if tag
-                tagsave(s, file, false, gitpath)
+                tagsave(s, file, false, gitpath, storepatch)
             else
             wsave(s, copy(file))
         end
@@ -70,13 +70,13 @@ end
 #                             tag saving                                       #
 ################################################################################
 """
-    tagsave(file::String, d::Dict [, safe = false, gitpath = projectdir()])
+    tagsave(file::String, d::Dict [, safe = false, gitpath = projectdir(), storepatch = true])
 First [`tag!`](@ref) dictionary `d` and then save `d` in `file`.
 If `safe = true` save the file using [`safesave`](@ref).
 """
 tagsave(file, d, p::String) = tagsave(file, d, false, p)
-function tagsave(file, d, safe = false, gitpath = projectdir(), s = nothing)
-    d2 = tag!(d, gitpath, s)
+function tagsave(file, d, safe = false, gitpath = projectdir(), storepatch = true, s = nothing)
+    d2 = tag!(d, gitpath, storepatch, s)
     mkpath(dirname(file))
     if safe
         safesave(file, copy(d2))
@@ -91,9 +91,9 @@ end
 Same as [`tagsave`](@ref) but also add a field `script` that records
 the local path of the script that called `@tagsave`, see [`@tag!`](@ref).
 """
-macro tagsave(file, d, safe::Bool = false, gitpath = projectdir())
+macro tagsave(file, d, safe::Bool = false, gitpath = projectdir(), storepatch = true)
     s = QuoteNode(__source__)
-    :(tagsave($(esc(file)), $(esc(d)), $(esc(safe)), $(esc(gitpath)), $s))
+    :(tagsave($(esc(file)), $(esc(d)), $(esc(safe)), $(esc(gitpath)), $(esc(storepatch)), $s))
 end
 
 ################################################################################

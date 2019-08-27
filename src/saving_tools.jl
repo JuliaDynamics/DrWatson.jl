@@ -65,18 +65,47 @@ function gitdescribe(gitpath = projectdir())
     return c
 end
 
-@deprecate current_commit gitdescribe
+"""
+    gitpatch(gitpath = projectdir())
+
+Generates a patch describing the changes of a dirty repository
+compared to its last commit; i.e. what `git diff HEAD` produces.
+"""
+function gitpatch(gitpath = projectdir())
+    try
+        repo = LibGit2.GitRepo(gitpath)
+    catch er
+        @warn "The directory ('$gitpath') is not a Git repository, "*
+              "returning `nothing` instead of a patch."
+        return nothing
+    end
+    # tree = LibGit2.GitTree(repo, "HEAD^{tree}")
+    # diff = LibGit2.diff_tree(repo, tree)
+    # now there is no way to generate the patch with LibGit2.jl.
+    # Instead use commands:
+    patch = read(`git --git-dir=$(gitpath)/.git diff HEAD`, String)
+    return patch
+end
 
 """
-    tag!(d::Dict, gitpath = projectdir()) -> d
-Tag `d` by adding an extra field `commit` which will have as value
+    tag!(d::Dict, gitpath = projectdir(), storepatch = true) -> d
+Tag `d` by adding an extra field `gitcommit` which will have as value
 the [`gitdescribe`](@ref) of the repository at `gitpath` (by default
-the project's gitpath). Do nothing if a key `commit` already exists or
-if the Git repository is not found.
+the project's gitpath). Do nothing if a key `gitcommit` already exists
+or if the Git repository is not found. If the git repository is dirty,
+i.e. there are un-commited changes, then the output of `git diff HEAD`
+is stored in the field `gitpatch`.  Note that patches for binary files
+are not stored.
 
 Notice that if `String` is not a subtype of the value type of `d` then
-a new dictionary is created and returned. Otherwise the operation
-is inplace (and the dictionary is returned again).
+a new dictionary is created and returned. Otherwise the operation is
+inplace (and the dictionary is returned again).
+
+To restore a repository to the state of a particular model-run do:
+- checkout the relevant commit with `git checkout xyz` where
+xyz is the value stored
+- apply the patch `git apply patch`, where the string stored
+in the `gitpatch` field needs to be written to the file `patch`.
 
 ## Examples
 ```julia
@@ -87,25 +116,32 @@ Dict{Symbol,Int64} with 2 entries:
 
 julia> tag!(d)
 Dict{Symbol,Any} with 3 entries:
-  :y      => 4
-  :commit => "96df587e45b29e7a46348a3d780db1f85f41de04"
-  :x      => 3
+  :y => 4
+  :gitcommit => "96df587e45b29e7a46348a3d780db1f85f41de04"
+  :x => 3
 ```
 """
-function tag!(d::Dict{K, T}, gitpath = projectdir(), source = nothing) where {K, T}
+function tag!(d::Dict{K, T}, gitpath = projectdir(), storepatch = true, source = nothing) where {K, T}
 
     c = gitdescribe(gitpath)
-    c === nothing && return d
-    if haskey(d, K("commit"))
-        @warn "The dictionary already has a key named `commit`. We won't "*
+    patch = gitpatch(gitpath)
+    c === nothing && return d # gitpath is not a git repo
+    if haskey(d, K("gitcommit"))
+        @warn "The dictionary already has a key named `gitcommit`. We won't "*
         "add any Git information."
         return d
     end
     if String <: T
-        d[K("commit")] = c
+        d[K("gitcommit")] = c
+        if patch!=""
+            d[K("gitpatch")] = patch
+        end
     else
         d = Dict{K, promote_type(T, String)}(d)
-        d[K("commit")] = c
+        d[K("gitcommit")] = c
+        if patch!=""
+            d[K("gitpatch")] = patch
+        end
     end
     if source != nothing
         if haskey(d, K("script"))
@@ -135,14 +171,14 @@ julia> d = Dict(:x => 3)Dict{Symbol,Int64} with 1 entry:
 
 julia> @tag!(d) # running from a script or inline evaluation of Juno
 Dict{Symbol,Any} with 3 entries:
-  :commit => "618b72bc0936404ab6a4dd8d15385868b8299d68"
+  :gitcommit => "618b72bc0936404ab6a4dd8d15385868b8299d68"
   :script => "test\\stools_tests.jl#10"
   :x      => 3
 ```
 """
-macro tag!(d, gitpath = projectdir())
+macro tag!(d, gitpath = projectdir(), storepatch = true)
     s = QuoteNode(__source__)
-    :(tag!($(esc(d)), $(esc(gitpath)), $s))
+    :(tag!($(esc(d)), $(esc(gitpath)), $(esc(storepatch)), $s))
 end
 
 """
