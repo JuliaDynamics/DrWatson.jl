@@ -1,5 +1,7 @@
 # 0.8.0
 * **[BREAKING]** : Slightly changed how `produce_or_load` uses `path` and interacts with `savename`, to better incorporate the changes done in version 0.6.0. `prefix` is now also supported.
+* `tag!` and co now also store the git diff patch if the repo is dirty (#80).
+* **[BREAKING]** : `tag!` now saves the commit information into a field `gitcommit` instead of just `commit`.
 
 # 0.7.1
 * `projectdir()` now warns if no project (other than the standard one) is

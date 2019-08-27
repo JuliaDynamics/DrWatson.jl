@@ -87,8 +87,6 @@ function gitpatch(gitpath = projectdir())
     return patch
 end
 
-@deprecate current_commit gitdescribe
-
 """
     tag!(d::Dict, gitpath = projectdir(), storepatch = true) -> d
 Tag `d` by adding an extra field `gitcommit` which will have as value
@@ -99,21 +97,29 @@ i.e. there are un-commited changes, then the output of `git diff HEAD`
 is stored in the field `gitpatch`.  Note that patches for binary files
 are not stored.
 
-To restore a repository to the state of a particular model-run do:
-- checkout the relevant commit with `git checkout xyz` where
-  xyz is the value stored
-- apply the patch `git apply patch`, where the string stored
-  in the `gitpatch` field needs to be written to the file `patch`.
-
 Notice that if `String` is not a subtype of the value type of `d` then
 a new dictionary is created and returned. Otherwise the operation is
 inplace (and the dictionary is returned again).
 
-## Examples ```julia julia> d = Dict(:x => 3, :y => 4)
-Dict{Symbol,Int64} with 2 entries: :y => 4 :x => 3
+To restore a repository to the state of a particular model-run do:
+- checkout the relevant commit with `git checkout xyz` where
+xyz is the value stored
+- apply the patch `git apply patch`, where the string stored
+in the `gitpatch` field needs to be written to the file `patch`.
 
-julia> tag!(d) Dict{Symbol,Any} with 3 entries: :y => 4 :gitcommit =>
-"96df587e45b29e7a46348a3d780db1f85f41de04" :x => 3 ```
+## Examples
+```julia
+julia> d = Dict(:x => 3, :y => 4)
+Dict{Symbol,Int64} with 2 entries:
+  :y => 4
+  :x => 3
+
+julia> tag!(d)
+Dict{Symbol,Any} with 3 entries:
+  :y => 4
+  :gitcommit => "96df587e45b29e7a46348a3d780db1f85f41de04"
+  :x => 3
+```
 """
 function tag!(d::Dict{K, T}, gitpath = projectdir(), storepatch = true, source = nothing) where {K, T}
 

@@ -31,9 +31,10 @@ For reproducibility reasons (and also to not go insane when asking "HOW DID I GE
 To this end we have some functions that can be used to ensure reproducibility:
 
 ```@docs
-gitdescribe
 tag!
 @tag!
+gitdescribe
+DrWatson.gitpatch
 ```
 
 Please notice that `tag!` will operate in place only when possible. If not possible then a new dictionary is returned. Also (importantly) these functions will **never error** as they are most commonly used when saving simulations and this could risk data not being saved!
