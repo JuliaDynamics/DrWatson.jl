@@ -10,7 +10,8 @@ in `gitpath`, which by default is the currently active project. If the repositor
 is dirty when this function is called the string will end
 with `"_dirty"`.
 
-Return `nothing` if `gitpath` is not a Git repository.
+Return `nothing` if `gitpath` is not a Git repository, i.e. a directory within a git
+repository.
 
 The format of the `git describe` output in general is
 
@@ -70,6 +71,8 @@ end
 
 Generates a patch describing the changes of a dirty repository
 compared to its last commit; i.e. what `git diff HEAD` produces.
+The `gitpath` needs to point to a directory within a git repository,
+otherwise `nothing` is returned.
 """
 function gitpatch(gitpath = projectdir())
     try
