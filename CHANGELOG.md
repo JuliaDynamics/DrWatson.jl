@@ -1,6 +1,10 @@
 # 0.8.0
+* **[BREAKING]** : The `gitpath` argument used among many functions
+  can now also point to a subdirectory within a git repository.
+  Previously it had to be the top directory (i.e. the one containing
+  `.git/`).
 * **[BREAKING]** : Slightly changed how `produce_or_load` uses `path` and interacts with `savename`, to better incorporate the changes done in version 0.6.0. `prefix` is now also supported.
-* `tag!` and co now also store the git diff patch if the repo is dirty (#80).
+* `tag!` and co now also store the git diff patch if the repo is dirty, see `gitpatch` (#80).
 * **[BREAKING]** : `tag!` now saves the commit information into a field `gitcommit` instead of just `commit`.
 
 # 0.7.1

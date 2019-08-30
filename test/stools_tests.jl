@@ -2,7 +2,7 @@ using DrWatson, Test
 
 # Test commit function
 com = gitdescribe(@__DIR__)
-@test com === nothing
+@test com isa String
 
 com = gitdescribe(dirname(@__DIR__))
 @test com !== nothing
@@ -12,7 +12,7 @@ com = gitdescribe(dirname(@__DIR__))
 d1 = Dict(:x => 3, :y => 4)
 d2 = Dict("x" => 3, "y" => 4)
 for d in (d1, d2)
-    d = tag!(d, dirname(@__DIR__))
+    d = tag!(d, @__DIR__)
 
     @test haskey(d, keytype(d)(:gitcommit))
     @test d[keytype(d)(:gitcommit)] |> typeof <: String
@@ -21,11 +21,9 @@ end
 # @tag!
 for d in (d1, d2)
     d = @tag!(d, @__DIR__)
-    @test !haskey(d, keytype(d)(:gitcommit))
-
-    d = @tag!(d, dirname(@__DIR__))
+    @test haskey(d, keytype(d)(:gitcommit))
     @test d[keytype(d)(:gitcommit)] |> typeof <: String
-    @test d[keytype(d)(:script)][1:4] == "test"
+    @test split(d[keytype(d)(:script)], '#')[1] == basename(@__FILE__)
 end
 
 # Test dictionary expansion
