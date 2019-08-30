@@ -57,9 +57,7 @@ DrWatson follows these simple principles:
 This is why we believe DrWatson can help you focus on the science and not worry about project code management.
 
 ## Poster
-Click [here](https://github.com/JuliaDynamics/JuliaDynamics/blob/master/videos/drwatson/DrWatson-poster-0.3.0.pdf?raw=true) for the pdf file or just download the following figure:
-
-![poster DrWatson](https://github.com/JuliaDynamics/JuliaDynamics/blob/master/videos/drwatson/DrWatson-poster-0.3.0.jpg?raw=true)
+![poster DrWatson](https://github.com/JuliaDynamics/JuliaDynamics/blob/master/videos/drwatson/DrWatson-poster-1.0.0.jpg?raw=true)
 
 ## Inspirations
 
