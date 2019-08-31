@@ -257,6 +257,7 @@ function cross_estimation(data)
     get(data, "noisy_training", false) && (prefix *= "_noisy")
     get(data, "symmetric_training", false) && (prefix *= "_symmetric")
     sname = savename((@dict γ τ r c N), "bson")
+    mkpath(datadir("results", data["model"]))
     save(datadir("results", data["model"], sname), data)
     return true
 end
@@ -267,13 +268,12 @@ end
 One way to run many simulations is with `map` (identical process for using `pmap`).
 To run all my simulations I just do:
 ```@example customizing
-mkpath(datadir("results"))
 dicts = dict_list(general_args)
 map(cross_estimation, dicts) # or pmap
 
 # load one of the files to be sure everything is ok:
-filename = readdir(datadir("results"))[1]
-file = load(datadir("results", filename))
+filename = readdir(datadir("results", "barkley"))[1]
+file = load(datadir("results", "barkley", filename))
 ```
 
 ### Using a Serial Cluster
@@ -306,8 +306,8 @@ Continuing from the [Preparing & running jobs](@ref) section, we now want to col
 It is quite simple actually! But because we don't want to include the error, we have to black-list it:
 ```@example customizing
 using DataFrames # this is necessary to access collect_results!
-black_list = ["error"]
-res = collect_results!(datadir("results"); black_list = black_list)
+bl = ["error"]
+res = collect_results!(datadir("results"); black_list = bl, subfolders = true)
 ```
 
 We can take also advantage of the basic processing functionality of [`collect_results!`](@ref) to use the excluded `"error"` column, replacing it with its average value:
@@ -316,17 +316,18 @@ using Statistics: mean
 special_list = [:avrg_error => data -> mean(data["error"])]
 res = collect_results(
       datadir("results"),
-      black_list = black_list,
-      special_list = special_list
+      black_list = bl,
+      special_list = special_list,
+      subfolders = true
 )
 
-deletecols!(res, :path) # don't show path this time
+select!(res, Not(:path)) # don't show path this time
 ```
 
 As you see here we used [`collect_results`](@ref) instead of the in-place version, since there already exists a `DataFrame` with all results processed (and thus everything would be skipped).
 
 ## Adapting to new data/parameters
-We once again continue from the above example. But we suddenly realize that we need to run some new simulations with some new parameters that _do not exist_ in the old simulations... Well, DrWatson says "no problem!" :)
+We once again continue from the above example. But we no we need to run some new simulations with some new parameters that _do not exist_ in the old simulations... Well, DrWatson says "no problem!" :)
 
 Let's save these new parameters in a different subfolder, to have a neatly organized project:
 ```@example customizing
@@ -343,23 +344,18 @@ As you can see, there here there are two parameters not existing in previous sim
 
 No problem though, let's run the new simulations:
 ```@example customizing
-mkpath(datadir("results", "sym"))
-
 dicts = dict_list(general_args_new)
 map(cross_estimation, dicts)
 
 # load one of the files to be sure everything is ok:
-filename = readdir(datadir("results", "sym"))[1]
-file = load(datadir("results", "sym", filename))
+filename = readdir(datadir("results", "bocf"))[1]
+file = load(datadir("results", "bocf", filename))
 ```
 
 Alright, now we want to _add_ these new runs to our existing dataframe that has collected all previous results. This is straight-forward:
 ```@example customizing
-res = collect_results!(datadir("results"));
-      black_list = black_list, subfolders = true)
+res = collect_results!(datadir("results"); black_list = bl, subfolders = true)
 
-deletecols!(res, :path) # don't show path
+select!(res, Not(:path)) # don't show path this time
 ```
-(`subfolders = true` ensures that we scan the new data)
-
 All `missing` entries were adjusted automatically :)

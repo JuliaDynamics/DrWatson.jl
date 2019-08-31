@@ -27,7 +27,7 @@ end
 
 # Update messages
 display_update = true
-update_version = "0.7.0"
+update_version = "1.0.0"
 update_name = "update_v$update_version"
 if display_update
 if !isfile(joinpath(@__DIR__, update_name))
@@ -35,11 +35,9 @@ printstyled(stdout,
 """
 \nUpdate message: DrWatson v$update_version
 
-New function `@savename`, `current_commit` deprecated for `gitdescribe`
-(with improved functionality)
+Welcome to the first major release!
 
-Do not forget the BREAKING change regarding `projectdir` that occured
-in v0.6.0!
+Checkout the CHANGELOG for breaking changes.
 \n
 """; color = :light_magenta)
 touch(joinpath(@__DIR__, update_name))
