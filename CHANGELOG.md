@@ -1,3 +1,6 @@
+# 1.0.0
+First major release (no notable change from 0.8.0).
+
 # 0.8.0
 * **[BREAKING]** : The `gitpath` argument used among many functions
   can now also point to a subdirectory within a git repository.
