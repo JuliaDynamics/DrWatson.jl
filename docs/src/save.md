@@ -51,8 +51,10 @@ Please notice that `tag!` will operate in place only when possible. If not possi
 
 `produce_or_load` is a function that very conveniently integrates with [`savename`](@ref) to either load a file if it exists, or if it doesn't to produce it, save it and then return it!
 
-This saves you the effort of checking if a file exists and then loading, or then running some code and saving, or writing a bunch of `if` clauses in your code! `produce_or_load` really shines when used in interactive sessions where some results require a couple of minutes to complete.
+This saves you the effort of checking if a file exists and then loading, or then running some code and saving, or writing a bunch of `if` clauses in your code.
+In addition, it attempts to minimize computing energy spent on getting a result.
 
 ```@docs
 produce_or_load
 ```
+See [Stopping "Did I run this?"](@ref) for an example usage of `produce_or_load`.

@@ -26,6 +26,10 @@ using TimeseriesPrediction, LinearAlgebra, Statistics
 
 include(srcdir("systems", "barkley.jl"))
 include(srcdir("nrmse.jl")
+
+# stuff...
+
+save(datadir("sim", "barkley", "astonishing_results.bson"), data)
 ```
 
 ## `savename` and tagging
@@ -47,7 +51,7 @@ for N ∈ Ns, ΔT ∈ ΔTs
     U, V = barkley(T, N, every; seed = seed)
 
     @tagsave(
-        savename(datadir("sim", "bk"), simulation, "bson"),
+        datadir("sim", "bk", savename(simulation, "bson")),
         @dict U V simulation
     )
 end
@@ -59,7 +63,7 @@ path/to/project/data/sim/bk_N=50_T=10050_seed=1111_ΔT=1.bson
 and each file is a dictionary that has my data fields: `:U, :V, :simulation`, but also `:gitcommit, :script`. When I read this file I know exactly what was the source code that produced it (provided that I am not sloppy and commit code changes regularly :P).
 
 ## Customizing `savename`
-Here is a simple (but not from a real project) example for customizing [`savename`](@ref). We are using a common struct `Experiment` across different experiments with cats and mice.
+Here is a simple example for customizing [`savename`](@ref). We are using a common struct `Experiment` across different experiments with cats and mice.
 In this example we are also using Parameters.jl for a convenient default constructor.
 
 We first define the relevant types.
@@ -71,6 +75,7 @@ abstract type Species end
 struct Mouse <: Species end
 struct Cat <: Species end
 
+# @with_kw comes from Parameters.jl
 @with_kw struct Experiment{S<:Species}
     n::Int = 50
     c::Float64 = 10.0
@@ -84,7 +89,7 @@ e1 = Experiment()
 e2 = Experiment(species = Cat())
 ```
 
-For analyzing our experiments we need information about the species used, and to use multiple dispatch latter on we decided to make this information associated with a Type.
+For analyzing our experiments we need information about the species used, and to use multiple dispatch latter on we decided to make this information associated with a Type. This is why we defined `Species`.
 
 Now, we want to customize [`savename`](@ref). We start by extending [`DrWatson.default_prefix`](@ref):
 ```@example customizing
@@ -102,14 +107,14 @@ To make printing better we can extend `Base.string`, which is what DrWatson uses
 ```@example customizing
 Base.string(::Mouse) = "mouse"
 Base.string(::Cat) = "cat"
-nothing # hide
+savename(e1)
 ```
 
 Lastly, let's say that the information of which scientist performed the experiment is not really relevant for `savename`. We can extend the last method, [`DrWatson.allaccess`](@ref):
 ```@example customizing
 DrWatson.allaccess(::Experiment) = (:n, :c, :x, :species)
 ```
-so that only those four fields will be used (notice that the `date` field is anyway used in `default_prefix`). We finally have:
+so that only those four fields will be used (notice that the `date` field is already used in `default_prefix`). We finally have:
 ```@example customizing
 println( savename(e1) )
 println( savename(e2) )
@@ -187,13 +192,12 @@ end
 ```
 that was taking some minutes to run. To use the function [`produce_or_load`](@ref) I first have to wrap this code in a high level function like so:
 ```julia
-HTEST = 0.1:0.1:2.0
-WS = [0.5, 1.0, 1.5]
-
 function g(d)
+    HTEST = 0.1:0.1:2.0
+    WS = [0.5, 1.0, 1.5]
     @unpack N, T = d
-
     toypar_h = [[] for l in HS]
+
     for (wi, w) in enumerate(WS)
         println("w = $w")
         for h in HTEST
@@ -201,19 +205,19 @@ function g(d)
             push!(toypar_h[wi], toyp)
         end
     end
-
     return @dict toypar_h
 end
 
 N = 2000; T = 2000.0
 file = produce_or_load(
-    datadir("mushrooms", "toy"), # prefix
+    datadir("mushrooms", "toy"), # path
     @dict(N, T), # container
-    g # function
+    g, # function
+    prefix = "fig5_toyparams" # prefix for savename
 )
 @unpack toypar_h = file
 ```
-Now, every time I run this code block the function tests automatically whether the file exists. Only if it does not then the code is run.
+Now, every time I run this code block the function tests automatically whether the file exists. Only if it does not, then the code is run while the new result is saved to ensure I won't have to run it again.
 
 The extra step is that I have to extract the useful data I need from the container `file`. Thankfully the `@unpack` macro from [Parameters.jl](https://mauro3.github.io/Parameters.jl/stable/manual.html) makes this super easy.
 
@@ -238,7 +242,7 @@ dicts = dict_list(general_args)
 println("Total dictionaries made: ", length(dicts))
 dicts[1]
 ```
-Now how you use these dictionaries is up to you. Typically each dictionary is given to a `main`-like Julia function which extracts the necessary data and calls the necessary functions.
+Now, how you use these dictionaries is up to you. Typically each dictionary is given to a `main`-like Julia function which extracts the necessary data and calls the necessary functions.
 
 Let's say I have written a function that takes in one of these dictionaries and saves the file somewhere locally:
 ```@example customizing
@@ -251,14 +255,9 @@ function cross_estimation(data)
     # Save data:
     prefix = datadir("results", data["model"])
     get(data, "noisy_training", false) && (prefix *= "_noisy")
-    save(
-        savename(
-            prefix,
-            (@dict γ τ r c N),
-            "bson"
-            ),
-        data
-    )
+    get(data, "symmetric_training", false) && (prefix *= "_symmetric")
+    sname = savename((@dict γ τ r c N), "bson")
+    save(datadir("results", data["model"], sname), data)
     return true
 end
 ```
@@ -346,28 +345,8 @@ No problem though, let's run the new simulations:
 ```@example customizing
 mkpath(datadir("results", "sym"))
 
-function cross_estimation_new(data)
-    γ, τ, r, c = data["embedding"]
-    N = data["N"]
-    # add fake results:
-    data["x"] = rand()
-    data["error"] = rand(10)
-    # Save data:
-    prefix = datadir("results", "sym", data["model"])
-    get(data, "symmetric_training", false) && (prefix *= "_symmetric")
-    save(
-        savename(
-            prefix,
-            (@dict γ τ r c N),
-            "bson"
-            ),
-        data
-    )
-    return true
-end
-
 dicts = dict_list(general_args_new)
-map(cross_estimation_new, dicts)
+map(cross_estimation, dicts)
 
 # load one of the files to be sure everything is ok:
 filename = readdir(datadir("results", "sym"))[1]

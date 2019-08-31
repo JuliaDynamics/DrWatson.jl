@@ -6,10 +6,10 @@ Let `s = joinpath(path, savename(prefix, c, suffix))`.
 If a file named `s` exists then load it and return it, along
 with the global path that it is saved at (`s`).
 
-If the file does not exist then call `file = f(c)`, save `file` as
-`s` and then return `file, s`.
-The function `f` must return a dictionary.
-The macros [`@dict`](@ref) and [`@strdict`](@ref) can help with that.
+If the file does not exist then call `file = f(c)`, with `f` your function
+that produces your data. Then save `file` as `s` and then return `file, s`.
+The function `f` must return a dictionary,
+the macros [`@dict`](@ref) and [`@strdict`](@ref) can help with that.
 
 ## Keywords
 * `tag = true` : Save the file using [`tagsave`](@ref).
@@ -19,7 +19,8 @@ The macros [`@dict`](@ref) and [`@strdict`](@ref) can help with that.
   it and save it anyway.
 * `loadfile = true` : If `false`, this function does not actually load the
   file, but only checks if it exists. The return value in this case is always
-  `nothing, s`, regardless of whether the file must be produced or not.
+  `nothing, s`, regardless of whether the file exists or not. If it doesn't
+  exist it is still produced and saved.
 * `verbose = true` : print info about the process.
 * `kwargs...` : All other keywords are propagated to `savename`.
 
@@ -27,7 +28,7 @@ See also [`savename`](@ref).
 """
 produce_or_load(c, f; kwargs...) = produce_or_load("", c, f; kwargs...)
 function produce_or_load(path::String, c, f;
-    tag::Bool = true, gitpath = projectdir(), storepatch = true, loadfile = true,
+    tag::Bool = true, gitpath = projectdir(), loadfile = true,
     suffix = "bson", prefix = default_prefix(c),
     force = false, verbose = true, kwargs...)
 
@@ -50,10 +51,11 @@ function produce_or_load(path::String, c, f;
         try
             mkpath(dirname(s))
             if tag
-                tagsave(s, file, false, gitpath, storepatch)
+                tagsave(s, file, false, gitpath)
             else
-            wsave(s, copy(file))
-        end
+                wsave(s, copy(file))
+            end
+            verbose && @info "File $s saved."
         catch er
             @warn "Could not save file, got error $er. "*
             "\nReturning the file if `loadfile=true`."
@@ -169,7 +171,7 @@ See also [`dict_list`](@ref).
 
 ## Keywords
 * `l = 8` : number of characters in the random string.
-* `prefix = ""` : prefix each temporary name with this.
+* `prefix = ""` : prefix each temporary name will have.
 * `suffix = "bson"` : ending of the temporary names (no need for the dot).
 """
 function tmpsave(dicts, tmp = projectdir("_research", "tmp");

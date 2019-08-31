@@ -14,7 +14,7 @@ If no file exists in `filename`, then `df` will be saved there. If however
 `filename` exists, the existing `df` will be first loaded and then reused.
 The reused `df` has some results already collected: files already
 included in `df` are skipped in subsequent calls to `collect_results!` while
-new result-files are simply appended in the dataframe.
+new result-files are simply appended to the dataframe.
 
 `filename` defaults to:
 ```julia
@@ -161,7 +161,7 @@ end
 """
     collect_results(folder; kwargs...) -> df
 Do exactly the same as [`collect_results!`](@ref) but don't care to
-load (or later save) an existing dataframe. Thus _all_ found results files
+load (or later save) an existing dataframe. Thus all found results files
 are processed.
 """
 collect_results(folder; kwargs...) =
