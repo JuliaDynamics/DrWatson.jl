@@ -73,6 +73,11 @@ end
     tagsave(file::String, d::Dict [, safe = false, gitpath = projectdir(), storepatch = true])
 First [`tag!`](@ref) dictionary `d` and then save `d` in `file`.
 If `safe = true` save the file using [`safesave`](@ref).
+
+"Tagging" means that when saving the dictionary, an extra field `:gitcommit` is added to
+establish reproducibility of results using Git. If the Git repository is dirty,
+one more field `:gitpatch` is added that stores the difference string.
+For more, see [`tag!`](@ref).
 """
 tagsave(file, d, p::String) = tagsave(file, d, false, p)
 function tagsave(file, d, safe = false, gitpath = projectdir(), storepatch = true, s = nothing)
@@ -88,8 +93,8 @@ end
 
 """
     @tagsave(file::String, d::Dict [, safe = false, gitpath = projectdir()])
-Same as [`tagsave`](@ref) but also add a field `script` that records
-the local path of the script that called `@tagsave`, see [`@tag!`](@ref).
+Same as [`tagsave`](@ref) but one more field `:script` is added that records
+the local path of the script and line number that called `@tagsave`, see [`@tag!`](@ref).
 """
 macro tagsave(file, d, safe::Bool = false, gitpath = projectdir(), storepatch = true)
     s = QuoteNode(__source__)

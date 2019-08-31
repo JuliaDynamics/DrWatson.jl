@@ -1,12 +1,10 @@
-![DrWatson](https://github.com/JuliaDynamics/JuliaDynamics/blob/master/videos/drwatson/DrWatson-banner-nobg.png?raw=true)
+![DrWatson](https://github.com/JuliaDynamics/JuliaDynamics/blob/master/videos/drwatson/DrWatson-banner.png?raw=true)
 
 ---
 
 DrWatson is a scientific project assistant software. It is a Julia package created to help people "deal" with their simulations, simulation parameters, where are files saved, experimental data, scripts, existing simulations, project source code and in general their scientific projects.
 
 See the [Functionality](@ref) section to get an impression of what you can do with DrWatson. To install, simply type `] add DrWatson` in your Julia session.
-
-**DrWatson is currently in beta and under development! Please join us in making this package more useful and more robust!**
 
 !!! info "JuliaDynamics"
     DrWatson is part of [JuliaDynamics](https://juliadynamics.github.io/JuliaDynamics/), check out our [website](https://juliadynamics.github.io/JuliaDynamics/) for more cool stuff!
@@ -40,7 +38,7 @@ Think of these core aspects of DrWatson as independent islands connected by brid
 
 Applications of DrWatson are demonstrated the [Real World Examples](@ref) page. All of these examples are taken from code of real scientific projects that use DrWatson.
 
-Please note that DrWatson is **not a data management system**. Of course, data management is very important, which is why we are currently working on bringing [CaosDB](https://arxiv.org/abs/1801.07653) to Julia. CaosDB is a **research** data management system that was developed by scientists for scientists, for more details please see the arXiv paper, or be a bit more patient until we bring it to Julia.
+Please note that DrWatson is **not a data management system**.
 
 ## Description of DrWatson
 
@@ -52,7 +50,7 @@ DrWatson follows these simple principles:
 3. **Allows increments.** You didn't plan your project well enough? Want to add more folders, more files, more variables to your simulations? It's fine.
 5. **Reproducibility.** DrWatson aims to make your projects fully reproducible using Git, Julia's package manager and consistent naming schemes.
 6. **Modular.** DrWatson has a flexible modular design (see [Functionality](@ref)) which means you only have to use what fits _your project_.
-4. **Scientific.** DrWatson has been beta tested in real-world scientific projects and has matured based on feedback from scientists.
+4. **Scientific.** DrWatson has been beta tested in many real-world scientific projects and has matured based on feedback from scientists.
 
 This is why we believe DrWatson can help you focus on the science and not worry about project code management.
 

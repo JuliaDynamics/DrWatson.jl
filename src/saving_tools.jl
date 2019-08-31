@@ -105,10 +105,8 @@ a new dictionary is created and returned. Otherwise the operation is
 inplace (and the dictionary is returned again).
 
 To restore a repository to the state of a particular model-run do:
-- checkout the relevant commit with `git checkout xyz` where
-xyz is the value stored
-- apply the patch `git apply patch`, where the string stored
-in the `gitpatch` field needs to be written to the file `patch`.
+1. checkout the relevant commit with `git checkout xyz` where xyz is the value stored
+2. apply the patch `git apply patch`, where the string stored in the `gitpatch` field needs to be written to the file `patch`.
 
 ## Examples
 ```julia
