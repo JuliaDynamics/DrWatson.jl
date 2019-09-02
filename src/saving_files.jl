@@ -21,7 +21,7 @@ the macros [`@dict`](@ref) and [`@strdict`](@ref) can help with that.
   file, but only checks if it exists. The return value in this case is always
   `nothing, s`, regardless of whether the file exists or not. If it doesn't
   exist it is still produced and saved.
-* `verbose = true` : print info about the process.
+* `verbose = true` : print info about the process, if the file doesn't exist.
 * `kwargs...` : All other keywords are propagated to `savename`.
 
 See also [`savename`](@ref).

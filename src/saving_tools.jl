@@ -126,30 +126,37 @@ function tag!(d::Dict{K, T}, gitpath = projectdir(), storepatch = true, source =
 
     c = gitdescribe(gitpath)
     patch = gitpatch(gitpath)
+    @assert (Symbol <: K) || (String <: K)
+    if K == Symbol
+        commitname, patchname, scriptname = :gitcommit, :gitpatch, :script
+    else
+        commitname, patchname, scriptname = "gitcommit", "gitpatch", "script"
+    end
+
     c === nothing && return d # gitpath is not a git repo
-    if haskey(d, K("gitcommit"))
+    if haskey(d, commitname)
         @warn "The dictionary already has a key named `gitcommit`. We won't "*
         "add any Git information."
         return d
     end
     if String <: T
-        d[K("gitcommit")] = c
+        d[commitname] = c
         if patch!=""
-            d[K("gitpatch")] = patch
+            d[patchname] = patch
         end
     else
         d = Dict{K, promote_type(T, String)}(d)
-        d[K("gitcommit")] = c
+        d[commitname] = c
         if patch!=""
-            d[K("gitpatch")] = patch
+            d[patchname] = patch
         end
     end
     if source != nothing
-        if haskey(d, K("script"))
+        if haskey(d, scriptname)
             @warn "The dictionary already has a key named `script`. We won't "*
             "overwrite it with the script name."
         else
-            d[K("script")] = relpath(sourcename(source), gitpath)
+            d[scriptname] = relpath(sourcename(source), gitpath)
         end
     end
     return d

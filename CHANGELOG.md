@@ -1,3 +1,5 @@
+# 1.0.1
+* Allow `tag!` and derivatives to handle dictionaries with *key type* `Any`.
 # 1.0.0
 First major release (no notable change from 0.8.0).
 
