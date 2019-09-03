@@ -26,9 +26,9 @@ function __init__()
 end
 
 # Update messages
-display_update = true
-update_version = "1.0.0"
-update_name = "update_v$update_version"
+const display_update = true
+const update_version = "1.0.0"
+const update_name = "update_v$update_version"
 if display_update
 if !isfile(joinpath(@__DIR__, update_name))
 printstyled(stdout,

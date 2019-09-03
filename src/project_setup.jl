@@ -228,15 +228,14 @@ vecstring(a::Vector{String}) = a
 vecstring(c) = [string(a) for a in c]
 
 function greet()
-    println(
+    s =
     """
-    DrWatson is currently in beta.
-    Help us make it better by opening
-    issues on GitHub or submitting feature requests!
-
     Currently active project is: $(projectname())
 
     Have fun with your new project!
+
+    You can help us make improve DrWatson by opening
+    issues on GitHub or submitting feature requests!
     """
-    )
+    println(s)
 end
