@@ -16,7 +16,7 @@ See the [Functionality](@ref) section to get an impression of what you can do wi
 Have you thought things like:
 
 * Urgh, I moved my folders and now my `load` commands don't work anymore!
-* Duuuude, have I run this simulation already?
+* Hold on, haven't I run this simulation already?
 * Do I have to produce a dataframe of my finished simulations AGAIN?!
 * Wait, are those experiments already processed?
 * PFfffff I am tired of typing `savename = "w=$w_f=$f_x=$x.jld2"`, can't I do it automatically?
