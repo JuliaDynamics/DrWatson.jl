@@ -3,10 +3,10 @@ This page discusses numerous tools that can significantly improve process of sav
 
 These tools are also used in the examples demonstrated in the [Real World Examples](@ref) page. After reading the proper documentation here it might be worth it to have a look there as well!
 
-!!! info "We use `FileIO`"
+!!! warning "We use `FileIO`"
     For saving and loading files we use `FileIO.save` and `FileIO.load`. This means that you have to install yourself whatever saving backend you want to use. `FileIO` by itself does _not_ install a package that saves data, it only provides the interface!
 
-    In addition, DrWatson re-exports `FileIO.save` and `FileIO.load` for convenience!
+    The *suffix* of the file name determines which package will be used for actually saving the file. It is **your responsibility** to know how the saving package works and what input it expects!
 
 !!! info "We always call `mkpath`"
     All functions of DrWatson that save things, e.g. [`tagsave`](@ref), [`safesave`](@ref), [`tmpsave`](@ref) etc. always call `mkpath` first on the directory the file needs to be saved at. This is not the case for the standard `save` function, as it comes from `FileIO`.
