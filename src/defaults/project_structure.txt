@@ -23,9 +23,6 @@
 │                       structures and modules that are used throughout
 │                       the project and in multiple scripts.
 │
-├── test             <- Tests for code in src.
-│   └── runtests.jl  <- Script to run all tests.
-│
 ├── README.md        <- Optional top-level README for anyone using this project.
 ├── .gitignore       <- by default ignores _research, data, plots, videos,
 │                       notebooks and latex-compilation related files.
