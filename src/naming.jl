@@ -43,10 +43,11 @@ See also [`parse_savename`](@ref).
   ```
   then the integer value is used in the name instead.
 * `connector = "_"` : string used to connect the various entries.
-* `expand::Vector{String} = default_expand` : keys that will be expanded
+* `expand::Vector{String} = default_expand(c)` : keys that will be expanded
   to the `savename` of their contents, to allow for nested containers.
   By default is empty. Notice that the type of the container must also be
-  allowed for `expand` to take effect!
+  allowed in `allowedtypes` for `expand` to take effect! Empty containers
+  are always skipped.
 
 ## Examples
 ```julia
@@ -85,18 +86,19 @@ function savename(prefix::String, c, suffix::String;
     for j ∈ p
         val = access(c, accesses[j])
         label = labels[j]
-        t = typeof(val)
-        if any(x -> (t <: x), allowedtypes)
-            !first && (s *= connector)
+        if any(x -> (typeof(val) <: x), allowedtypes)
             if t <: AbstractFloat
                 x = round(val; digits = digits); y = round(Int, val)
                 val = x == y ? y : x
             end
             if label ∈ expand
-                s *= label*"="*'('*savename(val;connector=",")*')'
+                isempty(val) && continue
+                entry = label*"="*'('*savename(val;connector=",")*')'
             else
-                s *= label*"="*string(val)
+                entry = label*"="*string(val)
             end
+            !first && (s *= connector)
+            s *= entry
             first = false
         end
     end
