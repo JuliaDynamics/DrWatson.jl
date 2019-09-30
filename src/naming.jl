@@ -86,14 +86,16 @@ function savename(prefix::String, c, suffix::String;
     for j ∈ p
         val = access(c, accesses[j])
         label = labels[j]
-        if any(x -> (typeof(val) <: x), allowedtypes)
+        t = typeof(val)
+        if any(x -> (t <: x), allowedtypes)
             if t <: AbstractFloat
                 x = round(val; digits = digits); y = round(Int, val)
                 val = x == y ? y : x
             end
             if label ∈ expand
                 isempty(val) && continue
-                entry = label*"="*'('*savename(val;connector=",")*')'
+                sname = savename(val; connector=",")
+                entry = label*"="*'('*sname*')'
             else
                 entry = label*"="*string(val)
             end
@@ -161,8 +163,7 @@ will in fact return a string that looks like
 ```julia
 "path/to/data/lala_p1=..."
 ```
-This allows [`savename`](@ref) to work with paths-as-prefixes
-(even though this is not something recommended).
+This allows [`savename`](@ref) to work well with [`produce_or_load`](@ref).
 """
 default_prefix(c) = ""
 
