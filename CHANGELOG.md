@@ -1,4 +1,4 @@
-# 1.1.1
+# 1.2.0
 * Improved behavior of `savename` with respect to nested containers. If a nested container is empty, it is not printed instead. For example, `T=100_p=()_x=2` now becomes `T=100_x=2`. (if `p` is not empty then it is expanded as usual)
 
 # 1.1.0
