@@ -43,10 +43,14 @@ See also [`parse_savename`](@ref).
   ```
   then the integer value is used in the name instead.
 * `connector = "_"` : string used to connect the various entries.
-* `expand::Vector{String} = default_expand` : keys that will be expanded
+* `expand::Vector{String} = default_expand(c)` : keys that will be expanded
   to the `savename` of their contents, to allow for nested containers.
   By default is empty. Notice that the type of the container must also be
-  allowed for `expand` to take effect!
+  allowed in `allowedtypes` for `expand` to take effect! Empty containers
+  are always skipped and the `savename` of the nested arguments is always
+  called with its default arguments (so customization here is possible only
+  by rolling your own container type). If the `savename` of the nested
+  containers is `""`, it is also skipped.
 
 ## Examples
 ```julia
@@ -87,16 +91,20 @@ function savename(prefix::String, c, suffix::String;
         label = labels[j]
         t = typeof(val)
         if any(x -> (t <: x), allowedtypes)
-            !first && (s *= connector)
             if t <: AbstractFloat
                 x = round(val; digits = digits); y = round(Int, val)
                 val = x == y ? y : x
             end
             if label ∈ expand
-                s *= label*"="*'('*savename(val;connector=",")*')'
+                isempty(val) && continue
+                sname = savename(val; connector=",")
+                isempty(sname) && continue
+                entry = label*"="*'('*sname*')'
             else
-                s *= label*"="*string(val)
+                entry = label*"="*string(val)
             end
+            !first && (s *= connector)
+            s *= entry
             first = false
         end
     end
@@ -159,8 +167,7 @@ will in fact return a string that looks like
 ```julia
 "path/to/data/lala_p1=..."
 ```
-This allows [`savename`](@ref) to work with paths-as-prefixes
-(even though this is not something recommended).
+This allows [`savename`](@ref) to work well with [`produce_or_load`](@ref).
 """
 default_prefix(c) = ""
 

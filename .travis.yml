@@ -5,14 +5,14 @@ os:
   - osx
 
 julia:
-  - 1.1
+  - 1.2
   - 1.0
   # - nightly
-  
+
 before_script:
   - git config --global user.name "GitUser"
   - git config --global user.email "git@us.er"
-  
+
 matrix:
   allow_failures:
   - julia: nightly
