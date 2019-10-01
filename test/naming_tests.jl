@@ -75,7 +75,7 @@ x = A(5, (b = 3, c = 4))
 
 # empty container
 x = A(5, NamedTuple())
-@test !occursin("p", x)
+@test !occursin("p", savename(x))
 
 # container with values that are not by default printed in savename
 x = A(5, (m = rand(50,50),))
