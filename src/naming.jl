@@ -47,7 +47,10 @@ See also [`parse_savename`](@ref).
   to the `savename` of their contents, to allow for nested containers.
   By default is empty. Notice that the type of the container must also be
   allowed in `allowedtypes` for `expand` to take effect! Empty containers
-  are always skipped.
+  are always skipped and the `savename` of the nested arguments is always
+  called with its default arguments (so customization here is possible only
+  by rolling your own container type). If the `savename` of the nested
+  containers is `""`, it is also skipped.
 
 ## Examples
 ```julia
