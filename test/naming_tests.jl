@@ -60,3 +60,23 @@ s = savename(e; allowedtypes = (Any,), expand = ["c"])
 @test ')' ∈ s
 @test occursin("a=3", s)
 @test occursin("b=4", s)
+
+# More detailed expand tests
+struct A
+    a
+    p
+end
+DrWatson.default_allowed(::A) = (Any,)
+DrWatson.default_expand(::A) = ["p"]
+
+x = A(5, (b = 3, c = 4))
+
+@test savename(x) == "a=5_p=(b=3,c=4)"
+
+# empty container
+x = A(5, NamedTuple())
+@test !occursin("p", x)
+
+# container with values that are not by default printed in savename
+x = A(5, (m = rand(50,50),))
+@test !occursin("p", savename(x))
