@@ -95,6 +95,7 @@ function savename(prefix::String, c, suffix::String;
             if label ∈ expand
                 isempty(val) && continue
                 sname = savename(val; connector=",")
+                isempty(sname) && continue
                 entry = label*"="*'('*sname*')'
             else
                 entry = label*"="*string(val)
