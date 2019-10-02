@@ -38,10 +38,16 @@ t = f(simulation)
 @tagsave(savename(simulation, "bson"), t, true, findproject())
 sn = savename(simulation, "bson")[1:end-5]*"_#1"*".bson"
 @test isfile(sn)
-rm(savename(simulation, "bson"))
 rm(sn)
-@test !isfile(savename(simulation, "bson"))
 
+t = f(simulation)
+tagsave(savename(simulation, "bson"), t, safe=true, gitpath=findproject())
+sn = savename(simulation, "bson")[1:end-5]*"_#1"*".bson"
+@test isfile(sn)
+rm(sn)
+
+rm(savename(simulation, "bson"))
+@test !isfile(savename(simulation, "bson"))
 ################################################################################
 #                              produce or load                                 #
 ################################################################################

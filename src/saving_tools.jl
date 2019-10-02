@@ -122,8 +122,12 @@ Dict{Symbol,Any} with 3 entries:
   :x => 3
 ```
 """
-function tag!(d::Dict{K, T}, gitpath = projectdir(), storepatch = true, source = nothing) where {K, T}
-
+function tag!(d::Dict{K, T}, gitpath, storepatch = true, source = nothing) where {K, T}
+    # The second argument `gitpath` must be non-optional here, because
+    # the kw-argument version of tag! would overwrite tag!(d) created
+    # here (Which still works but throws a warning).  So dispatching
+    # on tag!(d) now works through one of the methods created by the
+    # kw-version of this function.
     c = gitdescribe(gitpath)
     patch = gitpatch(gitpath)
     @assert (Symbol <: K) || (String <: K)
@@ -161,6 +165,8 @@ function tag!(d::Dict{K, T}, gitpath = projectdir(), storepatch = true, source =
     end
     return d
 end
+
+tag!(d::Dict; gitpath = projectdir(), storepatch = true, source = nothing) = tag!(d,gitpath,storepatch,source)
 
 sourcename(s) = string(s)
 sourcename(s::LineNumberNode) = string(s.file)*"#"*string(s.line)

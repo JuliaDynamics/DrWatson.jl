@@ -82,7 +82,7 @@ one more field `:gitpatch` is added that stores the difference string.
 For more, see [`tag!`](@ref).
 """
 tagsave(file, d, p::String) = tagsave(file, d, false, p)
-function tagsave(file, d, safe = false, gitpath = projectdir(), storepatch = true, s = nothing)
+function tagsave(file, d, safe::Bool, gitpath = projectdir(), storepatch = true, s = nothing)
     d2 = tag!(d, gitpath, storepatch, s)
     mkpath(dirname(file))
     if safe
@@ -92,6 +92,9 @@ function tagsave(file, d, safe = false, gitpath = projectdir(), storepatch = tru
     end
     return d2
 end
+
+tagsave(file, d; safe::Bool = false, gitpath = projectdir(), storepatch = true, s = nothing) =
+    tagsave(file, d, safe, gitpath, storepatch, s)
 
 """
     @tagsave(file::String, d::Dict [, safe = false, gitpath = projectdir()])
