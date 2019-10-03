@@ -190,9 +190,18 @@ Dict{Symbol,Any} with 3 entries:
   :x      => 3
 ```
 """
-macro tag!(d, gitpath = projectdir(), storepatch = true)
+macro tag!(d,args...)
     s = QuoteNode(__source__)
-    :(tag!($(esc(d)), $(esc(gitpath)), $(esc(storepatch)), $s))
+    N = length(args)
+    (N == 0 || all(iskwdefinition.(args))) &&
+        return :(tag!($(esc(d)),$(esc.(convert_to_kw.(args))...),source=$s))
+    # First optional arg. is not needed as if it's not provided dispatch
+    # is done through the kw-version of the function (ie. this line is
+    # never reached)
+    default = [
+        :(true), #storepatch
+    ]
+    :(tag!($(esc(d)), $(esc.(args)...), $(esc.(default[N:end])...), $s))
 end
 
 """

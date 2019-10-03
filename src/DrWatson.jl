@@ -4,6 +4,11 @@ import Pkg, LibGit2
 
 const PATH_SEPARATOR = joinpath("_", "_")[2]
 
+# Misc functions for kw-macros
+convert_to_kw(ex::Expr) = Expr(:kw,ex.args...)
+iskwdefinition(ex) = false
+iskwdefinition(ex::Expr) = ex.head == Symbol("=")
+
 # Pure Julia implementation
 include("project_setup.jl")
 include("naming.jl")

@@ -36,6 +36,38 @@ d_new = tag!(d)
 d_new = tag!(d,gitpath=@__DIR__,source="foo")
 @test endswith(d_new[:script],"foo")
 
+d_new = @tag!(d,gitpath=@__DIR__)
+@test split(d_new[keytype(d_new)(:script)], '#')[1] == basename(@__FILE__)
+
+ex = @macroexpand @tag!(d)
+
+@test ex.args[1].name == :tag!
+@test ex.args[2] == :d
+@test ex.args[3].head == :kw
+
+ex = @macroexpand @tag!(d,"path")
+
+@test ex.args[1].name == :tag!
+@test ex.args[2] == :d
+@test ex.args[3] == "path"
+@test ex.args[4] == true
+
+ex = @macroexpand @tag!(d,"path",false)
+
+@test ex.args[1].name == :tag!
+@test ex.args[2] == :d
+@test ex.args[3] == "path"
+@test ex.args[4] == false
+
+ex = @macroexpand @tag!(d,gitpath="path")
+
+@test ex.args[1].name == :tag!
+@test ex.args[2] == :d
+@test ex.args[3].head == :kw
+@test ex.args[3].args[1] == :gitpath
+@test ex.args[3].args[2] == "path"
+@test ex.args[4].head == :kw
+
 # Test dictionary expansion
 c = Dict(:a => [1, 2], :b => 4);
 c1 = [ Dict(:a=>1,:b=>4)

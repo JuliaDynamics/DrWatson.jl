@@ -93,17 +93,27 @@ function tagsave(file, d, safe::Bool, gitpath = projectdir(), storepatch = true,
     return d2
 end
 
-tagsave(file, d; safe::Bool = false, gitpath = projectdir(), storepatch = true, s = nothing) =
-    tagsave(file, d, safe, gitpath, storepatch, s)
+tagsave(file, d; safe::Bool = false, gitpath = projectdir(), storepatch = true, source = nothing) =
+    tagsave(file, d, safe, gitpath, storepatch, source)
 
 """
     @tagsave(file::String, d::Dict [, safe = false, gitpath = projectdir()])
 Same as [`tagsave`](@ref) but one more field `:script` is added that records
 the local path of the script and line number that called `@tagsave`, see [`@tag!`](@ref).
 """
-macro tagsave(file, d, safe::Bool = false, gitpath = projectdir(), storepatch = true)
+macro tagsave(file,d,args...)
     s = QuoteNode(__source__)
-    :(tagsave($(esc(file)), $(esc(d)), $(esc(safe)), $(esc(gitpath)), $(esc(storepatch)), $s))
+    N = length(args)
+    (N == 0 || all(iskwdefinition.(args))) &&
+        return :(tagsave($(esc(file)), $(esc(d)),$(esc.(convert_to_kw.(args))...),source=$s))
+    # First optional arg. is not needed as if it's not provided dispatch
+    # is done through the kw-version of the function (ie. this line is
+    # never reached)
+    default = [
+        :(projectdir()), #gitpath
+        :(true),         #storepatch
+    ]
+    :(tagsave($(esc(file)),$(esc(d)), $(esc.(args)...), $(esc.(default[N:end])...), $s))
 end
 
 ################################################################################
