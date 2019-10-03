@@ -81,8 +81,8 @@ establish reproducibility of results using Git. If the Git repository is dirty,
 one more field `:gitpatch` is added that stores the difference string.
 For more, see [`tag!`](@ref).
 """
-function tagsave(file, d; safe::Bool = false, gitpath = projectdir(), storepatch = true, source = nothing)
-    d2 = tag!(d, gitpath=gitpath, storepatch=storepatch, source=source)
+function tagsave(file, d; safe::Bool = false, gitpath = projectdir(), storepatch = true, force = false, source = nothing)
+    d2 = tag!(d, gitpath=gitpath, storepatch=storepatch, force=force, source=source)
     mkpath(dirname(file))
     if safe
         safesave(file, copy(d2))

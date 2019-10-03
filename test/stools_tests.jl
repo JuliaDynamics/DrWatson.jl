@@ -68,6 +68,14 @@ ex = @macroexpand @tag!(d,gitpath="path")
 @test ex.args[3].args[2] == "path"
 @test ex.args[4].head == :kw
 
+# Test force kw
+
+d = Dict(:x => 3, :y => 4, :gitcommit => "")
+@test tag!(d,gitpath=@__DIR__)[:gitcommit] == ""
+@test tag!(d,gitpath=@__DIR__,force=true)[:gitcommit] == com
+d = Dict(:x => 3, :y => 4, :gitcommit => "")
+@test (@tag!(d, gitpath=@__DIR__,force=true))[:gitcommit] == com
+
 # Test dictionary expansion
 c = Dict(:a => [1, 2], :b => 4);
 c1 = [ Dict(:a=>1,:b=>4)

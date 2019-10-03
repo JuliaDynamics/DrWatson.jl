@@ -122,7 +122,7 @@ Dict{Symbol,Any} with 3 entries:
   :x => 3
 ```
 """
-function tag!(d::Dict{K,T}; gitpath = projectdir(), storepatch = true, source = nothing) where {K,T}
+function tag!(d::Dict{K,T}; gitpath = projectdir(), storepatch = true, force = false, source = nothing) where {K,T}
     # The second argument `gitpath` must be non-optional here, because
     # the kw-argument version of tag! would overwrite tag!(d) created
     # here (Which still works but throws a warning).  So dispatching
@@ -138,7 +138,7 @@ function tag!(d::Dict{K,T}; gitpath = projectdir(), storepatch = true, source = 
     end
 
     c === nothing && return d # gitpath is not a git repo
-    if haskey(d, commitname)
+    if haskey(d, commitname) && !force
         @warn "The dictionary already has a key named `gitcommit`. We won't "*
         "add any Git information."
         return d
@@ -155,7 +155,7 @@ function tag!(d::Dict{K,T}; gitpath = projectdir(), storepatch = true, source = 
             d[patchname] = patch
         end
     end
-    if source != nothing
+    if source != nothing && !force
         if haskey(d, scriptname)
             @warn "The dictionary already has a key named `script`. We won't "*
             "overwrite it with the script name."
