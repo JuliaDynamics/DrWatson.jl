@@ -81,9 +81,8 @@ establish reproducibility of results using Git. If the Git repository is dirty,
 one more field `:gitpatch` is added that stores the difference string.
 For more, see [`tag!`](@ref).
 """
-tagsave(file, d, p::String) = tagsave(file, d, false, p)
-function tagsave(file, d, safe::Bool, gitpath = projectdir(), storepatch = true, s = nothing)
-    d2 = tag!(d, gitpath, storepatch, s)
+function tagsave(file, d; safe::Bool = false, gitpath = projectdir(), storepatch = true, source = nothing)
+    d2 = tag!(d, gitpath=gitpath, storepatch=storepatch, source=source)
     mkpath(dirname(file))
     if safe
         safesave(file, copy(d2))
@@ -93,8 +92,6 @@ function tagsave(file, d, safe::Bool, gitpath = projectdir(), storepatch = true,
     return d2
 end
 
-tagsave(file, d; safe::Bool = false, gitpath = projectdir(), storepatch = true, source = nothing) =
-    tagsave(file, d, safe, gitpath, storepatch, source)
 
 """
     @tagsave(file::String, d::Dict [, safe = false, gitpath = projectdir()])
@@ -206,3 +203,6 @@ function tmpsave(dicts, tmp = projectdir("_research", "tmp");
     end
     r
 end
+
+@deprecate tagsave(file, d, p::String) tagsave(file, d, gitpath=p)
+@deprecate tagsave(file, d, safe::Bool, gitpath = projectdir(), storepatch = true, source = nothing) tagsave(file,d,safe=safe,gitpath=gitpath,storepatch=storepatch,source=source)
