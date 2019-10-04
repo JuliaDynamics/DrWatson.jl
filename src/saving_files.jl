@@ -113,6 +113,9 @@ macro tagsave(file,d,args...)
         :(true),         #storepatch
     ]
     :(tagsave($(esc(file)),$(esc(d)), $(esc.(args)...), $(esc.(default[N:end])...), $s))
+    # Use this code after the deprecation warning for the non-kw version
+    # is removed.
+    # throw(MethodError(@tagsave,args...))
 end
 
 ################################################################################
@@ -208,3 +211,6 @@ end
 
 @deprecate tagsave(file, d, p::String) tagsave(file, d, gitpath=p)
 @deprecate tagsave(file, d, safe::Bool, gitpath = projectdir(), storepatch = true, source = nothing) tagsave(file,d,safe=safe,gitpath=gitpath,storepatch=storepatch,source=source)
+# TODO: When removing the deprecation warning, the tests must be adapted
+# to only use the kw-version of this function. Also the code from the
+# macro version for parsing the non-kw arguments can be replaced.
