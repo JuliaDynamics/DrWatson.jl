@@ -72,14 +72,16 @@ end
 #                             tag saving                                       #
 ################################################################################
 """
-    tagsave(file::String, d::Dict [, safe = false, gitpath = projectdir(), storepatch = true])
+    tagsave(file::String, d::Dict; safe = false, gitpath = projectdir(), storepatch = true, force = false)
 First [`tag!`](@ref) dictionary `d` and then save `d` in `file`.
 If `safe = true` save the file using [`safesave`](@ref).
 
-"Tagging" means that when saving the dictionary, an extra field `:gitcommit` is added to
-establish reproducibility of results using Git. If the Git repository is dirty,
-one more field `:gitpatch` is added that stores the difference string.
-For more, see [`tag!`](@ref).
+"Tagging" means that when saving the dictionary, an extra field
+`:gitcommit` is added to establish reproducibility of results using
+Git. If the Git repository is dirty, one more field `:gitpatch` is
+added that stores the difference string.  If a dictionary already
+contains a key `:gitcommit`, it is not overwritten, unless,
+`force=true`. For more details, see [`tag!`](@ref).
 """
 function tagsave(file, d; safe::Bool = false, gitpath = projectdir(), storepatch = true, force = false, source = nothing)
     d2 = tag!(d, gitpath=gitpath, storepatch=storepatch, force=force, source=source)
@@ -94,7 +96,7 @@ end
 
 
 """
-    @tagsave(file::String, d::Dict [, safe = false, gitpath = projectdir()])
+    @tagsave(file::String, d::Dict; safe = false, gitpath = projectdir(), force = false)
 Same as [`tagsave`](@ref) but one more field `:script` is added that records
 the local path of the script and line number that called `@tagsave`, see [`@tag!`](@ref).
 """

@@ -91,14 +91,15 @@ function gitpatch(gitpath = projectdir())
 end
 
 """
-    tag!(d::Dict, gitpath = projectdir(), storepatch = true) -> d
+    tag!(d::Dict; gitpath = projectdir(), storepatch = true, force = false) -> d
 Tag `d` by adding an extra field `gitcommit` which will have as value
 the [`gitdescribe`](@ref) of the repository at `gitpath` (by default
 the project's gitpath). Do nothing if a key `gitcommit` already exists
-or if the Git repository is not found. If the git repository is dirty,
-i.e. there are un-commited changes, then the output of `git diff HEAD`
-is stored in the field `gitpatch`.  Note that patches for binary files
-are not stored.
+(unless `force=true` then replace with the new value) or if the Git
+repository is not found. If the git repository is dirty, i.e. there
+are un-commited changes, then the output of `git diff HEAD` is stored
+in the field `gitpatch`.  Note that patches for binary files are not
+stored.
 
 Notice that if `String` is not a subtype of the value type of `d` then
 a new dictionary is created and returned. Otherwise the operation is
@@ -123,11 +124,6 @@ Dict{Symbol,Any} with 3 entries:
 ```
 """
 function tag!(d::Dict{K,T}; gitpath = projectdir(), storepatch = true, force = false, source = nothing) where {K,T}
-    # The second argument `gitpath` must be non-optional here, because
-    # the kw-argument version of tag! would overwrite tag!(d) created
-    # here (Which still works but throws a warning).  So dispatching
-    # on tag!(d) now works through one of the methods created by the
-    # kw-version of this function.
     c = gitdescribe(gitpath)
     patch = gitpatch(gitpath)
     @assert (Symbol <: K) || (String <: K)
@@ -170,7 +166,7 @@ sourcename(s) = string(s)
 sourcename(s::LineNumberNode) = string(s.file)*"#"*string(s.line)
 
 """
-    @tag!(d, gitpath = projectdir()) -> d
+    @tag!(d, gitpath = projectdir(), storepatch = true, force = false) -> d
 Do the same as [`tag!`](@ref) but also add another field `script` that has
 the path of the script that called `@tag!`, relative with respect to `gitpath`.
 The saved string ends with `#line_number`, which indicates the line number
