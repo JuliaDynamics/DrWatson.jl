@@ -91,14 +91,15 @@ function gitpatch(gitpath = projectdir())
 end
 
 """
-    tag!(d::Dict, gitpath = projectdir(), storepatch = true) -> d
+    tag!(d::Dict; gitpath = projectdir(), storepatch = true, force = false) -> d
 Tag `d` by adding an extra field `gitcommit` which will have as value
 the [`gitdescribe`](@ref) of the repository at `gitpath` (by default
 the project's gitpath). Do nothing if a key `gitcommit` already exists
-or if the Git repository is not found. If the git repository is dirty,
-i.e. there are un-commited changes, then the output of `git diff HEAD`
-is stored in the field `gitpatch`.  Note that patches for binary files
-are not stored.
+(unless `force=true` then replace with the new value) or if the Git
+repository is not found. If the git repository is dirty, i.e. there
+are un-commited changes, then the output of `git diff HEAD` is stored
+in the field `gitpatch`.  Note that patches for binary files are not
+stored.
 
 Notice that if `String` is not a subtype of the value type of `d` then
 a new dictionary is created and returned. Otherwise the operation is
@@ -122,8 +123,7 @@ Dict{Symbol,Any} with 3 entries:
   :x => 3
 ```
 """
-function tag!(d::Dict{K, T}, gitpath = projectdir(), storepatch = true, source = nothing) where {K, T}
-
+function tag!(d::Dict{K,T}; gitpath = projectdir(), storepatch = true, force = false, source = nothing) where {K,T}
     c = gitdescribe(gitpath)
     patch = gitpatch(gitpath)
     @assert (Symbol <: K) || (String <: K)
@@ -134,7 +134,7 @@ function tag!(d::Dict{K, T}, gitpath = projectdir(), storepatch = true, source =
     end
 
     c === nothing && return d # gitpath is not a git repo
-    if haskey(d, commitname)
+    if haskey(d, commitname) && !force
         @warn "The dictionary already has a key named `gitcommit`. We won't "*
         "add any Git information."
         return d
@@ -151,7 +151,7 @@ function tag!(d::Dict{K, T}, gitpath = projectdir(), storepatch = true, source =
             d[patchname] = patch
         end
     end
-    if source != nothing
+    if source != nothing && !force
         if haskey(d, scriptname)
             @warn "The dictionary already has a key named `script`. We won't "*
             "overwrite it with the script name."
@@ -166,7 +166,7 @@ sourcename(s) = string(s)
 sourcename(s::LineNumberNode) = string(s.file)*"#"*string(s.line)
 
 """
-    @tag!(d, gitpath = projectdir()) -> d
+    @tag!(d, gitpath = projectdir(), storepatch = true, force = false) -> d
 Do the same as [`tag!`](@ref) but also add another field `script` that has
 the path of the script that called `@tag!`, relative with respect to `gitpath`.
 The saved string ends with `#line_number`, which indicates the line number
@@ -184,9 +184,21 @@ Dict{Symbol,Any} with 3 entries:
   :x      => 3
 ```
 """
-macro tag!(d, gitpath = projectdir(), storepatch = true)
+macro tag!(d,args...)
     s = QuoteNode(__source__)
-    :(tag!($(esc(d)), $(esc(gitpath)), $(esc(storepatch)), $s))
+    N = length(args)
+    (N == 0 || all(iskwdefinition.(args))) &&
+        return :(tag!($(esc(d)),$(esc.(convert_to_kw.(args))...),source=$s))
+    # First optional arg. is not needed as if it's not provided dispatch
+    # is done through the kw-version of the function (ie. this line is
+    # never reached)
+    default = [
+        :(true), #storepatch
+    ]
+    :(tag!($(esc(d)), $(esc.(args)...), $(esc.(default[N:end])...), $s))
+    # Use this code after the deprecation warning for the non-kw version
+    # is removed.
+    # throw(MethodError(@tag!,args...))
 end
 
 """
@@ -278,3 +290,8 @@ tagsave(savename(s), struct2dict(s))
 function struct2dict(s)
     Dict(x => getfield(s, x) for x in fieldnames(typeof(s)))
 end
+
+@deprecate tag!(d::Dict, gitpath, storepatch = true, source = nothing) tag!(d,gitpath=gitpath,storepatch=storepatch,source=source)
+# TODO: When removing the deprecation warning, the tests must be adapted
+# to only use the kw-version of this function. Also the code from the
+# macro version for parsing the non-kw arguments can be replaced.

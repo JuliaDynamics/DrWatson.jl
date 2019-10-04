@@ -72,18 +72,19 @@ end
 #                             tag saving                                       #
 ################################################################################
 """
-    tagsave(file::String, d::Dict [, safe = false, gitpath = projectdir(), storepatch = true])
+    tagsave(file::String, d::Dict; safe = false, gitpath = projectdir(), storepatch = true, force = false)
 First [`tag!`](@ref) dictionary `d` and then save `d` in `file`.
 If `safe = true` save the file using [`safesave`](@ref).
 
-"Tagging" means that when saving the dictionary, an extra field `:gitcommit` is added to
-establish reproducibility of results using Git. If the Git repository is dirty,
-one more field `:gitpatch` is added that stores the difference string.
-For more, see [`tag!`](@ref).
+"Tagging" means that when saving the dictionary, an extra field
+`:gitcommit` is added to establish reproducibility of results using
+Git. If the Git repository is dirty, one more field `:gitpatch` is
+added that stores the difference string.  If a dictionary already
+contains a key `:gitcommit`, it is not overwritten, unless,
+`force=true`. For more details, see [`tag!`](@ref).
 """
-tagsave(file, d, p::String) = tagsave(file, d, false, p)
-function tagsave(file, d, safe = false, gitpath = projectdir(), storepatch = true, s = nothing)
-    d2 = tag!(d, gitpath, storepatch, s)
+function tagsave(file, d; safe::Bool = false, gitpath = projectdir(), storepatch = true, force = false, source = nothing)
+    d2 = tag!(d, gitpath=gitpath, storepatch=storepatch, force=force, source=source)
     mkpath(dirname(file))
     if safe
         safesave(file, copy(d2))
@@ -93,14 +94,28 @@ function tagsave(file, d, safe = false, gitpath = projectdir(), storepatch = tru
     return d2
 end
 
+
 """
-    @tagsave(file::String, d::Dict [, safe = false, gitpath = projectdir()])
+    @tagsave(file::String, d::Dict; safe = false, gitpath = projectdir(), force = false)
 Same as [`tagsave`](@ref) but one more field `:script` is added that records
 the local path of the script and line number that called `@tagsave`, see [`@tag!`](@ref).
 """
-macro tagsave(file, d, safe::Bool = false, gitpath = projectdir(), storepatch = true)
+macro tagsave(file,d,args...)
     s = QuoteNode(__source__)
-    :(tagsave($(esc(file)), $(esc(d)), $(esc(safe)), $(esc(gitpath)), $(esc(storepatch)), $s))
+    N = length(args)
+    (N == 0 || all(iskwdefinition.(args))) &&
+        return :(tagsave($(esc(file)), $(esc(d)),$(esc.(convert_to_kw.(args))...),source=$s))
+    # First optional arg. is not needed as if it's not provided dispatch
+    # is done through the kw-version of the function (ie. this line is
+    # never reached)
+    default = [
+        :(projectdir()), #gitpath
+        :(true),         #storepatch
+    ]
+    :(tagsave($(esc(file)),$(esc(d)), $(esc.(args)...), $(esc.(default[N:end])...), $s))
+    # Use this code after the deprecation warning for the non-kw version
+    # is removed.
+    # throw(MethodError(@tagsave,args...))
 end
 
 ################################################################################
@@ -193,3 +208,9 @@ function tmpsave(dicts, tmp = projectdir("_research", "tmp");
     end
     r
 end
+
+@deprecate tagsave(file, d, p::String) tagsave(file, d, gitpath=p)
+@deprecate tagsave(file, d, safe::Bool, gitpath = projectdir(), storepatch = true, source = nothing) tagsave(file,d,safe=safe,gitpath=gitpath,storepatch=storepatch,source=source)
+# TODO: When removing the deprecation warning, the tests must be adapted
+# to only use the kw-version of this function. Also the code from the
+# macro version for parsing the non-kw arguments can be replaced.

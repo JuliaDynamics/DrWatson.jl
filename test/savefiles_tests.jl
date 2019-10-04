@@ -38,9 +38,35 @@ t = f(simulation)
 @tagsave(savename(simulation, "bson"), t, true, findproject())
 sn = savename(simulation, "bson")[1:end-5]*"_#1"*".bson"
 @test isfile(sn)
-rm(savename(simulation, "bson"))
 rm(sn)
+
+t = f(simulation)
+tagsave(savename(simulation, "bson"), t, safe=true, gitpath=findproject())
+sn = savename(simulation, "bson")[1:end-5]*"_#1"*".bson"
+@test isfile(sn)
+rm(sn)
+
+t = f(simulation)
+t["gitcommit"] = ""
+@test @tagsave(savename(simulation, "bson"), t, safe=true, gitpath=findproject())["gitcommit"] == ""
+@test isfile(sn)
+rm(sn)
+@test @tagsave(savename(simulation, "bson"), t, safe=true, force=true, gitpath=findproject())["gitcommit"] != ""
+@test isfile(sn)
+rm(sn)
+
+rm(savename(simulation, "bson"))
 @test !isfile(savename(simulation, "bson"))
+
+ex = @macroexpand @tagsave("name",d,false)
+@test ex.args[1].name == :tagsave
+@test ex.args[2] == "name"
+@test ex.args[3] == :d
+@test ex.args[4] == false
+@test ex.args[5] == :(projectdir())
+@test ex.args[6] == true
+
+# Remove leftover
 
 ################################################################################
 #                              produce or load                                 #

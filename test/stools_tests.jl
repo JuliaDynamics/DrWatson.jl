@@ -26,6 +26,56 @@ for d in (d1, d2)
     @test split(d[keytype(d)(:script)], '#')[1] == basename(@__FILE__)
 end
 
+# Tag kw-functions
+
+d = Dict(:x => 3, :y => 4)
+d_new = tag!(d)
+
+@test d == d_new
+
+d_new = tag!(d,gitpath=@__DIR__,source="foo")
+@test endswith(d_new[:script],"foo")
+
+d_new = @tag!(d,gitpath=@__DIR__)
+@test split(d_new[keytype(d_new)(:script)], '#')[1] == basename(@__FILE__)
+
+ex = @macroexpand @tag!(d)
+
+@test ex.args[1].name == :tag!
+@test ex.args[2] == :d
+@test ex.args[3].head == :kw
+
+ex = @macroexpand @tag!(d,"path")
+
+@test ex.args[1].name == :tag!
+@test ex.args[2] == :d
+@test ex.args[3] == "path"
+@test ex.args[4] == true
+
+ex = @macroexpand @tag!(d,"path",false)
+
+@test ex.args[1].name == :tag!
+@test ex.args[2] == :d
+@test ex.args[3] == "path"
+@test ex.args[4] == false
+
+ex = @macroexpand @tag!(d,gitpath="path")
+
+@test ex.args[1].name == :tag!
+@test ex.args[2] == :d
+@test ex.args[3].head == :kw
+@test ex.args[3].args[1] == :gitpath
+@test ex.args[3].args[2] == "path"
+@test ex.args[4].head == :kw
+
+# Test force kw
+
+d = Dict(:x => 3, :y => 4, :gitcommit => "")
+@test tag!(d,gitpath=@__DIR__)[:gitcommit] == ""
+@test tag!(d,gitpath=@__DIR__,force=true)[:gitcommit] == com
+d = Dict(:x => 3, :y => 4, :gitcommit => "")
+@test (@tag!(d, gitpath=@__DIR__,force=true))[:gitcommit] == com
+
 # Test dictionary expansion
 c = Dict(:a => [1, 2], :b => 4);
 c1 = [ Dict(:a=>1,:b=>4)
