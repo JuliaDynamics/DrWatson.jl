@@ -1,3 +1,6 @@
+# 1.4.0
+* `initialize_project` now adds Julia version under use in `Project.toml` when it is called.
+
 # 1.3.0
 * The functions `tag!, tagsave` and their respective macros now obtain their arguments (besides the first two) as keywords instead of positional arguments. The positional versions are deprecated (#93).
 * New keyword `force = false` for `tag!` and co. which replaces the existing `gitcommit` field.
