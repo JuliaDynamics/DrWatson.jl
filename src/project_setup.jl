@@ -222,6 +222,10 @@ function initialize_project(path, name = basename(path);
     if !(authors === nothing)
             w *= "authors = "*sprint(show, vecstring(authors))*"\n"
     end
+    w *= """
+        [compat]
+        julia = "$VERSION"
+        """
     write(joinpath(path, "Project.toml"), w, pro)
     push!(files, "Project.toml")
 
