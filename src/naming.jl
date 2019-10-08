@@ -74,7 +74,8 @@ savename(prefix::String, c::Any; kwargs...) = savename(prefix, c, ""; kwargs...)
 function savename(prefix::String, c, suffix::String;
                   allowedtypes = default_allowed(c),
                   accesses = allaccess(c), digits = 3,
-                  connector = "_", expand::Vector{String} = default_expand(c))
+                  connector = "_", expand::Vector{String} = default_expand(c),
+                  scientific::Union{Int,Nothing}=nothing)
 
     # Here take care of extra prefix besides default
     dpre = default_prefix(c)
@@ -91,10 +92,7 @@ function savename(prefix::String, c, suffix::String;
         label = labels[j]
         t = typeof(val)
         if any(x -> (t <: x), allowedtypes)
-            if t <: AbstractFloat
-                x = round(val; digits = digits); y = round(Int, val)
-                val = x == y ? y : x
-            end
+            val = formatval(val,digits=digits,scientific=scientific)
             if label ∈ expand
                 isempty(val) && continue
                 sname = savename(val; connector=",")
@@ -110,6 +108,18 @@ function savename(prefix::String, c, suffix::String;
     end
     suffix != "" && (s *= "."*suffix)
     return s
+end
+
+function formatval(val::Tv;digits::Td,scientific::Ts) where {Tv, Td, Ts}
+    if Tv <: AbstractFloat && Ts <: Int
+        return round(val,sigdigits=scientific)
+    end
+    if Tv <: AbstractFloat
+        x = round(val; digits = digits); y = round(Int, val)
+        return val = x == y ? y : x
+    end
+    return val
+
 end
 
 """
