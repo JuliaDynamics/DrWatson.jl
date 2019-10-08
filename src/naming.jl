@@ -114,11 +114,13 @@ function savename(prefix::String, c, suffix::String;
 end
 
 function formatval(val::Tv;digits::Td,scientific::Ts) where {Tv, Td, Ts}
-    if Tv <: AbstractFloat && Ts <: Int
-        return round(val,sigdigits=scientific)
-    end
     if Tv <: AbstractFloat
-        x = round(val; digits = digits); y = round(Int, val)
+        if Ts <: Int
+            x = round(val,sigdigits=scientific)
+        else
+            x = round(val; digits = digits)
+        end
+        y = round(Int, val)
         return val = x == y ? y : x
     end
     return val

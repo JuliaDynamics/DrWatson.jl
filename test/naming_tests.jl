@@ -88,12 +88,12 @@ c = 1
 d = "test"
 di = @dict a b c d
 
-@test savename(di,scientific=6) == "a=1.2345e-7_b=1.0_c=1_d=test"
-@test savename(di,scientific=5) == "a=1.2345e-7_b=1.0_c=1_d=test"
-@test savename(di,scientific=4) == "a=1.234e-7_b=1.0_c=1_d=test"
-@test savename(di,scientific=3) == "a=1.23e-7_b=1.0_c=1_d=test"
-@test savename(di,scientific=2) == "a=1.2e-7_b=1.0_c=1_d=test"
-@test savename(di,scientific=1) == "a=1.0e-7_b=1.0_c=1_d=test"
+@test savename(di,scientific=6) == "a=1.2345e-7_b=1_c=1_d=test"
+@test savename(di,scientific=5) == "a=1.2345e-7_b=1_c=1_d=test"
+@test savename(di,scientific=4) == "a=1.234e-7_b=1_c=1_d=test"
+@test savename(di,scientific=3) == "a=1.23e-7_b=1_c=1_d=test"
+@test savename(di,scientific=2) == "a=1.2e-7_b=1_c=1_d=test"
+@test savename(di,scientific=1) == "a=1.0e-7_b=1_c=1_d=test"
 @test savename(di) == "a=0_b=1_c=1_d=test"
 
 sn = savename(di,scientific=4)
