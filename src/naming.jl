@@ -119,7 +119,6 @@ function formatval(val::Tv;digits::Td,scientific::Ts) where {Tv, Td, Ts}
         return val = x == y ? y : x
     end
     return val
-
 end
 
 """
