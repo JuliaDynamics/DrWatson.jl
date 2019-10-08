@@ -1,5 +1,5 @@
 # 1.4.0
-* `savename` now supports rounding to significant digits though the keyword argument `scientific`, where `scientific` defines the number of significant digits.
+* `savename` now supports rounding to significant digits with the keyword argument `scientific`, where `scientific` defines the number of significant digits.
 # 1.3.0
 * `initialize_project` now adds a Julia version under `compat` in the created `Project.toml` when it is called.
 * The functions `tag!, tagsave` and their respective macros now obtain their arguments (besides the first two) as keywords instead of positional arguments. The positional versions are deprecated (#93).
