@@ -117,7 +117,7 @@ end
     roundval(val; digits, scientific)
 
 Round `val`, if roundable, where `digits` defines the number of digits
-and `scientific` the number of siginificant digits used for rounding.
+and `scientific` the number of significant digits used for rounding.
 `scientific` overwrites `digits`.
 """
 function roundval(val::Tv;digits::Td,scientific::Ts) where {Tv, Td, Ts}
@@ -137,7 +137,7 @@ end
     valtostring(val)
 
 Convert `val` to a string with the smallest possible representation of `val`
-that allows recovering val from `valtostring(val)`.
+that allows recovering `val` from `valtostring(val)`.
 """
 valtostring(val) = string(val)
 valtostring(val::AbstractFloat) = replace(string(val),".0e"=>"e")
