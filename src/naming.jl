@@ -95,14 +95,14 @@ function savename(prefix::String, c, suffix::String;
         label = labels[j]
         t = typeof(val)
         if any(x -> (t <: x), allowedtypes)
-            val = formatval(val,digits=digits,scientific=scientific)
+            val = roundval(val,digits=digits,scientific=scientific)
             if label ∈ expand
                 isempty(val) && continue
                 sname = savename(val; connector=",")
                 isempty(sname) && continue
                 entry = label*"="*'('*sname*')'
             else
-                entry = label*"="*string(val)
+                entry = label*"="*valtostring(val)
             end
             !first && (s *= connector)
             s *= entry
@@ -113,10 +113,17 @@ function savename(prefix::String, c, suffix::String;
     return s
 end
 
-function formatval(val::Tv;digits::Td,scientific::Ts) where {Tv, Td, Ts}
+"""
+    roundval(val; digits, scientific)
+
+Round `val`, if roundable, where `digits` defines the number of digits
+and `scientific` the number of siginificant digits used for rounding.
+`scientific` overwrites `digits`.
+"""
+function roundval(val::Tv;digits::Td,scientific::Ts) where {Tv, Td, Ts}
     if Tv <: AbstractFloat
         if Ts <: Int
-            x = round(val,sigdigits=scientific)
+            x = round(val,sigdigits = scientific)
         else
             x = round(val; digits = digits)
         end
@@ -125,6 +132,15 @@ function formatval(val::Tv;digits::Td,scientific::Ts) where {Tv, Td, Ts}
     end
     return val
 end
+
+"""
+    valtostring(val)
+
+Convert `val` to a string with the smallest possible representation of `val`
+that allows recovering val from `valtostring(val)`.
+"""
+valtostring(val) = string(val)
+valtostring(val::AbstractFloat) = replace(string(val),".0e"=>"e")
 
 """
     allaccess(c)
