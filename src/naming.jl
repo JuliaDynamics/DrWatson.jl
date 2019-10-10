@@ -42,9 +42,9 @@ See also [`parse_savename`](@ref).
   round(val; digits = digits) == round(Int, val)
   ```
   then the integer value is used in the name instead.
-* `scientific` : Number of significant digits used for rounding of floating point
-  values. By default this is `nothing`, so rounding to `digitis` decimal places
-  is used.
+* `scientific = nothing` : Number of significant digits used for rounding of
+  floating point values using scientific notation (e.g. `1.65e-7`).
+  If `nothing`, normal rounding is done. 
 * `connector = "_"` : string used to connect the various entries.
 * `expand::Vector{String} = default_expand(c)` : keys that will be expanded
   to the `savename` of their contents, to allow for nested containers.
