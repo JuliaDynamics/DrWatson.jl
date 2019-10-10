@@ -80,3 +80,26 @@ x = A(5, NamedTuple())
 # container with values that are not by default printed in savename
 x = A(5, (m = rand(50,50),))
 @test !occursin("p", savename(x))
+
+# Scientific notation for savename
+a = 1.2345e-7
+b = 1.0
+c = 1
+d = "test"
+di = @dict a b c d
+
+@test savename(di,scientific=6) == "a=1.2345e-7_b=1_c=1_d=test"
+@test savename(di,scientific=5) == "a=1.2345e-7_b=1_c=1_d=test"
+@test savename(di,scientific=4) == "a=1.234e-7_b=1_c=1_d=test"
+@test savename(di,scientific=3) == "a=1.23e-7_b=1_c=1_d=test"
+@test savename(di,scientific=2) == "a=1.2e-7_b=1_c=1_d=test"
+@test savename(di,scientific=1) == "a=1e-7_b=1_c=1_d=test"
+@test savename(di) == "a=0_b=1_c=1_d=test"
+
+sn = savename(di,scientific=4)
+_,parsed,_ = parse_savename(sn)
+@test parsed["a"] == 1.234e-7
+
+sn = savename(di,scientific=1)
+_,parsed,_ = parse_savename(sn)
+@test parsed["a"] == 1.0e-7

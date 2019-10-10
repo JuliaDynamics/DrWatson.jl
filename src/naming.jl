@@ -42,6 +42,9 @@ See also [`parse_savename`](@ref).
   round(val; digits = digits) == round(Int, val)
   ```
   then the integer value is used in the name instead.
+* `scientific = nothing` : Number of significant digits used for rounding of
+  floating point values using scientific notation (e.g. `1.65e-7`).
+  If `nothing`, normal rounding is done. 
 * `connector = "_"` : string used to connect the various entries.
 * `expand::Vector{String} = default_expand(c)` : keys that will be expanded
   to the `savename` of their contents, to allow for nested containers.
@@ -74,7 +77,8 @@ savename(prefix::String, c::Any; kwargs...) = savename(prefix, c, ""; kwargs...)
 function savename(prefix::String, c, suffix::String;
                   allowedtypes = default_allowed(c),
                   accesses = allaccess(c), digits = 3,
-                  connector = "_", expand::Vector{String} = default_expand(c))
+                  connector = "_", expand::Vector{String} = default_expand(c),
+                  scientific::Union{Int,Nothing}=nothing)
 
     # Here take care of extra prefix besides default
     dpre = default_prefix(c)
@@ -91,17 +95,14 @@ function savename(prefix::String, c, suffix::String;
         label = labels[j]
         t = typeof(val)
         if any(x -> (t <: x), allowedtypes)
-            if t <: AbstractFloat
-                x = round(val; digits = digits); y = round(Int, val)
-                val = x == y ? y : x
-            end
+            val = roundval(val,digits=digits,scientific=scientific)
             if label ∈ expand
                 isempty(val) && continue
                 sname = savename(val; connector=",")
                 isempty(sname) && continue
                 entry = label*"="*'('*sname*')'
             else
-                entry = label*"="*string(val)
+                entry = label*"="*valtostring(val)
             end
             !first && (s *= connector)
             s *= entry
@@ -111,6 +112,35 @@ function savename(prefix::String, c, suffix::String;
     suffix != "" && (s *= "."*suffix)
     return s
 end
+
+"""
+    roundval(val; digits, scientific)
+
+Round `val`, if roundable, where `digits` defines the number of digits
+and `scientific` the number of significant digits used for rounding.
+`scientific` overwrites `digits`.
+"""
+function roundval(val::Tv;digits::Td,scientific::Ts) where {Tv, Td, Ts}
+    if Tv <: AbstractFloat
+        if Ts <: Int
+            x = round(val,sigdigits = scientific)
+        else
+            x = round(val; digits = digits)
+        end
+        y = round(Int, val)
+        return val = x == y ? y : x
+    end
+    return val
+end
+
+"""
+    valtostring(val)
+
+Convert `val` to a string with the smallest possible representation of `val`
+that allows recovering `val` from `valtostring(val)`.
+"""
+valtostring(val) = string(val)
+valtostring(val::AbstractFloat) = replace(string(val),".0e"=>"e")
 
 """
     allaccess(c)
