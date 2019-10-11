@@ -1,3 +1,6 @@
+# 1.4.1
+* Fix a bug that created incompatible version strings in generated `Project.toml` files on release candidate versions of Julia.
+
 # 1.4.0
 * `savename` now supports rounding to significant digits with the keyword argument `scientific`, where `scientific` defines the number of significant digits.
 # 1.3.0
