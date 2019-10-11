@@ -224,7 +224,7 @@ function initialize_project(path, name = basename(path);
     end
     w *= """
         [compat]
-        julia = "$VERSION"
+        julia = "$(VERSION.major).$(VERSION.minor).$(VERSION.patch)"
         """
     write(joinpath(path, "Project.toml"), w, pro)
     push!(files, "Project.toml")
