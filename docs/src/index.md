@@ -27,7 +27,7 @@ DrWatson tries to eradicate such bad thoughts and bedtime nightmares.
 
 
 ## Functionality
-DrWarson is a scientific project assistant software package. Here is what it can do:
+DrWarson is a **scientific project assistant software**. Here is what it can do:
 
 * [Project Setup](@ref) : A universal project structure and functions that allow you to consistently and robustly navigate through your project, no matter where it is located on your hard drive.
 * [Naming Simulations](@ref) : A robust and deterministic scheme for naming and handling your containers.
@@ -39,6 +39,7 @@ Think of these core aspects of DrWatson as independent islands connected by brid
 Applications of DrWatson are demonstrated the [Real World Examples](@ref) page. All of these examples are taken from code of real scientific projects that use DrWatson.
 
 Please note that DrWatson is **not a data management system**.
+It is also **not a Julia package creator** like [PkgTemplates.jl](https://github.com/invenia/PkgTemplates.jl) **nor a package developement tool**.
 
 ## Description of DrWatson
 
