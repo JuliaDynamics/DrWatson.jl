@@ -86,8 +86,13 @@ function gitpatch(gitpath = projectdir())
     # diff = LibGit2.diff_tree(repo, tree)
     # now there is no way to generate the patch with LibGit2.jl.
     # Instead use commands:
-    patch = read(`git -C $(gitpath) diff HEAD`, String)
-    return patch
+    try
+        patch = read(`git -C $(gitpath) diff HEAD`, String)
+        return patch
+    catch er
+        @warn "gitpatch failed, with error $er. Returning nothing instead"
+        return nothing
+    end
 end
 
 """
