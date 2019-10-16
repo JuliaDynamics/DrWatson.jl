@@ -57,8 +57,8 @@ function produce_or_load(path::String, c, f;
             end
             verbose && @info "File $s saved."
         catch er
-            @warn "Could not save file, got error $er. "*
-            "\nReturning the file if `loadfile=true`."
+            @warn "Could not save file. Error stacktrace:"*
+            Base.showerror(stderr, er, stacktrace(catch_backtrace()))
         end
         if loadfile
             return file, s
