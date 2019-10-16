@@ -13,7 +13,7 @@ Requires = "ae029012-a4dd-5104-9daa-d747884805df"
 
 [compat]
 FileIO = "1.0.6"
-Requires = "≥ 0.5.2"
+Requires = "0.5.2, 0.6, 1"
 julia = "1.0"
 
 [extras]
