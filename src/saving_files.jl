@@ -51,7 +51,7 @@ function produce_or_load(path::String, c, f;
         try
             mkpath(dirname(s))
             if tag
-                tagsave(s, file, false, gitpath)
+                tagsave(s, file; safe = false, gitpath = gitpath)
             else
                 wsave(s, copy(file))
             end
