@@ -44,8 +44,14 @@ function gitdescribe(gitpath = projectdir())
     try
         repo = LibGit2.GitRepoExt(gitpath)
     catch er
-        @warn "The directory ('$gitpath') is not a Git repository, "*
-              "returning `nothing` instead of the commit ID."
+        if isa(er,LibGit2.GitError) && er.code == LibGit2.Error.ENOTFOUND
+            @warn "The directory ('$gitpath') is not a Git repository, "*
+            "returning `nothing` instead of the commit ID."
+        elseif isa(er,LibGit2.GitError)
+            @warn "$(er.msg). Returning `nothing` instead of the commit ID."
+        else
+            @warn "`gitdescribe` failed with '$er', returning `nothing` instead of the commit ID."
+        end
         return nothing
     end
     suffix = ""
@@ -74,25 +80,28 @@ compared to its last commit; i.e. what `git diff HEAD` produces.
 The `gitpath` needs to point to a directory within a git repository,
 otherwise `nothing` is returned.
 """
-function gitpatch(gitpath = projectdir())
+function gitpatch(path = projectdir())
     try
-        repo = LibGit2.GitRepoExt(gitpath)
+        repo = LibGit2.GitRepoExt(path)
+        gitpath = LibGit2.path(repo)
+        gitdir = joinpath(gitpath,".git")
+        patch = read(`git --git-dir=$gitdir --work-tree=$gitpath diff HEAD`, String)
+        return patch
     catch er
-        @warn "The directory ('$gitpath') is not a Git repository, "*
-              "returning `nothing` instead of a patch."
+        if isa(er,LibGit2.GitError) && er.code == LibGit2.Error.ENOTFOUND
+            @warn "The directory ('$path') is not a Git repository, "*
+            "returning `nothing` instead of a patch."
+        elseif isa(er,LibGit2.GitError)
+            @warn "$(er.msg). Returning `nothing` instead of a patch."
+        else
+            @warn "`gitpatch` failed with error $er, returning `nothing` instead."
+        end
         return nothing
     end
     # tree = LibGit2.GitTree(repo, "HEAD^{tree}")
     # diff = LibGit2.diff_tree(repo, tree)
     # now there is no way to generate the patch with LibGit2.jl.
     # Instead use commands:
-    try
-        patch = read(`git -C $(gitpath) diff HEAD`, String)
-        return patch
-    catch er
-        @warn "gitpatch failed, with error $er. Returning nothing instead"
-        return nothing
-    end
 end
 
 """
