@@ -78,6 +78,16 @@ df = BSON.load(defaultname)[:df]
 @test sort(names(df)) == sort(names(cres2))
 
 ###############################################################################
+#                            test empty whitelist                             #
+###############################################################################
+
+rm(defaultname)
+cres_empty = collect_results!(defaultname, folder;
+    subfolders = true, special_list=special_list, white_list=[]) 
+
+@test dropmissing(cres2[!,[:lv_mean, :lv_lar, :path]]) == dropmissing(cres_empty)
+
+###############################################################################
 #                           test out-of-place form                            #
 ###############################################################################
 cd(@__DIR__)
