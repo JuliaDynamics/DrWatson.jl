@@ -96,7 +96,7 @@ end
 
 
 """
-    @tagsave(file::String, d::Dict; safe = false, gitpath = projectdir(), force = false)
+    @tagsave(file::String, d::Dict; kwargs...)
 Same as [`tagsave`](@ref) but one more field `:script` is added that records
 the local path of the script and line number that called `@tagsave`, see [`@tag!`](@ref).
 """

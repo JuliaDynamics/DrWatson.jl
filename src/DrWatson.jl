@@ -31,7 +31,7 @@ function __init__()
 end
 
 # Update messages
-const display_update = true
+const display_update = false
 const update_version = "1.0.0"
 const update_name = "update_v$update_version"
 if display_update
