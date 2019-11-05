@@ -210,8 +210,13 @@ function initialize_project(path, name = basename(path);
     git && LibGit2.commit(repo, "Folder setup by DrWatson")
 
     # Default files
+    # chmod is needed, as the file permissions are not set correctly when adding the package with `add`.
     cp(joinpath(@__DIR__, "defaults", "gitignore.txt"), joinpath(path, ".gitignore"))
+    chmod(joinpath(path, ".gitignore"),0o644)
+    
     cp(joinpath(@__DIR__, "defaults", "intro.jl"), joinpath(path, "scripts", "intro.jl"))
+    chmod(joinpath(path, "scripts", "intro.jl"),0o644)
+
     files = vcat(".gitignore", joinpath("scripts", "intro.jl"), joinpath("test", "runtests.jl"))
     if readme
         write(joinpath(path, "README.md"), DEFAULT_README)
