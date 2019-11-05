@@ -13,6 +13,7 @@ initialize_project(path, force = true)
 
 @test !DrWatson.is_standard_julia_project()
 
+
 @test projectname() == path
 @test typeof(findproject(@__DIR__)) == String
 for p in DrWatson.DEFAULT_PATHS
@@ -21,8 +22,10 @@ end
 
 @test ispath(projectdir("data"))
 @test isfile(joinpath(path, ".gitignore"))
+@test uperm(joinpath(path, ".gitignore")) == 0x06
 @test isfile(joinpath(path, "README.md"))
 @test isfile(joinpath(path, "Project.toml"))
+@test uperm(joinpath(path, "scripts", "intro.jl")) == 0x06
 
 for dir_type in ("data", "src", "plots", "papers", "scripts")
     fn = Symbol(dir_type * "dir")
