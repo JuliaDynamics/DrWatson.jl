@@ -17,11 +17,10 @@ include("saving_tools.jl")
 # Functionality that saves/loads
 using FileIO: save, load
 export save, load
+
+_wsave(filename, obj) = save(filename, obj)
 wsave(args...) = save(args...)
-function wsave(filename, obj)
-    mkpath(dirname(filename))
-    save(filename, obj)
-end
+wsave(filename, obj) = (mkpath(dirname(filename)); _wsave(filename, obj))
 
 wload(args...) = load(args...)
 
