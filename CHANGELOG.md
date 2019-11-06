@@ -1,3 +1,6 @@
+# 1.5.0
+* Started to add support for overloading save/load for custom files. See the updated docs around `wsave` and `wload`.
+
 # 1.4.1
 * Fix a bug that created incompatible version strings in generated `Project.toml` files on release candidate versions of Julia.
 

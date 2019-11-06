@@ -49,7 +49,6 @@ function produce_or_load(path::String, c, f;
         end
         file = f(c)
         try
-            mkpath(dirname(s))
             if tag
                 tagsave(s, file; safe = false, gitpath = gitpath)
             else
@@ -85,7 +84,6 @@ contains a key `:gitcommit`, it is not overwritten, unless,
 """
 function tagsave(file, d; safe::Bool = false, gitpath = projectdir(), storepatch = true, force = false, source = nothing)
     d2 = tag!(d, gitpath=gitpath, storepatch=storepatch, force=force, source=source)
-    mkpath(dirname(file))
     if safe
         safesave(file, copy(d2))
     else
@@ -143,7 +141,6 @@ See also [`tagsave`](@ref).
 """
 function safesave(f, data)
     recursively_clear_path(f)
-    mkpath(dirname(f))
     wsave(f, data)
 end
 
