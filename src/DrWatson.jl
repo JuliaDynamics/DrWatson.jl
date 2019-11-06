@@ -15,7 +15,7 @@ include("naming.jl")
 include("saving_tools.jl")
 
 # Functionality that saves/loads
-using FileIO: save, load
+using FileIO
 export save, load
 export wsave, wload
 
