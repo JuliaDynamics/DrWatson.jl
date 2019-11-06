@@ -142,20 +142,19 @@ function to_data_row(data, file;
         black_list = keytype(data)[],
         special_list = keytype(data)[])
     cnames = setdiff!(white_list, black_list)
-    df = DataFrames.DataFrame(
-        (Symbol.(cnames) .=> (x->[x]).(getindex.(Ref(data),cnames)))...
-        )
-
+    entries = Pair{Symbol,Any}[]
+    append!(entries,Symbol.(cnames) .=> (x->[x]).(getindex.(Ref(data),cnames)))
     #Add special things here
     for (ename, func) in special_list
-        try df[!, ename] .= [func(data), ]
+        try 
+            push!(entries,Symbol(ename) => [func(data), ])
         catch e
             @warn "While applying function $(nameof(func)) to file "*
             "$(file), got error $e. Using value `missing` instead."
-            df[!, ename] .= [missing, ]
+            push!(entries,Symbol(ename) => [missing, ])
         end
     end
-    return df
+    return DataFrames.DataFrame(entries...)
 end
 
 """
