@@ -1,5 +1,7 @@
-# 1.5.1
+# 1.6.0
 * `quickactivate` doesn't do anything anymore if you try to activate to already active project.
+* New macro `@quickactivate`
+
 # 1.5.0
 * Started to add support for overloading save/load for custom files. See the updated docs around `wsave` and `wload`.
 

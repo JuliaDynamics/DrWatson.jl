@@ -91,16 +91,21 @@ end
 
 """
     quickactivate(path [, name::String])
-Activate the project found by [`findproject`](@ref) of the `path`, which
-recursively searches the `path` and its parents for a valid Julia
-project file.
+Activate the project found by recursively searching the `path`
+and its parents for a valid Julia project file.
 Optionally check if `name` is the same as the activated project's name.
-If it is not, throw an error.
+If it is not, throw an error. See also [`@quickactivate`].
+Do nothing if the project found is already active, or if no
+project file is found.
 
-This function is _first_ activating the project and _then_ checking if
+Example:
+```julia
+using DrWatson
+quickactivate("path/to/project", "Best project in the WOLRLDD")
+```
+
+Notice that this function is _first_ activating the project and _then_ checking if
 it matches the `name`.
-It also does nothing if the project found is already active, or if it
-fails to find a project file.
 
 !!! warning
     Note that to access `quickactivate` you need to be `using DrWatson`.
@@ -141,6 +146,13 @@ function quickactivate(path, name = nothing)
     return nothing
 end
 
+"""
+    @quickactivate
+Equivalent with `quickactivate(@__DIR__)`.
+
+    @quickactivate name
+Equivalent with `quickactivate(@__DIR__, name)`.
+"""
 macro quickactivate(name = nothing)
     if __source__.file === nothing
         dir = nothing
