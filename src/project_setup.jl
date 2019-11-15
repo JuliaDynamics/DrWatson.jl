@@ -3,7 +3,7 @@
 ##########################################################################################
 export projectdir, datadir, srcdir, plotsdir, scriptsdir, papersdir
 export projectname
-export findproject, quickactivate
+export findproject, quickactivate, @quickactivate
 
 @deprecate scriptdir scriptsdir #TODO: remove in next release
 
@@ -141,8 +141,15 @@ function quickactivate(path, name = nothing)
     return nothing
 end
 
-
-
+macro quickactivate(name = nothing)
+    if __source__.file === nothing
+        dir = nothing
+    else
+        _dirname = dirname(String(__source__.file))
+        dir = isempty(_dirname) ? pwd() : abspath(_dirname)
+    end
+    :(quickactivate($dir,$name))
+end
 
 ##########################################################################################
 # Project setup
