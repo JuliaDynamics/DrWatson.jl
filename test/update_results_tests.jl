@@ -99,6 +99,19 @@ subfolders = true, special_list=special_list, black_list = black_list)
 @test size(cres3) == size(cres2)
 
 ###############################################################################
+#                              Quickactivate macro                            #
+###############################################################################
+
+cd(@__DIR__)
+isdir("testdir") && rm("testdir", recursive=true)
+initialize_project("testdir"; git = false)
+open(joinpath("testdir","testinclude.jl"),"w") do f
+    write(f,"@quickactivate\n")
+end
+include(joinpath("testdir", "testinclude.jl"))
+@test Base.active_project() == abspath(joinpath("testdir","Project.toml"))
+
+###############################################################################
 #                                 Delete Folders                              #
 ###############################################################################
 

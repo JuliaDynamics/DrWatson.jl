@@ -3,7 +3,7 @@
 ##########################################################################################
 export projectdir, datadir, srcdir, plotsdir, scriptsdir, papersdir
 export projectname
-export findproject, quickactivate
+export findproject, quickactivate, @quickactivate
 
 @deprecate scriptdir scriptsdir #TODO: remove in next release
 
@@ -91,14 +91,20 @@ end
 
 """
     quickactivate(path [, name::String])
-Activate the project found by [`findproject`](@ref) of the `path`, which
-recursively searches the `path` and its parents for a valid Julia
-project file.
-
+Activate the project found by recursively searching the `path`
+and its parents for a valid Julia project file.
 Optionally check if `name` is the same as the activated project's name.
-If it is not, throw an error.
+If it is not, throw an error. See also [`@quickactivate`].
+Do nothing if the project found is already active, or if no
+project file is found.
 
-This function is _first_ activating the project and _then_ checking if
+Example:
+```julia
+using DrWatson
+quickactivate("path/to/project", "Best project in the WOLRLDD")
+```
+
+Notice that this function is _first_ activating the project and _then_ checking if
 it matches the `name`.
 
 !!! warning
@@ -108,17 +114,17 @@ it matches the `name`.
     will be the one of the global environment, and not of the activated project.
     To avoid unexpected behavior take care so that these two versions coincide.
 
-    **In addition please be very careful to not write:**
-    ```julia
-    using DrWatson, Package1, Package2
-    quickactivate(@__DIR__)
-    # do stuff
-    ```
-    **but instead load packages after activating the project:**
+    **In addition please be very careful to write:**
     ```julia
     using DrWatson
     quickactivate(@__DIR__)
     using Package1, Package2
+    # do stuff
+    ```
+    **instead of the erroneous:**
+    ```julia
+    using DrWatson, Package1, Package2
+    quickactivate(@__DIR__)
     # do stuff
     ```
     This ensures that the packages you use will all have the versions dictated
@@ -127,7 +133,9 @@ it matches the `name`.
 """
 function quickactivate(path, name = nothing)
     projectpath = findproject(path)
-    projectpath === nothing && return nothing
+    if projectpath === nothing || projectpath == dirname(Base.active_project())
+        return nothing
+    end
     Pkg.activate(projectpath)
     if !(name === nothing) && projectname() != name
         error(
@@ -138,8 +146,22 @@ function quickactivate(path, name = nothing)
     return nothing
 end
 
+"""
+    @quickactivate
+Equivalent with `quickactivate(@__DIR__)`.
 
-
+    @quickactivate name
+Equivalent with `quickactivate(@__DIR__, name)`.
+"""
+macro quickactivate(name = nothing)
+    if __source__.file === nothing
+        dir = nothing
+    else
+        _dirname = dirname(String(__source__.file))
+        dir = isempty(_dirname) ? pwd() : abspath(_dirname)
+    end
+    :(quickactivate($dir,$name))
+end
 
 ##########################################################################################
 # Project setup
@@ -213,7 +235,7 @@ function initialize_project(path, name = basename(path);
     # chmod is needed, as the file permissions are not set correctly when adding the package with `add`.
     cp(joinpath(@__DIR__, "defaults", "gitignore.txt"), joinpath(path, ".gitignore"))
     chmod(joinpath(path, ".gitignore"),0o644)
-    
+
     cp(joinpath(@__DIR__, "defaults", "intro.jl"), joinpath(path, "scripts", "intro.jl"))
     chmod(joinpath(path, "scripts", "intro.jl"),0o644)
 

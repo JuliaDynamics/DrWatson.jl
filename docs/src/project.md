@@ -63,16 +63,9 @@ This can be done in multiple ways:
 
 We recommend the fourth approach, although it does come with a caveat (see the docstring of [`quickactivate`](@ref)).
 
-Here is how it works: the function [`quickactivate`](@ref) activates a project given some path by recursively searching the path and its parents for a valid `Project.toml` file. Typically you put this function in your script files like so:
-```julia
-using DrWatson # DONT USE OTHER PACKAGES HERE!
-quickactivate(@__DIR__, "Best project in the WORLLDD")
-# Now you should start using other packages
-```
-where the second optional argument can assert if the activated project matches the name you provided. If not the function will throw an error.
-
 ```@docs
 quickactivate
+@quickactivate
 findproject
 ```
 
