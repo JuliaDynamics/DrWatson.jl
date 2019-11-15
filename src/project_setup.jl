@@ -109,7 +109,7 @@ fails to find a project file.
     will be the one of the global environment, and not of the activated project.
     To avoid unexpected behavior take care so that these two versions coincide.
 
-    **In addition please be very careful to not write:**
+    **In addition please be very careful to write:**
     ```julia
     using DrWatson
     quickactivate(@__DIR__)
