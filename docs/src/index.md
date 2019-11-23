@@ -29,7 +29,7 @@ DrWatson tries to eradicate such bad thoughts and bedtime nightmares.
 ## Functionality
 DrWarson is a **scientific project assistant software**. Here is what it can do:
 
-* [Project Setup](@ref) : A universal project structure and functions that allow you to consistently and robustly navigate through your project, no matter where it is located on your hard drive.
+* [Project Setup](@ref) : A universal project structure and functions that allow you to consistently and robustly navigate through your project, no matter where it is located.
 * [Naming Simulations](@ref) : A robust and deterministic scheme for naming and handling your containers.
 * [Saving Tools](@ref) : Tools for safely saving and loading your data, tagging the Git commit ID to your saved files, safety when tagging with dirty repos, and more.
 * [Running & Listing Simulations](@ref): Tools for producing tables of existing simulations/data, adding new simulation results to the tables, preparing batch parameter containers, and more.

@@ -2,7 +2,7 @@
 
 | **Documentation**   |  **Tests**     | **Gitter** |
 |:--------:|:---------------:|:-----:|
-|[![](https://img.shields.io/badge/docs-latest-blue.svg)](https://JuliaDynamics.github.io/DrWatson.jl/dev)| [![Build Status](https://travis-ci.org/JuliaDynamics/DrWatson.jl.svg?branch=master)](https://travis-ci.org/JuliaDynamics/DrWatson.jl) | [![Gitter](https://img.shields.io/gitter/room/nwjs/nw.js.svg)](https://gitter.im/JuliaDynamics/Lobby)
+|[![](https://img.shields.io/badge/documentation-blue.svg)](https://JuliaDynamics.github.io/DrWatson.jl/dev)| [![Build Status](https://travis-ci.org/JuliaDynamics/DrWatson.jl.svg?branch=master)](https://travis-ci.org/JuliaDynamics/DrWatson.jl) | [![Gitter](https://img.shields.io/gitter/room/nwjs/nw.js.svg)](https://gitter.im/JuliaDynamics/Lobby)
 
 DrWatson is a Julia package created to help people "deal" with their simulations, simulation parameters, where are files saved, experimental data, scripts, existing simulations, project source code and in general their scientific projects. To install, simply type `] add DrWatson` in your Julia session.
 
