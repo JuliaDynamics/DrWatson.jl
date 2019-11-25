@@ -47,10 +47,11 @@ initialize_project
 Notice that the project initialized by DrWatson does not represent a Julia package. It represents a scientific project. That being said, it is often the case that you want to develop normal Julia Modules inside your project, so that you can later use them in your code with `using PackageName`. The proper way to do this is to initialize Julia packages, using the package manager, inside the `src` folder, using these steps:
 
 1. Active your project that uses DrWatson.
-2. Change directory to the project's `src` folder.
-3. Go into package mode and initialize a package with the name that you want: `generate PackageName`
-4. `dev` the local path to `PackageName` using the package manager , e.g. `dev PackageName`. Notice that this command uses a local path, see this PR for more details: https://github.com/JuliaLang/Pkg.jl/pull/1215
+2. Change directory to the project's folder (very important).
+3. Go into package mode and initialize a package with the name that you want: `generate src/PackageName`
+4. `dev` the local path to `PackageName` using the package manager , e.g. `dev src/PackageName`. Notice that this command uses a local path, see [this PR](https://github.com/JuliaLang/Pkg.jl/pull/1215) for more details.
 
+Now whenever you do `using PackageName`, the local version will be used. This will still work even if you transfer your project to another computer, because the Manifest.toml file stores the local path.
 
 
 ## Activating a Project
