@@ -200,6 +200,9 @@ Dict{Symbol,Any} with 3 entries:
 """
 macro tag!(d,args...)
     args = Any[args...]
+    # Keywords added after a ; are moved to the front of the expression
+    # that is passed to the macro. So instead of getting the dict in d
+    # an Expr is passed.
     if d isa Expr && d.head == :parameters
         length(args) > 0 || return :(throw(MethodError(@tag!,$(esc(d)),$(esc.(args)...))))
         extra_kw_def = d.args

@@ -100,6 +100,9 @@ the local path of the script and line number that called `@tagsave`, see [`@tag!
 """
 macro tagsave(file,d,args...)
     args = Any[args...]
+    # Keywords added after a ; are moved to the front of the expression
+    # that is passed to the macro. So instead of getting the filename in file
+    # an Expr is passed.
     if file isa Expr && file.head == :parameters
         length(args) > 0 || return :(throw(MethodError(@tagsave,$(esc(file)),$(esc(d)),$(esc.(args)...))))
         extra_kw_def = file.args
