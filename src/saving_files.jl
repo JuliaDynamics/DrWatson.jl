@@ -99,21 +99,19 @@ Same as [`tagsave`](@ref) but one more field `:script` is added that records
 the local path of the script and line number that called `@tagsave`, see [`@tag!`](@ref).
 """
 macro tagsave(file,d,args...)
+    args = Any[args...]
+    # Keywords added after a ; are moved to the front of the expression
+    # that is passed to the macro. So instead of getting the filename in file
+    # an Expr is passed.
+    if file isa Expr && file.head == :parameters
+        length(args) > 0 || return :(throw(MethodError(@tagsave,$(esc(file)),$(esc(d)),$(esc.(args)...))))
+        extra_kw_def = file.args
+        file = d
+        d = popfirst!(args)
+        append!(args,extra_kw_def)
+    end
     s = QuoteNode(__source__)
-    N = length(args)
-    (N == 0 || all(iskwdefinition.(args))) &&
-        return :(tagsave($(esc(file)), $(esc(d)),$(esc.(convert_to_kw.(args))...),source=$s))
-    # First optional arg. is not needed as if it's not provided dispatch
-    # is done through the kw-version of the function (ie. this line is
-    # never reached)
-    default = [
-        :(projectdir()), #gitpath
-        :(true),         #storepatch
-    ]
-    :(tagsave($(esc(file)),$(esc(d)), $(esc.(args)...), $(esc.(default[N:end])...), $s))
-    # Use this code after the deprecation warning for the non-kw version
-    # is removed.
-    # throw(MethodError(@tagsave,args...))
+    return :(tagsave($(esc(file)), $(esc(d)), $(esc.(convert_to_kw.(args))...),source=$s))
 end
 
 ################################################################################
@@ -205,9 +203,3 @@ function tmpsave(dicts, tmp = projectdir("_research", "tmp");
     end
     r
 end
-
-@deprecate tagsave(file, d, p::String) tagsave(file, d, gitpath=p)
-@deprecate tagsave(file, d, safe::Bool, gitpath = projectdir(), storepatch = true, source = nothing) tagsave(file,d,safe=safe,gitpath=gitpath,storepatch=storepatch,source=source)
-# TODO: When removing the deprecation warning, the tests must be adapted
-# to only use the kw-version of this function. Also the code from the
-# macro version for parsing the non-kw arguments can be replaced.

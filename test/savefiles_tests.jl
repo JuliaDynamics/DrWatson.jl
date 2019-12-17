@@ -19,14 +19,14 @@ end
 #                                 tagsave                                      #
 ################################################################################
 t = f(simulation)
-tagsave(savename(simulation, "bson"), t, findproject())
+tagsave(savename(simulation, "bson"), t, gitpath=findproject())
 file = load(savename(simulation, "bson"))
 @test "gitcommit" ∈ keys(file)
 @test file["gitcommit"] |> typeof == String
 rm(savename(simulation, "bson"))
 
 t = f(simulation)
-@tagsave(savename(simulation, "bson"), t, false, findproject())
+@tagsave(savename(simulation, "bson"), t, safe=false, gitpath=findproject())
 file = load(savename(simulation, "bson"))
 @test "gitcommit" ∈ keys(file)
 @test file["gitcommit"] |> typeof == String
@@ -35,7 +35,7 @@ file = load(savename(simulation, "bson"))
 @test file["script"] == joinpath("test", "savefiles_tests.jl#29")
 
 t = f(simulation)
-@tagsave(savename(simulation, "bson"), t, true, findproject())
+@tagsave(savename(simulation, "bson"), t, safe=true, gitpath=findproject())
 sn = savename(simulation, "bson")[1:end-5]*"_#1"*".bson"
 @test isfile(sn)
 rm(sn)
@@ -58,13 +58,9 @@ rm(sn)
 rm(savename(simulation, "bson"))
 @test !isfile(savename(simulation, "bson"))
 
-ex = @macroexpand @tagsave("name",d,false)
-@test ex.args[1].name == :tagsave
-@test ex.args[2] == "name"
-@test ex.args[3] == :d
-@test ex.args[4] == false
-@test ex.args[5] == :(projectdir())
-@test ex.args[6] == true
+ex = @macroexpand @tagsave("testname.bson", (@dict a b c ), storepatch=false; safe=true)
+ex2 = @macroexpand @tagsave("testname.bson", @dict a b c; storepatch=false, safe=true)
+@test ex.args[1:end-1] == ex2.args[1:end-1]
 
 # Remove leftover
 

@@ -5,8 +5,6 @@ export projectdir, datadir, srcdir, plotsdir, scriptsdir, papersdir
 export projectname
 export findproject, quickactivate, @quickactivate
 
-@deprecate scriptdir scriptsdir #TODO: remove in next release
-
 """
     function is_standard_julia_project()
 

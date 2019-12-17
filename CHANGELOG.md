@@ -1,3 +1,6 @@
+# 1.6.2
+* `@tag!` and `@tagsave` now support using `;` as keywords separator (#111)
+
 # 1.6.0
 * `quickactivate` doesn't do anything anymore if you try to activate to already active project.
 * New macro `@quickactivate`

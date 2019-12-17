@@ -199,20 +199,18 @@ Dict{Symbol,Any} with 3 entries:
 ```
 """
 macro tag!(d,args...)
+    args = Any[args...]
+    # Keywords added after a ; are moved to the front of the expression
+    # that is passed to the macro. So instead of getting the dict in d
+    # an Expr is passed.
+    if d isa Expr && d.head == :parameters
+        length(args) > 0 || return :(throw(MethodError(@tag!,$(esc(d)),$(esc.(args)...))))
+        extra_kw_def = d.args
+        d = popfirst!(args)
+        append!(args,extra_kw_def)
+    end
     s = QuoteNode(__source__)
-    N = length(args)
-    (N == 0 || all(iskwdefinition.(args))) &&
-        return :(tag!($(esc(d)),$(esc.(convert_to_kw.(args))...),source=$s))
-    # First optional arg. is not needed as if it's not provided dispatch
-    # is done through the kw-version of the function (ie. this line is
-    # never reached)
-    default = [
-        :(true), #storepatch
-    ]
-    :(tag!($(esc(d)), $(esc.(args)...), $(esc.(default[N:end])...), $s))
-    # Use this code after the deprecation warning for the non-kw version
-    # is removed.
-    # throw(MethodError(@tag!,args...))
+    return :(tag!($(esc(d)),$(esc.(convert_to_kw.(args))...),source=$s))
 end
 
 """
@@ -304,8 +302,3 @@ tagsave(savename(s), struct2dict(s))
 function struct2dict(s)
     Dict(x => getfield(s, x) for x in fieldnames(typeof(s)))
 end
-
-@deprecate tag!(d::Dict, gitpath, storepatch = true, source = nothing) tag!(d,gitpath=gitpath,storepatch=storepatch,source=source)
-# TODO: When removing the deprecation warning, the tests must be adapted
-# to only use the kw-version of this function. Also the code from the
-# macro version for parsing the non-kw arguments can be replaced.
