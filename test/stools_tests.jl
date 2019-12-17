@@ -12,7 +12,7 @@ com = gitdescribe(dirname(@__DIR__))
 d1 = Dict(:x => 3, :y => 4)
 d2 = Dict("x" => 3, "y" => 4)
 for d in (d1, d2)
-    d = tag!(d, @__DIR__)
+    d = tag!(d, gitpath=@__DIR__)
 
     @test haskey(d, keytype(d)(:gitcommit))
     @test d[keytype(d)(:gitcommit)] |> typeof <: String
@@ -20,7 +20,7 @@ end
 
 # @tag!
 for d in (d1, d2)
-    d = @tag!(d, @__DIR__)
+    d = @tag!(d, gitpath=@__DIR__)
     @test haskey(d, keytype(d)(:gitcommit))
     @test d[keytype(d)(:gitcommit)] |> typeof <: String
     @test split(d[keytype(d)(:script)], '#')[1] == basename(@__FILE__)
@@ -38,26 +38,6 @@ d_new = tag!(d,gitpath=@__DIR__,source="foo")
 
 d_new = @tag!(d,gitpath=@__DIR__)
 @test split(d_new[keytype(d_new)(:script)], '#')[1] == basename(@__FILE__)
-
-ex = @macroexpand @tag!(d)
-
-@test ex.args[1].name == :tag!
-@test ex.args[2] == :d
-@test ex.args[3].head == :kw
-
-ex = @macroexpand @tag!(d,"path")
-
-@test ex.args[1].name == :tag!
-@test ex.args[2] == :d
-@test ex.args[3] == "path"
-@test ex.args[4] == true
-
-ex = @macroexpand @tag!(d,"path",false)
-
-@test ex.args[1].name == :tag!
-@test ex.args[2] == :d
-@test ex.args[3] == "path"
-@test ex.args[4] == false
 
 ex = @macroexpand @tag!(d,gitpath="path")
 
