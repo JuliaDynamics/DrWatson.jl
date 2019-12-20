@@ -234,8 +234,7 @@ function initialize_project(path, name = basename(path);
     cp(joinpath(@__DIR__, "defaults", "gitignore.txt"), joinpath(path, ".gitignore"))
     chmod(joinpath(path, ".gitignore"),0o644)
 
-    cp(joinpath(@__DIR__, "defaults", "intro.jl"), joinpath(path, "scripts", "intro.jl"))
-    chmod(joinpath(path, "scripts", "intro.jl"),0o644)
+    write(joinpath(path, "scripts", "intro.jl"), makeintro(name))
 
     files = vcat(".gitignore", joinpath("scripts", "intro.jl"), joinpath("test", "runtests.jl"))
     if readme
@@ -245,7 +244,7 @@ function initialize_project(path, name = basename(path);
     pro = read(joinpath(path, "Project.toml"), String)
     w = "name = \"$name\"\n"
     if !(authors === nothing)
-            w *= "authors = "*sprint(show, vecstring(authors))*"\n"
+        w *= "authors = "*sprint(show, vecstring(authors))*"\n"
     end
     w *= """
         [compat]
@@ -263,6 +262,17 @@ vecstring(a::String) = [a]
 vecstring(a::Vector{String}) = a
 vecstring(c) = [string(a) for a in c]
 
+##########################################################################################
+# Introductory file
+##########################################################################################
+function makeintro(name)
+    f = """
+    using DrWatson
+    @quickactivate $(name)
+    DrWatson.greet()
+    """
+end
+
 function greet()
     s =
     """
@@ -270,8 +280,9 @@ function greet()
 
     Have fun with your new project!
 
-    You can help us make improve DrWatson by opening
-    issues on GitHub or submitting feature requests!
+    You can help us improve DrWatson by opening
+    issues on GitHub, submitting feature requests,
+    or even opening your own Pull Requests!
     """
     println(s)
 end
