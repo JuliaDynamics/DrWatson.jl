@@ -1,3 +1,6 @@
+# 1.7.0
+* Improve the introductory file created by DrWatson.
+
 # 1.6.2
 * `@tag!` and `@tagsave` now support using `;` as keywords separator (#111)
 

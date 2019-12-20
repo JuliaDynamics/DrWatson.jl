@@ -13,7 +13,6 @@ initialize_project(path, force = true)
 
 @test !DrWatson.is_standard_julia_project()
 
-
 @test projectname() == path
 @test typeof(findproject(@__DIR__)) == String
 for p in DrWatson.DEFAULT_PATHS
@@ -54,6 +53,8 @@ end
 @test isfile(joinpath(path, "Project.toml"))
 z = read(joinpath(path, "Project.toml"), String)
 @test occursin("[\"George\", \"Nick\"]", z)
+z = read(joinpath(path, "scripts", "intro.jl"), String)
+@test occursin("@quickactivate", z)
 
 initialize_project(path, name; force = true, authors = "Sophia", git = false)
 @test !isdir(joinpath(path, ".git"))
