@@ -2,7 +2,10 @@
 
 ---
 
-DrWatson is a scientific project assistant software. It is a Julia package created to help people "deal" with their simulations, simulation parameters, where are files saved, experimental data, scripts, existing simulations, project source code and in general their scientific projects.
+DrWatson is a **scientific project assistant** software.
+It helps people manage their scientific projects (or any project for that matter).
+
+Specifically, it is a Julia package created to help people "deal" with their simulations, simulation parameters, where are files saved, experimental data, scripts, existing simulations, project source code, establishing reproducibility, and in general their scientific projects.
 
 See the [Functionality](@ref) section to get an impression of what you can do with DrWatson. To install, simply type `] add DrWatson` in your Julia session.
 
