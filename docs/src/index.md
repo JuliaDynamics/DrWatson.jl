@@ -74,3 +74,48 @@ https://github.com/mohamed82008/ComputExp.jl
 https://sacred.readthedocs.io/en/latest/index.html
 
 https://experimentator.readthedocs.io/en/latest/
+
+## Other useful packages
+
+### Efficient code writing
+* https://github.com/mauro3/Parameters.jl
+* https://github.com/docopt/DocOpt.jl
+* https://github.com/vtjnash/Glob.jl
+
+### Notebooks
+* IJulia.jl
+* Weave.jl
+
+### Documenting your code
+* Literate.jl
+* Documenter.jl
+
+### Debugging, writing code
+* Juno
+* Revise.jl
+* Debugger.jl
+
+### Performance measures
+* ProgressMeter.jl
+* BenchmarkTools.jl
+* https://github.com/KristofferC/TimerOutputs.jl
+* ProfileViews.jl (similar available in Juno with `@profiler`)
+
+### Saving Data
+* BSON.jl
+* JLD2.jl
+* CSV.jl
+
+### Data management & data bases
+* https://github.com/helgee/RemoteFiles.jl
+* https://github.com/JuliaDynamics/CaosDB.jl
+* https://juliadb.org/
+* https://github.com/SebastianM-C/StorageGraphs.jl
+
+### Tabular data
+* https://juliadata.github.io/DataFrames.jl/stable/
+* https://www.queryverse.org/
+
+### Traversing folders
+* Base.Filesystem
+* https://github.com/Keno/AbstractTrees.jl/blob/master/examples/fstree.jl
