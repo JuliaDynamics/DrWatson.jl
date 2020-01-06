@@ -8,10 +8,12 @@ These tools are also used in the examples demonstrated in the [Real World Exampl
 
     In addition, `wsave` **ensures** that `mkpath` is always called on the path you are trying to save your file at. We all know how unpleasant it is to run a 2-hour simulation and save no data because `FileIO.save` complains that the path you are trying to save does not exist...
 
-    To overload the saving part, add a new method to `DrWatson._wsave` (notice the `_`), and to overload the load part add a new method to `DrWatson.wload`. By overloading these methods you get all the extra functionality of [`tagsave`](@ref), [`safesave`](@ref), etc., for free for your own types.
+    To overload the saving part, add a new method to `DrWatson._wsave(filename, ::YourType)` (notice the `_`). By overloading `_wsave` you get all the extra functionality of [`tagsave`](@ref), [`safesave`](@ref), etc., for free for your own types (`tagsave` requires that you save your data as a dictionary).
 
 !!! warning "Saving and loading fallback"
-    By default we fallback to `FileIO.save` and `FileIO.load` for all files and types. This means that you have to install yourself whatever saving backend you want to use. `FileIO` by itself does _not_ install a package that saves data, it only provides the interface!
+    By default we fallback to `FileIO.save` and `FileIO.load` for and types.
+    This means that you have to install yourself whatever saving backend you want to use.
+    `FileIO` by itself does _not_ install a package that saves data, it only provides the interface!
 
     The *suffix* of the file name determines which package will be used for actually saving the file. It is **your responsibility** to know how the saving package works and what input it expects!
 
