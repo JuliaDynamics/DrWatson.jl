@@ -1,6 +1,6 @@
 using Pkg
 Pkg.activate(@__DIR__)
-
+CI = get(ENV, "CI", nothing) == "true"
 using DrWatson
 using Documenter, DataFrames, Parameters, Dates, BSON, JLD2
 
@@ -12,7 +12,7 @@ sitename= "DrWatson",
 authors = "George Datseris and contributors.",
 doctest = false,
 format = Documenter.HTML(
-    prettyurls = get(ENV, "CI", nothing) == "true",
+    prettyurls = CI,
     assets = ["assets/logo.ico"],
     ),
 pages = [
@@ -25,7 +25,7 @@ pages = [
     ],
 )
 
-if get(ENV, "CI", nothing) == "true"
+if CI
     deploydocs(repo = "github.com/JuliaDynamics/DrWatson.jl.git",
                target = "build")
 end
