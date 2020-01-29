@@ -114,14 +114,14 @@ it matches the `name`.
 
     **In addition please be very careful to write:**
     ```julia
-    using DrWatson
+    using DrWatson # YES
     quickactivate(@__DIR__)
     using Package1, Package2
     # do stuff
     ```
     **instead of the erroneous:**
     ```julia
-    using DrWatson, Package1, Package2
+    using DrWatson, Package1, Package2 # NO!
     quickactivate(@__DIR__)
     # do stuff
     ```
@@ -148,10 +148,10 @@ end
     @quickactivate
 Equivalent with `quickactivate(@__DIR__)`.
 
-    @quickactivate name
+    @quickactivate name::String
 Equivalent with `quickactivate(@__DIR__, name)`.
 """
-macro quickactivate(name = nothing)
+macro quickactivate(name::String = nothing)
     if __source__.file === nothing
         dir = nothing
     else
@@ -159,6 +159,19 @@ macro quickactivate(name = nothing)
         dir = isempty(_dirname) ? pwd() : abspath(_dirname)
     end
     :(quickactivate($dir,$name))
+end
+
+macro quickactivate(name::Symbol)
+    if __source__.file === nothing
+        dir = nothing
+    else
+        _dirname = dirname(String(__source__.file))
+        dir = isempty(_dirname) ? pwd() : abspath(_dirname)
+    end
+    quote
+        quickactivate($dir, string($name))
+        using $name
+    end
 end
 
 ##########################################################################################
