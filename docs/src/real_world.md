@@ -61,7 +61,7 @@ end
 and then the header of all my files is transformed to
 ```julia
 using DrWatson
-@quickactivate AlbedoProperties
+@quickactivate :AlbedoProperties
 ```
 (notice that the above code takes advantage of [`@quickactivate`](@ref)'s feature to essentially combine the commands `@quickactivate "AlbedoProperties"` and `using AlbedoProperties` into one).
 
