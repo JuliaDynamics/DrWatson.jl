@@ -12,7 +12,7 @@ include(srcdir("unitcells.jl"))
 ```
 In all projects I save data/plots using `datadir/plotdir`:
 ```julia
-@tagsave(datadir("mushrooms, "Λ_N=$N.bson"), (@dict Λ Λσ ws hs description))
+@tagsave(datadir("mushrooms", "Λ_N=$N.bson"), (@dict Λ Λσ ws hs description))
 ```
 The advantage of this approach is that it will always work regardless of if I move the specific file to a different subfolder (which is very often necessary) or whether I move the entire project folder somewhere else!
 **Please be sure you have understood the caveat of using [`quickactivate`](@ref)!**
@@ -25,12 +25,48 @@ using Parameters
 using TimeseriesPrediction, LinearAlgebra, Statistics
 
 include(srcdir("systems", "barkley.jl"))
-include(srcdir("nrmse.jl")
+include(srcdir("nrmse.jl"))
 
 # stuff...
 
 save(datadir("sim", "barkley", "astonishing_results.bson"), data)
 ```
+
+## Making your project a usable module
+For some projects, it is often the case that some packages and files from the source folder are loaded at the beginning of _every file of the project_.
+For example, I have a project that I know that for _any_ script I will write, the first five lines will be:
+```julia
+using DrWatson
+@quickactivate "AlbedoProperties"
+using Dates, Statistics, NCDatasets
+include(srcdir("core.jl"))
+include(srcdir("style.jl"))
+```
+It would be quite convenient to group all of these commands into one file and instead load that file, for example do `include(srcdir("everything.jl"))` and all commands are in there.
+
+We can do even better though! Because of the way Julia handles project and module paths, it is in fact possible to transform the currently active project into a usable module. If one defines inside the `src` folder a file `AlbedoProperties.jl` and in that file define a module `AlbedoProperties` (notice that these names must match _exactly_ the project name), then upon doing `using AlbedoProperties` Julia will in fact just bring this module into scope.
+
+So what I end up doing (for some projects where this makes sense) is creating the aforementioned file and putting inside things like
+```julia
+module AlbedoProperties
+
+using Reexport
+@reexport using Dates, Statistics
+using NCDatasets: NCDataset, dimnames, NCDatasets
+export NCDataset, dimnames
+include("core.jl") # this file now also has export statements
+include("style.jl")
+
+end
+```
+and then the header of all my files is transformed to
+```julia
+using DrWatson
+@quickactivate :AlbedoProperties
+```
+which takes advantage of [`@quickactivate`](@ref)'s feature to essentially combine the commands `@quickactivate "AlbedoProperties"` and `using AlbedoProperties` into one.
+
+If you intend to share your project with a non-DrWatson user, you should consider the verbose syntax instead, as the above syntax is not really clear for someone that doesn't know what `@quickactivate` does.
 
 ## `savename` and tagging
 The combination of using [`savename`](@ref) and [`tagsave`](@ref) makes it easy and fast to save output in a way that is consistent, robust and reproducible. Here is an example from a project:

@@ -1,6 +1,6 @@
 using Pkg, Test, DrWatson
 
-cd()
+cd() # changes directory to `homedir()`
 path = "test project"
 name = "lala"
 
@@ -48,9 +48,6 @@ com = gitdescribe(path)
 for p in DrWatson.DEFAULT_PATHS
     @test ispath(joinpath(path, p))
 end
-@test isfile(joinpath(path, ".gitignore"))
-@test isfile(joinpath(path, "README.md"))
-@test isfile(joinpath(path, "Project.toml"))
 z = read(joinpath(path, "Project.toml"), String)
 @test occursin("[\"George\", \"Nick\"]", z)
 z = read(joinpath(path, "scripts", "intro.jl"), String)
@@ -60,6 +57,10 @@ initialize_project(path, name; force = true, authors = "Sophia", git = false)
 @test !isdir(joinpath(path, ".git"))
 z = read(joinpath(path, "Project.toml"), String)
 @test occursin("[\"Sophia\"]", z)
+
+# here we test quickactivate
+quickactivate(joinpath(homedir(), path))
+@test projectname() == name
 
 cd(path)
 @test findproject(pwd()) == pwd()

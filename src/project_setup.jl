@@ -114,14 +114,14 @@ it matches the `name`.
 
     **In addition please be very careful to write:**
     ```julia
-    using DrWatson
+    using DrWatson # YES
     quickactivate(@__DIR__)
     using Package1, Package2
     # do stuff
     ```
     **instead of the erroneous:**
     ```julia
-    using DrWatson, Package1, Package2
+    using DrWatson, Package1, Package2 # NO!
     quickactivate(@__DIR__)
     # do stuff
     ```
@@ -144,21 +144,41 @@ function quickactivate(path, name = nothing)
     return nothing
 end
 
+function get_dir_from_source(source_file)
+    if source_file === nothing
+        return nothing
+    else
+        _dirname = dirname(String(source_file))
+        return isempty(_dirname) ? pwd() : abspath(_dirname)
+    end
+end
+
 """
     @quickactivate
 Equivalent with `quickactivate(@__DIR__)`.
 
-    @quickactivate name
+    @quickactivate name::String
 Equivalent with `quickactivate(@__DIR__, name)`.
 """
 macro quickactivate(name = nothing)
-    if __source__.file === nothing
-        dir = nothing
-    else
-        _dirname = dirname(String(__source__.file))
-        dir = isempty(_dirname) ? pwd() : abspath(_dirname)
-    end
+    dir = get_dir_from_source(__source__.file)
     :(quickactivate($dir,$name))
+end
+
+"""
+    @quickactivate ProjectName::Symbol
+If given a `Symbol` then first `quickactivate(@__DIR__, string(ProjectName))`,
+and then do `using ProjectName`, as if the symbol was representing a module name.
+
+This ties with [Making your project a usable module](@ref) functionality,
+see the docs for an example.
+"""
+macro quickactivate(name::QuoteNode)
+    dir = get_dir_from_source(__source__.file)
+    quote
+        quickactivate($dir, string($name))
+        using $(name.value)
+    end
 end
 
 ##########################################################################################
