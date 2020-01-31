@@ -40,8 +40,8 @@ function __init__()
 end
 
 # Update messages
-const display_update = false
-const update_version = "1.0.0"
+const display_update = true
+const update_version = "1.8.0"
 const update_name = "update_v$update_version"
 if display_update
 if !isfile(joinpath(@__DIR__, update_name))
@@ -49,9 +49,7 @@ printstyled(stdout,
 """
 \nUpdate message: DrWatson v$update_version
 
-Welcome to the first major release!
-
-Checkout the CHANGELOG for breaking changes.
+A cool new feature was added to the `@quickactivate` macro!
 \n
 """; color = :light_magenta)
 touch(joinpath(@__DIR__, update_name))

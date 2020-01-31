@@ -1,3 +1,6 @@
+# 1.8.0
+* `@quickactivate` was enhanced to allow projects that also represent a module.
+
 # 1.7.0
 * Improve the introductory file created by DrWatson.
 

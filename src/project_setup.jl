@@ -165,6 +165,14 @@ macro quickactivate(name = nothing)
     :(quickactivate($dir,$name))
 end
 
+"""
+    @quickactivate ProjectName::Symbol
+If given a `Symbol` then first `quickactivate(@__DIR__, string(ProjectName))`,
+and then do `using ProjectName`, as if the symbol was representing a module name.
+
+This ties with [Making your project a usable module](@ref) functionality,
+see the docs for an example.
+"""
 macro quickactivate(name::QuoteNode)
     dir = get_dir_from_source(__source__.file)
     quote
