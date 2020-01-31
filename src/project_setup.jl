@@ -144,6 +144,15 @@ function quickactivate(path, name = nothing)
     return nothing
 end
 
+function get_dir_from_source(source_file)
+    if source_file === nothing
+        return nothing
+    else
+        _dirname = dirname(String(source_file))
+        return isempty(_dirname) ? pwd() : abspath(_dirname)
+    end
+end
+
 """
     @quickactivate
 Equivalent with `quickactivate(@__DIR__)`.
@@ -151,26 +160,16 @@ Equivalent with `quickactivate(@__DIR__)`.
     @quickactivate name::String
 Equivalent with `quickactivate(@__DIR__, name)`.
 """
-macro quickactivate(name::String = nothing)
-    if __source__.file === nothing
-        dir = nothing
-    else
-        _dirname = dirname(String(__source__.file))
-        dir = isempty(_dirname) ? pwd() : abspath(_dirname)
-    end
+macro quickactivate(name = nothing)
+    dir = get_dir_from_source(__source__.file)
     :(quickactivate($dir,$name))
 end
 
-macro quickactivate(name::Symbol)
-    if __source__.file === nothing
-        dir = nothing
-    else
-        _dirname = dirname(String(__source__.file))
-        dir = isempty(_dirname) ? pwd() : abspath(_dirname)
-    end
+macro quickactivate(name::QuoteNode)
+    dir = get_dir_from_source(__source__.file)
     quote
         quickactivate($dir, string($name))
-        using $name
+        using $(name.value)
     end
 end
 
