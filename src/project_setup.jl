@@ -198,6 +198,14 @@ const DEFAULT_README = """
 This is an awesome new scientific project that uses `DrWatson`!\n
 """
 
+function default_name_from_path(path)
+    ap = abspath(path)
+    path, dir = splitdir(ap)
+    if length(dir) == 0
+        _, dir = splitdir(path)
+    end
+    return dir
+end
 
 """
     initialize_project(path [, name]; kwargs...)
@@ -214,7 +222,7 @@ The new project remains activated for you to immidiately add packages.
   is `true` then recursively delete everything in the path and create the project.
 * `git = true` : Make the project a Git repository.
 """
-function initialize_project(path, name = basename(path);
+function initialize_project(path, name = default_name_from_path(path);
     force = false, readme = true, authors = nothing,
     git = true)
 
