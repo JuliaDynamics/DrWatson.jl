@@ -1,5 +1,6 @@
 # 1.8.0
 * `@quickactivate` was enhanced to allow projects that also represent a module.
+* `initialize_project` no resolves the folder name for naming the project if the path is given as "." or ".."
 
 # 1.7.0
 * Improve the introductory file created by DrWatson.

@@ -11,6 +11,10 @@ Pkg.activate()
 
 initialize_project(path, force = true)
 
+cd(path) do
+    @test DrWatson.default_name_from_path(".") == path
+end
+
 @test !DrWatson.is_standard_julia_project()
 
 @test projectname() == path
