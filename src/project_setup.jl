@@ -92,7 +92,7 @@ end
 Activate the project found by recursively searching the `path`
 and its parents for a valid Julia project file.
 Optionally check if `name` is the same as the activated project's name.
-If it is not, throw an error. See also [`@quickactivate`].
+If it is not, throw an error. See also [`@quickactivate`](@ref).
 Do nothing if the project found is already active, or if no
 project file is found.
 
