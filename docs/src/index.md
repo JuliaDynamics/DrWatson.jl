@@ -15,6 +15,9 @@ See the [Functionality](@ref) section to get an impression of what you can do wi
 !!! info "Poster for DrWatson"
     If you prefer having a concise and visual summary of DrWatson we have prepared a poster for it! Check out the [Poster](@ref) section!
 
+!!! tip "Star us on GitHub!"
+    If you like DrWatson the please consider starring the [GitHub repository](https://github.com/JuliaDynamics/DrWatson.jl). This gives as an accurate lower bound of the number of people the software has helped!
+
 ## Rationale
 Have you thought things like:
 
@@ -22,7 +25,7 @@ Have you thought things like:
 * Hold on, haven't I run this simulation already?
 * Do I have to produce a dataframe of my finished simulations AGAIN?!
 * Wait, are those experiments already processed?
-* PFfffff I am tired of typing `savename = "w=$w_f=$f_x=$x.jld2"`, can't I do it automatically?
+* PFfffff I am tired of typing `savename = "w=$w_f=$f_x=$x.txt"`, can't I do it automatically?
 * I wish I could just use Parameters.jl and just translate my simulations into a dataframe.
 * Yeah you've sent me your project but none of the scripts work...
 
