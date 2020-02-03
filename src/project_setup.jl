@@ -296,7 +296,7 @@ vecstring(c) = [string(a) for a in c]
 function makeintro(name)
     f = """
     using DrWatson
-    @quickactivate $(name)
+    @quickactivate "$name"
     DrWatson.greet()
     """
 end
