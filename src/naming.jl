@@ -76,7 +76,7 @@ savename(c::Any, suffix::String; kwargs...) =
 savename(prefix::String, c::Any; kwargs...) = savename(prefix, c, ""; kwargs...)
 function savename(prefix::String, c, suffix::String;
                   allowedtypes = default_allowed(c),
-                  accesses = allaccess(c), digits = 3,
+                  accesses = allaccess(c), ignores = allignores(c), digits = 3,
                   connector = "_", expand::Vector{String} = default_expand(c),
                   scientific::Union{Int,Nothing}=nothing)
 
@@ -86,7 +86,7 @@ function savename(prefix::String, c, suffix::String;
         prefix = joinpath(prefix, dpre)
     end
 
-    labels = vecstring(accesses) # make it vector of strings
+    labels = vecstring(setdiff(accesses, ignores)) # make it vector of strings
     p = sortperm(labels)
     first = prefix == "" || endswith(prefix, PATH_SEPARATOR)
     s = prefix
@@ -172,6 +172,13 @@ For example, if `c, c.k1` are `NamedTuple`s then
 access(c, keys...) = access(access(c, keys[1]), Base.tail(keys)...)
 access(c::AbstractDict, key) = getindex(c, key)
 access(c, key) = getproperty(c, key)
+
+"""
+    allignores(c)
+Return all the keys `c` will be ignored during [`savename`](@ref).
+This is an empty tuple by default.
+"""
+allignores(c::Any) = ()
 
 """
     default_allowed(c) = (Real, String, Symbol)
