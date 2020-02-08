@@ -71,6 +71,7 @@ savename(d, allowedtypes = (String,)) == "mode=double"
 
 rick = (never = "gonna", give = "you", up = "!");
 savename(rick) == "give=you_never=gonna_up=!" # keys are sorted!
+savename(rick; ignores = ["up"]) == "give=you_never=gonna"
 ```
 """
 savename(c; kwargs...) = savename(default_prefix(c), c, ""; kwargs...)
@@ -181,7 +182,7 @@ access(c, key) = getproperty(c, key)
 
 """
     allignore(c)
-Return all the keys `c` will be ignored during [`savename`](@ref).
+Return all the keys `c` that will be ignored in [`savename`](@ref).
 This is an empty tuple by default.
 """
 allignore(c::Any) = ()
