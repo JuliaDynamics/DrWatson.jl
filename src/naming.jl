@@ -37,7 +37,7 @@ See also [`parse_savename`](@ref).
   to use with the keyword `accesses`. By default this is all possible
   keys `c` can be accessed with, see [`allaccess`](@ref).
 * `ignores = allignore(c)` : You can also specify which specific keys you want
-  to ignore with the keyword `ignores`. By default this is an empty 
+  to ignore with the keyword `ignores`. By default this is an empty
   tuple, see [`allignore`](@ref). Note that `ignores` overwrites `accesses`.
 * `digits = 3` : Floating point values are rounded to `digits`.
   In addition if the following holds:
@@ -47,7 +47,7 @@ See also [`parse_savename`](@ref).
   then the integer value is used in the name instead.
 * `scientific = nothing` : Number of significant digits used for rounding of
   floating point values using scientific notation (e.g. `1.65e-7`).
-  If `nothing`, normal rounding is done. 
+  If `nothing`, normal rounding is done.
 * `connector = "_"` : string used to connect the various entries.
 * `expand::Vector{String} = default_expand(c)` : keys that will be expanded
   to the `savename` of their contents, to allow for nested containers.
@@ -90,15 +90,15 @@ function savename(prefix::String, c, suffix::String;
     end
 
     # Perform access and ignore logic and sort
-    access_labels, ignore_labels = vecstring.((accesses, ignores))  # make it vector of strings
-    label_acc_tuples = collect(zip(access_labels, accesses))        # create tuple
-    filter!(t -> !(t[1] in ignore_labels), label_acc_tuples)        # ignores overwrites accesses
-    sort!(label_acc_tuples; by=(t -> t[1]))                         # sort by labels
-    
+    labels = vecstring(accesses) # make it vector of strings
+    ignored_labels = vecstring(ignores)
+    p = sortperm(labels)
     first = prefix == "" || endswith(prefix, PATH_SEPARATOR)
     s = prefix
-    for (label, acc) ∈ label_acc_tuples
-        val = access(c, acc)
+    for j ∈ p
+        label = labels[j]
+        label ∈ ignored_labels && continue
+        val = access(c, accesses[j])
         t = typeof(val)
         if any(x -> (t <: x), allowedtypes)
             val = roundval(val,digits=digits,scientific=scientific)

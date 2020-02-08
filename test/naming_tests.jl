@@ -14,6 +14,7 @@ d = (a = 0.153456453, b = 5.0, mode = "double")
 
 rick = (never = "gonna", give = "you", up = "!");
 @test savename(rick) == "give=you_never=gonna_up=!"
+@test savename(rick; ignores = ["up"]) == "give=you_never=gonna"
 
 x = 3; y = 5.0;
 d = Dict(:x => x, :y => y)
