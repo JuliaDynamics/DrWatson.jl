@@ -89,8 +89,9 @@ function savename(prefix::String, c, suffix::String;
         prefix = joinpath(prefix, dpre)
     end
 
-    visibles = setdiff(accesses, ignores)
-    labels = vecstring(visibles) # make it vector of strings
+    labels = setdiff(
+        vecstring.((accesses, ignores)) # make it vector of strings
+    )   # ignores overwrites accesses
     p = sortperm(labels)
     first = prefix == "" || endswith(prefix, PATH_SEPARATOR)
     s = prefix
