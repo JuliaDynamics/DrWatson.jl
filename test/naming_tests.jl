@@ -41,7 +41,7 @@ w = rand(50)
 @test ntuple2dict(@ntuple x y) == @dict x y
 @test sort(collect(keys(dict2ntuple(@dict x y)))) == sort(collect(keys(@ntuple x y)))
 
-@test savename(@ntuple x y z; ignores=(:y)) == "x=3_z=lala"
+@test savename(@ntuple x y z; ignores=(:y,)) == "x=3_z=lala"
 
 a = 3; b = 4
 c = @ntuple a b
