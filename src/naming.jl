@@ -38,7 +38,7 @@ See also [`parse_savename`](@ref).
   keys `c` can be accessed with, see [`allaccess`](@ref).
 * `ignores = allignore(c)` : You can also specify which specific keys you want
   to ignore with the keyword `ignores`. By default this is an empty 
-  tuple, see [`allignore`](@ref).
+  tuple, see [`allignore`](@ref). Note that `ignores` overwrites `accesses`.
 * `digits = 3` : Floating point values are rounded to `digits`.
   In addition if the following holds:
   ```julia
