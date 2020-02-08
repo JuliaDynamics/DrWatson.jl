@@ -36,6 +36,9 @@ See also [`parse_savename`](@ref).
 * `accesses = allaccess(c)` : You can also specify which specific keys you want
   to use with the keyword `accesses`. By default this is all possible
   keys `c` can be accessed with, see [`allaccess`](@ref).
+* `ignores = allignore(c)` : You can also specify which specific keys you want
+  to ignore with the keyword `ignores`. By default this is an empty 
+  tuple, see [`allignore`](@ref).
 * `digits = 3` : Floating point values are rounded to `digits`.
   In addition if the following holds:
   ```julia
@@ -76,7 +79,7 @@ savename(c::Any, suffix::String; kwargs...) =
 savename(prefix::String, c::Any; kwargs...) = savename(prefix, c, ""; kwargs...)
 function savename(prefix::String, c, suffix::String;
                   allowedtypes = default_allowed(c),
-                  accesses = allaccess(c), ignores = allignores(c), digits = 3,
+                  accesses = allaccess(c), ignores = allignore(c), digits = 3,
                   connector = "_", expand::Vector{String} = default_expand(c),
                   scientific::Union{Int,Nothing}=nothing)
 
@@ -175,11 +178,11 @@ access(c::AbstractDict, key) = getindex(c, key)
 access(c, key) = getproperty(c, key)
 
 """
-    allignores(c)
+    allignore(c)
 Return all the keys `c` will be ignored during [`savename`](@ref).
 This is an empty tuple by default.
 """
-allignores(c::Any) = ()
+allignore(c::Any) = ()
 
 """
     default_allowed(c) = (Real, String, Symbol)
