@@ -89,15 +89,16 @@ function savename(prefix::String, c, suffix::String;
         prefix = joinpath(prefix, dpre)
     end
 
-    labels = setdiff(
-        vecstring.((accesses, ignores)) # make it vector of strings
-    )   # ignores overwrites accesses
-    p = sortperm(labels)
+    # Perform access and ignore logic and sort
+    access_labels, ignore_labels = vecstring.((accesses, ignores))  # make it vector of strings
+    label_acc_tuples = collect(zip(access_labels, accesses))        # create tuple
+    filter!(t -> !(t[1] in ignore_labels), label_acc_tuples)        # ignores overwrites accesses
+    sort!(label_acc_tuples; by=(t -> t[1]))                         # sort by labels
+    
     first = prefix == "" || endswith(prefix, PATH_SEPARATOR)
     s = prefix
-    for j ∈ p
-        val = access(c, visibles[j])
-        label = labels[j]
+    for (label, acc) ∈ label_acc_tuples
+        val = access(c, acc)
         t = typeof(val)
         if any(x -> (t <: x), allowedtypes)
             val = roundval(val,digits=digits,scientific=scientific)

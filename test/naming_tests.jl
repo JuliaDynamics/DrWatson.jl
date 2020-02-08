@@ -31,7 +31,9 @@ n2 = (x = x, y = y, z = z)
 @test d2 == @dict x y z
 @test n2 == @ntuple x y z
 
-@test savename(n2; ignores=(:y,)) == "x=3_z=lala"
+@test savename(n2; ignores=(:y,))  == "x=3_z=lala"
+@test savename(n2; ignores=("y",)) == "x=3_z=lala"
+@test savename(n2; accesses=(:x, :y), ignores=(:y,)) == "x=3"
 
 @test savename(@dict x y) == "x=3_y=5"
 @test savename(@ntuple x y) == "x=3_y=5"
