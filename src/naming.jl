@@ -27,18 +27,19 @@ See [`default_prefix`](@ref) for more.
 
 `savename` can be very conveniently combined with
 [`@dict`](@ref) or [`@ntuple`](@ref).
-See also [`parse_savename`](@ref).
+See also [`parse_savename`](@ref) and [`@savename`](@ref).
 
 ## Keywords
 * `allowedtypes = default_allowed(c)` : Only values of type subtyping
   anything in `allowedtypes` are used in the name. By default
   this is `(Real, String, Symbol)`.
-* `accesses = allaccess(c)` : You can also specify which specific keys you want
+* `accesses = allaccess(c)` : pecify which specific keys you want
   to use with the keyword `accesses`. By default this is all possible
   keys `c` can be accessed with, see [`allaccess`](@ref).
-* `ignores = allignore(c)` : You can also specify which specific keys you want
+* `ignores = allignore(c)` : You can also specify keys that you want
   to ignore with the keyword `ignores`. By default this is an empty
-  tuple, see [`allignore`](@ref). Note that `ignores` overwrites `accesses`.
+  tuple, see [`allignore`](@ref).
+  (keys in `ignore` are ignored even if they are in `accesses`)
 * `digits = 3` : Floating point values are rounded to `digits`.
   In addition if the following holds:
   ```julia
