@@ -27,15 +27,19 @@ See [`default_prefix`](@ref) for more.
 
 `savename` can be very conveniently combined with
 [`@dict`](@ref) or [`@ntuple`](@ref).
-See also [`parse_savename`](@ref).
+See also [`parse_savename`](@ref) and [`@savename`](@ref).
 
 ## Keywords
 * `allowedtypes = default_allowed(c)` : Only values of type subtyping
   anything in `allowedtypes` are used in the name. By default
   this is `(Real, String, Symbol)`.
-* `accesses = allaccess(c)` : You can also specify which specific keys you want
+* `accesses = allaccess(c)` : pecify which specific keys you want
   to use with the keyword `accesses`. By default this is all possible
   keys `c` can be accessed with, see [`allaccess`](@ref).
+* `ignores = allignore(c)` : You can also specify keys that you want
+  to ignore with the keyword `ignores`. By default this is an empty
+  tuple, see [`allignore`](@ref).
+  (keys in `ignore` are ignored even if they are in `accesses`)
 * `digits = 3` : Floating point values are rounded to `digits`.
   In addition if the following holds:
   ```julia
@@ -44,7 +48,7 @@ See also [`parse_savename`](@ref).
   then the integer value is used in the name instead.
 * `scientific = nothing` : Number of significant digits used for rounding of
   floating point values using scientific notation (e.g. `1.65e-7`).
-  If `nothing`, normal rounding is done. 
+  If `nothing`, normal rounding is done.
 * `connector = "_"` : string used to connect the various entries.
 * `expand::Vector{String} = default_expand(c)` : keys that will be expanded
   to the `savename` of their contents, to allow for nested containers.
@@ -68,6 +72,7 @@ savename(d, allowedtypes = (String,)) == "mode=double"
 
 rick = (never = "gonna", give = "you", up = "!");
 savename(rick) == "give=you_never=gonna_up=!" # keys are sorted!
+savename(rick; ignores = ["up"]) == "give=you_never=gonna"
 ```
 """
 savename(c; kwargs...) = savename(default_prefix(c), c, ""; kwargs...)
@@ -76,7 +81,7 @@ savename(c::Any, suffix::String; kwargs...) =
 savename(prefix::String, c::Any; kwargs...) = savename(prefix, c, ""; kwargs...)
 function savename(prefix::String, c, suffix::String;
                   allowedtypes = default_allowed(c),
-                  accesses = allaccess(c), digits = 3,
+                  accesses = allaccess(c), ignores = allignore(c), digits = 3,
                   connector = "_", expand::Vector{String} = default_expand(c),
                   scientific::Union{Int,Nothing}=nothing)
 
@@ -86,13 +91,16 @@ function savename(prefix::String, c, suffix::String;
         prefix = joinpath(prefix, dpre)
     end
 
+    # Perform access and ignore logic and sort
     labels = vecstring(accesses) # make it vector of strings
+    ignored_labels = vecstring(ignores)
     p = sortperm(labels)
     first = prefix == "" || endswith(prefix, PATH_SEPARATOR)
     s = prefix
     for j ∈ p
-        val = access(c, accesses[j])
         label = labels[j]
+        label ∈ ignored_labels && continue
+        val = access(c, accesses[j])
         t = typeof(val)
         if any(x -> (t <: x), allowedtypes)
             val = roundval(val,digits=digits,scientific=scientific)
@@ -172,6 +180,13 @@ For example, if `c, c.k1` are `NamedTuple`s then
 access(c, keys...) = access(access(c, keys[1]), Base.tail(keys)...)
 access(c::AbstractDict, key) = getindex(c, key)
 access(c, key) = getproperty(c, key)
+
+"""
+    allignore(c)
+Return all the keys `c` that will be ignored in [`savename`](@ref).
+This is an empty tuple by default.
+"""
+allignore(c::Any) = ()
 
 """
     default_allowed(c) = (Real, String, Symbol)
