@@ -26,10 +26,12 @@ n = (x = x, y = y)
 
 z = "lala"
 d2 = Dict(:x => x, :y => y, :z => z)
-n2 = (x = x, y = y, z= z)
+n2 = (x = x, y = y, z = z)
 
 @test d2 == @dict x y z
 @test n2 == @ntuple x y z
+
+@test savename(n2; ignores=(:y,)) == "x=3_z=lala"
 
 @test savename(@dict x y) == "x=3_y=5"
 @test savename(@ntuple x y) == "x=3_y=5"
@@ -40,8 +42,6 @@ w = rand(50)
 
 @test ntuple2dict(@ntuple x y) == @dict x y
 @test sort(collect(keys(dict2ntuple(@dict x y)))) == sort(collect(keys(@ntuple x y)))
-
-@test savename(@ntuple x y z; ignores=(:y,)) == "x=3_z=lala"
 
 a = 3; b = 4
 c = @ntuple a b

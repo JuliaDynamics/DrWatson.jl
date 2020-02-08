@@ -86,12 +86,13 @@ function savename(prefix::String, c, suffix::String;
         prefix = joinpath(prefix, dpre)
     end
 
-    labels = vecstring(setdiff(accesses, ignores)) # make it vector of strings
+    visibles = setdiff(accesses, ignores)
+    labels = vecstring(visibles) # make it vector of strings
     p = sortperm(labels)
     first = prefix == "" || endswith(prefix, PATH_SEPARATOR)
     s = prefix
     for j ∈ p
-        val = access(c, accesses[j])
+        val = access(c, visibles[j])
         label = labels[j]
         t = typeof(val)
         if any(x -> (t <: x), allowedtypes)
