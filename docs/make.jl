@@ -1,6 +1,6 @@
 using Pkg
 Pkg.activate(@__DIR__)
-CI = get(ENV, "CI", nothing) == "true"
+CI = get(ENV, "CI", nothing) == "true" || get(ENV, "GITHUB_TOKEN", nothing) !== nothing
 using DrWatson
 using Documenter, DataFrames, Parameters, Dates, BSON, JLD2
 
@@ -26,6 +26,9 @@ pages = [
 )
 
 if CI
-    deploydocs(repo = "github.com/JuliaDynamics/DrWatson.jl.git",
-               target = "build")
+    deploydocs(
+        repo = "github.com/JuliaDynamics/DrWatson.jl.git",
+        target = "build",
+        push_preview = true
+    )
 end
