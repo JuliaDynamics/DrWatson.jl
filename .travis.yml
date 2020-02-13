@@ -15,14 +15,8 @@ before_script:
 
 matrix:
   allow_failures:
-  - julia: nightly
-
-notifications:
-  email:
-    on_success: never
-    on_failure: never
-
-jobs:
+    - julia: nightly
+  fast_finish: true
   include:
     - stage: "Documentation"
       julia: 1
@@ -32,3 +26,5 @@ jobs:
                                                Pkg.instantiate()'
         - julia --project=docs/ docs/make.jl
       after_success: skip
+notifications:
+  email: false
