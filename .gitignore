@@ -3,6 +3,7 @@
 *.jl.mem
 docs/build
 docs/data
+docs/src/assets/themes/*.css
 Manifest.toml
 test/testdir
 src/update*

@@ -3,9 +3,12 @@ Pkg.activate(@__DIR__)
 CI = get(ENV, "CI", nothing) == "true" || get(ENV, "GITHUB_TOKEN", nothing) !== nothing
 using DrWatson
 using Documenter, DataFrames, Parameters, Dates, BSON, JLD2
+using DocumenterTools: Themes
 
 # %%
 isdir(datadir()) && rm(datadir(); force = true, recursive = true)
+
+Themes.compile(joinpath(@__DIR__, "watson-light.scss"), joinpath(@__DIR__, "src/assets/themes/documenter-light.css"))
 
 makedocs(modules = [DrWatson],
 sitename= "DrWatson",

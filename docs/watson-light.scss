@@ -1,0 +1,8 @@
+@charset "UTF-8";
+
+// Override some of the Documenter theme variables to customize the theme:
+$themename: "documenter-light"; // CSS file must be called `$(themename).css`
+$background: #fe55aa;
+
+// Include the original theme:
+@import "documenter-light";
