@@ -32,7 +32,7 @@ To do that you may extend any of the following functions:
 ```@docs
 DrWatson.allaccess
 DrWatson.access
-DrWatson.allingore
+DrWatson.allignore
 DrWatson.default_allowed
 DrWatson.default_prefix
 DrWatson.default_expand
