@@ -4,8 +4,9 @@
 $themename: "documenter-light"; // CSS file must be called `$(themename).css`
 $background: #fe55aa;
 
-// Include the original theme:
-@import "documenter-light";
+$family-sans-serif: 'Montserrat', sans-serif;
+$family-monospace: 'Source Code Pro', monospace;
 
-$family-sans-serif: 'Montserrat', sans-serif !default;
-$family-monospace: 'Source Code Pro', monospace !default;
+// Include the original theme which will now use the updated variables.
+// This should be the last thing in the SCSS file.
+@import "documenter-light";
