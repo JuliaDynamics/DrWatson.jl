@@ -182,23 +182,20 @@ access(c::AbstractDict, key) = getindex(c, key)
 access(c, key) = getproperty(c, key)
 
 """
-    allignore(c)
+    allignore(c) = ()
 Return all the keys `c` that will be ignored in [`savename`](@ref).
-This is an empty tuple by default.
 """
 allignore(c::Any) = ()
 
 """
     default_allowed(c) = (Real, String, Symbol)
-Return the (super-)Types that will be used as `allowedtypes`
-in [`savename`](@ref) or other similar functions.
+Return the (super-)Types that will be used as `allowedtypes` in [`savename`](@ref).
 """
 default_allowed(c) = (Real, String, Symbol)
 
 """
     default_prefix(c) = ""
-Return the `prefix` that will be used by default
-in [`savename`](@ref) or other similar functions.
+Return the `prefix` that will be used by default in [`savename`](@ref).
 
 Notice that if `default_prefix` is defined for `c` but a prefix is also given
 to [`savename`](@ref) then the two values are merged via `joinpath` for
