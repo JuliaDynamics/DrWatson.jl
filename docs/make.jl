@@ -16,7 +16,11 @@ authors = "George Datseris and contributors.",
 doctest = false,
 format = Documenter.HTML(
     prettyurls = CI,
-    assets = ["assets/logo.ico"],
+    assets = [
+        "assets/logo.ico",
+        asset("https://fonts.googleapis.com/css?family=Montserrat&display=swap", class=:css),
+        asset("https://fonts.googleapis.com/css?family=Source+Code+Pro&display=swap", class=:css),
+        ],
     ),
 pages = [
     "Introduction" => "index.md",
@@ -24,7 +28,7 @@ pages = [
     "Naming Simulations" => "name.md",
     "Saving Tools" => "save.md",
     "Running & Listing Simulations" => "run&list.md",
-    "Real World Examples" => "real_world.md"
+    # "Real World Examples" => "real_world.md"
     ],
 )
 
