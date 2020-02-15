@@ -5,7 +5,7 @@ $themename: "documenter-light"; // CSS file must be called `$(themename).css`
 // The customizable varibles can be found here:
 // https://github.com/JuliaDocs/Documenter.jl/tree/master/assets/html/scss
 // under documenter/_variables or documenter/_overrides. But some stuff are Bulma defaults
-// as well, so you may need to look them up too: https://bulma.io/documentation/
+// as well, so you may need to look them up too: https://bulma.io/documentation/customize/variables/
 
 // Two cool helper functions:
 $lightness-unit: 8% !default;
@@ -18,33 +18,39 @@ $lightness-unit: 8% !default;
   @return adjust-color($color, $lightness: $factor*$lightness-unit);
 }
 
+////////////////////////////////////////////////////////////////////////
 // This defines the JuliaDynamics color scheme:
 $maincolor: #644e99;
-$maintext-dark: #202020; // main text color, dark (for light bg)
-$maintext-light: #fff;   // main text color, light (for dark bg)
-$linkcolor: #0eb3c9;
-$linkcolor-hover: #05a28d;
+$mainwhite: #fafafa;
+$mainblack: #202020;
+$accentcolor: #0eb3c9;
+////////////////////////////////////////////////////////////////////////
+
+$boldcolor: darken-color($maincolor, 0.5);
+
 
 // this sets the default background color for the documentation, affecting the sidebar color,
 // the --- lines, as well as the codeblock background, and many other things, see
 // the overrides file. Therefore it is best to not set it and change elements one by one
 // $background: $maincolor;
 
+$body-background-color: $mainwhite; // main page background
+
 // Sidebar
 $documenter-sidebar-background: $maincolor !default; //background color for all sidebar
-$documenter-sidebar-color: $maintext-light !default; //font color for all sidebar
+$documenter-sidebar-color: $mainwhite !default; //font color for all sidebar
 
-$documenter-sidebar-menu-active-background: #fff !default;
-$documenter-sidebar-menu-active-color: $maintext-dark !default;
+$documenter-sidebar-menu-active-background: $mainwhite !default;
+$documenter-sidebar-menu-active-color: $mainblack !default;
 
 // this is the color the links get, and also when they are hovered
-$link: $linkcolor;
-$link-hover: $linkcolor-hover;
+$link: $accentcolor;
+$link-hover: $maincolor;
 
 // Main text color:
-$text: #202020 !default;
+$text: $mainblack;
 // Bold text color, also affects headers
-$text-strong: darken-color($maincolor, 1) !default;
+$text-strong: $boldcolor;
 
 // Section headers (markdown ###) text color:
 // TODO
@@ -55,7 +61,7 @@ $documenter-sidebar-color: $maintext-light !default;
 
 // Code text color:
 $code: #000000 !default;
-$code-background: rgba(50,50,50, 0.05);
+$code-background: rgb(150,0,0);
 
 // main text font size
 // TODO
