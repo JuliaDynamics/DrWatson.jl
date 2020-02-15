@@ -23,7 +23,7 @@ matrix:
       os: linux
       script:
         - julia --project=docs/ -e 'using Pkg; Pkg.develop(PackageSpec(path=pwd()));
-                                    Pkg.add("DocumenterTools#mp/theming"); Pkg.instantiate()'
+                                    Pkg.instantiate(); Pkg.add(PackageSpec("DocumenterTools#mp/theming"));'
         - julia --project=docs/ docs/make.jl
       after_success: skip
 notifications:

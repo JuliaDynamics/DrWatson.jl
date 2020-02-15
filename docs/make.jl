@@ -1,6 +1,7 @@
 using Pkg
 Pkg.activate(@__DIR__)
 CI = get(ENV, "CI", nothing) == "true" || get(ENV, "GITHUB_TOKEN", nothing) !== nothing
+CI && Pkg.instantiate()
 using DrWatson
 using Documenter, DataFrames, Parameters, Dates, BSON, JLD2
 using DocumenterTools: Themes
