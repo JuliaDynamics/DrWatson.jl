@@ -76,27 +76,27 @@ https://experimentator.readthedocs.io/en/latest/
 ## Other useful packages
 
 ### Efficient code writing
-* https://github.com/mauro3/Parameters.jl
-* https://github.com/docopt/DocOpt.jl
-* https://github.com/vtjnash/Glob.jl
+* <https://github.com/mauro3/Parameters.jl>
+* <https://github.com/docopt/DocOpt.jl>
+* <https://github.com/vtjnash/Glob.jl>
 
 ### Notebooks
-* IJulia.jl
-* Weave.jl
+* <https://github.com/JuliaLang/IJulia.jl>
+* <https://github.com/JunoLab/Weave.jl>
 
 ### Documenting your code
-* Literate.jl
-* Documenter.jl
+* <https://github.com/JuliaDocs/Documenter.jl>
+* <https://github.com/fredrikekre/Literate.jl>
 
 ### Debugging, writing code
-* Juno
-* Revise.jl
-* Debugger.jl
+* <https://junolab.org/>
+* <https://github.com/timholy/Revise.jl>
+* <https://github.com/JuliaDebug/Debugger.jl>
 
 ### Performance measures
-* ProgressMeter.jl
-* BenchmarkTools.jl
-* https://github.com/KristofferC/TimerOutputs.jl
+* <https://github.com/JuliaCI/BenchmarkTools.jl>
+* <https://github.com/timholy/ProgressMeter.jl>
+* <https://github.com/KristofferC/TimerOutputs.jl>
 * ProfileViews.jl (similar available in Juno with `@profiler`)
 
 ### Saving Data
@@ -105,15 +105,15 @@ https://experimentator.readthedocs.io/en/latest/
 * CSV.jl
 
 ### Data management & data bases
-* https://github.com/helgee/RemoteFiles.jl
-* https://github.com/JuliaDynamics/CaosDB.jl
-* https://juliadb.org/
-* https://github.com/SebastianM-C/StorageGraphs.jl
+* <https://github.com/helgee/RemoteFiles.jl>
+* <https://github.com/JuliaDynamics/CaosDB.jl>
+* <https://juliadb.org/>
+* <https://github.com/SebastianM-C/StorageGraphs.jl>
 
 ### Tabular data
-* https://juliadata.github.io/DataFrames.jl/stable/
-* https://www.queryverse.org/
+* <https://juliadata.github.io/DataFrames.jl/stable/>
+* <https://www.queryverse.org/>
 
 ### Traversing folders
 * Base.Filesystem
-* https://github.com/Keno/AbstractTrees.jl/blob/master/examples/fstree.jl
+* <https://github.com/Keno/AbstractTrees.jl/blob/master/examples/fstree.jl>
