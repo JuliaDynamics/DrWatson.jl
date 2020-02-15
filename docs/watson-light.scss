@@ -9,6 +9,7 @@ $themename: "documenter-light"; // CSS file must be called `$(themename).css`
 
 // This defines the JuliaDynamics color scheme:
 $maincolor: #7E57C2;
+$headercolor: #391d6a;
 $maintext: #202020;
 $linkcolor: #17D5E5;
 
@@ -18,20 +19,26 @@ $linkcolor: #17D5E5;
 // $background: #7E57C2;
 
 // Main text color:
-$text: #60AF50 !default;
+$text: #202020 !default;
 // Bold text color, also affects headers
-$text-strong: #415c3c !default;
+$text-strong: $headercolor !default;
 
 // Section headers (markdown ###) text color:
 // TODO
 
 // These two commands set the sidebar background color, as well as text color
 $documenter-sidebar-background: $maincolor !default;
-$documenter-sidebar-color: $maintext !default;
+$documenter-sidebar-color: #fff !default;
 
 // Code text color:
 $code: #000000 !default;
 $code-background: rgb(50,50,50);
+
+// main text font size
+// TODO
+
+// sidebar font size
+// TODO
 
 // These commands set up the fonts for the main text and code blocks.
 // the fonds must be included into the assets of the `makdocs` command, with e.g.
