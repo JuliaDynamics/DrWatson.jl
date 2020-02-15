@@ -37,7 +37,7 @@ $link-hover: $linkcolor-hover;
 // Main text color:
 $text: #202020 !default;
 // Bold text color, also affects headers
-$text-strong: darken-color($maincolor, 1) !default;
+$text-strong: darken-color($maincolor, 2) !default;
 
 // Section headers (markdown ###) text color:
 // TODO
