@@ -7,21 +7,35 @@ $themename: "documenter-light"; // CSS file must be called `$(themename).css`
 // under documenter/_variables or documenter/_overrides. But some stuff are Bulma defaults
 // as well, so you may need to look them up too: https://bulma.io/documentation/
 
+$lightness-unit: 8% !default;
+// Uses adjust-color to create a darker version of $color
+@function darken-color($color, $factor) {
+  @return adjust-color($color, $lightness: -$factor*$lightness-unit);
+}
+// Uses adjust-color to create a lighter version of $color
+@function lighten-color($color, $factor) {
+  @return adjust-color($color, $lightness: $factor*$lightness-unit);
+}
+
 // This defines the JuliaDynamics color scheme:
 $maincolor: #7E57C2;
-$headercolor: #391d6a;
 $maintext: #202020;
-$linkcolor: #17D5E5;
+$linkcolor: #05a28d;
+$linkcolor-hover: #0eb3c9;
 
 // this sets the default background color for the documentation, affecting the sidebar color,
 // the --- lines, as well as the codeblock background, and many other things, see
 // the overrides file
-// $background: #7E57C2;
+$background: $maincolor;
+
+// this is the color the links get, and also when they are hovered
+$link: $linkcolor;
+$link-hover: $linkcolor-hover;
 
 // Main text color:
 $text: #202020 !default;
 // Bold text color, also affects headers
-$text-strong: $headercolor !default;
+$text-strong: darken-color($maincolor, 2); !default;
 
 // Section headers (markdown ###) text color:
 // TODO
