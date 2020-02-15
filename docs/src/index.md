@@ -8,12 +8,7 @@ It helps people manage their scientific projects (or any project for that matter
 Specifically, it is a Julia package created to help people "deal" with their simulations, simulation parameters, where are files saved, experimental data, scripts, existing simulations, project source code, establishing reproducibility, and in general their scientific projects.
 
 See the [Functionality](@ref) section to get an impression of what you can do with DrWatson. To install, simply type `] add DrWatson` in your Julia session.
-
-!!! info "JuliaDynamics"
-    DrWatson is part of [JuliaDynamics](https://juliadynamics.github.io/JuliaDynamics/), check out our [website](https://juliadynamics.github.io/JuliaDynamics/) for more cool stuff!
-
-!!! info "Poster for DrWatson"
-    If you prefer having a concise and visual summary of DrWatson we have prepared a poster for it! Check out the [Poster](@ref) section!
+DrWatson is part of [JuliaDynamics](https://juliadynamics.github.io/JuliaDynamics/), check out our [website](https://juliadynamics.github.io/JuliaDynamics/) for more cool stuff!
 
 !!! tip "Star us on GitHub!"
     If you like DrWatson the please consider starring the [GitHub repository](https://github.com/JuliaDynamics/DrWatson.jl). This gives as an accurate lower bound of the number of people the software has helped!

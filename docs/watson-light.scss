@@ -19,16 +19,23 @@ $lightness-unit: 8% !default;
 }
 
 // This defines the JuliaDynamics color scheme:
-$maincolor: #7E57C2;
-$maintext-dark: #202020;
-$maintext-light: #e1ddec;
-$linkcolor: #05a28d;
-$linkcolor-hover: #0eb3c9;
+$maincolor: #644e99;
+$maintext-dark: #202020; // main text color, dark (for light bg)
+$maintext-light: #fff;   // main text color, light (for dark bg)
+$linkcolor: #0eb3c9;
+$linkcolor-hover: #05a28d;
 
 // this sets the default background color for the documentation, affecting the sidebar color,
 // the --- lines, as well as the codeblock background, and many other things, see
-// the overrides file
-$background: $maincolor;
+// the overrides file. Therefore it is best to not set it and change elements one by one
+// $background: $maincolor;
+
+// Sidebar
+$documenter-sidebar-background: $maincolor !default; //background color for all sidebar
+$documenter-sidebar-color: $maintext-light !default; //font color for all sidebar
+
+$documenter-sidebar-menu-active-background: #fff !default;
+$documenter-sidebar-menu-active-color: $maintext-dark !default;
 
 // this is the color the links get, and also when they are hovered
 $link: $linkcolor;
@@ -37,7 +44,7 @@ $link-hover: $linkcolor-hover;
 // Main text color:
 $text: #202020 !default;
 // Bold text color, also affects headers
-$text-strong: darken-color($maincolor, 2) !default;
+$text-strong: darken-color($maincolor, 1) !default;
 
 // Section headers (markdown ###) text color:
 // TODO
@@ -71,3 +78,12 @@ $family-monospace: 'Source Code Pro', monospace;
 // Include the original theme which will now use the updated variables.
 // This should be the last thing in the SCSS file.
 @import "documenter-light";
+
+// This makes sidebar have shadow
+#documenter .docs-sidebar {
+  &.visible {
+    @include desktop {
+      box-shadow: 5*$shadow-size 2rem 2*$shadow-blur $shadow;
+    }
+  }
+}
