@@ -38,7 +38,7 @@ $body-background-color: $mainwhite; // main page background
 
 // Sidebar
 $documenter-sidebar-background: $maincolor !default; //background color for all sidebar
-$documenter-sidebar-color: $mainwhite !default; //font color for all sidebar
+$documenter-sidebar-color: $mainblack !default; //font color for all sidebar
 
 $documenter-sidebar-menu-active-background: $mainwhite !default;
 $documenter-sidebar-menu-active-color: $mainblack !default;
@@ -57,7 +57,7 @@ $text-strong: $boldcolor;
 
 // These two commands set the sidebar background color, as well as text color
 $documenter-sidebar-background: $maincolor !default;
-$documenter-sidebar-color: $maintext-light !default;
+$documenter-sidebar-color: $mainblack !default;
 
 // Code text color:
 $code: #000000 !default;

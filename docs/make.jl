@@ -19,7 +19,7 @@ format = Documenter.HTML(
     prettyurls = CI,
     assets = [
         "assets/logo.ico",
-        asset("https://fonts.googleapis.com/css?family=Montserrat|Source+Code+Pro&display=swap", class=:css),
+        asset("https://fonts.googleapis.com/css?family=Quicksand|Montserrat|Source+Code+Pro|Lora&display=swap", class=:css),
         ],
     ),
 pages = [
