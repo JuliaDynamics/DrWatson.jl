@@ -87,9 +87,5 @@ $family-monospace: 'Source Code Pro', monospace;
 
 // This makes sidebar have shadow
 #documenter .docs-sidebar {
-  &.visible {
-    @include desktop {
-      box-shadow: 5*$shadow-size 2rem 2*$shadow-blur $shadow;
-    }
-  }
+  box-shadow: 5*$shadow-size 2rem 2*$shadow-blur $shadow;
 }
