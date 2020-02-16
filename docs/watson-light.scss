@@ -67,6 +67,7 @@ $documenter-sidebar-color: $mainblack !default;
 $code: #000000 !default;
 //$code-background: rgba(0.5,0,0, 0.05);
 $codebg: lighten-color($maincolor, 6);
+// $codebg: lighten-color($secondcolor, 8);
 $code-background: $codebg; // for inline code
 $pre-background: $codebg;  // for code blocks
 
@@ -96,9 +97,14 @@ $family-monospace: 'Source Code Pro', monospace;
   border-right: none;
   box-shadow: 1.2*$shadow-size 0rem 1*$shadow-blur $shadow;
 
-  form.docs-search > input { // This makes sidebar have shadow at all displays
+  form.docs-search > input { // these controls are for the searchbar
     color: $mainwhite;
     background-color: darken-color($documenter-sidebar-background, 1);
     border-color: darken-color($documenter-sidebar-background, 2);
+    margin-top: 1.0rem;
+    margin-bottom: 1.0rem; // adjust the margings between search and other elements
+    &::placeholder {
+      color: $mainwhite; // placeholder text color ("Search here...")
+    }
   }
 }
