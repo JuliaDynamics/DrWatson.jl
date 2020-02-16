@@ -21,9 +21,9 @@ $lightness-unit: 8% !default;
 ////////////////////////////////////////////////////////////////////////
 // This defines the JuliaDynamics color scheme:
 $maincolor: #644e99;
+$secondcolor: #008eac; // secondary color that serves as accents, eg. links
 $mainwhite: #fafafa;
 $mainblack: #202020;
-$accentcolor: #15adb6;
 ////////////////////////////////////////////////////////////////////////
 
 $boldcolor: $maincolor; // darken-color($maincolor, 1);
@@ -48,7 +48,7 @@ $documenter-sidebar-menu-active-hover-background: lighten-color($documenter-side
 $documenter-sidebar-menu-active-hover-color: $documenter-sidebar-menu-active-color !default;
 
 // this is the color the links get, and also when they are hovered
-$link: $accentcolor;
+$link: $secondcolor;
 $link-hover: $maincolor;
 
 // Main text color:
@@ -65,7 +65,7 @@ $documenter-sidebar-color: $mainblack !default;
 
 // Code text color:
 $code: #000000 !default;
-$code-background: rgb(150,0,0);
+$code-background: rgba(0.5,0,0, 0.05);
 
 // main text font size
 // TODO

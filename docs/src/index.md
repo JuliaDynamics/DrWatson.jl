@@ -10,7 +10,7 @@ Specifically, it is a Julia package created to help people "deal" with their sim
 See the [Functionality](@ref) section to get an impression of what you can do with DrWatson. To install, simply type `] add DrWatson` in your Julia session.
 DrWatson is part of [JuliaDynamics](https://juliadynamics.github.io/JuliaDynamics/), check out our [website](https://juliadynamics.github.io/JuliaDynamics/) for more cool stuff!
 
-!!! tip "Star us on GitHub!"
+!!! note "Star us on GitHub!"
     If you like DrWatson the please consider starring the [GitHub repository](https://github.com/JuliaDynamics/DrWatson.jl). This gives as an accurate lower bound of the number of people the software has helped!
 
 ## Rationale
