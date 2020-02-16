@@ -95,4 +95,9 @@ $family-monospace: 'Source Code Pro', monospace;
 #documenter .docs-sidebar {
   border-right: none;
   box-shadow: 1.2*$shadow-size 0rem 1*$shadow-blur $shadow;
+
+  form.docs-search > input {
+    background-color: red;
+    border-color: yellow;
+  }
 }
