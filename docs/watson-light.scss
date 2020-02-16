@@ -28,7 +28,6 @@ $mainblack: #202020;
 
 $boldcolor: $maincolor; // darken-color($maincolor, 1);
 
-
 // this sets the default background color for the documentation, affecting the sidebar color,
 // the --- lines, as well as the codeblock background, and many other things, see
 // the overrides file. Therefore it is best to not set it and change elements one by one
@@ -88,6 +87,10 @@ $pre-background: $codebg;  // for code blocks
 //     ),
 $family-sans-serif: 'Montserrat', sans-serif;
 $family-monospace: 'Source Code Pro', monospace;
+
+// these two change what happens with input boxes (the search box):
+$input-hover-border-color: $secondcolor;
+$input-focus-border-color: $mainwhite;
 
 // Include the original theme which will now use the updated variables.
 // This should be the last thing in the SCSS file.
