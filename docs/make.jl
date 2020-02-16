@@ -28,7 +28,7 @@ pages = [
     "Naming Simulations" => "name.md",
     "Saving Tools" => "save.md",
     "Running & Listing Simulations" => "run&list.md",
-    # "Real World Examples" => "real_world.md"
+    "Real World Examples" => "real_world.md"
     ],
 )
 

@@ -66,8 +66,9 @@ $documenter-sidebar-color: $mainblack !default;
 // Code text color:
 $code: #000000 !default;
 //$code-background: rgba(0.5,0,0, 0.05);
-$code-background: blue;
-$pre-background: green; // for code blocks
+$codebg: lighten-color($maincolor, 6);
+$code-background: $codebg; // for inline code
+$pre-background: $codebg;  // for code blocks
 
 // main text font size
 // TODO
@@ -91,13 +92,13 @@ $family-monospace: 'Source Code Pro', monospace;
 // This should be the last thing in the SCSS file.
 @import "documenter-light";
 
-// This makes sidebar have shadow
-#documenter .docs-sidebar {
+#documenter .docs-sidebar { // This makes sidebar have shadow at all displays
   border-right: none;
   box-shadow: 1.2*$shadow-size 0rem 1*$shadow-blur $shadow;
 
-  form.docs-search > input {
-    background-color: red;
-    border-color: yellow;
+  form.docs-search > input { // This makes sidebar have shadow at all displays
+    color: $mainwhite;
+    background-color: darken-color($documenter-sidebar-background, 1);
+    border-color: darken-color($documenter-sidebar-background, 2);
   }
 }
