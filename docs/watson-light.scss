@@ -23,10 +23,10 @@ $lightness-unit: 8% !default;
 $maincolor: #644e99;
 $mainwhite: #fafafa;
 $mainblack: #202020;
-$accentcolor: #0eb3c9;
+$accentcolor: #15adb6;
 ////////////////////////////////////////////////////////////////////////
 
-$boldcolor: darken-color($maincolor, 0.5);
+$boldcolor: $maincolor; // darken-color($maincolor, 1);
 
 
 // this sets the default background color for the documentation, affecting the sidebar color,
@@ -38,10 +38,14 @@ $body-background-color: $mainwhite; // main page background
 
 // Sidebar
 $documenter-sidebar-background: $maincolor !default; //background color for all sidebar
-$documenter-sidebar-color: $mainblack !default; //font color for all sidebar
+$documenter-sidebar-color: $mainwhite !default; //font color for all sidebar
+$documenter-sidebar-menu-hover-color: $documenter-sidebar-color !default;
+$documenter-sidebar-menu-hover-background: darken-color($documenter-sidebar-background, 2) !default;
 
 $documenter-sidebar-menu-active-background: $mainwhite !default;
 $documenter-sidebar-menu-active-color: $mainblack !default;
+$documenter-sidebar-menu-active-hover-background: lighten-color($documenter-sidebar-background, 3) !default;
+$documenter-sidebar-menu-active-hover-color: $documenter-sidebar-menu-active-color !default;
 
 // this is the color the links get, and also when they are hovered
 $link: $accentcolor;
@@ -87,5 +91,5 @@ $family-monospace: 'Source Code Pro', monospace;
 
 // This makes sidebar have shadow
 #documenter .docs-sidebar {
-  box-shadow: 5*$shadow-size 2rem 2*$shadow-blur $shadow;
+  box-shadow: 1.2*$shadow-size 0rem 1*$shadow-blur $shadow;
 }
