@@ -92,5 +92,6 @@ $family-monospace: 'Source Code Pro', monospace;
 
 // This makes sidebar have shadow
 #documenter .docs-sidebar {
+  border-right: none;
   box-shadow: 1.2*$shadow-size 0rem 1*$shadow-blur $shadow;
 }
