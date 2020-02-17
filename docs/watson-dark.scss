@@ -4,5 +4,8 @@
 $themename: "documenter-dark"; // CSS file must be called `$(themename).css`
 
 $body-background-color: #0799eb; // main page background
+$family-sans-serif: monospace;
 
-@import "documenter-dark";
+html.theme--#{$themename} {
+    @import "documenter-light";
+}
