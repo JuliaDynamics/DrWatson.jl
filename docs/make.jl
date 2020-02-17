@@ -10,6 +10,7 @@ using DocumenterTools: Themes
 isdir(datadir()) && rm(datadir(); force = true, recursive = true)
 
 Themes.compile(joinpath(@__DIR__, "watson-light.scss"), joinpath(@__DIR__, "src/assets/themes/documenter-light.css"))
+Themes.compile(joinpath(@__DIR__, "watson-dark.scss"), joinpath(@__DIR__, "src/assets/themes/documenter-dark.css"))
 
 makedocs(modules = [DrWatson],
 sitename= "DrWatson",
