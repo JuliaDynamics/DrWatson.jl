@@ -56,9 +56,6 @@ DrWatson follows these simple principles:
 
 This is why we believe DrWatson can help you focus on the science and not worry about project code management.
 
-## Poster
-![poster DrWatson](https://github.com/JuliaDynamics/JuliaDynamics/blob/master/videos/drwatson/DrWatson-poster-1.0.0.jpg?raw=true)
-
 ## Inspirations
 
 https://drivendata.github.io/cookiecutter-data-science/#cookiecutter-data-science
