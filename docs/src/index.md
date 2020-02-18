@@ -13,6 +13,18 @@ DrWatson is part of [JuliaDynamics](https://juliadynamics.github.io/JuliaDynamic
 !!! note "Star us on GitHub!"
     If you like DrWatson the please consider starring the [GitHub repository](https://github.com/JuliaDynamics/DrWatson.jl). This gives as an accurate lower bound of the number of people the software has helped!
 
+!!! tip "test tip"
+    this test the tip admonition, `here is some code`.
+
+!!! warning "warning tip"
+    this test the warning admonition, `here is some code`.
+
+!!! danger "danger tip"
+    this test the danger admonition, `here is some code`.
+
+!!! compat "compat test"
+    this tests the compat, `here is some code`.
+
 ## Rationale
 Have you thought things like:
 

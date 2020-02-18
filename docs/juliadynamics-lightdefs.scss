@@ -6,19 +6,19 @@ $boldcolor: $maincolor; // darken-color($maincolor, 1);
 $body-background-color: $mainwhite; // main page background
 
 // Sidebar
-$documenter-sidebar-background: $maincolor; //background color for all sidebar
-$documenter-sidebar-color: $mainwhite; //font color for all sidebar
-$documenter-sidebar-menu-hover-color: $documenter-sidebar-color;
+$documenter-sidebar-background: $maincolor; //background color for sidebar
+$documenter-sidebar-color: $mainwhite; //font color all sidebar
+$documenter-sidebar-menu-hover-color: $documenter-sidebar-color; // text color
 $documenter-sidebar-menu-hover-background: darken-color($documenter-sidebar-background, 2);
 
 $documenter-sidebar-menu-active-background: $mainwhite;
 $documenter-sidebar-menu-active-color: $mainblack;
-$documenter-sidebar-menu-active-hover-background: lighten-color($documenter-sidebar-background, 5);
+$documenter-sidebar-menu-active-hover-background: lighten-color($documenter-sidebar-background, 5.2);
 $documenter-sidebar-menu-active-hover-color: $documenter-sidebar-menu-active-color;
 
 // this is the color the links get, and also when they are hovered
 $link: $secondcolor;
-$link-hover: $maincolor;
+$link-hover: darken-color($link, 2);
 
 // Main text color:
 $text: $mainblack;
@@ -31,7 +31,7 @@ $text-strong: $boldcolor;
 // Code text color:
 $code: #000000;
 //$code-background: rgba(0.5,0,0, 0.05);
-$codebg: lighten-color($maincolor, 6);
+$codebg: lighten-color($maincolor, 5.8);
 // $codebg: lighten-color($secondcolor, 8);
 $code-background: $codebg; // for inline code
 $pre-background: $codebg;  // for code blocks

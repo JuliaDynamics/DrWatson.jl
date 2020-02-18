@@ -3,23 +3,35 @@ $themename: "documenter-dark"; // CSS file must be called `$(themename).css`
 // Instruct documenter/*.scss files that this is a dark theme
 $documenter-is-dark-theme: true;
 
+$boldcolor: lighten-color($maincolor, 4.5);
+
 $body-background-color: $darkbg; // main page background
+
+// this is the color the links get, and also when they are hovered
+$link: lighten-color($secondcolor, 2);
+$link-hover: lighten-color($link, 3);
 
 // Main text color:
 $text: $mainwhite;
 // Bold text color, also affects headers
-$text-strong: $mainwhite;
+$text-strong: $boldcolor;
 
+// Code text color:
+$code: #fff;
+//$code-background: rgba(0.5,0,0, 0.05);
+$codebg: darken-color($maincolor, 3);
+$code-background: $codebg; // for inline code
+$pre-background: $codebg;  // for code blocks
 
 // Sidebar
-$documenter-sidebar-background: $maincolor; //background color for all sidebar
-$documenter-sidebar-color: $mainwhite; //font color for all sidebar
+$documenter-sidebar-background: darken-color($maincolor, 1); //background color for sidebar
+$documenter-sidebar-color: $mainwhite; //font color for sidebar
 $documenter-sidebar-menu-hover-color: $documenter-sidebar-color;
 $documenter-sidebar-menu-hover-background: darken-color($documenter-sidebar-background, 2);
 
-$documenter-sidebar-menu-active-background: $mainwhite;
-$documenter-sidebar-menu-active-color: $mainblack;
-$documenter-sidebar-menu-active-hover-background: lighten-color($documenter-sidebar-background, 5);
+$documenter-sidebar-menu-active-background: $darkbg;
+$documenter-sidebar-menu-active-color: $mainwhite;
+$documenter-sidebar-menu-active-hover-background: $documenter-sidebar-menu-hover-background;
 $documenter-sidebar-menu-active-hover-color: $documenter-sidebar-menu-active-color;
 // these two change what happens with input boxes (the search box):
 $input-hover-border-color: $secondcolor;
@@ -54,9 +66,11 @@ html.theme--#{$themename} {
 
   @import "documenter/theme_overrides";
 
+  // $shadow-color: #202224;
+
   #documenter .docs-sidebar { // This makes sidebar have shadow at all displays
     border-right: none;
-    box-shadow: 1.2*$shadow-size 0rem 1*$shadow-blur $shadow-color;
+    box-shadow: 1.2*$shadow-size 0rem 1*$shadow-blur invert($shadow-color);
 
     form.docs-search > input { // these controls are for the searchbar
       color: $mainwhite;
