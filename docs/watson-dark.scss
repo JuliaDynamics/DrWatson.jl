@@ -6,8 +6,41 @@ $themename: "documenter-dark"; // CSS file must be called `$(themename).css`
 $documenter-is-dark-theme: true;
 
 // Variable overrides
+////////////////////////////////////////////////////////////////////////
+// This defines the JuliaDynamics color scheme:
+$maincolor: #644e99;
+$secondcolor: #178b8f; // secondary color that serves as accents, eg. links
+$mainwhite: #fff; //#fafafa;
+$mainblack: #202020;
+////////////////////////////////////////////////////////////////////////
 $body-background-color: #0799eb; // main page background
-$family-sans-serif: monospace;
+
+// Main text color:
+$text: #59aa1a;
+// Bold text color, also affects headers
+$text-strong: #3f498e;
+
+
+// Sidebar
+$documenter-sidebar-background: $maincolor !default; //background color for all sidebar
+$documenter-sidebar-color: $mainwhite !default; //font color for all sidebar
+$documenter-sidebar-menu-hover-color: $documenter-sidebar-color !default;
+$documenter-sidebar-menu-hover-background: darken-color($documenter-sidebar-background, 2) !default;
+
+$documenter-sidebar-menu-active-background: $mainwhite !default;
+$documenter-sidebar-menu-active-color: $mainblack !default;
+$documenter-sidebar-menu-active-hover-background: lighten-color($documenter-sidebar-background, 5) !default;
+$documenter-sidebar-menu-active-hover-color: $documenter-sidebar-menu-active-color !default;
+// these two change what happens with input boxes (the search box):
+$input-hover-border-color: $secondcolor;
+$input-focus-border-color: $mainwhite;
+
+$family-sans-serif: 'Montserrat', sans-serif;
+$family-monospace: 'Source Code Pro', monospace;
+
+$shadow-size: 0.5em;
+$shadow-blur: 1.0em;
+$shadow: #000;
 
 @import "documenter/utilities";
 @import "documenter/variables";
@@ -37,4 +70,20 @@ html.theme--#{$themename} {
   @import "documenter/layout/all";
 
   @import "documenter/theme_overrides";
+
+  #documenter .docs-sidebar { // This makes sidebar have shadow at all displays
+    border-right: none;
+    box-shadow: 1.2*$shadow-size 0rem 1*$shadow-blur $shadow;
+
+    form.docs-search > input { // these controls are for the searchbar
+      color: $mainwhite;
+      background-color: darken-color($documenter-sidebar-background, 1);
+      border-color: darken-color($documenter-sidebar-background, 2);
+      margin-top: 1.0rem;
+      margin-bottom: 1.0rem; // adjust the margings between search and other elements
+      &::placeholder {
+        color: $mainwhite; // placeholder text color ("Search here...")
+      }
+    }
+  }
 }
