@@ -7,3 +7,5 @@ docs/src/assets/themes/*.css
 test/testdir
 src/update*
 test project
+juliadynamics-light.scss
+juliadynamics-dark.scss

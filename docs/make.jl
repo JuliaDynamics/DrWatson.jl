@@ -7,10 +7,18 @@ using Documenter, DataFrames, Parameters, Dates, BSON, JLD2
 using DocumenterTools: Themes
 
 # %%
-isdir(datadir()) && rm(datadir(); force = true, recursive = true)
+# build the themes
+for w in ("light", "dark")
+    header = read(joinpath(@__DIR__, "juliadynamics-style.scss"), String)
+    theme = read(joinpath(@__DIR__, "juliadynamics-$(w)defs.scss"), String)
+    write(joinpath(@__DIR__, "juliadynamics-$(w).scss"), header*"\n"*theme)
+end
 
-Themes.compile(joinpath(@__DIR__, "watson-light.scss"), joinpath(@__DIR__, "src/assets/themes/documenter-light.css"))
-Themes.compile(joinpath(@__DIR__, "watson-dark.scss"), joinpath(@__DIR__, "src/assets/themes/documenter-dark.css"))
+
+Themes.compile(joinpath(@__DIR__, "juliadynamics-light.scss"), joinpath(@__DIR__, "src/assets/themes/documenter-light.css"))
+Themes.compile(joinpath(@__DIR__, "juliadynamics-dark.scss"), joinpath(@__DIR__, "src/assets/themes/documenter-dark.css"))
+
+isdir(datadir()) && rm(datadir(); force = true, recursive = true)
 
 makedocs(modules = [DrWatson],
 sitename= "DrWatson",
