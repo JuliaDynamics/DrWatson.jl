@@ -2,10 +2,39 @@
 
 // This template file overrides some of the Documenter theme variables to customize the theme:
 $themename: "documenter-dark"; // CSS file must be called `$(themename).css`
+// Instruct documenter/*.scss files that this is a dark theme
+$documenter-is-dark-theme: true;
 
+// Variable overrides
 $body-background-color: #0799eb; // main page background
 $family-sans-serif: monospace;
 
+@import "documenter/utilities";
+@import "documenter/variables";
+@import "bulma/utilities/all";
+@import "bulma/base/minireset.sass";
+@import "bulma/base/helpers.sass";
+
+// All secondary themes have to be nested in a theme--$(themename) class. When Documenter
+// switches themes, it applies this class to <html> and then disables the primary
+// stylesheet.
 html.theme--#{$themename} {
-    @import "documenter-light";
+  @import "bulma/base/generic.sass";
+
+  @import "documenter/overrides";
+
+  @import "bulma/elements/all";
+  @import "bulma/form/all";
+  @import "bulma/components/all";
+  @import "bulma/grid/all";
+  @import "bulma/layout/all";
+
+  // Additional overrides, if need be
+
+  @import "documenter/elements";
+  @import "documenter/components/all";
+  @import "documenter/patches";
+  @import "documenter/layout/all";
+
+  @import "documenter/theme_overrides";
 }
