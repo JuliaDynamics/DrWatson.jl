@@ -5,27 +5,15 @@
 // as well, so you may need to look them up too: https://bulma.io/documentation/customize/variables/
 
 
-// Two cool helper functions:
-$lightness-unit: 8% !default;
-// Uses adjust-color to create a darker version of $color
-@function darken-color($color, $factor) {
-  @return adjust-color($color, $lightness: -$factor*$lightness-unit);
-}
-// Uses adjust-color to create a lighter version of $color
-@function lighten-color($color, $factor) {
-  @return adjust-color($color, $lightness: $factor*$lightness-unit);
-}
-
 ////////////////////////////////////////////////////////////////////////
-// This defines the JuliaDynamics color scheme:
+////////////////////////////////////////////////////////////////////////
+// Thse define the JuliaDynamics template:
 $maincolor: #644e99;   // main color of the org theme
 $secondcolor: #178b8f; // secondary color that serves as accents
                        // it is used as-is for links in light theme
-$mainwhite: #f0f0f0;      // color representing white
+$mainwhite: #fff;      // color representing white
 $mainblack: #202020;   // color representing black
-$darkbg: #16131b;      // dark theme main page background
-
-////////////////////////////////////////////////////////////////////////
+$darkbg: #1e1e20;      // dark theme main page background
 
 // These commands set up the fonts for the main text and code blocks.
 // the fonds must be included into the assets of the `makdocs` command, with e.g.
@@ -38,8 +26,21 @@ $darkbg: #16131b;      // dark theme main page background
 //     ),
 $family-sans-serif: 'Montserrat', sans-serif;
 $family-monospace: 'Source Code Pro', monospace;
+////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////
 
 // variables controlling the siderbar's shadow
 $shadow-color: #bbb !default;
 $shadow-size: 0.2rem !default;
 $shadow-blur: 0.4rem !default;
+
+// Two cool helper functions:
+$lightness-unit: 8% !default;
+// Uses adjust-color to create a darker version of $color
+@function darken-color($color, $factor) {
+  @return adjust-color($color, $lightness: -$factor*$lightness-unit);
+}
+// Uses adjust-color to create a lighter version of $color
+@function lighten-color($color, $factor) {
+  @return adjust-color($color, $lightness: $factor*$lightness-unit);
+}

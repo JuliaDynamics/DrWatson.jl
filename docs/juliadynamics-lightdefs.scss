@@ -35,6 +35,7 @@ $codebg: lighten-color($maincolor, 5.8);
 // $codebg: lighten-color($secondcolor, 8);
 $code-background: $codebg; // for inline code
 $pre-background: $codebg;  // for code blocks
+$documenter-docstring-header-background: darken-color($body-background-color, 0.4);
 
 // main text font size
 $body-font-size: 1.0em; // the default is 1.0

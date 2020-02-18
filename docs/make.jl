@@ -7,6 +7,8 @@ using Documenter, DataFrames, Parameters, Dates, BSON, JLD2
 using DocumenterTools: Themes
 
 # %%
+# TODO: fix admonitions
+
 # build the themes
 for w in ("light", "dark")
     header = read(joinpath(@__DIR__, "juliadynamics-style.scss"), String)

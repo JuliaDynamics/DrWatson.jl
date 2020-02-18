@@ -12,7 +12,7 @@ $link: lighten-color($secondcolor, 2);
 $link-hover: lighten-color($link, 3);
 
 // Main text color:
-$text: $mainwhite;
+$text: darken-color($mainwhite, 0.2);
 // Bold text color, also affects headers
 $text-strong: $boldcolor;
 
@@ -22,16 +22,17 @@ $code: #fff;
 $codebg: darken-color($maincolor, 3);
 $code-background: $codebg; // for inline code
 $pre-background: $codebg;  // for code blocks
+$documenter-docstring-header-background: lighten-color($body-background-color, 0.5);
 
 // Sidebar
-$documenter-sidebar-background: darken-color($maincolor, 1); //background color for sidebar
-$documenter-sidebar-color: $mainwhite; //font color for sidebar
+$documenter-sidebar-background: darken-color($maincolor, 1.2); //background color for sidebar
+$documenter-sidebar-color: $text; //font color for sidebar
 $documenter-sidebar-menu-hover-color: $documenter-sidebar-color;
 $documenter-sidebar-menu-hover-background: darken-color($documenter-sidebar-background, 2);
 
 $documenter-sidebar-menu-active-background: $darkbg;
 $documenter-sidebar-menu-active-color: $mainwhite;
-$documenter-sidebar-menu-active-hover-background: $documenter-sidebar-menu-hover-background;
+$documenter-sidebar-menu-active-hover-background: darken-color($documenter-sidebar-background, 1);
 $documenter-sidebar-menu-active-hover-color: $documenter-sidebar-menu-active-color;
 // these two change what happens with input boxes (the search box):
 $input-hover-border-color: $secondcolor;
@@ -82,5 +83,11 @@ html.theme--#{$themename} {
         color: $mainwhite; // placeholder text color ("Search here...")
       }
     }
+  }
+  // FIXME: Hack to get a proper theme for highlight.js in the dark theme
+  @import "highlightjs/a11y-dark";
+  // Also, a11y-dark does not highlight string interpolation properly.
+  .hljs-subst {
+    color: #f8f8f2;
   }
 }
