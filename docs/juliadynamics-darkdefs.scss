@@ -38,8 +38,9 @@ $documenter-sidebar-menu-active-hover-color: $documenter-sidebar-menu-active-col
 $input-hover-border-color: $secondcolor;
 $input-focus-border-color: $mainwhite;
 
-// Admonition stuff
+$documenter-docstring-shadow: invert($shadow-color);
 
+// Admonition stuff
 $admbg: lighten-color($body-background-color, 0.5);
 $admonition-background: (
   'default': $admbg, 'info': $admbg, 'success': $admbg, 'warning': $admbg,
