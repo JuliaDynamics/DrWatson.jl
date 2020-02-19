@@ -38,7 +38,7 @@ $documenter-sidebar-menu-active-hover-color: $documenter-sidebar-menu-active-col
 $input-hover-border-color: $secondcolor;
 $input-focus-border-color: $mainwhite;
 
-$documenter-docstring-shadow: invert($shadow-color);
+$documenter-docstring-shadow: 3px 3px 4px invert($shadow-color);
 
 // Admonition stuff
 $admbg: lighten-color($body-background-color, 0.5);
