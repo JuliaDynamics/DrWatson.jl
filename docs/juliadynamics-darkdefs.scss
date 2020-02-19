@@ -19,7 +19,7 @@ $text-strong: $boldcolor;
 // Code text color:
 $code: #fff;
 //$code-background: rgba(0.5,0,0, 0.05);
-$codebg: darken-color($maincolor, 3);
+$codebg: darken-color($maincolor, 3.5);
 $code-background: $codebg; // for inline code
 $pre-background: $codebg;  // for code blocks
 $documenter-docstring-header-background: lighten-color($body-background-color, 0.5);
@@ -38,15 +38,26 @@ $documenter-sidebar-menu-active-hover-color: $documenter-sidebar-menu-active-col
 $input-hover-border-color: $secondcolor;
 $input-focus-border-color: $mainwhite;
 
+// Admonition stuff
+
+$admbg: lighten-color($body-background-color, 0.5);
+$admonition-background: (
+  'default': $admbg, 'info': $admbg, 'success': $admbg, 'warning': $admbg,
+  'danger': $admbg, 'compat': $admbg
+);
+$admonition-header-background: (
+  'default': #ba3f1f, 'warning': #a88b17, 'danger': #c7524c,
+  'success': #42ac68, 'info': #28c);
+
+// All secondary themes have to be nested in a theme--$(themename) class. When Documenter
+// switches themes, it applies this class to <html> and then disables the primary
+// stylesheet.
 @import "documenter/utilities";
 @import "documenter/variables";
 @import "bulma/utilities/all";
 @import "bulma/base/minireset.sass";
 @import "bulma/base/helpers.sass";
 
-// All secondary themes have to be nested in a theme--$(themename) class. When Documenter
-// switches themes, it applies this class to <html> and then disables the primary
-// stylesheet.
 html.theme--#{$themename} {
   @import "bulma/base/generic.sass";
 
