@@ -21,11 +21,11 @@ prefix_key1=val1_key2=val2_key3=val3.suffix
 ```
 assuming you chose the default `connector`, see below. Notice
 that `prefix` should not contain path separators to avoid compatibility issues
- on different operating systems. For constructing paths, the `*dir` methods
- can be used and the `savename()` as the last parameter.
+ on different operating systems. For constructing paths, use the `*dir()`
+ methods or `joinpath` with `savename()` as the last parameter.
 See [`default_prefix`](@ref) for more.
 
-`savename` can be very conveniently combined with
+`savename` can be conveniently combined with
 [`@dict`](@ref) or [`@ntuple`](@ref).
 See also [`parse_savename`](@ref) and [`@savename`](@ref).
 
@@ -86,7 +86,7 @@ function savename(prefix::String, c, suffix::String;
     if any(sep in prefix for sep in ['/', '\\'])
         @warn """
             Path separators in `savename` prefixes may break reproducibility on other OS.
-            The recommended way is using the `*dir` methods to construct the path and pass in
+            The recommended way is using the `*dir()` methods or `joinpath` with
             `savename` (e.g. `datadir("path", "to", "folder", savename("prefix", data))`).
         """
     end
