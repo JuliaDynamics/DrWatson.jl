@@ -85,6 +85,14 @@ function savename(prefix::String, c, suffix::String;
                   connector = "_", expand::Vector{String} = default_expand(c),
                   scientific::Union{Int,Nothing}=nothing)
 
+    if any(sep in prefix for sep in ['/', '\\'])
+        @warn """
+            Path separators in `savename` prefixes may break reproducibility on other OS.
+            The recommended way is using the `*dir` methods to construct the path and pass in
+            `savename` (e.g. `datadir("path", "to", "folder", savename("prefix", data))`).
+        """
+    end
+
     # Here take care of extra prefix besides default
     dpre = default_prefix(c)
     if dpre != "" && prefix != dpre
