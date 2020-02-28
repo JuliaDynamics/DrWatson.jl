@@ -112,7 +112,7 @@ function savename(prefix::String, c, suffix::String;
             val = roundval(val,digits=digits,scientific=scientific)
             if label ∈ expand
                 isempty(val) && continue
-                sname = savename(val; connector=",")
+                sname = savename(val; connector=",", digits=digits, scientific=scientific)
                 isempty(sname) && continue
                 entry = label*"="*'('*sname*')'
             else
