@@ -39,7 +39,7 @@ See also [`collect_results`](@ref).
 * `verbose = true` : Print (using `@info`) information about the process.
 * `white_list` : List of keys to use from result file. By default
   uses all keys from all loaded result-files.
-* `black_list = []`: List of keys not to include from result-file.
+* `black_list = [:gitcommit, :gitpatch, :script]`: List of keys not to include from result-file.
 * `special_list = []`: List of additional (derived) key-value pairs
   to put in `df` as explained below.
 
@@ -139,14 +139,14 @@ is_valid_file(file, valid_filetypes) =
 
 function to_data_row(data, file;
         white_list = collect(keys(data)),
-        black_list = keytype(data)[],
+        black_list = keytype(data).((:gitcommit, :gitpatch, :script)),
         special_list = keytype(data)[])
     cnames = setdiff!(white_list, black_list)
     entries = Pair{Symbol,Any}[]
     append!(entries,Symbol.(cnames) .=> (x->[x]).(getindex.(Ref(data),cnames)))
     #Add special things here
     for (ename, func) in special_list
-        try 
+        try
             push!(entries,Symbol(ename) => [func(data), ])
         catch e
             @warn "While applying function $(nameof(func)) to file "*
