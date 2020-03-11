@@ -9,3 +9,4 @@ src/update*
 test project
 juliadynamics-light.scss
 juliadynamics-dark.scss
+*.scss

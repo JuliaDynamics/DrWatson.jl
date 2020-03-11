@@ -1,3 +1,4 @@
+cd(@__DIR__)
 using Pkg
 Pkg.activate(@__DIR__)
 CI = get(ENV, "CI", nothing) == "true" || get(ENV, "GITHUB_TOKEN", nothing) !== nothing
@@ -7,16 +8,17 @@ using Documenter, DataFrames, Parameters, Dates, BSON, JLD2
 using DocumenterTools: Themes
 
 # %%
-# TODO: fix admonitions
-
-# build the themes
+# download the themes
+for file in ("juliadynamics-darkdefs.scss", "juliadynamics-darkdefs.scss", "juliadynamics-style.scss")
+    download("https://github.com/JuliaDynamics/doctheme/blob/master/$file", file)
+end
+# create the themes
 for w in ("light", "dark")
     header = read(joinpath(@__DIR__, "juliadynamics-style.scss"), String)
     theme = read(joinpath(@__DIR__, "juliadynamics-$(w)defs.scss"), String)
     write(joinpath(@__DIR__, "juliadynamics-$(w).scss"), header*"\n"*theme)
 end
-
-
+# compile the themes
 Themes.compile(joinpath(@__DIR__, "juliadynamics-light.scss"), joinpath(@__DIR__, "src/assets/themes/documenter-light.css"))
 Themes.compile(joinpath(@__DIR__, "juliadynamics-dark.scss"), joinpath(@__DIR__, "src/assets/themes/documenter-dark.css"))
 
