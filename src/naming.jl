@@ -20,12 +20,12 @@ the prefix/suffix the function will do:
 prefix_key1=val1_key2=val2_key3=val3.suffix
 ```
 assuming you chose the default `connector`, see below. Notice
-that `prefix` can be any path, and in addition if
-it ends with `/` or `\\` then the `connector` after `prefix` is ommited
-(although `joinpath` should be preferred instead of putting paths in `prefix`).
+that `prefix` should not contain path separators to avoid compatibility issues
+ on different operating systems. For constructing paths, use the `*dir()`
+ methods or `joinpath` with `savename()` as the last parameter.
 See [`default_prefix`](@ref) for more.
 
-`savename` can be very conveniently combined with
+`savename` can be conveniently combined with
 [`@dict`](@ref) or [`@ntuple`](@ref).
 See also [`parse_savename`](@ref) and [`@savename`](@ref).
 
@@ -64,9 +64,7 @@ See also [`parse_savename`](@ref) and [`@savename`](@ref).
 d = (a = 0.153456453, b = 5.0, mode = "double")
 savename(d; digits = 4) == "a=0.1535_b=5_mode=double"
 savename("n", d) == "n_a=0.153_b=5_mode=double"
-savename("n/", d) == "n/a=0.153_b=5_mode=double"
 savename(d, "n") == "a=0.153_b=5_mode=double.n"
-savename("data/n", d, "n") == "data/n_a=0.153_b=5_mode=double.n"
 savename("n", d, "n"; connector = "-") == "n-a=0.153-b=5-mode=double.n"
 savename(d, allowedtypes = (String,)) == "mode=double"
 
@@ -84,6 +82,14 @@ function savename(prefix::String, c, suffix::String;
                   accesses = allaccess(c), ignores = allignore(c), digits = 3,
                   connector = "_", expand::Vector{String} = default_expand(c),
                   scientific::Union{Int,Nothing}=nothing)
+
+    if any(sep in prefix for sep in ['/', '\\'])
+        @warn """
+            Path separators in `savename` prefixes may break reproducibility on other OS.
+            The recommended way is using the `*dir()` methods or `joinpath` with
+            `savename` (e.g. `datadir("path", "to", "folder", savename("prefix", data))`).
+        """
+    end
 
     # Here take care of extra prefix besides default
     dpre = default_prefix(c)
@@ -106,7 +112,7 @@ function savename(prefix::String, c, suffix::String;
             val = roundval(val,digits=digits,scientific=scientific)
             if label ∈ expand
                 isempty(val) && continue
-                sname = savename(val; connector=",")
+                sname = savename(val; connector=",", digits=digits, scientific=scientific)
                 isempty(sname) && continue
                 entry = label*"="*'('*sname*')'
             else
