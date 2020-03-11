@@ -310,6 +310,5 @@ export struct2ntuple
 Convert a Julia composite type `s` to a NamedTuple `n`.
 """
 function struct2ntuple(s)
-    d = Dict(x => getfield(s, x) for x in fieldnames(typeof(s)))
-    NamedTuple{Tuple(keys(d))}(values(d))
+    NamedTuple{fieldnames(typeof(s))}(( getfield(s, x) for x in fieldnames(typeof(s))))
 end
