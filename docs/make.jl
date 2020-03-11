@@ -1,4 +1,3 @@
-cd(@__DIR__)
 using Pkg
 Pkg.activate(@__DIR__)
 CI = get(ENV, "CI", nothing) == "true" || get(ENV, "GITHUB_TOKEN", nothing) !== nothing
@@ -9,8 +8,8 @@ using DocumenterTools: Themes
 
 # %%
 # download the themes
-for file in ("juliadynamics-darkdefs.scss", "juliadynamics-darkdefs.scss", "juliadynamics-style.scss")
-    download("https://github.com/JuliaDynamics/doctheme/blob/master/$file", file)
+for file in ("juliadynamics-lightdefs.scss", "juliadynamics-darkdefs.scss", "juliadynamics-style.scss")
+    download("https://raw.githubusercontent.com/JuliaDynamics/doctheme/master/$file", joinpath(@__DIR__, file))
 end
 # create the themes
 for w in ("light", "dark")
