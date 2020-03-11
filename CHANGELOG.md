@@ -1,6 +1,8 @@
+# 1.10.0
+* New function `struct2ntuple` that converts a struct to a NamedTuple (for saving)
+
 # 1.9.0
 * `savename` now has the `ignore` option.
-* New function `struct2ntuple` that converts a struct to a NamedTuple (for saving)
 
 # 1.8.0
 * `@quickactivate` was enhanced to allow projects that also represent a module.
