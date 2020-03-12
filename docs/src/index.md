@@ -1,4 +1,4 @@
-![DrWatson](https://github.com/JuliaDynamics/JuliaDynamics/blob/master/videos/drwatson/DrWatson-banner.png?raw=true)
+![DrWatson](https://github.com/JuliaDynamics/JuliaDynamics/blob/master/videos/drwatson/DrWatson-banner-nobg.png?raw=true)
 
 ---
 
@@ -8,14 +8,9 @@ It helps people manage their scientific projects (or any project for that matter
 Specifically, it is a Julia package created to help people "deal" with their simulations, simulation parameters, where are files saved, experimental data, scripts, existing simulations, project source code, establishing reproducibility, and in general their scientific projects.
 
 See the [Functionality](@ref) section to get an impression of what you can do with DrWatson. To install, simply type `] add DrWatson` in your Julia session.
+DrWatson is part of [JuliaDynamics](https://juliadynamics.github.io/JuliaDynamics/), check out our [website](https://juliadynamics.github.io/JuliaDynamics/) for more cool stuff!
 
-!!! info "JuliaDynamics"
-    DrWatson is part of [JuliaDynamics](https://juliadynamics.github.io/JuliaDynamics/), check out our [website](https://juliadynamics.github.io/JuliaDynamics/) for more cool stuff!
-
-!!! info "Poster for DrWatson"
-    If you prefer having a concise and visual summary of DrWatson we have prepared a poster for it! Check out the [Poster](@ref) section!
-
-!!! tip "Star us on GitHub!"
+!!! note "Star us on GitHub!"
     If you like DrWatson the please consider starring the [GitHub repository](https://github.com/JuliaDynamics/DrWatson.jl). This gives as an accurate lower bound of the number of people the software has helped!
 
 ## Rationale
@@ -61,9 +56,6 @@ DrWatson follows these simple principles:
 
 This is why we believe DrWatson can help you focus on the science and not worry about project code management.
 
-## Poster
-![poster DrWatson](https://github.com/JuliaDynamics/JuliaDynamics/blob/master/videos/drwatson/DrWatson-poster-1.0.0.jpg?raw=true)
-
 ## Inspirations
 
 https://drivendata.github.io/cookiecutter-data-science/#cookiecutter-data-science
@@ -81,27 +73,27 @@ https://experimentator.readthedocs.io/en/latest/
 ## Other useful packages
 
 ### Efficient code writing
-* https://github.com/mauro3/Parameters.jl
-* https://github.com/docopt/DocOpt.jl
-* https://github.com/vtjnash/Glob.jl
+* <https://github.com/mauro3/Parameters.jl>
+* <https://github.com/docopt/DocOpt.jl>
+* <https://github.com/vtjnash/Glob.jl>
 
 ### Notebooks
-* IJulia.jl
-* Weave.jl
+* <https://github.com/JuliaLang/IJulia.jl>
+* <https://github.com/JunoLab/Weave.jl>
 
 ### Documenting your code
-* Literate.jl
-* Documenter.jl
+* <https://github.com/JuliaDocs/Documenter.jl>
+* <https://github.com/fredrikekre/Literate.jl>
 
 ### Debugging, writing code
-* Juno
-* Revise.jl
-* Debugger.jl
+* <https://junolab.org/>
+* <https://github.com/timholy/Revise.jl>
+* <https://github.com/JuliaDebug/Debugger.jl>
 
 ### Performance measures
-* ProgressMeter.jl
-* BenchmarkTools.jl
-* https://github.com/KristofferC/TimerOutputs.jl
+* <https://github.com/JuliaCI/BenchmarkTools.jl>
+* <https://github.com/timholy/ProgressMeter.jl>
+* <https://github.com/KristofferC/TimerOutputs.jl>
 * ProfileViews.jl (similar available in Juno with `@profiler`)
 
 ### Saving Data
@@ -110,15 +102,15 @@ https://experimentator.readthedocs.io/en/latest/
 * CSV.jl
 
 ### Data management & data bases
-* https://github.com/helgee/RemoteFiles.jl
-* https://github.com/JuliaDynamics/CaosDB.jl
-* https://juliadb.org/
-* https://github.com/SebastianM-C/StorageGraphs.jl
+* <https://github.com/helgee/RemoteFiles.jl>
+* <https://github.com/JuliaDynamics/CaosDB.jl>
+* <https://juliadb.org/>
+* <https://github.com/SebastianM-C/StorageGraphs.jl>
 
 ### Tabular data
-* https://juliadata.github.io/DataFrames.jl/stable/
-* https://www.queryverse.org/
+* <https://juliadata.github.io/DataFrames.jl/stable/>
+* <https://www.queryverse.org/>
 
 ### Traversing folders
 * Base.Filesystem
-* https://github.com/Keno/AbstractTrees.jl/blob/master/examples/fstree.jl
+* <https://github.com/Keno/AbstractTrees.jl/blob/master/examples/fstree.jl>

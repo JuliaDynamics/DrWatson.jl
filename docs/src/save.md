@@ -3,12 +3,11 @@ This page discusses numerous tools that can significantly improve process of sav
 
 These tools are also used in the examples demonstrated in the [Real World Examples](@ref) page. After reading the proper documentation here it might be worth it to have a look there as well!
 
-!!! info "Saving and loading files"
-    In DrWatson we save and load files with the functions `wsave(filename, data)` and `wload(filename)`. These functions are further used in the tools below, like e.g. [`tagsave`](@ref) and can be overloaded for your own specific datatype.
+In DrWatson we save and load files with the functions `wsave(filename, data)` and `wload(filename)`. These functions are further used in the tools below, like e.g. [`tagsave`](@ref) and can be overloaded for your own specific datatype.
 
-    In addition, `wsave` **ensures** that `mkpath` is always called on the path you are trying to save your file at. We all know how unpleasant it is to run a 2-hour simulation and save no data because `FileIO.save` complains that the path you are trying to save does not exist...
+In addition, `wsave` **ensures** that `mkpath` is always called on the path you are trying to save your file at. We all know how unpleasant it is to run a 2-hour simulation and save no data because `FileIO.save` complains that the path you are trying to save at does not exist...
 
-    To overload the saving part, add a new method to `DrWatson._wsave(filename, ::YourType)` (notice the `_`). By overloading `_wsave` you get all the extra functionality of [`tagsave`](@ref), [`safesave`](@ref), etc., for free for your own types (`tagsave` requires that you save your data as a dictionary).
+To overload the saving part, add a new method to `DrWatson._wsave(filename, ::YourType)` (notice the `_`). By overloading `_wsave` you get all the extra functionality of [`tagsave`](@ref), [`safesave`](@ref), etc., for free for your own types (`tagsave` requires that you save your data as a dictionary).
 
 !!! warning "Saving and loading fallback"
     By default we fallback to `FileIO.save` and `FileIO.load` for and types.

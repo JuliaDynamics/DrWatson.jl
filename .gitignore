@@ -416,6 +416,12 @@ $RECYCLE.BIN/
 ## Acknowledgements
 # Many thanks to `https://gitignore.io/`, written and maintained by Joe Blau, which contributed much material to this gitignore file.
 
+docs/build
+docs/data
+docs/src/assets/themes/*.css
 test/testdir
 src/update*
 test project
+juliadynamics-light.scss
+juliadynamics-dark.scss
+*.scss
