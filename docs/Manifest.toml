@@ -75,8 +75,6 @@ version = "0.8.1"
 [[Documenter]]
 deps = ["Base64", "Dates", "DocStringExtensions", "InteractiveUtils", "JSON", "LibGit2", "Logging", "Markdown", "REPL", "Test", "Unicode"]
 git-tree-sha1 = "3bacd94d853a6bccaee1d0104d8b06d29a7506ac"
-repo-rev = "mp/theming-variables"
-repo-url = "https://github.com/JuliaDocs/Documenter.jl.git"
 uuid = "e30172f5-a6a5-5a46-863b-614d45cd2de4"
 version = "0.24.6"
 
@@ -88,9 +86,9 @@ version = "0.1.5"
 
 [[DrWatson]]
 deps = ["FileIO", "LibGit2", "Pkg", "Random", "Requires"]
-path = ".."
+git-tree-sha1 = "c04127a9d9b04f2a6306f3491d510724f9ef0db9"
 uuid = "634d3b9d-ee7a-5ddf-bec9-22491ea816e1"
-version = "1.9.0"
+version = "1.9.2"
 
 [[FileIO]]
 deps = ["Pkg"]
