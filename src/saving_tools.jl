@@ -302,3 +302,13 @@ tagsave(savename(s), struct2dict(s))
 function struct2dict(s)
     Dict(x => getfield(s, x) for x in fieldnames(typeof(s)))
 end
+
+export struct2ntuple
+
+"""
+    struct2ntuple(s) -> n
+Convert a Julia composite type `s` to a NamedTuple `n`.
+"""
+function struct2ntuple(s)
+    NamedTuple{fieldnames(typeof(s))}(( getfield(s, x) for x in fieldnames(typeof(s))))
+end

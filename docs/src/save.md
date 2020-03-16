@@ -63,4 +63,5 @@ See [Stopping "Did I run this?"](@ref) for an example usage of `produce_or_load`
 [`savename`](@ref) gives great support for getting a name out of any Julia composite type. To save something though, one needs a dictionary. So the following function can be conveniently used to directly save a struct using any saving function:
 ```@docs
 struct2dict
+struct2ntuple
 ```

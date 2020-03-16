@@ -46,6 +46,12 @@ for x in fieldnames(typeof(e1))
     @test d[x] == getfield(e1, x)
 end
 
+nt = struct2ntuple(e1)
+@test isa(nt, NamedTuple)
+for x in fieldnames(typeof(e1))
+    @test nt[x] == getfield(e1, x)
+end
+
 # Test extra dir and default_prefix:
 s = savename(joinpath("path", "to", "data"), e1)
 @test s[1:4] == "path"
