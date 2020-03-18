@@ -155,7 +155,7 @@ function tag!(d::Dict{K,T}; gitpath = projectdir(), storepatch = true, force = f
     end
     if String <: T
         d[commitname] = c
-        if patch!=""
+        if storepatch && (patch != nothing)
             d[patchname] = patch
         end
     else
