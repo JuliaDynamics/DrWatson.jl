@@ -115,9 +115,9 @@ are un-commited changes, then the output of `git diff HEAD` is stored
 in the field `gitpatch`.  Note that patches for binary files are not
 stored.
 
-Notice that if `String` is not a subtype of the value type of `d` then
-a new dictionary is created and returned. Otherwise the operation is
-inplace (and the dictionary is returned again).
+Notice that the key-type of the dictionary must be `String` or `Symbol`.
+If `String` is a subtype of the _value_ type of the dictionary, this operation is
+in-place. Otherwise a new dictionary is created and returned.
 
 To restore a repository to the state of a particular model-run do:
 1. checkout the relevant commit with `git checkout xyz` where xyz is the value stored
