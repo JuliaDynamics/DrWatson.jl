@@ -56,20 +56,6 @@ DrWatson follows these simple principles:
 
 This is why we believe DrWatson can help you focus on the science and not worry about project code management.
 
-## Inspirations
-
-https://drivendata.github.io/cookiecutter-data-science/#cookiecutter-data-science
-
-https://discourse.julialang.org/t/computational-experiments-organising-different-algorithms-their-parameters-and-results/10774/7
-
-http://neuralensemble.org/sumatra/
-
-https://github.com/mohamed82008/ComputExp.jl
-
-https://sacred.readthedocs.io/en/latest/index.html
-
-https://experimentator.readthedocs.io/en/latest/
-
 ## Other useful packages
 
 ### Efficient code writing
@@ -84,6 +70,7 @@ https://experimentator.readthedocs.io/en/latest/
 ### Documenting your code
 * <https://github.com/JuliaDocs/Documenter.jl>
 * <https://github.com/fredrikekre/Literate.jl>
+* <https://github.com/caseykneale/Sherlock.jl>
 
 ### Debugging, writing code
 * <https://junolab.org/>
@@ -114,3 +101,20 @@ https://experimentator.readthedocs.io/en/latest/
 ### Traversing folders
 * Base.Filesystem
 * <https://github.com/Keno/AbstractTrees.jl/blob/master/examples/fstree.jl>
+
+
+## Inspirations
+
+Initial inspirations for DrWatson follow below. All inspirations are specific in scope and functionality, and since its original conception DrWatson has moved on to become a whole scientific project assistant.
+
+https://drivendata.github.io/cookiecutter-data-science/#cookiecutter-data-science
+
+https://discourse.julialang.org/t/computational-experiments-organising-different-algorithms-their-parameters-and-results/10774/7
+
+http://neuralensemble.org/sumatra/
+
+https://github.com/mohamed82008/ComputExp.jl
+
+https://sacred.readthedocs.io/en/latest/index.html
+
+https://experimentator.readthedocs.io/en/latest/
