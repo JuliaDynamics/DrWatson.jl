@@ -81,6 +81,7 @@ This is why we believe DrWatson can help you focus on the science and not worry 
 * <https://github.com/JuliaCI/BenchmarkTools.jl>
 * <https://github.com/timholy/ProgressMeter.jl>
 * <https://github.com/KristofferC/TimerOutputs.jl>
+* <https://github.com/JuliaDebug/Cthulhu.jl>
 * ProfileViews.jl (similar available in Juno with `@profiler`)
 
 ### Saving Data
