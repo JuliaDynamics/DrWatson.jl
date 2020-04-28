@@ -58,6 +58,9 @@ This is why we believe DrWatson can help you focus on the science and not worry 
 
 ## Other useful packages
 
+### Running simulations
+* <https://github.com/baggepinnen/Hyperopt.jl>
+
 ### Efficient code writing
 * <https://github.com/mauro3/Parameters.jl>
 * <https://github.com/docopt/DocOpt.jl>
