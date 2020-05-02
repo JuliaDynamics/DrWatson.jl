@@ -48,8 +48,6 @@ Pkg.add(["Statistics", "BSON"])
 # cd(joinpath(@__DIR__, "DrWatson Example"))
 # ```
 
-pwd()
-
 # Let's also reset the Julia project to the default one.
 
 Pkg.activate()
@@ -60,6 +58,7 @@ Pkg.activate()
 # quickactivate("DrWatson Example", "DrWatson Example")
 # ```
 
+pwd()
 
 # ```julia
 # using DrWatson
@@ -131,7 +130,7 @@ allparams = Dict(
 
 dicts = dict_list(allparams)
 
-# 4. Run and save
+# ## 4. Run and save
 # Alright, we now have to actually save the results, so we first define:
 
 using Parameters: @unpack
@@ -161,7 +160,7 @@ end
 # (`wsave` is a function from DrWatson, that ensures that the directory you try to
 # save the data exists. It then calls `FileIO.save`)
 
-# Here each simulation was named according to number.
+# Here each simulation was named according to a number.
 # But this is not how we do it in science... We typically want the input parameters
 # to be part of the file name. E.g. here we would want the file name to be something like
 # `a=2_b=3_method=linear.bson`. It would be also nice that such a naming scheme would
@@ -178,9 +177,12 @@ savename(params)
 
 savename(dicts[1], "bson")
 
-# `savename` is flexible and smart. As you noticed, even though the vector `r` with
-# 5 numbers is part of `params`, it wasn't included in the output name (on purpose).
+# `savename` is flexible and smart. As you noticed, even though the vector `v` with
+# 5 numbers is part of the input, it wasn't included in the name (on purpose).
 # See `savename` documentation for more. We now transform our make+save loop into
+
+println(datadir())
+println(pwd())
 
 for (i, d) in enumerate(dicts)
     f = makesim(d)
@@ -191,8 +193,7 @@ readdir(datadir("simulations"))
 
 # That is cool, but we can do better. In fact, **much better**.
 # Remember that the project initialized by DrWatson is a git repository.
-# So, now go into git and commit the script we have created and all other
-# changes (in e.g. the Project.toml).
+# So, now go into git and commit the script we have created and all changes.
 
 # Then make+save again, but now instead of `wsave` us [`tagsave`](@ref):
 
