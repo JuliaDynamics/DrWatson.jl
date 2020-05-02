@@ -1,9 +1,10 @@
+cd(@__DIR__)
 using Pkg
-Pkg.activate(@__DIR__)
 CI = get(ENV, "CI", nothing) == "true" || get(ENV, "GITHUB_TOKEN", nothing) !== nothing
+CI && Pkg.activate(@__DIR__)
 CI && Pkg.instantiate()
 using DrWatson
-using Documenter, DataFrames, Parameters, Dates, BSON, JLD2
+using Documenter, DataFrames, Parameters, Dates, BSON
 using DocumenterTools: Themes
 
 # %%
@@ -23,25 +24,29 @@ Themes.compile(joinpath(@__DIR__, "juliadynamics-dark.scss"), joinpath(@__DIR__,
 
 isdir(datadir()) && rm(datadir(); force = true, recursive = true)
 
+using Literate
+Literate.markdown("src/workflow.jl", "src")
+
 makedocs(modules = [DrWatson],
-sitename= "DrWatson",
-authors = "George Datseris and contributors.",
-doctest = false,
-format = Documenter.HTML(
-    prettyurls = CI,
-    assets = [
-        "assets/logo.ico",
-        asset("https://fonts.googleapis.com/css?family=Quicksand|Montserrat|Source+Code+Pro|Lora&display=swap", class=:css),
+    sitename= "DrWatson",
+    authors = "George Datseris and contributors.",
+    doctest = false,
+    format = Documenter.HTML(
+        prettyurls = CI,
+        assets = [
+            "assets/logo.ico",
+            asset("https://fonts.googleapis.com/css?family=Quicksand|Montserrat|Source+Code+Pro|Lora&display=swap", class=:css),
+            ],
+        ),
+    pages = [
+        "Introduction" => "index.md",
+        "DrWatson Workflow Tutorial" => "workflow.md",
+        "Project Setup" => "project.md",
+        "Naming Simulations" => "name.md",
+        "Saving Tools" => "save.md",
+        "Running & Listing Simulations" => "run&list.md",
+        "Real World Examples" => "real_world.md"
         ],
-    ),
-pages = [
-    "Introduction" => "index.md",
-    "Project Setup" => "project.md",
-    "Naming Simulations" => "name.md",
-    "Saving Tools" => "save.md",
-    "Running & Listing Simulations" => "run&list.md",
-    "Real World Examples" => "real_world.md"
-    ],
 )
 
 if CI
