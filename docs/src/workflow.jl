@@ -48,17 +48,11 @@ Pkg.add(["Statistics", "BSON", "Parameters"])
 # cd(joinpath(@__DIR__, "DrWatson Example"))
 # ```
 
-# Let's also reset the Julia project to the default one.
-
-Pkg.activate()
-
 
 # Now, every script I ever write starts with the following two lines:
 # ```@setup workflow
 # quickactivate("DrWatson Example", "DrWatson Example")
 # ```
-
-pwd()
 
 # ```julia
 # using DrWatson
@@ -180,9 +174,6 @@ savename(dicts[1], "bson")
 # `savename` is flexible and smart. As you noticed, even though the vector `v` with
 # 5 numbers is part of the input, it wasn't included in the name (on purpose).
 # See `savename` documentation for more. We now transform our make+save loop into
-
-println(datadir())
-println(pwd())
 
 for (i, d) in enumerate(dicts)
     f = makesim(d)
