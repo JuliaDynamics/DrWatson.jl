@@ -36,7 +36,7 @@ initialize_project("DrWatson Example"; authors="Datseris", force=true)
 # that we will be using in the project. I'll add Statistics and BSON for
 # demonstrating.
 using Pkg
-Pkg.add(["Statistics", "BSON"])
+Pkg.add(["Statistics", "BSON", "Parameters"])
 
 # ## 2. Write some scripts
 
@@ -125,10 +125,15 @@ allparams = Dict(
     :a => [1, 2], # it is inside vector. It is expanded.
     :b => [3, 4],
     :v => [rand(5)], # single element inside vector; no expansion
-    :method => ["linear", "cubic"],
+    :method => "linear", # not in vector = not expanded
 )
 
 dicts = dict_list(allparams)
+
+# using `dict_list` is great, because it has a very clear design on how to expand
+# containers, while not caring whether the parameter values are iterable or not.
+# In short **everything in a `Vector` is expanded once** (`Vector`s of length 1
+# are not expanded naturally).
 
 # ## 4. Run and save
 # Alright, we now have to actually save the results, so we first define:
@@ -145,20 +150,15 @@ function makesim(d::Dict)
 end
 
 # and then we can save the results by once again leveraging [`projectdir`](@ref)
-for (i, d) in enumerate(dicts)
-    f = makesim(d)
-    wsave(datadir("simulations", "sim_$(i).bson"), f)
-end
-
-# ```@setup workflow
+# ```julia
 # for (i, d) in enumerate(dicts)
 #     f = makesim(d)
-#     rm(datadir("simulations", "sim_$(i).bson"))
+#     wsave(datadir("simulations", "sim_$(i).bson"), f)
 # end
 # ```
 
-# (`wsave` is a function from DrWatson, that ensures that the directory you try to
-# save the data exists. It then calls `FileIO.save`)
+# *(`wsave` is a function from DrWatson, that ensures that the directory you try to
+# save the data exists. It then calls `FileIO.save`)*
 
 # Here each simulation was named according to a number.
 # But this is not how we do it in science... We typically want the input parameters
@@ -236,7 +236,7 @@ df = collect_results(datadir("simulations"))
 # * If you create new simulations that have **new parameters**, that don't exist in the
 #   simulations already saved, that's no problem. `collect_results` will appropriately
 #   and automatically add `missing` to all parameter values that don't exist in previews
-#   and/or current simulations. This is demonstrated explicitly in the example
+#   and/or current simulations. This is demonstrated explicitly in the
 #   [Adapting to new data/parameters](@ref) real world example, so it is not repeated here.
 # * Similarly with e.g. `savename`, `collect_results` is a flexible function. It has
 #   several configuration options.
