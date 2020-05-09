@@ -25,6 +25,7 @@ Have you thought things like:
 * PFfffff I am tired of typing `savename = "w=$w_f=$f_x=$x.txt"`, can't I do it automatically?
 * I wish I could just use Parameters.jl and just translate my simulations into a dataframe.
 * Yeah you've sent me your project but none of the scripts work...
+* It would be so nice to automatically integrate `git` information to all the data I save...
 
 DrWatson tries to eradicate such bad thoughts and bedtime nightmares.
 
