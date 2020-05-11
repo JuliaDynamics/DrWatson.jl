@@ -32,9 +32,7 @@ Seems like `src` and `scripts` folders have pretty similar functionality. Howeve
 
 * If upon `include("file.jl")` there is _anything_ being produced, be it data files, plots or even output to the console, then it should be in `scripts`.
 * If it is functionality used across multiple files or pipelines, it should be in `src`.
-* `src` should only contain files that define functions or types but not output anything. You can also organize `src` to be a Julia package, or contain multiple Julia packages.
-
-Notice that it is typically the case that in the `src` folder you will have a full Julia package as a subfolder. In such cases be sure that you add the *relative* path to the package in your `Manifest.toml`, instead of the absolute path. This will ensure reproducibility!
+* `src` should only contain files that define functions or types but not output anything.
 
 ## Initializing a Project
 
@@ -42,16 +40,6 @@ To initialize a project as described in the [Default Project Setup](@ref) sectio
 ```@docs
 initialize_project
 ```
-
-### Including Julia packages in `src`
-Notice that the project initialized by DrWatson does not represent a Julia package. It represents a scientific project. That being said, it is often the case that you want to develop normal Julia Modules inside your project, so that you can later use them in your code with `using PackageName`. The proper way to do this is to initialize Julia packages, using the package manager, inside the `src` folder, using these steps:
-
-1. Active your project that uses DrWatson.
-2. Change directory to the project's folder (very important).
-3. Go into package mode and initialize a package with the name that you want: `generate src/PackageName`
-4. `dev` the local path to `PackageName` using the package manager , e.g. `dev src/PackageName`. Notice that this command uses a local path, see [this PR](https://github.com/JuliaLang/Pkg.jl/pull/1215) for more details.
-
-Now whenever you do `using PackageName`, the local version will be used. This will still work even if you transfer your project to another computer, because the Manifest.toml file stores the local path.
 
 
 ## Activating a Project
@@ -75,6 +63,18 @@ Notice that to get the current project's name you can use:
 projectname
 ```
 
+## Including Julia packages/modules in `src`
+Notice that the project initialized by DrWatson does not represent a Julia package. It represents a scientific project. That being said, it is often the case that you want to develop normal Julia Modules (and perhaps later publish them as packages) inside your project, so that you can later use them in your code with `using ModuleName`. The proper way to do this is to initialize Julia packages, using the package manager, inside the `src` folder, using these steps:
+
+1. Active your project that uses DrWatson.
+2. Change directory to the project's main folder (**important!**).
+3. Go into package mode and initialize a package with the name that you want: `generate src/ModuleName`
+4. `dev` the local path to `ModuleName` using the package manager: `dev src/ModuleName`. Notice that this command uses a local path, see [this PR](https://github.com/JuliaLang/Pkg.jl/pull/1215) for more details.
+   * If you don't care do make this module a Julia package, simply delete its `.git` folder: `src/Modulename/.git`.
+   * If you do care about publishing this module as a Julia package, then it is mandatory to keep it as git-repository. What we recommend in this case is to ignore `src/Modulename` in your main project's `.gitignore`.
+
+Now whenever you do `using ModuleName`, the local version will be used. This will still work even if you transfer your project to another computer, because the Manifest.toml file stores the local path.
+
 ## Navigating a Project
 To be able to navigate the project consistently, DrWatson provides the core function
 ```@docs
@@ -96,6 +96,14 @@ All of these functions take advantage of `joinpath`, ensuring an error-free path
 datadir("foo", "test.bson") # preferred
 datadir() * "/foo/test.bson" # not recommended
 ```
+
+### Custom directory functions
+
+It is straightforward to make custom directory functions if there is a directory you created that you access more often. Simply define
+```julia
+customdir(args...) = projectdir("custom", args...)
+```
+to make the `customdir` version that works exactly like e.g. `datadir` but for `"custom"` instead of `"data"`.
 
 ## Reproducibility
 The project setup approach that DrWatson suggests is designed to work flawlessly with Julia standards, to be easy to share and to be fully reproducible. There are three reasons that **true** reproducibility is possible:
