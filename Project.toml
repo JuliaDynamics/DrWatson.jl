@@ -14,7 +14,7 @@ UnPack = "3a884ed6-31ef-47d7-9d2a-63182c4928ed"
 [compat]
 FileIO = "1.0.6"
 Requires = "0.5.2, 0.6, 1"
-UnPack = "1"
+UnPack = "1.0.1"
 julia = "1.0"
 
 [extras]
