@@ -16,3 +16,5 @@ function add_data_entry!(file::String, force::Bool = false, pdir = projectdir();
     wsave(provenance, db)
     return nothing
 end
+
+# TODO: `file` must be made relative w.r.t. project directory.
