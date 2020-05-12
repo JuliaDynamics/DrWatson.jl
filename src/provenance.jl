@@ -1,6 +1,6 @@
 using Dates
 
-function add_data_entry!(file::String, pdir = projectdir(), force = false; kwargs...)
+function add_data_entry!(file::String, force::Bool = false, pdir = projectdir(); kwargs...)
     provenance = joinpath(pdr, "Provenance.bson")
     db = isfile(provenance) ? wload(provenance) : Dict{String, Any}()
     date = get(kwargs, :date, Dates.now())
@@ -12,7 +12,7 @@ function add_data_entry!(file::String, pdir = projectdir(), force = false; kwarg
             error("Provenance database has existing file.")
         end
     end
-    db[file] = Dict{Symbol, Any}(:date => date, :git => git, kwargs...)
+    db[file] = Dict{Symbol, Any}(:date => date, :gitcommit => git, kwargs...)
     wsave(provenance, db)
     return nothing
 end
