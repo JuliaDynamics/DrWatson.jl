@@ -40,7 +40,7 @@ Pkg.add(["Statistics", "BSON", "Parameters"])
 
 # ## 2. Write some scripts
 
-# We start by writing some script for our project that will do some dummy caclulations.
+# We start by writing some script for our project that will do some dummy calculations.
 # Let's create `scripts/example.jl` in our project. All following code is supposed to
 # exist in that file.
 
@@ -127,7 +127,10 @@ dicts = dict_list(allparams)
 # using `dict_list` is great, because it has a very clear design on how to expand
 # containers, while not caring whether the parameter values are iterable or not.
 # In short **everything in a `Vector` is expanded once** (`Vector`s of length 1
-# are not expanded naturally).
+# are not expanded naturally). See [`dict_list`](@ref) for more details.
+
+# The resulting dictionaries are then typically given into a `main` or `makesim`
+# function that actually does the simulation given some input parameters.
 
 # ## 4. Run and save
 # Alright, we now have to actually save the results, so we first define:
@@ -173,7 +176,9 @@ savename(dicts[1], "bson")
 
 # `savename` is flexible and smart. As you noticed, even though the vector `v` with
 # 5 numbers is part of the input, it wasn't included in the name (on purpose).
-# See `savename` documentation for more. We now transform our make+save loop into
+# See the [`savename`](@ref) documentation for more.
+
+# We now transform our make+save loop into
 
 for (i, d) in enumerate(dicts)
     f = makesim(d)
@@ -191,14 +196,14 @@ readdir(datadir("simulations"))
 # ```@setup workflow
 # for (i, d) in enumerate(dicts)
 #     f = makesim(d)
-#     tagsave(datadir("simulations", savename(d, "bson")), f; gitpath = "../..")
+#     @tagsave(datadir("simulations", savename(d, "bson")), f; gitpath = "../..")
 # end
 # ```
 
 # ```julia
 # for (i, d) in enumerate(dicts)
 #     f = makesim(d)
-#     tagsave(datadir("simulations", savename(d, "bson")), f)
+#     @tagsave(datadir("simulations", savename(d, "bson")), f)
 # end
 # ```
 
@@ -210,6 +215,11 @@ wload(datadir("simulations", firstsim))
 
 # So what happened is that `tagsave` automatically added git-related information
 # into the file we saved (the field `:gitcommit`), enabling reproducibility!
+
+# It gets even better! Because [`@tagsave`](@ref) is a macro, it deduced automatically
+# where the script that called it was located. It even includes the exact line of code
+# that called the `@tagsave` command. This information is in the `:script` field of the
+# saved data!
 
 # ## 5. Analyze results
 
@@ -254,6 +264,11 @@ safesave(datadir("ana", "linear.bson"), @dict analysis)
 
 # This is already discussed in the [Reproducibility](@ref) section of the docs
 # so there is no reason to copy/paste everything here.
+# What is demonstrated there is that it is truly trivial to share your project
+# with a colleague, and this project is guaranteed to work for them!
+
+
+# ---
 
 # And that's it! Hope that DrWatson will take some stress out of the absurdly stressfull
 # scientific life!

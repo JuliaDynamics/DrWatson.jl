@@ -25,6 +25,7 @@ Have you thought things like:
 * PFfffff I am tired of typing `savename = "w=$w_f=$f_x=$x.txt"`, can't I do it automatically?
 * I wish I could just use Parameters.jl and just translate my simulations into a dataframe.
 * Yeah you've sent me your project but none of the scripts work...
+* It would be so nice to automatically integrate `git` information to all the data I save...
 
 DrWatson tries to eradicate such bad thoughts and bedtime nightmares.
 
@@ -57,6 +58,7 @@ DrWatson follows these simple principles:
 3. **Allows increments.** You didn't plan your project well enough? Want to add more folders, more files, more variables to your simulations? It's fine.
 5. **Reproducibility.** DrWatson aims to make your projects fully reproducible using Git, Julia's package manager and consistent naming schemes.
 6. **Modular.** DrWatson has a flexible modular design (see [Functionality](@ref)) which means you only have to use what fits _your project_.
+1. **General.** DrWatson is completely agnostic to the content of your project. It is not tailored to specific scientific workflows, or specific scientific communities.
 4. **Scientific.** DrWatson has been beta tested in many real-world scientific projects and has matured based on feedback from scientists.
 
 This is why we believe DrWatson can help you focus on the science and not worry about project code management.

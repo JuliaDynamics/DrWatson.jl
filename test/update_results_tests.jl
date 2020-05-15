@@ -47,10 +47,10 @@ cres = collect_results!(defaultname, folder;
     subfolders = true, special_list=special_list, black_list = black_list)
 
 @test size(cres) == (4, 6)
-for n in (:a, :b, :lv_mean)
+for n in ("a", "b", "lv_mean")
     @test n ∈ names(cres)
 end
-@test :c ∉ names(cres)
+@test "c" ∉ names(cres)
 
 ###############################################################################
 #                           Add another file in a sub sub folder              #
