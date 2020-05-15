@@ -25,6 +25,12 @@ ntuple2dict
 dict2ntuple
 ```
 
+Notice that we also re-export the convenient `@pack!, @unpack` tools from [UnPack.jl](https://github.com/mauro3/UnPack.jl), because they play very well with [`@dict`](@ref) and similar functions. Be aware of the syntactic `,` difference: `d = @dict a b c` versus `@unpack a, b, c = d`.
+```@docs
+@unpack
+@pack!
+```
+
 ## Customizing `savename`
 You can customize [`savename`](@ref) for your own Types. For example you could make it so that it only uses some specific keys instead of all of them, only specific types, or you could make it access data in a different way (maybe even loading files!). You can even make it have a custom `prefix`!
 

@@ -13,6 +13,9 @@ include("project_setup.jl")
 include("naming.jl")
 include("saving_tools.jl")
 
+using UnPack
+export @pack!, @unpack
+
 # Functionality that saves/loads
 using FileIO
 export save, load
@@ -40,7 +43,7 @@ function __init__()
 end
 
 # Update messages
-const display_update = true
+const display_update = false
 const update_version = "1.8.0"
 const update_name = "update_v$update_version"
 if display_update
