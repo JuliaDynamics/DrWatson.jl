@@ -23,18 +23,31 @@ using DrWatson
 initialize_project("DrWatson Example"; authors="Datseris", force=true)
 
 # Alright now we have a project set up. The project has a default reasonable structure,
-# as illustrated in the [Default Project Setup](@ref) page.
+# as illustrated in the [Default Project Setup](@ref) page:
+#
+# ```@setup workflow
+# using DrWatson
+# struct ShowFile
+#     file::String
+# end
+# function Base.show(io::IO, ::MIME"text/plain", f::ShowFile)
+#     write(io, read(f.file))
+# end
+# ```
+# ```@example workflow
+# ShowFile(dirname(pathof(DrWatson))*"/defaults/project_structure.txt") # hide
+# ```
+
 # For example, folders exist for data, plots, scripts, source code, etc.
-# Three things are noteworthy:
+# Three files are noteworthy:
 # * Project.toml: Defines project
 # * Manifest.toml: Contains exact list of project dependencies
-# * .git (hidden folder): Contains reversible history of the project
+# * .git (hidden folder): Contains reversible and searchable history of the project
 
-
-# The project we have created is active by default. This means that it has its own
-# dedicated dependencies and versions of dependencies. We can start adding packages
-# that we will be using in the project. I'll add Statistics and BSON for
-# demonstrating.
+# The scientific project we have created is also a [Julia project environment](https://docs.julialang.org/en/v1/manual/code-loading/#Environments-1).
+# This means that it has its own dedicated dependencies and versions of dependencies.
+# This project is now active by default so we can start adding packages
+# that we will be using in the project. I'll add the following for demonstrating
 using Pkg
 Pkg.add(["Statistics", "BSON", "Parameters"])
 
@@ -270,5 +283,5 @@ safesave(datadir("ana", "linear.bson"), @dict analysis)
 
 # ---
 
-# And that's it! Hope that DrWatson will take some stress out of the absurdly stressfull
+# And that's it! We hope that DrWatson will take some stress out of the absurdly stressfull
 # scientific life!

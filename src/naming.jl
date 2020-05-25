@@ -33,7 +33,7 @@ See also [`parse_savename`](@ref) and [`@savename`](@ref).
 * `allowedtypes = default_allowed(c)` : Only values of type subtyping
   anything in `allowedtypes` are used in the name. By default
   this is `(Real, String, Symbol)`.
-* `accesses = allaccess(c)` : pecify which specific keys you want
+* `accesses = allaccess(c)` : specify which specific keys you want
   to use with the keyword `accesses`. By default this is all possible
   keys `c` can be accessed with, see [`allaccess`](@ref).
 * `ignores = allignore(c)` : You can also specify keys that you want

@@ -25,9 +25,9 @@ Themes.compile(joinpath(@__DIR__, "juliadynamics-dark.scss"), joinpath(@__DIR__,
 isdir(datadir()) && rm(datadir(); force = true, recursive = true)
 
 using Literate
-Literate.markdown("src/workflow.jl", "src")
+Literate.markdown("src/workflow.jl", "src"; credit = false)
 
-makedocs(modules = [DrWatson],
+makedocs(modules = [DrWatson, UnPack],
     sitename= "DrWatson",
     authors = "George Datseris and contributors.",
     doctest = false,
