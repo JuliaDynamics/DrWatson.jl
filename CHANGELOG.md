@@ -1,3 +1,8 @@
+# 1.12.0
+* `wsave/wload` now support keyword arguments.
+# 1.11.0
+* Macros `@pack!, @unpack` are re-exported by DrWatson.
+
 # 1.10.0
 * New function `struct2ntuple` that converts a struct to a NamedTuple (for saving)
 
