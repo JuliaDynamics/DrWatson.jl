@@ -21,16 +21,20 @@ using FileIO
 export save, load
 export wsave, wload
 
-_wsave(filename, obj) = FileIO.save(filename, obj)
+_wsave(filename, data...; kwargs...) = FileIO.save(filename, data...; kwargs...)
 
 """
-    wsave(filename, obj)
-Save `obj` at `filename` via `FileIO` by first creating the appropriate paths.
+    wsave(filename, data...; kwargs...)
+
+Save `data` at `filename` via `FileIO` by first creating the appropriate paths.
 """
-wsave(filename, obj) = (mkpath(dirname(filename)); _wsave(filename, obj))
+function wsave(filename, data...; kwargs...)
+    mkpath(dirname(filename))
+    return _wsave(filename, data...; kwargs...)
+end
 
 "Currently equivalent with `FileIO.load`."
-wload(args...) = FileIO.load(args...)
+wload(data...; kwargs...) = FileIO.load(data...; kwargs...)
 
 include("saving_files.jl")
 
