@@ -1,3 +1,4 @@
+using Dates
 export savename, @savename, @dict, @ntuple, @strdict, parse_savename
 export ntuple2dict, dict2ntuple
 
@@ -32,7 +33,7 @@ See also [`parse_savename`](@ref) and [`@savename`](@ref).
 ## Keywords
 * `allowedtypes = default_allowed(c)` : Only values of type subtyping
   anything in `allowedtypes` are used in the name. By default
-  this is `(Real, String, Symbol)`.
+  this is `(Real, String, Symbol, TimeType)`.
 * `accesses = allaccess(c)` : specify which specific keys you want
   to use with the keyword `accesses`. By default this is all possible
   keys `c` can be accessed with, see [`allaccess`](@ref).
@@ -134,7 +135,7 @@ Round `val`, if roundable, where `digits` defines the number of digits
 and `scientific` the number of significant digits used for rounding.
 `scientific` overwrites `digits`.
 """
-function roundval(val::Tv;digits::Td,scientific::Ts) where {Tv, Td, Ts}
+function roundval(val::Tv;digits::Td, scientific::Ts) where {Tv, Td, Ts}
     if Tv <: AbstractFloat
         if Ts <: Int
             x = round(val,sigdigits = scientific)
@@ -194,10 +195,10 @@ Return all the keys `c` that will be ignored in [`savename`](@ref).
 allignore(c::Any) = ()
 
 """
-    default_allowed(c) = (Real, String, Symbol)
+    default_allowed(c) = (Real, String, Symbol, TimeType)
 Return the (super-)Types that will be used as `allowedtypes` in [`savename`](@ref).
 """
-default_allowed(c) = (Real, String, Symbol)
+default_allowed(c) = (Real, String, Symbol, TimeType)
 
 """
     default_prefix(c) = ""

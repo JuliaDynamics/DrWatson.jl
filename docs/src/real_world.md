@@ -104,7 +104,8 @@ In this example we are also using Parameters.jl for a convenient default constru
 
 We first define the relevant types.
 ```@example customizing
-using DrWatson, Parameters, Dates
+using DrWatson, Dates
+using Base: @kwdef
 
 # Define a type hierarchy we use at experiments
 abstract type Species end
@@ -112,7 +113,7 @@ struct Mouse <: Species end
 struct Cat <: Species end
 
 # @with_kw comes from Parameters.jl
-@with_kw struct Experiment{S<:Species}
+@kwdef struct Experiment{S<:Species}
     n::Int = 50
     c::Float64 = 10.0
     x::Float64 = 0.2
@@ -133,13 +134,14 @@ DrWatson.default_prefix(e::Experiment) = "Experiment_"*string(e.date)
 
 savename(e1)
 ```
-However this is not good enough for us, as the information about the species is not contained in [`savename`](@ref). We have to extend [`DrWatson.default_allowed`](@ref) like so:
+However this is not good enough for us, as the information about the species is not contained in [`savename`](@ref) and also the date information is duplicated.
+We have to extend [`DrWatson.default_allowed`](@ref) to specify which data types should be extended in `savename`:
 ```@example customizing
 DrWatson.default_allowed(::Experiment) = (Real, String, Species)
 
 savename(e1)
 ```
-To make printing better we can extend `Base.string`, which is what DrWatson uses internally in [`savename`](@ref) to display values.
+To make printing of `Species` better we can extend `Base.string`, which is what DrWatson uses internally in [`savename`](@ref) to display values.
 ```@example customizing
 Base.string(::Mouse) = "mouse"
 Base.string(::Cat) = "cat"
