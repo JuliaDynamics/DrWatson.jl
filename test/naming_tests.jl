@@ -1,4 +1,4 @@
-using DrWatson, Test
+using DrWatson, Test, Dates
 
 ps = DrWatson.PATH_SEPARATOR
 
@@ -11,6 +11,8 @@ d = (a = 0.153456453, b = 5.0, mode = "double")
 @test savename("n", d, "n") == "n_a=0.153_b=5_mode=double.n"
 @test savename("n", d, "n"; connector = "-") == "n-a=0.153-b=5-mode=double.n"
 @test savename(d, allowedtypes = (String,)) == "mode=double"
+tday = today()
+@test savename(@dict(tday)) == "tday=$(string(tday))"
 
 rick = (never = "gonna", give = "you", up = "!");
 @test savename(rick) == "give=you_never=gonna_up=!"

@@ -1,3 +1,5 @@
+# 1.13.0
+* `savename` now includes `TimeType` (dates) in the default allowed types.
 # 1.12.0
 * `wsave/wload` now support keyword arguments.
 # 1.11.0
