@@ -1,3 +1,5 @@
+# 1.13.1
+* `gitpach` now shows a warning if `git` was not found in PATH
 # 1.13.0
 * `savename` now includes `TimeType` (dates) in the default allowed types.
 # 1.12.0
