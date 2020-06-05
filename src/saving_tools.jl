@@ -79,6 +79,9 @@ Generates a patch describing the changes of a dirty repository
 compared to its last commit; i.e. what `git diff HEAD` produces.
 The `gitpath` needs to point to a directory within a git repository,
 otherwise `nothing` is returned.
+
+Be aware that `gitpatch` needs a working installation of Git, that 
+can be found in the current PATH.
 """
 function gitpatch(path = projectdir())
     try
@@ -93,6 +96,9 @@ function gitpatch(path = projectdir())
             "returning `nothing` instead of a patch."
         elseif isa(er,LibGit2.GitError)
             @warn "$(er.msg). Returning `nothing` instead of a patch."
+        elseif Sys.which("git") == nothing
+            @warn "`git` was not found in the current PATH, "*
+            "returning `nothing` instead of a patch."
         else
             @warn "`gitpatch` failed with error $er, returning `nothing` instead."
         end
