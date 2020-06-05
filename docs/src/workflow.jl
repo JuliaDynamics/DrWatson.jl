@@ -49,7 +49,7 @@ initialize_project("DrWatson Example"; authors="Datseris", force=true)
 # This project is now active by default so we can start adding packages
 # that we will be using in the project. I'll add the following for demonstrating
 using Pkg
-Pkg.add(["Statistics", "BSON", "Parameters"])
+Pkg.add(["Statistics", "BSON"])
 
 # ## 2. Write some scripts
 
@@ -147,8 +147,6 @@ dicts = dict_list(allparams)
 
 # ## 4. Run and save
 # Alright, we now have to actually save the results, so we first define:
-
-using Parameters: @unpack
 
 function makesim(d::Dict)
     @unpack a, b, v, method = d
