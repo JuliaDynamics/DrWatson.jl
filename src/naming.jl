@@ -137,6 +137,9 @@ and `scientific` the number of significant digits used for rounding.
 """
 function roundval(val::Tv;digits::Td, scientific::Ts) where {Tv, Td, Ts}
     if Tv <: AbstractFloat
+        if isnan(val) || isinf(val)
+            return val
+        end
         if Ts <: Int
             x = round(val,sigdigits = scientific)
         else
