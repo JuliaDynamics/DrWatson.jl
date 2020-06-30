@@ -174,3 +174,4 @@ Dependency management is also possible in Python e.g. by using virtual environme
 In summary, DrWatson combines several functionalities, all communicating excellently with each other and almost all being entirely opt-in, while it goes well beyond only aiding data provenance or simply providing a default folder structure.
 This results in an efficient scientific workflow, taking time off of project management and giving it to doing science.
 
+# References
