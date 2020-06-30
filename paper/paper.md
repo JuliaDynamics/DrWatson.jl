@@ -10,7 +10,7 @@ tags:
 authors:
   - name: George Datseris
     orcid: 0000-0003-0872-7098
-    affiliation: "1, 2"
+    affiliation: 5
   - name: Jonas Isensee
     affiliation: 1
   - name: Sebastian Pech
@@ -27,6 +27,8 @@ affiliations:
    index: 3
  - name: Friedrich-Alexander-Universität Erlangen-Nürnberg
    index: 4
+ - name: Max Planck Institute for Meteorology
+   index: 5
 date: 30 June 2020
 bibliography: paper.bib
 ---
