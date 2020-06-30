@@ -110,3 +110,12 @@ _,parsed,_ = parse_savename(sn)
 sn = savename(di,scientific=1)
 _,parsed,_ = parse_savename(sn)
 @test parsed["a"] == 1.0e-7
+
+
+# Test for NaN and Inf compatibility
+let
+    a = Inf
+    b = NaN
+    di = @dict a b
+    @test savename(di) == "a=Inf_b=NaN"
+end
