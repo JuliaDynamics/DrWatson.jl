@@ -84,20 +84,20 @@ Once the project structure and navigation has been established, there are severa
 `savename` can be used for preparing a file name or a figure title. 
 Using it would transform the following dictionary
 ```julia
-parameters = Dict(:ϕ => 3, :pos_z => 0.5, :date => "2020-05-23")
+parameters = Dict(:phi => 3, :pos_z => 0.5, :date => "2020-05-23")
 ```
 ```
 Dict{Symbol,Any} with 3 entries:
   :pos_z => 0.5
   :date  => "2020-05-23"
-  :ϕ     => 3
+  :phi   => 3
 ```
 into 
 ```julia
 savename(parameters, "bson")
 ```
 ```
-"date=2020-05-23_pos_z=0.5_ϕ=3.bson"
+"date=2020-05-23_pos_z=0.5_phi=3.bson"
 ```
 
 Once a simulation script is created, taking advantage of e.g. `projectdir, dict_list, savename` among other functions, the user will typically want to save numeric results on disk.
