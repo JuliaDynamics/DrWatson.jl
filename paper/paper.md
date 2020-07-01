@@ -10,24 +10,24 @@ tags:
 authors:
   - name: George Datseris
     orcid: 0000-0003-0872-7098
-    affiliation: 5
+    affiliation: 4
   - name: Jonas Isensee
     affiliation: 1
   - name: Sebastian Pech
     orcid: 0000-0002-8415-2823
-    affiliation: "1, 2"
+    affiliation: 5
   - name: Tamás Gál
-    affiliation: "3, 4"
+    affiliation: "2, 3"
 affiliations:
  - name: Max Planck Institute for Dynamics and Self Organization
    index: 1
- - name: Institute for Nonlinear Dynamics
-   index: 2
  - name: Erlangen Centre for Astroparticle Physics
-   index: 3
+   index: 2
  - name: Friedrich-Alexander-Universität Erlangen-Nürnberg
-   index: 4
+   index: 3
  - name: Max Planck Institute for Meteorology
+   index: 4
+ - name: Institute for Mechanics of Materials and Structures, Vienna University of Technology (TU Wien)
    index: 5
 date: 30 June 2020
 bibliography: paper.bib
