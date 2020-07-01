@@ -17,6 +17,7 @@ authors:
     orcid: 0000-0002-8415-2823
     affiliation: 5
   - name: Tamás Gál
+    orcid: 0000-0001-7821-8673
     affiliation: "2, 3"
 affiliations:
  - name: Max Planck Institute for Dynamics and Self Organization
