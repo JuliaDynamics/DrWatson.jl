@@ -86,13 +86,7 @@ Once the project structure and navigation has been established, there are severa
 `savename` can be used for preparing a file name or a figure title. 
 Using it would transform the following dictionary
 ```julia
-parameters = Dict(:phi => 3, :pos_z => 0.5, :date => "2020-05-23")
-```
-```
-Dict{Symbol,Any} with 3 entries:
-  :pos_z => 0.5
-  :date  => "2020-05-23"
-  :phi   => 3
+parameters = Dict(:phi => 3, :pos_z => 0.5, :date => Date(2020,5,23))
 ```
 into 
 ```julia
