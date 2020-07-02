@@ -120,14 +120,13 @@ Dict{Symbol,Any} with 6 entries:
   :gitpatch  => ""
 ```
 
-The fields `:gitcommit, :script, :gitpatch` were added automatically and provide the necessary information for reproducibility. In case of uncommited modifications (also called a "dirty git repository"), a patch is saved under the `:gitpatch` key which can be applied to the `:gitcommit` to restore the exact state of the repository.
+The fields `:gitcommit, :script, :gitpatch` were added automatically and provide the necessary information for reproducibility. In case of uncommitted modifications (also called a "dirty git repository"), a patch is saved under the `:gitpatch` key which can be applied to the `:gitcommit` to restore the exact state of the repository.
 Calling `@tagsave` without extra arguments assumed that you used DrWatson's suggested folder structure using `initialize_project`, and thus could find all git-related information automatically.
 However this is not necessary, you can instead provide a keyword argument `gitpath` to `@tagsave` and explictly specify a git path.
 Finally, the `parse_savename(filename; kwargs...)` function can be used to obtain the parameters dictionary from the filename.
 
-A last step is data analysis.
-There the function `collect_results` is a powerful tool that can automatically collect all saved output files into a `DataFrame` (the major Julia tabular datastructure) for further analysis.
-The function is adaptive in the sense that adding new simulations (with potentially different parameter names) automatically adjusts existing columns to have `missing` values at appropriate locations.
+A last step is data aggregation.
+The function `collect_results` can traverse the data folder and collect all saved files into a `DataFrame` (the major Julia tabular datastructure) for further analysis. The function is adaptive in that it expands the table as needed when adding new simulations with potentially different parameters.
 
 Sharing and reproducing a DrWatson project is in every respect trivial.
 The entire project folder is simply sent to a different machine, and in a Julia session the user does the following:
