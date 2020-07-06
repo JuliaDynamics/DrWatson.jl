@@ -43,14 +43,34 @@ black_list = ["c"]
 folder = datadir()*"results"
 defaultname = joinpath(dirname(folder), "results_$(basename(folder)).bson")
 isfile(defaultname) && rm(defaultname)
-cres = collect_results!(defaultname, folder;
+cres = collect_results!(defaultname, folder; newfile=true,
     subfolders = true, special_list=special_list, black_list = black_list)
 
 @test size(cres) == (4, 6)
 for n in ("a", "b", "lv_mean")
-    @test n ∈ names(cres)
+    @test n ∈ String.(names(cres))
 end
 @test "c" ∉ names(cres)
+
+# Test additional syntax for special list
+special_list = [ :lv_mean => data -> mean(data["c"]),
+                 data -> :lv_var  =>  var(data["c"]),
+                 data -> [:lv_mean2 => mean(data["c"]),
+                          :lv_var2  =>  var(data["c"])]]
+black_list = ["c"]
+
+folder = datadir()*"results"
+defaultname = joinpath(dirname(folder), "results_$(basename(folder)).bson")
+isfile(defaultname) && rm(defaultname)
+cres = collect_results!(defaultname, folder; newfile=true,
+    subfolders = true, special_list=special_list, black_list = black_list)
+
+@test size(cres) == (4, 8)
+for n in ("a", "b", "lv_mean", "lv_var", "lv_mean2", "lv_var2")
+    @test n ∈ String.(names(cres))
+end
+@test "c" ∉ names(cres)
+
 
 ###############################################################################
 #                           Add another file in a sub sub folder              #
@@ -83,7 +103,7 @@ df = BSON.load(defaultname)[:df]
 
 rm(defaultname)
 cres_empty = collect_results!(defaultname, folder;
-    subfolders = true, special_list=special_list, white_list=[]) 
+    subfolders = true, special_list=special_list, white_list=[])
 
 @test dropmissing(cres2[!,[:lv_mean, :lv_lar, :path]]) == dropmissing(cres_empty)
 
