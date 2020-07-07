@@ -97,7 +97,10 @@ function dict_list_count(c)
     prod(length(c[i]) for i in iterable_fields)
 end
 
-using MacroTools: postwalk
+# Taken from https://github.com/FluxML/MacroTools.jl
+walk(x, inner, outer) = outer(x)
+walk(x::Expr, inner, outer) = outer(Expr(x.head, map(inner, x.args)...))
+postwalk(f, x) = walk(x, x -> postwalk(f, x), f)
 
 export @onlyif
 
