@@ -36,7 +36,7 @@ DrWatson.wsave(savename(d)*".bson", d)
 ###############################################################################
 using Statistics
 special_list = [ :lv_mean => data -> mean(data["c"]),
-                 :lv_lar  => data -> var(data["c"])]
+                 :lv_var  => data -> var(data["c"])]
 
 black_list = ["c"]
 
@@ -60,9 +60,9 @@ special_list = [ :lv_mean => data -> mean(data["c"]),
 black_list = ["c"]
 
 folder = datadir()*"results"
-defaultname = joinpath(dirname(folder), "results_$(basename(folder)).bson")
-isfile(defaultname) && rm(defaultname)
-cres = collect_results!(defaultname, folder; newfile=true,
+defaultname2 = joinpath(dirname(folder), "results_betterspeciallist.bson")
+isfile(defaultname2) && rm(defaultname2)
+cres = collect_results!(defaultname2, folder; newfile=true,
     subfolders = true, special_list=special_list, black_list = black_list)
 
 @test size(cres) == (4, 8)
@@ -75,6 +75,9 @@ end
 ###############################################################################
 #                           Add another file in a sub sub folder              #
 ###############################################################################
+special_list = [ :lv_mean => data -> mean(data["c"]),
+                 :lv_var  => data -> var(data["c"])]
+
 @test isfile(defaultname)
 
 mkdir("subsubfolder")

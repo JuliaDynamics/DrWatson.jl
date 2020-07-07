@@ -154,10 +154,6 @@ function to_data_row(data, file;
     for elem in special_list
         try
             if elem isa Pair
-                @show elem
-                @show last(elem)
-                @show last(elem)(data)
-                @show first(elem) => last(elem)(data)
                 push!(entries, first(elem) => last(elem)(data))
             elseif elem isa Function
                 res = elem(data)
