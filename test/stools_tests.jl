@@ -123,6 +123,7 @@ p = Dict(:α => 1,
            Dict(:α => 1, :solver => SolverB, :d => 1),
           ]) == Set(dict_list(p))
 
+# Advanced example with chained dependency. SolverA => :c => :d
 p = Dict(:α => 1,
          :solver => [SolverA,SolverB],
          :c => @onlyif(:solver == SolverA , [100,200]),
@@ -135,7 +136,8 @@ p = Dict(:α => 1,
            Dict(:α => 1, :solver => SolverB),
           ]) == Set(dict_list(p))
 
-# Advanced defintions
+# Advanced condition definition
+
 test_param = @onlyif(begin
                 d = Dict( :f => (conds...)->all(conds) )
                 cond1 = :b == :c
