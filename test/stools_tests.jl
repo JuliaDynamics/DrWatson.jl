@@ -107,6 +107,50 @@ v5 = dict_list(Dict(:a => [1], :b => 2.0)) # one non-iterable
 v6 = dict_list(Dict(:a => [1], :b => [2.0])) # both iterable
 @test keytype(eltype(v6)) == Symbol
 
+struct SolverA end
+struct SolverB end
+
+# Simple example with no chained dependencies
+
+p = Dict(:α => 1,
+         :solver => [SolverA,SolverB],
+         :c => @onlyif(:solver == SolverA , [100,200]),
+         :d => @onlyif(:solver == SolverB, 1)
+        )
+
+@test Set([ Dict(:α => 1, :solver => SolverA, :c => 100),
+           Dict(:α => 1, :solver => SolverA, :c => 200),
+           Dict(:α => 1, :solver => SolverB, :d => 1),
+          ]) == Set(dict_list(p))
+
+p = Dict(:α => 1,
+         :solver => [SolverA,SolverB],
+         :c => @onlyif(:solver == SolverA , [100,200]),
+         :d => @onlyif(:c == 100, 1)
+        )
+
+@test Set([
+           Dict(:α => 1, :solver => SolverA, :c => 100, :d => 1),
+           Dict(:α => 1, :solver => SolverA, :c => 200),
+           Dict(:α => 1, :solver => SolverB),
+          ]) == Set(dict_list(p))
+
+# Advanced defintions
+test_param = @onlyif(begin
+                d = Dict( :f => (conds...)->all(conds) )
+                cond1 = :b == :c
+                cond2 = :d == :something
+                cond3 = "d" == :d
+                cond4 = :α^2 == 1
+                return d[:f](cond1, cond2, cond3, cond4)
+            end, nothing)
+
+@test test_param.condition(Dict(:α=>1, :b=>1, :c=>1, :d=>:something, "d"=>:something))
+@test !test_param.condition(Dict(:α=>2, :b=>1, :c=>1, :d=>:something, "d"=>:something))
+@test !test_param.condition(Dict(:α=>1, :b=>2, :c=>1, :d=>:something, "d"=>:something))
+@test !test_param.condition(Dict(:α=>1, :b=>1, :c=>1, :d=>:foo, "d"=>:something))
+@test !test_param.condition(Dict(:α=>1, :b=>1, :c=>1, :d=>:something, "d"=>:foo))
+
 ### tmpsave ###
 tmpdir = joinpath(@__DIR__, "tmp")
 ret = tmpsave(v3, tmpdir)
