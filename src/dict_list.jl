@@ -127,12 +127,12 @@ function lookup_candidate(d, name)
 end
 
 macro onlyif(ex, value)
-    pd = esc(:pd)
-    condition = postwalk(:(($pd)->$ex)) do x
+    pd = :pd
+    condition = postwalk(:(($pd)->$(ex))) do x
         if x isa QuoteNode || x isa String
-            return :(lookup_candidate($pd, $x))
+            return :(DrWatson.lookup_candidate($pd, $x))
         end
         return x
     end
-    :(toDependentParameter($(esc(value)),$condition) )
+    :(toDependentParameter($(esc(value)),$(esc(condition))))
 end
