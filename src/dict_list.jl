@@ -45,19 +45,20 @@ julia> dict_list(c)
 """
 function dict_list(c::Dict)
     if any(t->t <: DependentParameter,eltype.(values(c)))
-        return collect(Set(map(_dict_list(c)) do pd
-                        n = length(pd)
+        return collect(Set(map(_dict_list(c)) do trial
+                        n = length(trial)
                         for i in 1:100_000
-                            foreach(collect(pd)) do (key,val)
-                                if val isa DependentParameter && !val.condition(pd)
-                                    delete!(pd,key)
+                            for key in keys(trial)
+                                val = trial[key]
+                                if val isa DependentParameter && !val.condition(trial)
+                                    delete!(trial,key)
                                 end
                             end
-                            length(pd) == n && break
-                            n = length(pd)
-                            i == 100_000 && error("There are too many parameters with a serial dependency. The limit is set to 100000")
+                            length(trial) == n && break
+                            n = length(trial)
+                            i == 100_000 && error("There are too many parameters with a serial dependency. The limit is set to 100000.")
                         end
-                        Dict([k=>pd[k] isa DependentParameter ? pd[k].value : pd[k] for k in keys(pd)])
+                        Dict([k=>trial[k] isa DependentParameter ? trial[k].value : trial[k] for k in keys(trial)])
                     end))
     end
     return _dict_list(c)
