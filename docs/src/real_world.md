@@ -412,8 +412,8 @@ ga_parameters = Dict(
     :fitness_scaling => @onlyif(:selection in ("SUS", "roulette-selection"), collect(1.0:20.0)),
     :tournamet_size => @onlyif(:selection == "tournament-selection", collect(2:10)),
     :chromosome => [:A, @onlyif(begin
-        size_constr = :population_size <= 50
-        select_constr = :selection != "SUS"
+        size_constr = (:population_size <= 50)
+        select_constr = (:selection != "SUS")
         size_constr && select_constr
     end, :B)])
 

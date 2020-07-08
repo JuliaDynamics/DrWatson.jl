@@ -192,7 +192,6 @@ julia> dict_list(d) # only in case `:a` is `1` the dictionary will get extra val
  Dict(:a => 1,:b => 4,:c => 10)
  Dict(:a => 1,:b => 4,:c => 11)
  Dict(:a => 2,:b => 4,:c => 10)
-```
 """
 macro onlyif(ex, value)
     pd = gensym()
