@@ -166,7 +166,7 @@ the Julia expression `ex` is evaluated as true.  If `value` is a subtype of
 `Vector`, `@onlyif` is applied to each entry.
 Since '@onlyif' is applied to a value and not to a dictionary key, it is
 possible to restrict only some of the values of a vector. This means that based
-on on `ex` the number of options for a particular key varies.
+on `ex` the number of options for a particular key varies.
 
 Within `ex` it is possible to extract values of the dictionary passed to
 [`dict_list`](@ref) by a shorthand notation where only the key must be
