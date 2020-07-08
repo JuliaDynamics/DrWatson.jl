@@ -162,7 +162,7 @@ end
 """
     @onlyif(ex, value)
 Tag `value` to only appear in a dictionary created with [`dict_list`](@ref) if
-the Julia expression `ex` is evaluated as true.  If `value` is a subtype of
+the Julia expression `ex` (see below) is evaluated as true.  If `value` is a subtype of
 `Vector`, `@onlyif` is applied to each entry.
 Since '@onlyif' is applied to a value and not to a dictionary key, it is
 possible to restrict only some of the values of a vector. This means that based
