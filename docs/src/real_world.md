@@ -419,3 +419,7 @@ ga_parameters = Dict(
 
 dicts = dict_list(ga_parameters)
 ```
+
+The parameter restriction for the chromosome type shows that one can use arbitrary Julia expressions that return `true` or `false`.
+In this case, first the conditions for the population size and for the selection method are evaluated and stored.
+The expression then only returns true, if both conditions are met, thus restricting the usage of chromosome type `:B`.
