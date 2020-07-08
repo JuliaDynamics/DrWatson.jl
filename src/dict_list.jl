@@ -179,7 +179,7 @@ function [`lookup_candidate`](@ref).  This is supported for `Symbol` and
 ```julia
 julia> d = Dict(:a => [1, 2], :b => 4, :c => @onlyif(:a == 1, [10, 11]));
 
-julia> dict_list(d) # only the case of `:a == 1` will get key `:c`
+julia> dict_list(d) # only in case `:a` is `1` the dictionary will get key `:c`
 3-element Array{Dict{Symbol,Int64},1}:
  Dict(:a => 1,:b => 4,:c => 10)
  Dict(:a => 1,:b => 4,:c => 11)
@@ -187,7 +187,7 @@ julia> dict_list(d) # only the case of `:a == 1` will get key `:c`
 
  julia> d = Dict(:a => [1, 2], :b => 4, :c => [10, @onlyif(:a == 1, 11)]);
 
-julia> dict_list(d) # case of `:a == 1` will get extra value `11` for key `:c`
+julia> dict_list(d) # only in case `:a` is `1` the dictionary will get extra value `11` for key `:c`
 3-element Array{Dict{Symbol,Int64},1}:
  Dict(:a => 1,:b => 4,:c => 10)
  Dict(:a => 1,:b => 4,:c => 11)
