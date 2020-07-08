@@ -162,18 +162,18 @@ test_param = @onlyif(:solver == TestMod.Foo,[100,200])
 @test test_param[1].condition(Dict(:solver=>TestMod.Foo))
 @test !test_param[1].condition(Dict(:solver=>:Foo))
 
-# partially restricted parameters
+# partially restricted and mixed keytypes parameters
 
 p = Dict(
          :a => :a1,
-         :b => [:b1,:b2],
-         :c => [:c1,@onlyif(:b == :b2, :c2)],
+         "b" => [:b1,:b2],
+         :c => [:c1,@onlyif("b" == :b2, :c2)],
         )
 
 @test Set(dict_list(p)) == Set([
-                          Dict(:a=>:a1, :b=>:b1, :c=>:c1),
-                          Dict(:a=>:a1, :b=>:b2, :c=>:c1),
-                          Dict(:a=>:a1, :b=>:b2, :c=>:c2),
+                          Dict(:a=>:a1, "b"=>:b1, :c=>:c1),
+                          Dict(:a=>:a1, "b"=>:b2, :c=>:c1),
+                          Dict(:a=>:a1, "b"=>:b2, :c=>:c2),
                          ])
 ### tmpsave ###
 tmpdir = joinpath(@__DIR__, "tmp")
