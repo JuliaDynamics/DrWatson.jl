@@ -187,7 +187,7 @@ julia> dict_list(c) # only the case of `a=1` will get key `c`
 
  julia> c = Dict(:a => [1, 2], :b => 4, :c => [10, @onlyif(:a == 1, 11)]);
 
-julia> dict_list(c)
+julia> dict_list(c) # case of `a=1` will get extra value `11` for key `c`
 3-element Array{Dict{Symbol,Int64},1}:
  Dict(:a => 1,:b => 4,:c => 10)
  Dict(:a => 1,:b => 4,:c => 11)
