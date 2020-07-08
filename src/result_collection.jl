@@ -50,8 +50,8 @@ to be used as column name in the DataFrame. The function entry always
 takes a single argument, which is the loaded result-file (a dictionary).
 The second option is to provide just one function `func`. This function
 also takes the single dictionary argument but returns one or more
-`key => value` pairs. This second notation may be useful when a single
-when one wants to extract values for multiple columns in a single step.
+`key => value` pairs. This second notation may be useful when one wants 
+to extract values for multiple columns in a single step.
 As an example consider that each result-file
 contains a field `:longvector` too large to be included in the `df`.
 The quantity of interest is the mean and the variance of said field.
