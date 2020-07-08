@@ -164,26 +164,15 @@ end
 Tag `value` to only appear in a dictionary created with [`dict_list`](@ref) if
 the Julia expression `ex` is evaluated as true.  If `value` is a subtype of
 `Vector`, `@onlyif` is applied to each entry.
+Since '@onlyif' is applied to a value and not to a dictionary key, it is
+possible to restrict only some of the values of a vector. This means that based
+on on 'ex' the number of options for a particular key varies.
 
 Within `ex` it is possible to extract values of the dictionary passed to
 [`dict_list`](@ref) by a shorthand notation where only the key must be
 provided.  For example `ex = :(:N == 1)` is tranformed in the call
 `dict_list(d)` to an expression analogous to `:(d[:N] == 1)` by using the
 function [`lookup_candidate`](@ref).
-
-Since '@onlyif' is applied to a value and not to a key, it is possible to
-restrict only some of the values of a vector.  For generating the dictionaries
-with [`dict_list`](@ref), the "partially restricted" keys must be included in
-each resulting dictionary This is motivate by picturing the dictionaries
-returned from [`dict_list`](@ref) as all possible paths from the root to the
-leaf nodes in a hierarchical graph, where the nodes are the values and each
-"hierarchical layer" is a key.  Having a "partially restricted" key now means
-that the number of resulting child nodes depends on the values of the parent
-nodes.  This number must always be greater than 0, i.e. every path from the
-root to a leaf must contain this key.  In contrast, a "fully restricted" key
-means that the number of child nodes still depends on the parent nodes, but the
-number can also be 0.  This means that there are paths in which the key is not
-contained at all.
 
 ## Examples
 ```julia
