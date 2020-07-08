@@ -56,7 +56,7 @@ function dict_list(c::Dict)
         # functions returns false
         # 3. Do (2) until the length of the obtained parameter set stops
         # changing.
-        # 4. Replace all `DependendParameter` types by their respective values
+        # 4. Replace all `DependentParameter` types by their respective values
         # 5. This gives a parameter dict with a valid combination
         # 6. From the resulting list of valid combinations remove the
         # duplicates.
