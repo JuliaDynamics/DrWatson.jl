@@ -44,7 +44,7 @@ julia> dict_list(c)
 ```
 """
 function dict_list(c::Dict)
-    if any(t->t <: DependentParameter,eltype.(values(c)))
+    if contains_partially_restricted(c) || contains_fully_restricted(c)
         # The method for generating the restricted parameter set is as follows:
         # 1. Create an array of trial combinations containing all possible
         # combinations of all parameters.
@@ -55,8 +55,12 @@ function dict_list(c::Dict)
         # 4. Replace all `DependendParameter` types by their respective values
         # 5. This gives a parameter dict with a valid combination
         # 6. From the resulting list of valid combinations remove the
-        # dublicates.
-        return collect(Set(map(_dict_list(c)) do trial
+        # duplicates.
+        # 7. For partially restricted parameters (ie. ones where some values
+        # have a condition and others don't).  It is assumed, that the
+        # parameter must be contained in the final parameter set. So remove all
+        # sets that don't include them
+        parameter_sets = Set(map(_dict_list(c)) do trial
                         n = length(trial)
                         for i in 1:100_000
                             for key in keys(trial)
@@ -70,7 +74,12 @@ function dict_list(c::Dict)
                             i == 100_000 && error("There are too many parameters with a serial dependency. The limit is set to 100000.")
                         end
                         Dict([k=>lookup_candidate(trial,k) for k in keys(trial)])
-                    end))
+                    end)
+        partially_restricted_parameters = Set([k for k in keys(c) if 
+                                               contains_partially_restricted(c[k]) && !is_fully_restricted(c[k])])
+        return filter(parameter_sets) do ps
+            partially_restricted_parameters ⊆ Set(keys(ps))
+        end
     end
     return _dict_list(c)
 end
@@ -120,6 +129,14 @@ struct DependentParameter{T}
     value::T
     condition::Function
 end
+
+contains_partially_restricted(d::Dict) = any(contains_partially_restricted,values(d))
+contains_partially_restricted(d::Vector) = any(contains_partially_restricted,d)
+contains_partially_restricted(::DependentParameter) = true 
+contains_partially_restricted(::Any) = false 
+contains_fully_restricted(d::Dict) = any(is_fully_restricted,values(d))
+is_fully_restricted(d::Vector) = eltype(d) <: DependentParameter
+is_fully_restricted(d) = typeof(d) <: DependentParameter
 
 function toDependentParameter(value::T,condition) where T
     if T <: Vector
