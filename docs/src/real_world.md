@@ -397,3 +397,29 @@ res = collect_results!(datadir("results"); black_list = bl, subfolders = true)
 select!(res, Not(:path)) # don't show path this time
 ```
 All `missing` entries were adjusted automatically :)
+
+## Defining parameter sets with restrictions
+
+As already demonstrated in the examples above, for functions where the set of input parameters is the same for each simulation run, a basic dictionary can be used to define these parameters.
+However, often some of the parameters or values should only be considered if another parameter is also included in the set or has a specific value.
+The macro [`@onlyif`](@ref) allows to place such restrictions on values and parameters.
+The following dictionary defines values and parameters for a genetic algorithm:
+
+```julia
+ga_parameters = Dict(
+    :population_size => [20,50,100],
+    :selection => ["roulette-selection", "SUS", "tournament-selection", "linear ranking"],
+    :fitness_scaling => @onlyif(:selection in ("SUS", "roulette-selection"), collect(1.0:20.0)),
+    :tournamet_size => @onlyif(:selection == "tournament-selection", collect(2:10)),
+    :chromosome => [:A, @onlyif(begin
+        size_constr = (:population_size <= 50)
+        select_constr = (:selection != "SUS")
+        size_constr && select_constr
+    end, :B)])
+
+dicts = dict_list(ga_parameters)
+```
+
+The parameter restriction for the chromosome type shows that one can use arbitrary Julia expressions that return `true` or `false`.
+In this case, first the conditions for the population size and for the selection method are evaluated and stored.
+The expression then only returns true, if both conditions are met, thus restricting the usage of chromosome type `:B`.

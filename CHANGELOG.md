@@ -1,3 +1,5 @@
+# 1.14.0
+* New macro `@onlyif` that allows placing restrictions on values in a dictionary used for expansion with `dict_list`
 # 1.13.1
 * `gitpach` now shows a warning if `git` was not found in PATH
 # 1.13.0
