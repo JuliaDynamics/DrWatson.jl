@@ -77,9 +77,9 @@ function dict_list(c::Dict)
                     end)
         partially_restricted_parameters = Set([k for k in keys(c) if 
                                                contains_partially_restricted(c[k]) && !is_fully_restricted(c[k])])
-        return filter(parameter_sets) do ps
+        return collect(filter(parameter_sets) do ps
             partially_restricted_parameters ⊆ Set(keys(ps))
-        end
+        end)
     end
     return _dict_list(c)
 end
