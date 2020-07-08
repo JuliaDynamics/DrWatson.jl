@@ -96,7 +96,7 @@ function collect_results!(filename, folder;
     end
 
     n = 0 # new entries added
-    existing_files = "path" in names(df) ? df[:,:path] : ()
+    existing_files = "path" in string.(names(df)) ? df[:,:path] : ()
     for file ∈ allfiles
         is_valid_file(file, valid_filetypes) || continue
         #already added?
