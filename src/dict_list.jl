@@ -45,6 +45,17 @@ julia> dict_list(c)
 """
 function dict_list(c::Dict)
     if any(t->t <: DependentParameter,eltype.(values(c)))
+        # The method for generating the restricted parameter set is as follows:
+        # 1. Create an array of trial combinations containing all possible
+        # combinations of all parameters.
+        # 2. For each solution, remove all parameters where the conditions
+        # functions returns false
+        # 3. Do (2) until the length of the obtained parameter set stops
+        # changing.
+        # 4. Replace all `DependendParameter` types by their respective values
+        # 5. This gives a parameter dict with a valid combination
+        # 6. From the resulting list of valid combinations remove the
+        # dublicates.
         return collect(Set(map(_dict_list(c)) do trial
                         n = length(trial)
                         for i in 1:100_000
@@ -58,7 +69,7 @@ function dict_list(c::Dict)
                             n = length(trial)
                             i == 100_000 && error("There are too many parameters with a serial dependency. The limit is set to 100000.")
                         end
-                        Dict([k=>trial[k] isa DependentParameter ? trial[k].value : trial[k] for k in keys(trial)])
+                        Dict([k=>lookup_candidate(trial,k) for k in keys(trial)])
                     end))
     end
     return _dict_list(c)
