@@ -205,7 +205,7 @@ julia> dict_list(c)
 ```
 """
 macro onlyif(ex, value)
-    pd = :___pd
+    pd = gensym()
     condition = postwalk(:(($pd)->$(ex))) do x, parent
         # Check if the parent expression in the postwalk is a dot expression
         # like Foo.Bar. In this case Bar is a QuoteNode, however it should not
