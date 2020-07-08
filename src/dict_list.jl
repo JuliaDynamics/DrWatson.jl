@@ -166,13 +166,14 @@ the Julia expression `ex` is evaluated as true.  If `value` is a subtype of
 `Vector`, `@onlyif` is applied to each entry.
 Since '@onlyif' is applied to a value and not to a dictionary key, it is
 possible to restrict only some of the values of a vector. This means that based
-on on 'ex' the number of options for a particular key varies.
+on on `ex` the number of options for a particular key varies.
 
 Within `ex` it is possible to extract values of the dictionary passed to
 [`dict_list`](@ref) by a shorthand notation where only the key must be
 provided.  For example `ex = :(:N == 1)` is tranformed in the call
 `dict_list(d)` to an expression analogous to `:(d[:N] == 1)` by using the
-function [`lookup_candidate`](@ref).
+function [`lookup_candidate`](@ref).  This is supported for `Symbol` and
+`String` keys.
 
 ## Examples
 ```julia
@@ -191,17 +192,6 @@ julia> dict_list(c)
  Dict(:a => 1,:b => 4,:c => 10)
  Dict(:a => 1,:b => 4,:c => 11)
  Dict(:a => 2,:b => 4,:c => 10)
-
- julia> c = Dict(:a => [1, 2], :b => 4, :c => @onlyif(begin
-    f(n::Int) = :a + :b^n - :c
-    f(2) > 7 # So only true if :a == 2 and :c == 10
- end, [10, 11]))
-
-julia> dict_list(c)
-3-element Array{Dict{Symbol,Int64},1}:
- Dict(:a => 1,:b => 4)
- Dict(:a => 2,:b => 4,:c => 10)
- Dict(:a => 2,:b => 4)
 ```
 """
 macro onlyif(ex, value)
