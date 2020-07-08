@@ -164,7 +164,7 @@ end
 Tag `value` to only appear in a dictionary created with [`dict_list`](@ref) if
 the Julia expression `ex` (see below) is evaluated as true.  If `value` is a subtype of
 `Vector`, `@onlyif` is applied to each entry.
-Since '@onlyif' is applied to a value and not to a dictionary key, it is
+Since `@onlyif` is applied to a value and not to a dictionary key, it is
 possible to restrict only some of the values of a vector. This means that based
 on `ex` the number of options for a particular key varies.
 
@@ -177,17 +177,17 @@ function [`lookup_candidate`](@ref).  This is supported for `Symbol` and
 
 ## Examples
 ```julia
-julia> c = Dict(:a => [1, 2], :b => 4, :c => @onlyif(:a == 1, [10, 11]));
+julia> d = Dict(:a => [1, 2], :b => 4, :c => @onlyif(:a == 1, [10, 11]));
 
-julia> dict_list(c) # only the case of `a=1` will get key `c`
+julia> dict_list(d) # only the case of `:a == 1` will get key `:c`
 3-element Array{Dict{Symbol,Int64},1}:
  Dict(:a => 1,:b => 4,:c => 10)
  Dict(:a => 1,:b => 4,:c => 11)
  Dict(:a => 2,:b => 4)
 
- julia> c = Dict(:a => [1, 2], :b => 4, :c => [10, @onlyif(:a == 1, 11)]);
+ julia> d = Dict(:a => [1, 2], :b => 4, :c => [10, @onlyif(:a == 1, 11)]);
 
-julia> dict_list(c) # case of `a=1` will get extra value `11` for key `c`
+julia> dict_list(d) # case of `:a == 1` will get extra value `11` for key `:c`
 3-element Array{Dict{Symbol,Int64},1}:
  Dict(:a => 1,:b => 4,:c => 10)
  Dict(:a => 1,:b => 4,:c => 11)
