@@ -153,6 +153,15 @@ test_param = @onlyif(begin
 @test !test_param.condition(Dict(:α=>1, :b=>1, :c=>1, :d=>:foo, "d"=>:something))
 @test !test_param.condition(Dict(:α=>1, :b=>1, :c=>1, :d=>:something, "d"=>:foo))
 
+module TestMod
+    struct Foo end
+end
+
+test_param = @onlyif(:solver == TestMod.Foo,[100,200])
+
+@test test_param[1].condition(Dict(:solver=>TestMod.Foo))
+@test !test_param[1].condition(Dict(:solver=>:Foo))
+
 ### tmpsave ###
 tmpdir = joinpath(@__DIR__, "tmp")
 ret = tmpsave(v3, tmpdir)

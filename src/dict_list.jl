@@ -109,10 +109,10 @@ function dict_list_count(c)
     prod(length(c[i]) for i in iterable_fields)
 end
 
-# Taken from https://github.com/FluxML/MacroTools.jl
-walk(x, inner, outer) = outer(x)
-walk(x::Expr, inner, outer) = outer(Expr(x.head, map(inner, x.args)...))
-postwalk(f, x) = walk(x, x -> postwalk(f, x), f)
+# Basis taken from https://github.com/FluxML/MacroTools.jl
+walk(x, inner, outer, ex) = outer(x, ex)
+walk(x::Expr, inner, outer, ex) = outer(Expr(x.head, map(y->inner(y,x), x.args)...), ex)
+postwalk(f, x, ex=:()) = walk(x, (x,y) -> postwalk(f, x, y), f, ex)
 
 export @onlyif
 
@@ -140,8 +140,12 @@ end
 
 macro onlyif(ex, value)
     pd = :pd
-    condition = postwalk(:(($pd)->$(ex))) do x
-        if x isa QuoteNode || x isa String
+    condition = postwalk(:(($pd)->$(ex))) do x, parent
+        # Check if the parent expression in the postwalk is a dot expression
+        # like Foo.Bar. In this case Bar is a QuoteNode, however it should not
+        # be wrapped by the lookup_candidate function, because without Foo it's
+        # not valid.
+        if (x isa QuoteNode && !(parent isa Expr && parent.head == :.)) || x isa String
             return :(DrWatson.lookup_candidate($pd, $x))
         end
         return x
