@@ -79,7 +79,7 @@ function dict_list(c::Dict)
                         end
                         Dict([k=>lookup_candidate(trial,k) for k in keys(trial)])
                     end)
-        partially_restricted_parameters = Set([k for k in keys(c) if 
+        partially_restricted_parameters = Set([k for k in keys(c) if
                                                contains_partially_restricted(c[k]) && !is_fully_restricted(c[k])])
         return collect(filter(parameter_sets) do ps
             partially_restricted_parameters ⊆ Set(keys(ps))
@@ -136,8 +136,8 @@ end
 
 contains_partially_restricted(d::Dict) = any(contains_partially_restricted,values(d))
 contains_partially_restricted(d::Vector) = any(contains_partially_restricted,d)
-contains_partially_restricted(::DependentParameter) = true 
-contains_partially_restricted(::Any) = false 
+contains_partially_restricted(::DependentParameter) = true
+contains_partially_restricted(::Any) = false
 contains_fully_restricted(d::Dict) = any(is_fully_restricted,values(d))
 is_fully_restricted(d::Vector) = eltype(d) <: DependentParameter
 is_fully_restricted(d) = typeof(d) <: DependentParameter
@@ -192,6 +192,8 @@ julia> dict_list(d) # only in case `:a` is `1` the dictionary will get extra val
  Dict(:a => 1,:b => 4,:c => 10)
  Dict(:a => 1,:b => 4,:c => 11)
  Dict(:a => 2,:b => 4,:c => 10)
+```
+See the [Defining parameter sets with restrictions](@ref) section for more examples.
 """
 macro onlyif(ex, value)
     pd = gensym()
