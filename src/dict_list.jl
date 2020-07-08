@@ -179,7 +179,7 @@ function [`lookup_candidate`](@ref).  This is supported for `Symbol` and
 ```julia
 julia> c = Dict(:a => [1, 2], :b => 4, :c => @onlyif(:a == 1, [10, 11]));
 
-julia> dict_list(c)
+julia> dict_list(c) # only the case of `a=1` will get key `c`
 3-element Array{Dict{Symbol,Int64},1}:
  Dict(:a => 1,:b => 4,:c => 10)
  Dict(:a => 1,:b => 4,:c => 11)
