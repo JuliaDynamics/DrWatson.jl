@@ -194,6 +194,10 @@ joinpath("data", "sims"),
 joinpath("data", "exp_raw"),
 joinpath("data", "exp_pro"),
 ]
+const PLACEHOLDER_TEXT = """
+This file acts as a placeholder to ensure the project structure is copied whenever you clone the project.
+This doesn't commit any files within the folder.
+"""
 const DEFAULT_README = """
 This is an awesome new scientific project that uses `DrWatson`!\n
 """
@@ -221,10 +225,14 @@ The new project remains activated for you to immidiately add packages.
 * `force = false` : If the `path` is _not_ empty then throw an error. If however `force`
   is `true` then recursively delete everything in the path and create the project.
 * `git = true` : Make the project a Git repository.
+* `placeholder = false` : Add hidden place holder files in each default folder to ensure that project
+  is maintained when the directory is cloned. Should be used only when `git = true`. Will throw a warning if used with `git = false`
 """
 function initialize_project(path, name = default_name_from_path(path);
     force = false, readme = true, authors = nothing,
-    git = true)
+    git = true, placeholder = false)
+    
+    placeholder && !git && @warn "The placeholder files are created, but you need to manually commit them to your version control software OR initialize project with git = true"
 
     mkpath(path)
     rd = readdir(path)
@@ -248,13 +256,19 @@ function initialize_project(path, name = default_name_from_path(path);
         Pkg.add("Pkg")
     end
     # Default folders
+    ph_files = String[]
     for p in DEFAULT_PATHS
         mkpath(joinpath(path, p))
+        if placeholder
+            write(joinpath(path, p, ".placeholder"), PLACEHOLDER_TEXT) #Create a placeholder file in each path
+            push!(files, joinpath(path, p, ".placeholder"))
+        end
     end
 
     git && LibGit2.add!(repo, "Project.toml")
     git && LibGit2.add!(repo, "Manifest.toml")
     git && LibGit2.add!(repo, DEFAULT_PATHS...)
+    placeholder && git && LibGit2.add!(repo, ph_files...)
     git && LibGit2.commit(repo, "Folder setup by DrWatson")
 
     # Default files
