@@ -225,10 +225,14 @@ The new project remains activated for you to immidiately add packages.
 * `force = false` : If the `path` is _not_ empty then throw an error. If however `force`
   is `true` then recursively delete everything in the path and create the project.
 * `git = true` : Make the project a Git repository.
+* `placeholder = false` : Add hidden place holder files in each default folder to ensure that project
+  is maintained when the directory is cloned. Should be used only when `git = true`. Will throw a warning if used with `git = false`
 """
 function initialize_project(path, name = default_name_from_path(path);
     force = false, readme = true, authors = nothing,
     git = true, placeholder = false)
+    
+    placeholder && !git && @warn "The placeholder files are created, but you need to manually commit them to your version control software OR initialize project with git = true"
 
     mkpath(path)
     rd = readdir(path)
