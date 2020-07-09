@@ -147,20 +147,24 @@ test_param = @onlyif(begin
                 return d[:f](cond1, cond2, cond3, cond4)
             end, nothing)
 
-@test test_param.condition(Dict(:α=>1, :b=>1, :c=>1, :d=>:something, "d"=>:something))
-@test !test_param.condition(Dict(:α=>2, :b=>1, :c=>1, :d=>:something, "d"=>:something))
-@test !test_param.condition(Dict(:α=>1, :b=>2, :c=>1, :d=>:something, "d"=>:something))
-@test !test_param.condition(Dict(:α=>1, :b=>1, :c=>1, :d=>:foo, "d"=>:something))
-@test !test_param.condition(Dict(:α=>1, :b=>1, :c=>1, :d=>:something, "d"=>:foo))
+dummy_dict = Dict(:α=>1, :b=>1, :c=>1, :d=>:something, "d"=>:something)
+
+@test test_param.condition(dummy_dict, Dict(:α=>1, :b=>1, :c=>1, :d=>:something, "d"=>:something))
+@test !test_param.condition(dummy_dict, Dict(:α=>2, :b=>1, :c=>1, :d=>:something, "d"=>:something))
+@test !test_param.condition(dummy_dict, Dict(:α=>1, :b=>2, :c=>1, :d=>:something, "d"=>:something))
+@test !test_param.condition(dummy_dict, Dict(:α=>1, :b=>1, :c=>1, :d=>:foo, "d"=>:something))
+@test !test_param.condition(dummy_dict, Dict(:α=>1, :b=>1, :c=>1, :d=>:something, "d"=>:foo))
+@test !test_param.condition(dummy_dict, Dict(:b=>1, :c=>1, :d=>:something, "d"=>:something))
 
 module TestMod
     struct Foo end
 end
 
+dummy_dict = Dict(:solver => TestMod.Foo)
 test_param = @onlyif(:solver == TestMod.Foo,[100,200])
 
-@test test_param[1].condition(Dict(:solver=>TestMod.Foo))
-@test !test_param[1].condition(Dict(:solver=>:Foo))
+@test test_param[1].condition(dummy_dict,Dict(:solver=>TestMod.Foo))
+@test !test_param[1].condition(dummy_dict,Dict(:solver=>:Foo))
 
 # partially restricted and mixed keytypes parameters
 
@@ -175,6 +179,47 @@ p = Dict(
                           Dict(:a=>:a1, "b"=>:b2, :c=>:c1),
                           Dict(:a=>:a1, "b"=>:b2, :c=>:c2),
                          ])
+
+# Every value restriced, but always at least 1 value available
+
+p = Dict(
+         :a => [1,2],
+         :b => @onlyif(:a==1,[1,2]),
+         :c => @onlyif(:a==3,[1,2]),
+        )
+
+@test Set(dict_list(p)) == Set([
+                                Dict(:a => 2)
+                                Dict(:a => 1,:b => 1)
+                                Dict(:a => 1,:b => 2)
+                               ])
+
+p = Dict(
+         :a => [1,2],
+         :b => @onlyif(:a==1,[1,2]),
+         :c => [@onlyif(:b==1,1), @onlyif(:b==2,2)],
+        )
+
+@test Set(dict_list(p)) == Set([
+                                Dict(:a => 1,:b => 1,:c => 1)
+                                Dict(:a => 1,:b => 2,:c => 2)
+                                Dict(:a => 2)
+                               ])
+
+p = Dict(
+         :a => [1,2],
+         :b => @onlyif(:a==1,[1,2]),
+         :c => [@onlyif(:b==1,1), @onlyif(:b==1,2)],
+        )
+
+@test Set(dict_list(p)) == Set([
+                                Dict(:a => 1,:b => 1,:c => 1)
+                                Dict(:a => 1,:b => 1,:c => 2)
+                                Dict(:a => 2)
+                                Dict(:a => 1,:b => 2)
+                               ])
+
+
 ### tmpsave ###
 tmpdir = joinpath(@__DIR__, "tmp")
 ret = tmpsave(v3, tmpdir)

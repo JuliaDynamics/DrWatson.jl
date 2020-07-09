@@ -405,7 +405,7 @@ However, often some of the parameters or values should only be considered if ano
 The macro [`@onlyif`](@ref) allows to place such restrictions on values and parameters.
 The following dictionary defines values and parameters for a genetic algorithm:
 
-```julia
+```@example customizing
 ga_parameters = Dict(
     :population_size => [20,50,100],
     :selection => ["roulette-selection", "SUS", "tournament-selection", "linear ranking"],
@@ -416,10 +416,16 @@ ga_parameters = Dict(
         select_constr = (:selection != "SUS")
         size_constr && select_constr
     end, :B)])
-
-dicts = dict_list(ga_parameters)
 ```
 
+```@example customizing
+dicts = dict_list(ga_parameters)
+length(dicts)
+```
+
+```@example customizing
+dicts[1]
+```
 The parameter restriction for the chromosome type shows that one can use arbitrary Julia expressions that return `true` or `false`.
 In this case, first the conditions for the population size and for the selection method are evaluated and stored.
 The expression then only returns true, if both conditions are met, thus restricting the usage of chromosome type `:B`.
