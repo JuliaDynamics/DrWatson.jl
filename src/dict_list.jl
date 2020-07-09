@@ -77,7 +77,7 @@ function dict_list(c::Dict)
                                  Dict([k=>lookup_candidate(c,trial,k) for k in keys(trial)])
                              end)
         return collect(filter(parameter_sets) do trial
-            is_solution_subset_of_existing(trial, parameter_sets)
+            !is_solution_subset_of_existing(trial, parameter_sets)
         end)
     end
     return _dict_list(c)
@@ -85,13 +85,12 @@ end
 
 function is_solution_subset_of_existing(trial, trial_solutions)
     ks = Set(keys(trial))
-    vals = Set(values(trial))
     for _trial in trial_solutions
         trial == _trial && continue
         ks ⊆ Set(keys(_trial)) || continue
-        vals == Set(_trial[k] for k in ks) && return false
+        all(trial[k] == _trial[k] for k in ks) && return true
     end
-    return true
+    return false
 end
 
 function _dict_list(c::Dict)
