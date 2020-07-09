@@ -65,25 +65,26 @@ function dict_list(c::Dict)
         # parameter must be contained in the final parameter set. So remove all
         # sets that don't include them
         parameter_sets = Set(map(_dict_list(c)) do trial
-                        n = length(trial)
-                        for i in 1:100_000
-                            for key in keys(trial)
-                                val = trial[key]
-                                if val isa DependentParameter && !val.condition(trial)
-                                    delete!(trial,key)
-                                end
-                            end
-                            length(trial) == n && break
-                            n = length(trial)
-                            i == 100_000 && error("There are too many parameters with a serial dependency. The limit is set to 100000.")
-                        end
-                        Dict([k=>lookup_candidate(trial,k) for k in keys(trial)])
-                    end)
+                                 n = length(trial)
+                                 for i in 1:100_000
+                                     for key in keys(trial)
+                                         val = trial[key]
+                                         if val isa DependentParameter && !val.condition(c,trial)
+                                             delete!(trial,key)
+                                         end
+                                     end
+                                     length(trial) == n && break
+                                     n = length(trial)
+                                     i == 100_000 && error("There are too many parameters with a serial dependency. The limit is set to 100000.")
+                                 end
+                                 Dict([k=>lookup_candidate(c,trial,k) for k in keys(trial)])
+                             end)
         partially_restricted_parameters = Set([k for k in keys(c) if
                                                contains_partially_restricted(c[k]) && !is_fully_restricted(c[k])])
-        return collect(filter(parameter_sets) do ps
-            partially_restricted_parameters ⊆ Set(keys(ps))
-        end)
+        trial_solutions = collect(filter(parameter_sets) do ps
+                           partially_restricted_parameters ⊆ Set(keys(ps))
+                       end)
+        return trial_solutions
     end
     return _dict_list(c)
 end
@@ -149,13 +150,16 @@ function toDependentParameter(value::T,condition) where T
     return DependentParameter(value,condition)
 end
 
+struct KeyDeletedFromDictError <: Exception end
+
 """
-    lookup_candidate(d, name)
+    lookup_candidate(original_dict, d, name)
 Return the value of key `name` if it is present in `d`. Otherwise return `name`.
 This function is needed for the shorthand notation used in [`@onlyif`](@ref).
 """
-function lookup_candidate(d, name)
-    if name in keys(d)
+function lookup_candidate(original_dict,d, name)
+    if name in keys(original_dict)
+        name in keys(d) || throw(KeyDeletedFromDictError())
         if d[name] isa DependentParameter
             return d[name].value
         end
@@ -192,25 +196,34 @@ julia> dict_list(d) # only in case `:a` is `1` the dictionary will get key `:c`
 
  julia> d = Dict(:a => [1, 2], :b => 4, :c => [10, @onlyif(:a == 1, 11)]);
 
-julia> dict_list(d) # only in case `:a` is `1` the dictionary will get extra value `11` for key `:c`
-3-element Array{Dict{Symbol,Int64},1}:
+ julia> dict_list(d) # only in case `:a` is `1` the dictionary will get extra value `11` for key `:c`
+ 3-element Array{Dict{Symbol,Int64},1}:
  Dict(:a => 1,:b => 4,:c => 10)
  Dict(:a => 1,:b => 4,:c => 11)
  Dict(:a => 2,:b => 4,:c => 10)
-```
-See the [Defining parameter sets with restrictions](@ref) section for more examples.
-"""
-macro onlyif(ex, value)
-    pd = gensym()
-    condition = postwalk(:(($pd)->$(ex))) do x, parent
-        # Check if the parent expression in the postwalk is a dot expression
-        # like Foo.Bar. In this case Bar is a QuoteNode, however it should not
-        # be wrapped by the lookup_candidate function, because without Foo it's
-        # not valid.
-        if (x isa QuoteNode && !(parent isa Expr && parent.head == :.)) || x isa String
-            return :(DrWatson.lookup_candidate($pd, $x))
-        end
-        return x
-    end
-    :(toDependentParameter($(esc(value)),$(esc(condition))))
-end
+ ```
+ See the [Defining parameter sets with restrictions](@ref) section for more examples.
+ """
+ macro onlyif(ex, value)
+     pd = gensym()
+     original_dict = gensym()
+     anon_function = quote
+         ($(original_dict),$pd)->try
+             $(ex)
+         catch e
+             e isa DrWatson.KeyDeletedFromDictError && return false
+             rethrow(e)
+         end
+     end
+     condition = postwalk(anon_function) do x, parent
+         # Check if the parent expression in the postwalk is a dot expression
+         # like Foo.Bar. In this case Bar is a QuoteNode, however it should not
+         # be wrapped by the lookup_candidate function, because without Foo it's
+         # not valid.
+         if (x isa QuoteNode && !(parent isa Expr && parent.head == :.)) || x isa String
+             return :(DrWatson.lookup_candidate($(original_dict),$pd, $x))
+         end
+         return x
+     end
+     :(toDependentParameter($(esc(value)),$(esc(condition))))
+ end

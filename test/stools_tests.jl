@@ -147,20 +147,24 @@ test_param = @onlyif(begin
                 return d[:f](cond1, cond2, cond3, cond4)
             end, nothing)
 
-@test test_param.condition(Dict(:α=>1, :b=>1, :c=>1, :d=>:something, "d"=>:something))
-@test !test_param.condition(Dict(:α=>2, :b=>1, :c=>1, :d=>:something, "d"=>:something))
-@test !test_param.condition(Dict(:α=>1, :b=>2, :c=>1, :d=>:something, "d"=>:something))
-@test !test_param.condition(Dict(:α=>1, :b=>1, :c=>1, :d=>:foo, "d"=>:something))
-@test !test_param.condition(Dict(:α=>1, :b=>1, :c=>1, :d=>:something, "d"=>:foo))
+dummy_dict = Dict(:α=>1, :b=>1, :c=>1, :d=>:something, "d"=>:something)
+
+@test test_param.condition(dummy_dict, Dict(:α=>1, :b=>1, :c=>1, :d=>:something, "d"=>:something))
+@test !test_param.condition(dummy_dict, Dict(:α=>2, :b=>1, :c=>1, :d=>:something, "d"=>:something))
+@test !test_param.condition(dummy_dict, Dict(:α=>1, :b=>2, :c=>1, :d=>:something, "d"=>:something))
+@test !test_param.condition(dummy_dict, Dict(:α=>1, :b=>1, :c=>1, :d=>:foo, "d"=>:something))
+@test !test_param.condition(dummy_dict, Dict(:α=>1, :b=>1, :c=>1, :d=>:something, "d"=>:foo))
+@test !test_param.condition(dummy_dict, Dict(:b=>1, :c=>1, :d=>:something, "d"=>:something))
 
 module TestMod
     struct Foo end
 end
 
+dummy_dict = Dict(:solver => TestMod.Foo)
 test_param = @onlyif(:solver == TestMod.Foo,[100,200])
 
-@test test_param[1].condition(Dict(:solver=>TestMod.Foo))
-@test !test_param[1].condition(Dict(:solver=>:Foo))
+@test test_param[1].condition(dummy_dict,Dict(:solver=>TestMod.Foo))
+@test !test_param[1].condition(dummy_dict,Dict(:solver=>:Foo))
 
 # partially restricted and mixed keytypes parameters
 
