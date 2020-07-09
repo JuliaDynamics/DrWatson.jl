@@ -156,8 +156,8 @@ struct KeyDeletedFromDictError <: Exception end
 
 """
     lookup_candidate(original_dict, d, name)
-Return the value of key `name` if it is present in `d`. Otherwise return `name`.
-This function is needed for the shorthand notation used in [`@onlyif`](@ref).
+If `name` is a key name from `original_dict` either return it's value from `d`
+or throw a `KeyDeletedFromDictError` error if it's not in `d`.
 """
 function lookup_candidate(original_dict,d, name)
     if name in keys(original_dict)
