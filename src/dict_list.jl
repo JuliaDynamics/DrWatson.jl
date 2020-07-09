@@ -149,6 +149,11 @@ function toDependentParameter(value::T,condition) where T
     return DependentParameter(value,condition)
 end
 
+"""
+    lookup_candidate(d, name)
+Return the value of key `name` if it is present in `d`. Otherwise return `name`.
+This function is needed for the shorthand notation used in [`@onlyif`](@ref).
+"""
 function lookup_candidate(d, name)
     if name in keys(d)
         if d[name] isa DependentParameter
