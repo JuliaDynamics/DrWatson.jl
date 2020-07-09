@@ -179,6 +179,47 @@ p = Dict(
                           Dict(:a=>:a1, "b"=>:b2, :c=>:c1),
                           Dict(:a=>:a1, "b"=>:b2, :c=>:c2),
                          ])
+
+# Every value restriced, but always at least 1 value available
+
+p = Dict(
+         :a => [1,2],
+         :b => @onlyif(:a==1,[1,2]),
+         :c => @onlyif(:a==3,[1,2]),
+        )
+
+@test Set(dict_list(p)) == Set([
+                                Dict(:a => 2)
+                                Dict(:a => 1,:b => 1)
+                                Dict(:a => 1,:b => 2)
+                               ])
+
+p = Dict(
+         :a => [1,2],
+         :b => @onlyif(:a==1,[1,2]),
+         :c => [@onlyif(:b==1,1), @onlyif(:b==2,2)],
+        )
+
+@test Set(dict_list(p)) == Set([
+                                Dict(:a => 1,:b => 1,:c => 1)
+                                Dict(:a => 1,:b => 2,:c => 2)
+                                Dict(:a => 2)
+                               ])
+
+p = Dict(
+         :a => [1,2],
+         :b => @onlyif(:a==1,[1,2]),
+         :c => [@onlyif(:b==1,1), @onlyif(:b==1,2)],
+        )
+
+@test Set(dict_list(p)) == Set([
+                                Dict(:a => 1,:b => 1,:c => 1)
+                                Dict(:a => 1,:b => 1,:c => 2)
+                                Dict(:a => 2)
+                                Dict(:a => 1,:b => 2)
+                               ])
+
+
 ### tmpsave ###
 tmpdir = joinpath(@__DIR__, "tmp")
 ret = tmpsave(v3, tmpdir)
