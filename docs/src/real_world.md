@@ -420,7 +420,10 @@ ga_parameters = Dict(
 
 ```@example customizing
 dicts = dict_list(ga_parameters)
-println("Total dictionaries made: ", length(dicts))
+length(dicts)
+```
+
+```@example customizing
 dicts[1]
 ```
 The parameter restriction for the chromosome type shows that one can use arbitrary Julia expressions that return `true` or `false`.
