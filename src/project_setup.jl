@@ -305,6 +305,38 @@ vecstring(a::Vector{String}) = a
 vecstring(c) = [string(a) for a in c]
 
 ##########################################################################################
+# Folder creation with placeholder utility
+##########################################################################################
+"""
+    mkpath(path::AbstractString, placeholder::Bool, gitpath::AbstractString = projectdir(); kwargs...)
+Extend `mkpath` to create and commit a hidden file everytime a folder is created for the project. When `true` is passed along with path, the function will create the hidden file and commit, else will fall back to `Base.mkpath`
+"""
+function mkpath(path::AbstractString, placeholder::Bool, gitpath::AbstractString = projectdir(); kwargs...)
+    if !placeholder
+        return mkpath(path; kwargs...)
+    end
+    try
+        repo = LibGit2.GitRepoExt(gitpath)
+    catch er
+        if isa(er,LibGit2.GitError) && er.code == LibGit2.Error.ENOTFOUND
+            @warn "The directory ('$gitpath') is not a Git repository, "*
+            "Not creating a directory."
+        elseif isa(er,LibGit2.GitError)
+            @warn "$(er.msg). Not creating a directory."
+        else
+            @warn "`gitdescribe` failed with '$er', Not creating a directory."
+        end
+        return nothing
+    end
+    repo = LibGit2.GitRepoExt(gitpath)
+    mkpath(path; kwargs...)
+    write(joinpath(path, ".placeholder"), PLACEHOLDER_TEXT) #Create a placeholder file
+    # Force addition of placeholder file
+    LibGit2.add!(repo, joinpath(path, ".placeholder"); flags = LibGit2.Consts.INDEX_ADD_FORCE) 
+    return path
+end
+
+##########################################################################################
 # Introductory file
 ##########################################################################################
 function makeintro(name)
