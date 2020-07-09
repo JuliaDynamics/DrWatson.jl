@@ -308,13 +308,10 @@ vecstring(c) = [string(a) for a in c]
 # Folder creation with placeholder utility
 ##########################################################################################
 """
-    mkpath(path::AbstractString, placeholder::Bool, gitpath::AbstractString = projectdir(); kwargs...)
-Extend `mkpath` to create and commit a hidden file everytime a folder is created for the project. When `true` is passed along with path, the function will create the hidden file and commit, else will fall back to `Base.mkpath`
+    mkpath_with_placeholder(path::AbstractString, gitpath::AbstractString = projectdir(); kwargs...)
+Create a path and place a `.placeholder` file in it. This file is forced added to git. `kwargs` are passed to [`Base.mkpath`](@ref).
 """
-function mkpath(path::AbstractString, placeholder::Bool, gitpath::AbstractString = projectdir(); kwargs...)
-    if !placeholder
-        return mkpath(path; kwargs...)
-    end
+function mkpath_with_placeholder(path::AbstractString, gitpath::AbstractString = projectdir(); kwargs...)
     try
         repo = LibGit2.GitRepoExt(gitpath)
     catch er
