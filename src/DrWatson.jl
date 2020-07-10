@@ -39,6 +39,7 @@ end
 wload(data...; kwargs...) = FileIO.load(data...; kwargs...)
 
 include("saving_files.jl")
+include("dict_list.jl")
 
 # Functionality that requires Dataframes and other heavy dependencies:
 using Requires

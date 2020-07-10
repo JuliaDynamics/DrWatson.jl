@@ -5,9 +5,11 @@
 DrWatson is a **scientific project assistant** software.
 It helps people manage their scientific projects (or any project for that matter).
 
-Specifically, it is a Julia package created to help people increase the consistency of their scientific projects, navigate and share them faster and easier, scripts, where and how files are saved, existing simulations, project source code, establishing reproducibility, and in general making managing a scientific project a simple job.
+Specifically, it is a Julia package created to help people increase the consistency of their scientific projects, navigate them and share them faster and easier, manage scripts, existing simulations as well as project source code.
+DrWatson helps establishing reproducibility, and in general it makes managing a scientific project a simple job.
 
 See the [Functionality](@ref) section to get an impression of what you can do with DrWatson or see the [DrWatson Workflow Tutorial](@ref) to get a "crash course" of how DrWatson helps the typical scientific workflow.
+The [Description of DrWatson](@ref) section describes the design decisions that make it a unique software that truly helps the scientific workflow.
 
 To install, simply type `] add DrWatson` in your Julia session.
 DrWatson is part of [JuliaDynamics](https://juliadynamics.github.io/JuliaDynamics/), check out our [website](https://juliadynamics.github.io/JuliaDynamics/) for more cool stuff!
@@ -46,13 +48,13 @@ Think of these core aspects of DrWatson as independent islands connected by brid
 Applications of DrWatson are demonstrated the [Real World Examples](@ref) page. All of these examples are taken from code of real scientific projects that use DrWatson.
 
 Please note that DrWatson is **not a data management system**.
-It is also **not a Julia package creator** like [PkgTemplates.jl](https://github.com/invenia/PkgTemplates.jl) **nor a package developement tool**.
+It is also **not a Julia package creator** like [PkgTemplates.jl](https://github.com/invenia/PkgTemplates.jl) **nor a package development tool**.
 
 ## Description of DrWatson
 
 DrWatson follows these simple principles:
 
-1. **Non-Invasive.** DrWatson does not require you to follow strict rules or change the way you work and do science in order to use it. In addition DrWatson is function-based: you only have to call a function and everything else just works; you *do not* have to create additional special `struct` or other data types. In addition, you also do not have to do anything outside of your code (e.g. command line arguments).
+1. **Non-Invasive.** DrWatson does not require you to follow strict rules or change the way you work and do science in order to use it. In addition DrWatson is function-based: you only have to call a function and everything else just works; you *do not* have to create additional special `struct` or other data types. In addition, you also do not have to do anything outside of your code (e.g. command line arguments or external software tools).
 1. **Simple.** The functionality offered is a baseline from where you handle your project as you wish. This makes it more likely to be of general use but also means that you don't have to "study" to learn DrWatson: all concepts are simple, everything is easy to understand.
 2. **Consistent.** The functionality is identical across all projects and DrWatson offers a universal base project structure.
 3. **Allows increments.** You didn't plan your project well enough? Want to add more folders, more files, more variables to your simulations? It's fine.

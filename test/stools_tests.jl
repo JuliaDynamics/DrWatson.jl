@@ -107,6 +107,119 @@ v5 = dict_list(Dict(:a => [1], :b => 2.0)) # one non-iterable
 v6 = dict_list(Dict(:a => [1], :b => [2.0])) # both iterable
 @test keytype(eltype(v6)) == Symbol
 
+struct SolverA end
+struct SolverB end
+
+# Simple example with no chained dependencies
+
+p = Dict(:α => 1,
+         :solver => [SolverA,SolverB],
+         :c => @onlyif(:solver == SolverA , [100,200]),
+         :d => @onlyif(:solver == SolverB, 1)
+        )
+
+@test Set([ Dict(:α => 1, :solver => SolverA, :c => 100),
+           Dict(:α => 1, :solver => SolverA, :c => 200),
+           Dict(:α => 1, :solver => SolverB, :d => 1),
+          ]) == Set(dict_list(p))
+
+# Advanced example with chained dependency. SolverA => :c => :d
+p = Dict(:α => 1,
+         :solver => [SolverA,SolverB],
+         :c => @onlyif(:solver == SolverA , [100,200]),
+         :d => @onlyif(:c == 100, 1)
+        )
+
+@test Set([
+           Dict(:α => 1, :solver => SolverA, :c => 100, :d => 1),
+           Dict(:α => 1, :solver => SolverA, :c => 200),
+           Dict(:α => 1, :solver => SolverB),
+          ]) == Set(dict_list(p))
+
+# Advanced condition definition
+
+test_param = @onlyif(begin
+                d = Dict( :f => (conds...)->all(conds) )
+                cond1 = :b == :c
+                cond2 = :d == :something
+                cond3 = "d" == :d
+                cond4 = :α^2 == 1
+                return d[:f](cond1, cond2, cond3, cond4)
+            end, nothing)
+
+dummy_dict = Dict(:α=>1, :b=>1, :c=>1, :d=>:something, "d"=>:something)
+
+@test test_param.condition(dummy_dict, Dict(:α=>1, :b=>1, :c=>1, :d=>:something, "d"=>:something))
+@test !test_param.condition(dummy_dict, Dict(:α=>2, :b=>1, :c=>1, :d=>:something, "d"=>:something))
+@test !test_param.condition(dummy_dict, Dict(:α=>1, :b=>2, :c=>1, :d=>:something, "d"=>:something))
+@test !test_param.condition(dummy_dict, Dict(:α=>1, :b=>1, :c=>1, :d=>:foo, "d"=>:something))
+@test !test_param.condition(dummy_dict, Dict(:α=>1, :b=>1, :c=>1, :d=>:something, "d"=>:foo))
+@test !test_param.condition(dummy_dict, Dict(:b=>1, :c=>1, :d=>:something, "d"=>:something))
+
+module TestMod
+    struct Foo end
+end
+
+dummy_dict = Dict(:solver => TestMod.Foo)
+test_param = @onlyif(:solver == TestMod.Foo,[100,200])
+
+@test test_param[1].condition(dummy_dict,Dict(:solver=>TestMod.Foo))
+@test !test_param[1].condition(dummy_dict,Dict(:solver=>:Foo))
+
+# partially restricted and mixed keytypes parameters
+
+p = Dict(
+         :a => :a1,
+         "b" => [:b1,:b2],
+         :c => [:c1,@onlyif("b" == :b2, :c2)],
+        )
+
+@test Set(dict_list(p)) == Set([
+                          Dict(:a=>:a1, "b"=>:b1, :c=>:c1),
+                          Dict(:a=>:a1, "b"=>:b2, :c=>:c1),
+                          Dict(:a=>:a1, "b"=>:b2, :c=>:c2),
+                         ])
+
+# Every value restriced, but always at least 1 value available
+
+p = Dict(
+         :a => [1,2],
+         :b => @onlyif(:a==1,[1,2]),
+         :c => @onlyif(:a==3,[1,2]),
+        )
+
+@test Set(dict_list(p)) == Set([
+                                Dict(:a => 2)
+                                Dict(:a => 1,:b => 1)
+                                Dict(:a => 1,:b => 2)
+                               ])
+
+p = Dict(
+         :a => [1,2],
+         :b => @onlyif(:a==1,[1,2]),
+         :c => [@onlyif(:b==1,1), @onlyif(:b==2,2)],
+        )
+
+@test Set(dict_list(p)) == Set([
+                                Dict(:a => 1,:b => 1,:c => 1)
+                                Dict(:a => 1,:b => 2,:c => 2)
+                                Dict(:a => 2)
+                               ])
+
+p = Dict(
+         :a => [1,2],
+         :b => @onlyif(:a==1,[1,2]),
+         :c => [@onlyif(:b==1,1), @onlyif(:b==1,2)],
+        )
+
+@test Set(dict_list(p)) == Set([
+                                Dict(:a => 1,:b => 1,:c => 1)
+                                Dict(:a => 1,:b => 1,:c => 2)
+                                Dict(:a => 2)
+                                Dict(:a => 1,:b => 2)
+                               ])
+
+
 ### tmpsave ###
 tmpdir = joinpath(@__DIR__, "tmp")
 ret = tmpsave(v3, tmpdir)
@@ -117,3 +230,4 @@ for r in ret
 end
 rm(tmpdir, force = true, recursive = true)
 @test !isdir(tmpdir)
+
