@@ -43,9 +43,15 @@ See also [`collect_results`](@ref).
 * `special_list = []`: List of additional (derived) key-value pairs
   to put in `df` as explained below.
 
-`special_list` is a `Vector{Pair{Symbol, Function}}` where each entry
-is a derived quantity to be included in `df`. The function entry always
+`special_list` is a `Vector` where each entry
+is a derived quantity to be included in `df`. There are two types of entries.
+The first option is of the form `key => func` where the `key` is a symbol
+to be used as column name in the DataFrame. The function entry always
 takes a single argument, which is the loaded result-file (a dictionary).
+The second option is to provide just one function `func`. This function
+also takes the single dictionary argument but returns one or more
+`key => value` pairs. This second notation may be useful when one wants 
+to extract values for multiple columns in a single step.
 As an example consider that each result-file
 contains a field `:longvector` too large to be included in the `df`.
 The quantity of interest is the mean and the variance of said field.
@@ -90,7 +96,7 @@ function collect_results!(filename, folder;
     end
 
     n = 0 # new entries added
-    existing_files = "path" in names(df) ? df[:,:path] : ()
+    existing_files = "path" in string.(names(df)) ? df[:,:path] : ()
     for file ∈ allfiles
         is_valid_file(file, valid_filetypes) || continue
         #already added?
@@ -140,22 +146,33 @@ is_valid_file(file, valid_filetypes) =
 function to_data_row(data, file;
         white_list = collect(keys(data)),
         black_list = keytype(data).((:gitcommit, :gitpatch, :script)),
-        special_list = keytype(data)[])
+        special_list = [])
     cnames = setdiff!(white_list, black_list)
     entries = Pair{Symbol,Any}[]
     append!(entries,Symbol.(cnames) .=> (x->[x]).(getindex.(Ref(data),cnames)))
     #Add special things here
-    for (ename, func) in special_list
+    for elem in special_list
         try
-            push!(entries,Symbol(ename) => [func(data), ])
+            if elem isa Pair
+                push!(entries, first(elem) => last(elem)(data))
+            elseif elem isa Function
+                res = elem(data)
+                if res isa Pair
+                    # Use push! if a single key value pair is returned
+                    push!(entries, res)
+                else
+                    # Use append! if a vector of pairs is returned
+                    append!(entries, res)
+                end
+            end
         catch e
-            @warn "While applying function $(nameof(func)) to file "*
-            "$(file), got error $e. Using value `missing` instead."
-            push!(entries,Symbol(ename) => [missing, ])
+            @warn "While applying $(string(elem)) to file "*
+            "$(file), got error $e."
         end
     end
     return DataFrames.DataFrame(entries...)
 end
+
 
 """
     collect_results(folder; kwargs...) -> df

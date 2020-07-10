@@ -13,8 +13,8 @@ quickactivate("testdir")
 ###############################################################################
 #                           Create Dummy Data                                 #
 ###############################################################################
-mkdir(datadir()*"results")
-cd(datadir()*"results")
+mkdir(datadir("results"))
+cd(datadir("results"))
 
 d = Dict("a" => 1, "b" => "2", "c" => rand(10))
 DrWatson.wsave(savename(d)*".bson", d)
@@ -36,11 +36,11 @@ DrWatson.wsave(savename(d)*".bson", d)
 ###############################################################################
 using Statistics
 special_list = [ :lv_mean => data -> mean(data["c"]),
-                 :lv_lar  => data -> var(data["c"])]
+                 :lv_var  => data -> var(data["c"])]
 
 black_list = ["c"]
 
-folder = datadir()*"results"
+folder = datadir("results")
 defaultname = joinpath(dirname(folder), "results_$(basename(folder)).bson")
 isfile(defaultname) && rm(defaultname)
 cres = collect_results!(defaultname, folder;
@@ -48,13 +48,14 @@ cres = collect_results!(defaultname, folder;
 
 @test size(cres) == (4, 6)
 for n in ("a", "b", "lv_mean")
-    @test n ∈ names(cres)
+    @test n ∈ String.(names(cres))
 end
 @test "c" ∉ names(cres)
 
 ###############################################################################
 #                           Add another file in a sub sub folder              #
 ###############################################################################
+
 @test isfile(defaultname)
 
 mkdir("subsubfolder")
@@ -70,6 +71,27 @@ cres2 = collect_results!(defaultname, folder;
 @test all(names(cres) .∈ Ref(names(cres2)))
 
 ###############################################################################
+#               Test additional syntax for special list                       #
+###############################################################################
+
+special_list2 = [ :lv_mean => data -> mean(data["c"]),
+                 data -> :lv_var  =>  var(data["c"]),
+                 data -> [:lv_mean2 => mean(data["c"]),
+                          :lv_var2  =>  var(data["c"])]]
+black_list = ["c"]
+
+folder = datadir("results")
+defaultname2 = joinpath(dirname(folder), "results_betterspeciallist.bson")
+isfile(defaultname2) && rm(defaultname2)
+cres10 = collect_results!(defaultname2, folder;
+    subfolders = true, special_list=special_list2, black_list = black_list)
+
+@test size(cres10) == (6, 9)
+for n in ("a", "b", "lv_mean", "lv_var", "lv_mean2", "lv_var2")
+    @test n ∈ String.(names(cres10))
+end
+@test "c" ∉ names(cres10)
+###############################################################################
 #                           Load and analyze  DataFrame                       #
 ###############################################################################
 
@@ -83,9 +105,9 @@ df = BSON.load(defaultname)[:df]
 
 rm(defaultname)
 cres_empty = collect_results!(defaultname, folder;
-    subfolders = true, special_list=special_list, white_list=[]) 
+    subfolders = true, special_list=special_list, white_list=[])
 
-@test dropmissing(cres2[!,[:lv_mean, :lv_lar, :path]]) == dropmissing(cres_empty)
+@test dropmissing(cres2[!,[:lv_mean, :lv_var, :path]]) == dropmissing(cres_empty)
 
 ###############################################################################
 #                           test out-of-place form                            #

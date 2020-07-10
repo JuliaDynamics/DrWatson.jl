@@ -20,7 +20,7 @@ The advantage of this approach is that it will always work regardless of if I mo
 Here is an example from another project. You will notice that another advantage is that I can use identical syntax to access the data or source folders even though I have different projects!
 ```julia
 using DrWatson
-quickactivate(@__DIR__, "EmbeddingResearch")
+quickactivate "EmbeddingResearch"
 using Parameters
 using TimeseriesPrediction, LinearAlgebra, Statistics
 
@@ -429,3 +429,35 @@ dicts[1]
 The parameter restriction for the chromosome type shows that one can use arbitrary Julia expressions that return `true` or `false`.
 In this case, first the conditions for the population size and for the selection method are evaluated and stored.
 The expression then only returns true, if both conditions are met, thus restricting the usage of chromosome type `:B`.
+
+### Advanced Usage of collect_results
+At some point in your work you may want to run a single function
+that returns multiple fields that you want to include in your
+results `DataFrame`.
+Depending on the problem you are trying to solve it may just make more sense to use a single function that extracts most or all of the meta-data.
+For this case `DrWatson` has another syntax available.
+Let us, for the sake of simplicity, assume that your data files
+contain a very long array of numbers called `"manynumbers"`
+and the information that you care about are the three largest values.
+
+One way to implement this would be to write
+```julia
+special_list = [
+    :first  => data -> sort(data["manynumbers"])[1],
+    :second => data -> sort(data["manynumbers"])[2],
+    :third  => data -> sort(data["manynumbers"])[3],
+    ]
+```
+which makes very obvious that there should be a better way to do this.
+There is no point in sorting the very long vector three times.
+A better thing to do is the following
+```julia
+function largestthree(data)
+    sorted = sort(data["manynumbers"])
+    return [:first  => sorted[1],
+            :second => sorted[2],
+            :third  => sorted[3]]
+end
+
+special_list = [largestthree,]
+```
