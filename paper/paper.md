@@ -29,7 +29,7 @@ affiliations:
    index: 3
  - name: Max Planck Institute for Meteorology
    index: 4
- - name: Institute for Mechanics of Materials and Structures, Vienna University of Technology (TU Wien)
+ - name: Institute for Mechanics of Materials and Structures, TU Wien
    index: 5
 date: 30 June 2020
 bibliography: paper.bib
