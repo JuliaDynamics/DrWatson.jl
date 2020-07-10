@@ -34,15 +34,15 @@ affiliations:
 date: 30 June 2020
 bibliography: paper.bib
 ---
-# DrWatson: 
-
-## Introduction
+# Summary
 
 Doing scientific work always involves a lot of focus and scrutiny, since producing a scientific result requires several levels of depth of analysis, all of which must be as accurate and as reproducible as possible. 
 All this required scrutiny *should* be naturally translated into the codebase of the scientific project. 
 One should strive for a code that is doing what it is supposed to, it is reproducible, it doesn't break over time, it is sufficiently clear of bugs, simulation results are appropriately labelled, and more.
 The challenges associated with carrying out scientific work should not be made any worse by the difficulties of managing the codebase and resulting data/simulations.
 An unfortunate but likely outcome of this stress is that scientific codebases tend to be *sloppy*: folders are not organized, there is no version control, data are not provenanced properly, most scripts break over time, and the whole project is very hard, if not impossible, to reproduce.
+
+# Statement of need
 
 DrWatson is a **scientific project assistance software**. 
 Its purpose is to help scientists manage their scientific codebase in a simple and clear manner, to make the process of creating the codebase faster and to enable true full reproducibility and project sharing.
@@ -57,7 +57,7 @@ In the rest of this paper we will provide a summary of what DrWatson can do (a d
 We will then highlight some examples of how using DrWatson speeds up the scientific workflow in real world scenarios.
 We close with a comparison with existing software.
 
-## Features and Functionality
+# Features and Functionality
 DrWatson has an opt-in design.
 This means that DrWatson's features can be grouped into the following few main categories, which remain independent of each other (and thus you "opt-in" which to use).
 
@@ -68,7 +68,7 @@ This means that DrWatson's features can be grouped into the following few main c
  
 The next section illustrates these categories. For a more thorough explanation, the reader is referred to DrWatson's main documentation.
 
-## Typical workflow with DrWatson
+# Typical workflow with DrWatson
 In this section we demonstrate how using DrWatson makes the typical scientific workflow faster, more robust, and easily reproducible. 
 This section is a brief summary of the [DrWatson Workflow Tutorial](https://juliadynamics.github.io/DrWatson.jl/dev/workflow/), which in itself showcases a subset of DrWatson's functionality.
 There the workflow is discussed and demonstrated more thoroughly via explicitly running every code command.
@@ -145,7 +145,7 @@ DrWatson's functionality comes directly from using the functions and macros expo
 While this is a great advantage in many use cases it does come with a natural limitation. When running and interacting with code from different languages, the relevant file-IO logic needs to happen in Julia to leverage the full power of DrWatson.
 
 
-## Comparison with existing software
+# Comparison with existing software
 
 There are numerous tools, software packages and language extensions that provide functions to improve the scientific workflow and allow full reproducibility.
 They contain features like version control, templates for folder structures, management of external code dependencies and data provenance.
@@ -167,7 +167,7 @@ Most of the mentioned languages come with a package manager enabling such functi
 `renv` [@renv] for R implements a feature similar to projects that can be created with `Pkg.jl`, that DrWatson uses. 
 Dependency management is also possible in Python e.g. by using virtual environments which are included in the standard library of Python since version 3.5.
 
-## Conclusion
+# Conclusion
 In summary, DrWatson combines several functionalities, all communicating excellently with each other and almost all being entirely opt-in, while it goes well beyond only aiding data provenance or simply providing a default folder structure.
 This results in an efficient scientific workflow, taking time off of project management and giving it to doing science.
 
