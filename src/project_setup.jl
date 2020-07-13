@@ -261,7 +261,7 @@ function initialize_project(path, name = default_name_from_path(path);
         mkpath(joinpath(path, p))
         if placeholder
             write(joinpath(path, p, ".placeholder"), PLACEHOLDER_TEXT) #Create a placeholder file in each path
-            push!(files, joinpath(path, p, ".placeholder"))
+            push!(ph_files, joinpath(path, p, ".placeholder"))
         end
     end
 
