@@ -84,6 +84,9 @@ This is why we believe DrWatson can help you focus on the science and not worry 
 * <https://github.com/fredrikekre/Literate.jl>
 * <https://github.com/caseykneale/Sherlock.jl>
 
+### Paper-related
+* <https://github.com/Azzaare/Bibliography.jl>
+
 ### Debugging, writing code
 * <https://junolab.org/>
 * <https://github.com/timholy/Revise.jl>
