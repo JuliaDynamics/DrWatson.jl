@@ -20,7 +20,7 @@ dictionaries that `dict_list` will produce.
 julia> c = Dict(:a => [1, 2], :b => 4);
 
 julia> dict_list(c)
-3-element Array{Dict{Symbol,Int64},1}:
+2-element Array{Dict{Symbol,Int64},1}:
  Dict(:a=>1,:b=>4)
  Dict(:a=>2,:b=>4)
 
@@ -182,8 +182,7 @@ Within `ex` it is possible to extract values of the dictionary passed to
 [`dict_list`](@ref) by a shorthand notation where only the key must be
 provided.  For example `ex = :(:N == 1)` is tranformed in the call
 `dict_list(d)` to an expression analogous to `:(d[:N] == 1)` by using the
-function [`lookup_candidate`](@ref).  This is supported for `Symbol` and
-`String` keys.
+function `lookup_candidate`.  This is supported for `Symbol` and `String` keys.
 
 ## Examples
 ```julia
@@ -202,7 +201,7 @@ julia> dict_list(d) # only in case `:a` is `1` the dictionary will get key `:c`
  Dict(:a => 1,:b => 4,:c => 10)
  Dict(:a => 1,:b => 4,:c => 11)
  Dict(:a => 2,:b => 4,:c => 10)
- ```
+```
  See the [Defining parameter sets with restrictions](@ref) section for more examples.
  """
  macro onlyif(ex, value)
