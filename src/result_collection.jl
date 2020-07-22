@@ -88,7 +88,7 @@ function collect_results!(filename, folder;
         allfiles = String[]
         for (root, dirs, files) in walkdir(folder)
             for file in files
-                push!(allfiles, joinpath(root,file))
+                push!(allfiles, relpath(joinpath(root,file), datadir()))
             end
         end
     else
@@ -102,7 +102,7 @@ function collect_results!(filename, folder;
         #already added?
         file ∈ existing_files && continue
 
-        data = wload(file)
+        data = wload(datadir(file))
         df_new = to_data_row(data, file; kwargs...)
         #add filename
         df_new[!, :path] .= file
