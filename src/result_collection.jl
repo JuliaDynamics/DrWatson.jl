@@ -36,6 +36,8 @@ See also [`collect_results`](@ref).
   for result-files.
 * `valid_filetypes = [".bson", ".jld", ".jld2"]`: Only files that have these
   endings are interpreted as result-files. Other files are skipped.
+* `rpath = nothing` : If not `nothing` stores `relpath(file,rpath)` of result-files
+  in `df`. By default the absolute path is used.
 * `verbose = true` : Print (using `@info`) information about the process.
 * `white_list` : List of keys to use from result file. By default
   uses all keys from all loaded result-files.
@@ -71,6 +73,7 @@ folder; kwargs...)
 function collect_results!(filename, folder;
     valid_filetypes = [".bson", "jld", ".jld2"],
     subfolders = false,
+    rpath = nothing,
     verbose = true,
     newfile = false, # keyword only for defining collect_results without !
     kwargs...)
@@ -99,10 +102,12 @@ function collect_results!(filename, folder;
     existing_files = "path" in string.(names(df)) ? df[:,:path] : ()
     for file ∈ allfiles
         is_valid_file(file, valid_filetypes) || continue
+        # maybe use relative path
+        file = rpath === nothing ? file : relpath(file, rpath)
         #already added?
         file ∈ existing_files && continue
 
-        data = wload(file)
+        data = rpath === nothing ? wload(file) : wload(joinpath(rpath, file))
         df_new = to_data_row(data, file; kwargs...)
         #add filename
         df_new[!, :path] .= file
