@@ -1,4 +1,4 @@
-# 1.14.5
+# 1.14.6
 * new keyword argument `rpath` for `collect_results!` that allows storing relative paths
 # 1.14.0
 * New macro `@onlyif` that allows placing restrictions on values in a dictionary used for expansion with `dict_list`
