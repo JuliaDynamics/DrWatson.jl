@@ -51,6 +51,13 @@ for n in ("a", "b", "lv_mean")
     @test n ∈ String.(names(cres))
 end
 @test "c" ∉ names(cres)
+@test all(startswith.(cres[!,"path"], projectdir()))
+
+relpathname = joinpath(dirname(folder), "results_relpath_$(basename(folder)).bson")
+cres_relpath = collect_results!(relpathname, folder;
+    subfolders = true, special_list=special_list, black_list = black_list,
+    rpath = projectdir())
+@info all(startswith.(cres[!,"path"], "data"))
 
 ###############################################################################
 #                           Add another file in a sub sub folder              #

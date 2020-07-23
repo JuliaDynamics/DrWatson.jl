@@ -71,6 +71,7 @@ folder; kwargs...)
 function collect_results!(filename, folder;
     valid_filetypes = [".bson", "jld", ".jld2"],
     subfolders = false,
+    rpath = nothing,
     verbose = true,
     newfile = false, # keyword only for defining collect_results without !
     kwargs...)
@@ -88,7 +89,7 @@ function collect_results!(filename, folder;
         allfiles = String[]
         for (root, dirs, files) in walkdir(folder)
             for file in files
-                push!(allfiles, relpath(joinpath(root,file), datadir()))
+                push!(allfiles, joinpath(root,file))
             end
         end
     else
@@ -99,10 +100,12 @@ function collect_results!(filename, folder;
     existing_files = "path" in string.(names(df)) ? df[:,:path] : ()
     for file ∈ allfiles
         is_valid_file(file, valid_filetypes) || continue
+        # maybe use relative path
+        file = isnothing(rpath) ? file : relpath(file, rpath)
         #already added?
         file ∈ existing_files && continue
 
-        data = wload(datadir(file))
+        data = isnothing(rpath) ? wload(file) : wload(joinpath(rpath, file))
         df_new = to_data_row(data, file; kwargs...)
         #add filename
         df_new[!, :path] .= file
