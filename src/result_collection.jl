@@ -36,6 +36,8 @@ See also [`collect_results`](@ref).
   for result-files.
 * `valid_filetypes = [".bson", ".jld", ".jld2"]`: Only files that have these
   endings are interpreted as result-files. Other files are skipped.
+* `rpath = nothing` : If not `nothing` stores `relpath(file,rpath)` of result-files
+  in `df`. By default the absolute path is used.
 * `verbose = true` : Print (using `@info`) information about the process.
 * `white_list` : List of keys to use from result file. By default
   uses all keys from all loaded result-files.
