@@ -103,11 +103,11 @@ function collect_results!(filename, folder;
     for file ∈ allfiles
         is_valid_file(file, valid_filetypes) || continue
         # maybe use relative path
-        file = isnothing(rpath) ? file : relpath(file, rpath)
+        file = rpath === nothing ? file : relpath(file, rpath)
         #already added?
         file ∈ existing_files && continue
 
-        data = isnothing(rpath) ? wload(file) : wload(joinpath(rpath, file))
+        data = rpath === nothing ? wload(file) : wload(joinpath(rpath, file))
         df_new = to_data_row(data, file; kwargs...)
         #add filename
         df_new[!, :path] .= file
