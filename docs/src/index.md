@@ -13,7 +13,7 @@ The [Description of DrWatson](@ref) section describes the design decisions that 
 Or, you can watch this 8-minutes video that introduces DrWatson in JuliaCon2020:
 
 ```@raw html
-<iframe src="https://www.youtube.com/watch?v=jKATlEAu8eE" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/jKATlEAu8eE" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 
 
