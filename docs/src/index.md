@@ -10,6 +10,12 @@ DrWatson helps establishing reproducibility, and in general it makes managing a 
 
 See the [Functionality](@ref) section to get an impression of what you can do with DrWatson or see the [DrWatson Workflow Tutorial](@ref) to get a "crash course" of how DrWatson helps the typical scientific workflow.
 The [Description of DrWatson](@ref) section describes the design decisions that make it a unique software that truly helps the scientific workflow.
+Or, you can watch this 8-minutes video that introduces DrWatson in JuliaCon2020:
+
+```@raw html
+<iframe src="https://www.youtube.com/watch?v=jKATlEAu8eE" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+```
+
 
 To install, simply type `] add DrWatson` in your Julia session.
 DrWatson is part of [JuliaDynamics](https://juliadynamics.github.io/JuliaDynamics/), check out our [website](https://juliadynamics.github.io/JuliaDynamics/) for more cool stuff!
