@@ -71,7 +71,7 @@ Notice that the project initialized by DrWatson does not represent a Julia packa
 3. Go into package mode and initialize a package with the name that you want: `generate src/ModuleName`
 4. `dev` the local path to `ModuleName` using the package manager: `dev src/ModuleName`. Notice that this command uses a local path, see [this PR](https://github.com/JuliaLang/Pkg.jl/pull/1215) for more details.
    * If you don't care to make this module a Julia package, simply delete its `.git` folder: `src/Modulename/.git`.
-   * If you do care about publishing this module as a Julia package, then it is mandatory to keep it as git-repository. What we recommend in this case is to ignore `src/Modulename` in your main project's `.gitignore`.
+   * If you do care about publishing this module as a Julia package, then it is mandatory to keep it as git-repository. In this case it is sensible to put `src/ModuleName/.git` into the main `.gitignore` file.
 
 Now whenever you do `using ModuleName`, the local version will be used. This will still work even if you transfer your project to another computer, because the Manifest.toml file stores the local path.
 
