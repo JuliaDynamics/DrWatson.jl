@@ -198,9 +198,36 @@ const PLACEHOLDER_TEXT = """
 This file acts as a placeholder to ensure the project structure is copied whenever you clone the project.
 This doesn't commit any files within the folder.
 """
-const DEFAULT_README = """
-This is an awesome new scientific project that uses `DrWatson`!\n
-"""
+
+function DEFAULT_README(name, authors = nothing)
+    s = """
+    # $name
+
+    This code base is using the Julia Language and [DrWatson](https://juliadynamics.github.io/DrWatson.jl/stable/)
+    to make a reproducible scientific project named
+    > $name
+
+    """
+    if !(authors === nothing)
+        s *= "It is authored by "*join(vecstring(authors), ", ")*".\n\n"
+    end
+
+    s *= """
+    To (locally) reproduce this project, do the following:
+    0. Download this code base. Notice that raw data are typically not included in the
+       git repo and may need to be downloaded independently.
+    1. Open a Julia console and do:
+       ```
+       julia> cd("path/to/this/project")
+       julia> using Pkg; Pkg.activate(".")
+       julia> Pkg.instantiate()
+       ```
+
+    This will install all necessary packages for you to be able to run the scripts and
+    everything should work out of the box.
+    """
+    return s
+end
 
 function default_name_from_path(path)
     ap = abspath(path)
@@ -213,26 +240,29 @@ end
 
 """
     initialize_project(path [, name]; kwargs...)
-Initialize a scientific project expected by `DrWatson` inside the given `path`.
-If its `name` is not given, it is assumed to be the folder's name.
+Initialize a scientific project expected by `DrWatson` in `path` (directory representing
+an empty folder).
+If `name` is not given, it is assumed to be the folder's name.
 
 The new project remains activated for you to immidiately add packages.
 
 ## Keywords
 * `readme = true` : adds a README.md file.
 * `authors = nothing` : if a string or container of strings, adds the authors in the
-  Project.toml file.
+  Project.toml file and README.md.
 * `force = false` : If the `path` is _not_ empty then throw an error. If however `force`
   is `true` then recursively delete everything in the path and create the project.
 * `git = true` : Make the project a Git repository.
 * `placeholder = false` : Add hidden place holder files in each default folder to ensure that project
-  is maintained when the directory is cloned. Should be used only when `git = true`. Will throw a warning if used with `git = false`
+  is maintained when the directory is cloned. Should be used only when `git = true`.
+  Will throw a warning if used with `git = false`
 """
 function initialize_project(path, name = default_name_from_path(path);
     force = false, readme = true, authors = nothing,
     git = true, placeholder = false)
-    
-    placeholder && !git && @warn "The placeholder files are created, but you need to manually commit them to your version control software OR initialize project with git = true"
+
+    placeholder && !git && @warn "The placeholder files are created, but you need to "*
+    "manually commit them to your version control software OR initialize project with git = true"
 
     mkpath(path)
     rd = readdir(path)
@@ -280,7 +310,7 @@ function initialize_project(path, name = default_name_from_path(path);
 
     files = vcat(".gitignore", joinpath("scripts", "intro.jl"), joinpath("test", "runtests.jl"))
     if readme
-        write(joinpath(path, "README.md"), DEFAULT_README)
+        write(joinpath(path, "README.md"), DEFAULT_README(name, authors))
         push!(files, "README.md")
     end
     pro = read(joinpath(path, "Project.toml"), String)
