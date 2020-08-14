@@ -1,3 +1,5 @@
+# 1.15.0
+* Better default readme file for a new project.
 # 1.14.6
 * new keyword argument `rpath` for `collect_results!` that allows storing relative paths
 # 1.14.0
