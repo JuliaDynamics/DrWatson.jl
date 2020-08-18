@@ -38,7 +38,6 @@ projectdir(args...) = joinpath(projectdir(), args...)
 for dir_type ∈ ("data", "src", "plots", "scripts", "papers")
     function_name = Symbol(dir_type * "dir")
     @eval begin
-        $function_name() = projectdir($dir_type)
         $function_name(args...) = projectdir($dir_type, args...)
     end
 end
@@ -214,12 +213,13 @@ function DEFAULT_README(name, authors = nothing)
 
     s *= """
     To (locally) reproduce this project, do the following:
+
     0. Download this code base. Notice that raw data are typically not included in the
-       git repo and may need to be downloaded independently.
+       git-history and may need to be downloaded independently.
     1. Open a Julia console and do:
        ```
-       julia> cd("path/to/this/project")
-       julia> using Pkg; Pkg.activate(".")
+       julia> using Pkg
+       julia> Pkg.activate("path/to/this/project")
        julia> Pkg.instantiate()
        ```
 
