@@ -36,15 +36,15 @@ bibliography: paper.bib
 ---
 # Summary
 
-Doing scientific work always involves a lot of focus and scrutiny, since producing a scientific result requires several levels of depth of analysis, all of which must be as accurate and as reproducible as possible. 
-All this required scrutiny *should* be naturally translated into the codebase of the scientific project. 
+Doing scientific work always involves a lot of focus and scrutiny, since producing a scientific result requires several levels of depth of analysis, all of which must be as accurate and as reproducible as possible.
+All this required scrutiny *should* be naturally translated into the codebase of the scientific project.
 One should strive for a code that is doing what it is supposed to, it is reproducible, it doesn't break over time, it is sufficiently clear of bugs, simulation results are appropriately labelled, and more.
 The challenges associated with carrying out scientific work should not be made any worse by the difficulties of managing the codebase and resulting data/simulations.
 An unfortunate but likely outcome of this stress is that scientific codebases tend to be *sloppy*: folders are not organized, there is no version control, data are not provenanced properly, most scripts break over time, and the whole project is very hard, if not impossible, to reproduce.
 
 # Statement of need
 
-DrWatson is a **scientific project assistance software**. 
+DrWatson is a **scientific project assistance software**.
 Its purpose is to help scientists manage their scientific codebase in a simple and clear manner, to make the process of creating the codebase faster and to enable true full reproducibility and project sharing.
 DrWatson achieves this while being entirely non-invasive throughout the process.
 It provides a well-tested science-driven framework for managing a scientific project, thus removing the unnecessary stress and giving more time to doing actual science.
@@ -65,11 +65,11 @@ This means that DrWatson's features can be grouped into the following few main c
 * **Naming schemes**: A robust and deterministic scheme for naming and handling your data structures.
 * **Saving tools**: Tools for safely saving and loading your data, automatically tagging the Git commit ID to your saved files, and more.
 * **Running & listing simulations**: Tools for producing tables of existing simulations/results, adding new simulation results to the tables, preparing batch parameter containers, and more.
- 
+
 The next section illustrates these categories. For a more thorough explanation, the reader is referred to DrWatson's main documentation.
 
 # Typical workflow with DrWatson
-In this section we demonstrate how using DrWatson makes the typical scientific workflow faster, more robust, and easily reproducible. 
+In this section we demonstrate how using DrWatson makes the typical scientific workflow faster, more robust, and easily reproducible.
 This section is a brief summary of the [DrWatson Workflow Tutorial](https://juliadynamics.github.io/DrWatson.jl/dev/workflow/), which in itself showcases a subset of DrWatson's functionality.
 There the workflow is discussed and demonstrated more thoroughly via explicitly running every code command.
 
@@ -78,24 +78,24 @@ This creates a project folder that contains sensible default structure (e.g. fol
 This allows the scientific project to be tied with the full hierarchy of exact package versions used, which remains entirely independent from the main Julia installation (or any other project).
 The project is also a git repository, which allows code versioning and reproducibility, and DrWatson provides functions that make this process seamless (see below).
 
-Within the context of DrWatson, all project-related code runs *after* the corresponding Julia project has been activated. 
+Within the context of DrWatson, all project-related code runs *after* the corresponding Julia project has been activated.
 Several DrWatson functions like `projectdir`, `datadir`, `plotsdir` and similar are then made available.
 When these functions are called they always return the absolute path to the directory (or the appropriate subdirectories) in the active project, independently of the current working directory or the script directory these functions are called from.
 This establishes a relative-only path relationship within the project, which allows it to naturally run on other machines when shared or synced via e.g. a cloud service.
 Adding the command `@quickactive "ProjectName"` to the start of every script automatically activates the appropriate project and thus enables all DrWatson features with minimal effort.
 
-Once the project structure and navigation has been established, there are several functions that help the scientific workflow. For example, the function `dict_list` provides a convient and consistent way of defining containers of parameter values. 
-`savename` can be used for preparing a file name or a figure title. 
+Once the project structure and navigation has been established, there are several functions that help the scientific workflow. For example, the function `dict_list` provides a convient and consistent way of defining containers of parameter values.
+`savename` can be used for preparing a file name or a figure title.
 Using it would transform the following dictionary
 ```julia
 parameters = Dict(:phi => 3, :pos_z => 0.5, :date => Date(2020,5,23))
 ```
-into 
+into
 ```julia
-savename(parameters, "bson")
+savename(parameters, "jld2")
 ```
 ```
-"date=2020-05-23_pos_z=0.5_phi=3.bson"
+"date=2020-05-23_pos_z=0.5_phi=3.jld2"
 ```
 
 Once a simulation script is created, taking advantage of e.g. `projectdir, dict_list, savename` among other functions, the user will typically want to save numeric results on disk.
@@ -103,13 +103,13 @@ DrWatson offers many functions that help the workflow at this level.
 `safesave` ensures that saved data will never overwrite existing files, but make a new version instead (and back up the original file).
 `tagsave` allows one to add git-related information to saved data.
 `tagsave` is a function that excellently highlights how DrWatson is a minimally invasive framework.
-Continuing from the dictionary `parameters` defined above, we would save any kind of `data` wrapped in a dictionary with the command `save(savename(parameters, "bson"), data)` (ending `.bson` is used as an example).
+Continuing from the dictionary `parameters` defined above, we would save any kind of `data` wrapped in a dictionary with the command `save(savename(parameters, "jld2"), data)` (ending `.jld2` is used as an example).
 By only replacing the function `save` with `@tagsave`, it is possible to attach important information to the saved data
 
 ```julia
-@tagsave(savename(parameters, "bson"), Dict("data" => [1,2,3]));
+@tagsave(savename(parameters, "jld2"), Dict("data" => [1,2,3]));
 
-load(savename(parameters, "bson")) # load back saved data
+load(savename(parameters, "jld2")) # load back saved data
 ```
 
 ```
@@ -134,8 +134,8 @@ The entire project folder is simply sent to a different machine, and in a Julia 
 pkg> activate path/to/project
 pkg> instantiate
 ```
-and all necessary dependencies are installed automatically. 
-Since the project uses only relative paths because of the function `projectdir`, every script runs as it did on the original machine. 
+and all necessary dependencies are installed automatically.
+Since the project uses only relative paths because of the function `projectdir`, every script runs as it did on the original machine.
 If all saved data are tagged with a git-commit, one can potentially re-create previous results by simply checking out the appropriate commit.
 Finally, since all package versions used are "baked" into the project, a DrWatson project does not break over time even if the main Julia installation is regularly updated.
 
@@ -151,12 +151,12 @@ There are numerous tools, software packages and language extensions that provide
 They contain features like version control, templates for folder structures, management of external code dependencies and data provenance.
 Although the tools we investigated perform well in their respective domains and in some parts, such as data provenance, even outperform DrWatson, none of them supports the wide range of functions required for a scientific project, while being non-invasive and easy to use. Therefore, several tools must be combined to provide a similar set of functions as those provided by DrWatson.
 
-One main aspect, and the entry point to every scientific project, is a consistent folder structure. 
+One main aspect, and the entry point to every scientific project, is a consistent folder structure.
 While DrWatson comes with a predefined structure, packages like `rrtools` [@rrtools], `prodigenr` [@prodigenr] and `starters` [@starters] for R or `Cookiecutter` [@cookiecutter] (with a template for scientific projects like `Cookiecutter-data-science` [@cookiecutter-data-science]) for Python, allow having a user-defined one.
-Like DrWatson, most of the tools that initialize a folder structure, also initialize a Git repository for version control. 
+Like DrWatson, most of the tools that initialize a folder structure, also initialize a Git repository for version control.
 In order to gain advantage from having code in version control eg. extracting diffs or commit ids, additional software packages, focused at data provenance, are needed.
 
-Applications like `sumatra` [@sumatra] for Python work mainly by executing scripts through a separate standalone tool that captures and tags all files created at runtime. 
+Applications like `sumatra` [@sumatra] for Python work mainly by executing scripts through a separate standalone tool that captures and tags all files created at runtime.
 Alternatives like `recordr` [@recordr] for R, `explore` for Matlab or `recipy` [@recipy] for Python aim at the non-invasive approach by redefining IO functions for logging metadata during saving.
 The outlined tools, however, come with a cost of being limited to certain supported IO functions or the need of additional software to run code or a server infrastructure. Moreover, all of them -- including DrWatson -- are tied to a specific programming language and data provenance is only provided in their own context. Scientific projects, however, often deal with heterogeneous environments and thus data provenance needs to be implemented in a more language agnostic way. An example for such a framework is the Common Workflow Language [@cwl] which can easily be integrated at any stage.
 Therefore, DrWatson only implements basic data provenance features like logging version control information in Julia dictionaries and storing parameter configurations in paths using the `savename` function, which in many cases already covers the basic requirements.
@@ -164,7 +164,7 @@ The latter approach allows for a simple, universal, file format independed metho
 
 In terms of portability of scientific projects, management of external code dependencies and packages is crucial.
 Most of the mentioned languages come with a package manager enabling such functionality.
-`renv` [@renv] for R implements a feature similar to projects that can be created with `Pkg.jl`, that DrWatson uses. 
+`renv` [@renv] for R implements a feature similar to projects that can be created with `Pkg.jl`, that DrWatson uses.
 Dependency management is also possible in Python e.g. by using virtual environments which are included in the standard library of Python since version 3.5.
 
 # Conclusion
