@@ -73,7 +73,7 @@ In this section we demonstrate how using DrWatson makes the typical scientific w
 This section is a brief summary of the [DrWatson Workflow Tutorial](https://juliadynamics.github.io/DrWatson.jl/dev/workflow/), which in itself showcases a subset of DrWatson's functionality.
 There the workflow is discussed and demonstrated more thoroughly via explicitly running every code command.
 
-Typically one starts a scientific project with the function `initialize_project`.
+Typically, one starts a scientific project with the function `initialize_project`.
 This creates a project folder that contains sensible default structure (e.g. folders for data, papers, scripts, etc.), while also making the project a Julia project.
 This allows the scientific project to be tied with the full hierarchy of exact package versions used, which remains entirely independent from the main Julia installation (or any other project).
 The project is also a git repository, which allows code versioning and reproducibility, and DrWatson provides functions that make this process seamless (see below).
@@ -82,7 +82,7 @@ Within the context of DrWatson, all project-related code runs *after* the corres
 Several DrWatson functions like `projectdir`, `datadir`, `plotsdir` and similar are then made available.
 When these functions are called they always return the absolute path to the directory (or the appropriate subdirectories) in the active project, independently of the current working directory or the script directory these functions are called from.
 This establishes a relative-only path relationship within the project, which allows it to naturally run on other machines when shared or synced via e.g. a cloud service.
-Adding the command `@quickactive "ProjectName"` to the start of every script automatically activates the appropriate project and thus enables all DrWatson features with minimal effort.
+Adding the command `@quickactivate "ProjectName"` to the start of every script automatically activates the appropriate project and thus enables all DrWatson features with minimal effort.
 
 Once the project structure and navigation has been established, there are several functions that help the scientific workflow. For example, the function `dict_list` provides a convient and consistent way of defining containers of parameter values.
 `savename` can be used for preparing a file name or a figure title.
