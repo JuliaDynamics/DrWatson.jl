@@ -84,6 +84,7 @@ This is why we believe DrWatson can help you focus on the science and not worry 
 ### Notebooks
 * <https://github.com/JuliaLang/IJulia.jl>
 * <https://github.com/JunoLab/Weave.jl>
+* <https://github.com/fonsp/Pluto.jl>
 
 ### Documenting your code
 * <https://github.com/JuliaDocs/Documenter.jl>
