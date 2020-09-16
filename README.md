@@ -1,8 +1,8 @@
 ![DrWatson](https://github.com/JuliaDynamics/JuliaDynamics/blob/master/videos/drwatson/DrWatson-banner-nobg.png?raw=true)
 
-| **Documentation**   |  **Tests**     | **Gitter** |
-|:--------:|:---------------:|:-----:|
-|[![](https://img.shields.io/badge/docs-online-blue.svg)](https://JuliaDynamics.github.io/DrWatson.jl/dev)| [![Build Status](https://travis-ci.org/JuliaDynamics/DrWatson.jl.svg?branch=master)](https://travis-ci.org/JuliaDynamics/DrWatson.jl) | [![Gitter](https://img.shields.io/gitter/room/nwjs/nw.js.svg)](https://gitter.im/JuliaDynamics/Lobby)
+| **Documentation**   |  **Tests**     | **CodeCov**  | **Gitter** |
+|:--------:|:---------------:|:-------:|:------:|
+|[![](https://img.shields.io/badge/docs-online-blue.svg)](https://JuliaDynamics.github.io/DrWatson.jl/dev)| [![Build Status](https://travis-ci.org/JuliaDynamics/DrWatson.jl.svg?branch=master)](https://travis-ci.org/JuliaDynamics/DrWatson.jl) | [![codecov](https://codecov.io/gh/JuliaDynamics/DrWatson.jl/branch/master/graph/badge.svg)](https://codecov.io/gh/JuliaDynamics/DrWatson.jl) | [![Gitter](https://img.shields.io/gitter/room/nwjs/nw.js.svg)](https://gitter.im/JuliaDynamics/Lobby)
 
 DrWatson is a **scientific project assistant** software.
 It helps people manage their scientific projects (or any project for that matter).

@@ -28,3 +28,6 @@ matrix:
       after_success: skip
 notifications:
   email: false
+
+after_success:
+  - julia -e 'using Pkg; Pkg.add("Coverage"); using Coverage; Codecov.submit(Codecov.process_folder())'
