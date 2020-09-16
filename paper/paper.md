@@ -112,6 +112,8 @@ By only replacing the function `save` with `@tagsave`, it is possible to attach 
 load(savename(parameters, "jld2")) # load back saved data
 ```
 
+yielding the output:
+
 ```
 Dict{Symbol,Any} with 6 entries:
   :gitcommit => "v1.13.0-1-g3a5364f"
