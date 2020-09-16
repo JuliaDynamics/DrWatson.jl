@@ -41,6 +41,8 @@ All this required scrutiny *should* be naturally translated into the codebase of
 One should strive for a code that is doing what it is supposed to, it is reproducible, it doesn't break over time, it is sufficiently clear of bugs, simulation results are appropriately labelled, and more.
 The challenges associated with carrying out scientific work should not be made any worse by the difficulties of managing the codebase and resulting data/simulations.
 An unfortunate but likely outcome of this stress is that scientific codebases tend to be *sloppy*: folders are not organized, there is no version control, data are not provenanced properly, most scripts break over time, and the whole project is very hard, if not impossible, to reproduce.
+We've created the software DrWatson to make the process of scientific project management easier.
+In this paper we will describe how DrWatson results in an efficient scientific workflow, taking time off of project management and giving it to doing science.
 
 # Statement of need
 
@@ -67,6 +69,9 @@ This means that DrWatson's features can be grouped into the following few main c
 * **Running & listing simulations**: Tools for producing tables of existing simulations/results, adding new simulation results to the tables, preparing batch parameter containers, and more.
 
 The next section illustrates these categories. For a more thorough explanation, the reader is referred to DrWatson's main documentation.
+
+Please note that DrWatson is not a data management system and provides only basic data management functionality that remains self-contained in a single scientific project.
+One of our main future goals is to integrate DrWatson with a Relational Data Management System, specifically CaosDB [@Fitschen2019], which had been developed specifically to handle large data bases connecting several scientific projects.
 
 # Typical workflow with DrWatson
 In this section we demonstrate how using DrWatson makes the typical scientific workflow faster, more robust, and easily reproducible.
