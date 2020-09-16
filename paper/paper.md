@@ -163,8 +163,10 @@ Applications like `sumatra` [@sumatra] for Python work mainly by executing scrip
 Alternatives like `recordr` [@recordr] for R, `explore` for Matlab or `recipy` [@recipy] for Python aim at the non-invasive approach by redefining IO functions for logging metadata during saving.
 The outlined tools, however, come with a cost of being limited to certain supported IO functions or the need of additional software to run code or a server infrastructure.
 Moreover, all of them are tied to a specific programming language and data provenance is only provided in their own context.
-Scientific projects, however, often deal with heterogeneous environments and thus data provenance needs to be implemented in a more language agnostic way. An example for such a framework is the Common Workflow Language [@cwl] which can easily be integrated at any stage.
+Scientific projects, however, often deal with heterogeneous environments and thus data provenance needs to be implemented in a more language agnostic way.
+An example for language-agnostic a framework (with in significantly different end-goals than DrWatson) is the Common Workflow Language [@cwl].
 Notice that in principle DrWatson is tied to Julia, a single programming language. But because Julia has strong interop capabilities, allowing native C/FORTRAN calls and calls to Python or R (for example) via PyCall and RCall, the Julia-based design of DrWatson is much less of a limiting factor than for other languages.
+In addition, and in contrast to CWL, DrWatson is suitable for both making repetitive workflows reproducible (which CWL targets) but also exploratory scientific work.
 
 Therefore, DrWatson only implements basic data provenance features like logging version control information in Julia dictionaries and storing parameter configurations in paths using the `savename` function, which in many cases already covers the basic requirements.
 The latter approach allows for a simple, universal, file format independed method for keeping simulation parameters together with result files.
