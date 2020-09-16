@@ -131,8 +131,9 @@ The function `collect_results` can traverse the data folder and collect all save
 Sharing and reproducing a DrWatson project is in every respect trivial.
 The entire project folder is simply sent to a different machine, and in a Julia session the user does the following:
 ```
-pkg> activate path/to/project
-pkg> instantiate
+using Pkg
+Pkg.activate("path/to/project")
+Pkg.instantiate()
 ```
 and all necessary dependencies are installed automatically.
 Since the project uses only relative paths because of the function `projectdir`, every script runs as it did on the original machine.
