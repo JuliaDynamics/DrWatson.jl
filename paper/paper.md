@@ -170,7 +170,7 @@ Alternatives like `recordr` [@recordr] for R, `explore` for Matlab or `recipy` [
 The outlined tools, however, come with a cost of being limited to certain supported IO functions or the need of additional software to run code or a server infrastructure.
 Moreover, all of them are tied to a specific programming language and data provenance is only provided in their own context and usually within a single process.
 Scientific projects, however, often deal with heterogeneous computing environments and pipelines running a multitude of scripts and applications connected to each other, thus the orchestration and data provenance needs to be implemented in a more language agnostic way.
-An example for such a framework (with insignificantly different end-goals compared to DrWatson) is the Common Workflow Language [@cwl].
+An example for such a framework (with significantly different end-goals compared to DrWatson) is the Common Workflow Language [@cwl].
 Notice that in principle DrWatson is tied to Julia, a single programming language. But because Julia has strong interop capabilities, allowing native C/FORTRAN calls and calls to Python or R (for example) via PyCall and RCall, the Julia-based design of DrWatson is much less of a limiting factor than for other languages.
 In addition, DrWatson is suitable for both making repetitive workflows reproducible (which CWL targets) but also exploratory scientific work.
 
