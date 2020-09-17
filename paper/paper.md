@@ -175,7 +175,7 @@ Notice that in principle DrWatson is tied to Julia, a single programming languag
 In addition, DrWatson is suitable for both making repetitive workflows reproducible (which CWL targets) but also exploratory scientific work.
 
 Therefore, DrWatson only implements basic data provenance features like logging version control information in Julia dictionaries and storing parameter configurations in paths using the `savename` function, which in many cases already covers the basic requirements.
-The latter approach allows for a simple, universal, file format independed method for keeping simulation parameters together with result files.
+The latter approach allows for a simple, universal, file format independent method for keeping simulation parameters together with result files.
 
 In terms of portability of scientific projects, management of external code dependencies and packages is crucial.
 Most of the mentioned languages come with a package manager enabling such functionality.
