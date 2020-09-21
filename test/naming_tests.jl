@@ -17,7 +17,7 @@ tday = today()
 rick = (never = "gonna", give = "you", up = "!");
 @test savename(rick) == "give=you_never=gonna_up=!"
 @test savename(rick; ignores = ["up"]) == "give=you_never=gonna"
-@test savename(rick, sort = false) == "never=gonna_give=you_up=!"
+@test savename(rick; sort = false) == "never=gonna_give=you_up=!"
 
 x = 3; y = 5.0;
 d = Dict(:x => x, :y => y)
