@@ -15,7 +15,7 @@ The function chains keys and values into a string of the form:
 ```julia
 key1=val1_key2=val2_key3=val3
 ```
-while the keys are **always sorted alphabetically.** If you provide
+while the keys are **sorted alphabetically** by default. If you provide
 the prefix/suffix the function will do:
 ```julia
 prefix_key1=val1_key2=val2_key3=val3.suffix
@@ -59,6 +59,9 @@ See also [`parse_savename`](@ref) and [`@savename`](@ref).
   called with its default arguments (so customization here is possible only
   by rolling your own container type). If the `savename` of the nested
   containers is `""`, it is also skipped.
+* `sort = true` : Indicate whether the pairs are sorted alphabetically by
+  keys. If not, they are sorted by the order of `accesses`. WARNING: the 
+  default `accesses` is not deterministic for `Dict` inputs.
 
 ## Examples
 ```julia
@@ -82,7 +85,8 @@ function savename(prefix::String, c, suffix::String;
                   allowedtypes = default_allowed(c),
                   accesses = allaccess(c), ignores = allignore(c), digits = 3,
                   connector = "_", expand::Vector{String} = default_expand(c),
-                  scientific::Union{Int,Nothing}=nothing)
+                  scientific::Union{Int,Nothing}=nothing,
+                  sort = true)
 
     if any(sep in prefix for sep in ['/', '\\'])
         @warn """
@@ -101,7 +105,7 @@ function savename(prefix::String, c, suffix::String;
     # Perform access and ignore logic and sort
     labels = vecstring(accesses) # make it vector of strings
     ignored_labels = vecstring(ignores)
-    p = sortperm(labels)
+    p = sort ? sortperm(labels) : 1:length(labels)
     first = prefix == "" || endswith(prefix, PATH_SEPARATOR)
     s = prefix
     for j ∈ p

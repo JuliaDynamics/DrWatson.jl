@@ -1,3 +1,5 @@
+# 1.16.0
+* Add a `sort` option to `savename`.
 # 1.15.0
 * Better default readme file for a new project.
 # 1.14.6
