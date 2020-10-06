@@ -1,3 +1,5 @@
+# 1.16.1
+* `dict_list` now retains the value's type from the passed dictionary.
 # 1.16.0
 * Add a `sort` option to `savename`.
 # 1.15.0
