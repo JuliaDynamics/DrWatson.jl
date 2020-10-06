@@ -102,13 +102,15 @@ function _dict_list(c::Dict)
 
     vec(
         map(Iterators.product(values(iterable_dict)...)) do vals
-            dd = Dict(keys(iterable_dict) .=> vals)
+            dd = [k=>convert(eltype(c[k]),v) for (k,v) in zip(keys(iterable_dict),vals)]
             if isempty(non_iterable_dict)
-                dd
+                Dict(dd)
             elseif isempty(iterable_dict)
                 non_iterable_dict
             else
-                merge(non_iterable_dict, dd)
+                # We can't use merge here because it promotes types.
+                # The uniqueness of the dictionary keys is guaranteed.
+                Dict(dd..., collect(non_iterable_dict)...)
             end
         end
     )
