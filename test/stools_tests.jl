@@ -219,6 +219,17 @@ p = Dict(
                                 Dict(:a => 1,:b => 2)
                                ])
 
+# Test dict_list retaining original types
+
+dlist = dict_list(Dict(
+       :n => [1],
+       :h => [10, 15, 20],
+       :a => 0.01,:d=>0.001))
+
+@test typeof(dlist[1][:a]) == Float64
+@test typeof(dlist[1][:n]) == Int
+@test typeof(dlist[1][:h]) == Int
+@test typeof(dlist[1][:d]) == Float64
 
 ### tmpsave ###
 tmpdir = joinpath(@__DIR__, "tmp")
