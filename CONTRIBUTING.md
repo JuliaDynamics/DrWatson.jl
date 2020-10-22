@@ -1,8 +1,12 @@
 # Contributing
 
-When contributing to this repository, consider first discussing the change you wish to make via an issue. 
+Everyone is welcome to contribute! You can contribute via simply opening Issues reporting bugs or requesting features.
 
-## Pull Request Process
+## Pull Request Contributions
+The best way to contribute is by doing a Pull Request that fixes a bug or implements a new feature.
+However, before opening the PR, onsider first discussing the change you wish to make via an issue, so that a good design can be discussed.
+
+To make a good PR, follow these steps:
 
 1. Ensure all tests pass locally before starting the pull request.
 1. Add adequate description in the Pull Request, or cite the corresponding issue if one exists by using hastag `#` and the issue number.
