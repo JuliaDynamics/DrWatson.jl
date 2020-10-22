@@ -4,7 +4,7 @@ Everyone is welcome to contribute! You can contribute via simply opening Issues 
 
 ## Pull Request Contributions
 The best way to contribute is by doing a Pull Request that fixes a bug or implements a new feature.
-However, before opening the PR, onsider first discussing the change you wish to make via an issue, so that a good design can be discussed.
+However, before opening the PR, consider first discussing the change you wish to make via an issue, so that a good design can be discussed.
 
 To make a good PR, follow these steps:
 
