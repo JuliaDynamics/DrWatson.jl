@@ -167,6 +167,7 @@ In order to gain advantage from having code in version control eg. extracting di
 
 Applications like `sumatra` [@sumatra] which is written in Python and also supports MATLAB, R, BASH while it also provides extensibility for other languages,
 work mainly by executing scripts through a separate standalone tool that captures and tags all files created at runtime. Another example for such an external manager is `ReproZip` [@ChirigatiRSF16] which traces system calls to identify which files are part of a specific analysis and generates additional metadata to combine everything together into zip-file in a reproducible manner.
+`ActivePapers` [@HINSEN2011579] falls into the same category and provides a concept and guidelines for reproducible science. There are reference implementations of the ActivePapers concept for Python, JVM (Java Virtual Machine) and Pharo, see [@activepapers].
 Specialised alternatives like `recordr` [@recordr] for R, `explore` for Matlab or `recipy` [@recipy] for Python aim at the non-invasive approach by redefining IO functions for logging metadata during saving.
 The outlined tools, however, come with a cost of being limited to certain supported IO functions or the need of additional software to run code or a server infrastructure.
 Moreover, most of them are tied to a specific programming language and data provenance is only provided in their own context and usually within a single process.
