@@ -125,6 +125,11 @@ This is why we believe DrWatson can help you focus on the science and not worry 
 * Base.Filesystem
 * <https://github.com/Keno/AbstractTrees.jl/blob/master/examples/fstree.jl>
 
+## Support and Contributing
+Questions about DrWatson can be asked by directly opening up an Issue on its GitHub page, or asking in the Julia slack channels `#helpdesk, #dynamics-bridged`.
+
+If you wish to contribute, thats great! Please consult the [online guidelines](https://github.com/JuliaDynamics/DrWatson.jl/blob/master/CONTRIBUTING.md).
+
 
 ## Inspirations
 
