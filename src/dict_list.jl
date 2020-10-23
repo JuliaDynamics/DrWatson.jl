@@ -61,7 +61,7 @@ function dict_list(c::Dict)
         # 6. From the resulting list of valid combinations remove the
         # duplicates.
         # 7. Remove solutions which are only a subset of others.
-        parameter_sets = Set(map(_dict_list(c)) do trial
+        parameter_sets = unique!(map(_dict_list(c)) do trial
                                  n = length(trial)
                                  for i in 1:100_000
                                      for key in keys(trial)
