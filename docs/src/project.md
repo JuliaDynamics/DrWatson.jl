@@ -122,3 +122,18 @@ All required packages and dependencies will be installed and then any script tha
 
 In addition, with DrWatson you have the possibility of "tagging" each simulation created with the commit id, see the discussion around [`gitdescribe`](@ref) and [`tag!`](@ref).
 This way, any data result obtained at any moment can be truly reproduced simply by resetting the Git tree to the appropriate commit and running the code.
+
+## Transitioning an existing project to DrWatson
+If you already have an existing project with scripts and data etc., then there is no reason to use the [`initialize_project`](@ref) function.
+The only requirement is that everything that belongs to your project is contained within a single folder (which can have an arbitrary amount of subfolders).
+If your project is already a Julia project (which means it has its own Project.toml and Manifest.toml files), then there is nothing more necessary to be done,
+you can immediatelly start using DrWatson with it.
+Although we recommend following the [Default Project Setup](@ref), you don't have to do this either, since you can create your own [Custom directory functions](@ref).
+
+If your project is _not_ also a Julia project, the steps necessary are still quite simple. You can do:
+```julia
+julia> cd("path/to/project")
+pkg> activate .
+pkg> add Package1 Package2 ...
+```
+Julia will automatically make the Project.toml and Manifest.toml files for you as you add packages used by your project.
