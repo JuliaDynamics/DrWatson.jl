@@ -47,7 +47,7 @@ initialize_project("DrWatson Example"; authors="Datseris", force=true)
 # The scientific project we have created is also a [Julia project environment](https://docs.julialang.org/en/v1/manual/code-loading/#Environments-1).
 # This means that it has its own dedicated dependencies and versions of dependencies.
 # This project is now active by default so we can start adding packages
-# that we will be using in the project. I'll add the following for demonstrating
+# that we will be using in the project. We'll add the following for demonstrating
 using Pkg
 Pkg.add(["Statistics", "BSON"])
 
@@ -62,7 +62,7 @@ Pkg.add(["Statistics", "BSON"])
 # ```
 
 
-# Now, every script I ever write starts with the following two lines:
+# Now, with DrwWatson every script (typically) starts with the following two lines:
 # ```@setup workflow
 # quickactivate("DrWatson Example", "DrWatson Example")
 # ```
@@ -131,8 +131,8 @@ params = Dict(:a => 2, :b => 3, :v => rand(5), :method => "linear")
 allparams = Dict(
     :a => [1, 2], # it is inside vector. It is expanded.
     :b => [3, 4],
-    :v => [rand(5)], # single element inside vector; no expansion
-    :method => "linear", # not in vector = not expanded
+    :v => [rand(5)],     # single element inside vector; no expansion
+    :method => "linear", # not in vector = not expanded, even if naturally iterable
 )
 
 dicts = dict_list(allparams)
@@ -200,9 +200,10 @@ readdir(datadir("simulations"))
 
 # That is cool, but we can do better. In fact, **much better**.
 # Remember that the project initialized by DrWatson is a git repository.
-# So, now go into git and commit the script we have created and all changes.
+# So, now we quickly go into git and commit the script we have created and all changes
+# (not shown here).
 
-# Then make+save again, but now instead of `wsave` us [`tagsave`](@ref):
+# Then we make+save again, but now instead of `wsave` we use [`@tagsave`](@ref):
 
 # ```@setup workflow
 # for (i, d) in enumerate(dicts)
@@ -228,7 +229,7 @@ wload(datadir("simulations", firstsim))
 # into the file we saved (the field `:gitcommit`), enabling reproducibility!
 
 # It gets even better! Because [`@tagsave`](@ref) is a macro, it deduced automatically
-# where the script that called it was located. It even includes the exact line of code
+# where the script that called `@tagsave` was located. It even includes the exact line of code
 # that called the `@tagsave` command. This information is in the `:script` field of the
 # saved data!
 
