@@ -1,8 +1,8 @@
 ![DrWatson](https://github.com/JuliaDynamics/JuliaDynamics/blob/master/videos/drwatson/DrWatson-banner-nobg.png?raw=true)
 
-| **Documentation**   |  **Tests**     | **CodeCov**  | **Gitter** |
-|:--------:|:---------------:|:-------:|:------:|
-|[![](https://img.shields.io/badge/docs-online-blue.svg)](https://JuliaDynamics.github.io/DrWatson.jl/dev)| [![Build Status](https://travis-ci.org/JuliaDynamics/DrWatson.jl.svg?branch=master)](https://travis-ci.org/JuliaDynamics/DrWatson.jl) | [![codecov](https://codecov.io/gh/JuliaDynamics/DrWatson.jl/branch/master/graph/badge.svg)](https://codecov.io/gh/JuliaDynamics/DrWatson.jl) | [![Gitter](https://img.shields.io/gitter/room/nwjs/nw.js.svg)](https://gitter.im/JuliaDynamics/Lobby)
+| **Documentation**   |  **Tests**     | **CodeCov**  | **Gitter** | Citation|
+|:--------:|:---------------:|:-------:|:------:|:-----:|
+|[![](https://img.shields.io/badge/docs-online-blue.svg)](https://JuliaDynamics.github.io/DrWatson.jl/dev)| [![Build Status](https://travis-ci.org/JuliaDynamics/DrWatson.jl.svg?branch=master)](https://travis-ci.org/JuliaDynamics/DrWatson.jl) | [![codecov](https://codecov.io/gh/JuliaDynamics/DrWatson.jl/branch/master/graph/badge.svg)](https://codecov.io/gh/JuliaDynamics/DrWatson.jl) | [![Gitter](https://img.shields.io/gitter/room/nwjs/nw.js.svg)](https://gitter.im/JuliaDynamics/Lobby) | [![DOI](https://joss.theoj.org/papers/10.21105/joss.02673/status.svg)](https://doi.org/10.21105/joss.02673)
 
 DrWatson is a **scientific project assistant** software.
 It helps people manage their scientific projects (or any project for that matter).
@@ -13,3 +13,21 @@ To install, simply type `] add DrWatson` in your Julia session.
 Please read the [documentation page](https://JuliaDynamics.github.io/DrWatson.jl/dev) for more!
 
 **DISCLAIMER** - The Julia package DrWatson, contained in this GitHub repository, is in no way related with the proprietary [Dr. Watson](https://en.wikipedia.org/wiki/Dr._Watson_(debugger)), a debugger implemented by Microsoft. In addition, the Julia package DrWatson contained in this GitHub repository is offered for free, without any monetary charge, and is provided with an MIT license.
+
+---
+
+If you have used DrWatson in a scientific project that lead to a publication, we'd appreciate you citing the paper associated with it:
+```
+@article{Datseris2020,
+  doi = {10.21105/joss.02673},
+  url = {https://doi.org/10.21105/joss.02673},
+  year = {2020},
+  publisher = {The Open Journal},
+  volume = {5},
+  number = {54},
+  pages = {2673},
+  author = {George Datseris and Jonas Isensee and Sebastian Pech and Tamás Gál},
+  title = {DrWatson: the perfect sidekick for your scientific inquiries},
+  journal = {Journal of Open Source Software}
+}
+```

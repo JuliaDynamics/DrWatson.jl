@@ -71,6 +71,27 @@ DrWatson follows these simple principles:
 
 This is why we believe DrWatson can help you focus on the science and not worry about project code management.
 
+## Citation
+If you have used DrWatson in a scientific project that lead to a publication, we'd appreciate you citing the paper associated with it:
+```
+@article{Datseris2020,
+  doi = {10.21105/joss.02673},
+  url = {https://doi.org/10.21105/joss.02673},
+  year = {2020},
+  publisher = {The Open Journal},
+  volume = {5},
+  number = {54},
+  pages = {2673},
+  author = {George Datseris and Jonas Isensee and Sebastian Pech and Tamás Gál},
+  title = {DrWatson: the perfect sidekick for your scientific inquiries},
+  journal = {Journal of Open Source Software}
+}
+```
+
+or use the DOI directly:
+
+[![DOI](https://joss.theoj.org/papers/10.21105/joss.02673/status.svg)](https://doi.org/10.21105/joss.02673)
+
 ## Other useful packages
 
 ### Running simulations
@@ -124,6 +145,10 @@ This is why we believe DrWatson can help you focus on the science and not worry 
 ### Traversing folders
 * Base.Filesystem
 * <https://github.com/Keno/AbstractTrees.jl/blob/master/examples/fstree.jl>
+
+
+### Time management
+* <https://github.com/oxinabox/ProjectManagement.jl>
 
 ## Support and Contributing
 Questions about DrWatson can be asked by directly opening up an Issue on its GitHub page, or asking in the Julia slack channels `#helpdesk, #dynamics-bridged`.
