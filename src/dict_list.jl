@@ -55,7 +55,7 @@ function dict_list(c::Dict)
         # combinations of all parameters.
         # 3. For each solution, remove all parameters where the conditions
         # functions returns false
-        # 4. Do (2) until the length of the obtained parameter set stops
+        # 4. Do (3) until the length of the obtained parameter set stops
         # changing.
         # 5. Replace all `DependentParameter` types by their respective values
         # 6. This gives a parameter dict with a valid combination
