@@ -219,6 +219,13 @@ p = Dict(
                                 Dict(:a => 1,:b => 2)
                                ])
 
+@test Set(dict_list(Dict(
+   :a => [1,2,3],
+   :b => [@onlyif(:a==1, 10), @onlyif(:a==2, [20]), @onlyif(:a==3, [30,30])]))) == Set(
+           [Dict(:a => 1,:b => 10),
+            Dict{Symbol,Any}(:a => 2,:b => [20]),
+            Dict{Symbol,Any}(:a => 3,:b => [30, 30])])
+
 # Test dict_list retaining original types
 
 dlist = dict_list(Dict(
