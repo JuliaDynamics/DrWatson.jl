@@ -180,6 +180,8 @@ function unexpand_restricted(d::Vector{<:DependentParameter})
     DependentParameter(values, conditions[1])
 end
 
+unexpand_restricted(d) = d
+
 function toDependentParameter(value::T,condition) where T
     if T <: Vector
         return DependentParameter.(value,Ref(condition))
