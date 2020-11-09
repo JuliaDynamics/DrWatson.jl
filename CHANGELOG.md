@@ -1,3 +1,5 @@
+# 1.16.5
+* `@onlyif` now doesn't expand vector arguments if it's placed inside another vector. (#209)
 # 1.16.1
 * `dict_list` now retains the value's type from the passed dictionary.
 # 1.16.0
