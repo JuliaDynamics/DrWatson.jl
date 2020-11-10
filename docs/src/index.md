@@ -39,7 +39,7 @@ DrWatson tries to eradicate such bad thoughts and bedtime nightmares.
 
 
 ## Functionality
-DrWarson is a **scientific project assistant software**. Here is what it can do:
+DrWatson is a **scientific project assistant software**. Here is what it can do:
 
 * [Project Setup](@ref) : A universal project structure and functions that allow you to consistently and robustly navigate through your project, no matter where it is located.
 * [Naming Simulations](@ref) : A robust and deterministic scheme for naming and handling your containers.
