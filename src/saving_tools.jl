@@ -88,7 +88,7 @@ function gitpatch(path = projectdir())
         repo = LibGit2.GitRepoExt(path)
         gitpath = LibGit2.path(repo)
         gitdir = joinpath(gitpath,".git")
-        patch = read(`git --git-dir=$gitdir --work-tree=$gitpath diff HEAD`, String)
+        patch = read(`git --git-dir=$gitdir --work-tree=$gitpath diff --submodule=diff HEAD`, String)
         return patch
     catch er
         if isa(er,LibGit2.GitError) && er.code == LibGit2.Error.ENOTFOUND
