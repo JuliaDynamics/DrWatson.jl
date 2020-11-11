@@ -1,3 +1,5 @@
+# 1.16.5
+* The patch information for a dirty repository now also contains the diff for submodules.
 # 1.16.1
 * `dict_list` now retains the value's type from the passed dictionary.
 # 1.16.0
