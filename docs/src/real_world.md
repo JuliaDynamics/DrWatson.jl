@@ -430,6 +430,10 @@ The parameter restriction for the chromosome type shows that one can use arbitra
 In this case, first the conditions for the population size and for the selection method are evaluated and stored.
 The expression then only returns true, if both conditions are met, thus restricting the usage of chromosome type `:B`.
 
+As `@onlyif` is meant to be used with [`dict_list`](@ref), it supports the vector notation used for defining possible parameter values.
+This is achieved by automatically broadcasting every `@onlyif` call over `Vector` arguments, which allows chaining those calls to combine conditions.
+So in terms of the result, `@onlyif( :a == 2, [5, @onlyif(:b == 4, 6)])` is equivalent to `[@onlyif( :a == 2, 5), @onlyif(:a == 2 && :b == 4, 6)]`.
+
 ### Advanced Usage of collect_results
 At some point in your work you may want to run a single function
 that returns multiple fields that you want to include in your
