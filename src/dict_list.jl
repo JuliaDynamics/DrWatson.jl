@@ -142,6 +142,13 @@ struct DependentParameter{T}
     condition::Function
 end
 
+# This adds support for nesting DependentParameters, which translates to an and condition.
+# The value is propagated upwards and both conditions are merged into one.
+function DependentParameter(value::DependentParameter, condition::Function)
+    new_condition = (args...) -> (condition(args...) && value.condition(args...))
+    DependentParameter(value.value, new_condition)
+end
+
 contains_partially_restricted(d::Dict) = any(contains_partially_restricted,values(d))
 contains_partially_restricted(d::Vector) = any(contains_partially_restricted,d)
 contains_partially_restricted(::DependentParameter) = true

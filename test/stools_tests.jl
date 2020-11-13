@@ -226,6 +226,17 @@ p = Dict(
             Dict{Symbol,Any}(:a => 2,:b => [20]),
             Dict{Symbol,Any}(:a => 3,:b => [30, 30])])
 
+# Testing nested @onlyif calls
+@test Set(dict_list(Dict(
+                   :a=>[1,2], 
+                   :b => [3,4], 
+                   :c => @onlyif( :a == 2, [5, @onlyif(:b == 4, 6)])
+                  ))) == Set([Dict(:a => 1,:b => 3),
+                              Dict(:a => 2,:b => 3,:c => 5),
+                              Dict(:a => 1,:b => 4),
+                              Dict(:a => 2,:b => 4,:c => 5),
+                              Dict(:a => 2,:b => 4,:c => 6)])
+
 # Test dict_list retaining original types
 
 dlist = dict_list(Dict(
