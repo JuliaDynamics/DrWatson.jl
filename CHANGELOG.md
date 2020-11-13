@@ -1,5 +1,8 @@
-# 1.16.5
+# 1.16.6
 * `@onlyif` now doesn't expand vector arguments if it's placed inside another vector. (#209)
+* `@onlyif` now supports chaining. See real world examples: "Defining parameter sets with restrictions". (#210)
+# 1.16.5
+* The patch information for a dirty repository now also contains the diff for submodules.
 # 1.16.1
 * `dict_list` now retains the value's type from the passed dictionary.
 # 1.16.0
