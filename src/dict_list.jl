@@ -50,18 +50,19 @@ julia> dict_list(c)
 function dict_list(c::Dict)
     if contains_partially_restricted(c)
         # The method for generating the restricted parameter set is as follows:
-        # 1. Create an array of trial combinations containing all possible
+        # 1. Remove any nested parameter restrictions (#209)
+        # 2. Create an array of trial combinations containing all possible
         # combinations of all parameters.
-        # 2. For each solution, remove all parameters where the conditions
+        # 3. For each solution, remove all parameters where the conditions
         # functions returns false
-        # 3. Do (2) until the length of the obtained parameter set stops
+        # 4. Do (3) until the length of the obtained parameter set stops
         # changing.
-        # 4. Replace all `DependentParameter` types by their respective values
-        # 5. This gives a parameter dict with a valid combination
-        # 6. From the resulting list of valid combinations remove the
+        # 5. Replace all `DependentParameter` types by their respective values
+        # 6. This gives a parameter dict with a valid combination
+        # 7. From the resulting list of valid combinations remove the
         # duplicates.
-        # 7. Remove solutions which are only a subset of others.
-        parameter_sets = unique!(map(_dict_list(c)) do trial
+        # 8. Remove solutions which are only a subset of others.
+        parameter_sets = unique!(map(_dict_list(unexpand_restricted(c))) do trial
                                  n = length(trial)
                                  for i in 1:100_000
                                      for key in keys(trial)
@@ -141,10 +142,52 @@ struct DependentParameter{T}
     condition::Function
 end
 
+# This adds support for nesting DependentParameters, which translates to an and condition.
+# The value is propagated upwards and both conditions are merged into one.
+function DependentParameter(value::DependentParameter, condition::Function)
+    new_condition = (args...) -> (condition(args...) && value.condition(args...))
+    DependentParameter(value.value, new_condition)
+end
+
 contains_partially_restricted(d::Dict) = any(contains_partially_restricted,values(d))
 contains_partially_restricted(d::Vector) = any(contains_partially_restricted,d)
 contains_partially_restricted(::DependentParameter) = true
 contains_partially_restricted(::Any) = false
+
+
+"""
+    unexpand_restricted(c)
+Return a dict where nested @[`@onlyif`](@ref) vectors are removed.
+This is necessary, because `@onlyif` automatically broadcasts vector arguments.
+In a case like this:
+
+```julia
+   :b => [@onlyif(:a==10,[10,11]), [12,13]]
+```
+
+Broadcasting is obviously not wanted as `:b` should retain it's type of `Vector{Int}`.
+"""
+function unexpand_restricted(c::Dict{T}) where T
+    _c = Dict{T,Any}() # There are hardly any cases where this will not be any.
+    for k in keys(c)
+        if c[k] isa AbstractVector && any(el->eltype(el) <: DependentParameter, c[k])
+            _c[k] = unexpand_restricted.(c[k])
+        else
+            _c[k] = c[k]
+        end
+    end
+    return _c
+end
+
+function unexpand_restricted(d::Vector{<:DependentParameter})
+    values = [_d.value for _d in d]
+    conditions = [_d.condition for _d in d]
+    unique!(conditions)
+    @assert length(conditions) == 1 "Nested @onlyif definitions with different conditions are not allowed."
+    DependentParameter(values, conditions[1])
+end
+
+unexpand_restricted(d) = d
 
 function toDependentParameter(value::T,condition) where T
     if T <: Vector
