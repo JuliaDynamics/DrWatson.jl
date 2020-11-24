@@ -107,10 +107,17 @@ di = @dict a b c d
 sn = savename(di,scientific=4)
 _,parsed,_ = parse_savename(sn)
 @test parsed["a"] == 1.234e-7
+_,parsed,_ = parse_savename(sn, asnamedtuple = true)
+@test typeof(parsed) <:NamedTuple
+@test parsed.a == 1.234e-7
 
 sn = savename(di,scientific=1)
 _,parsed,_ = parse_savename(sn)
 @test parsed["a"] == 1.0e-7
+
+_,parsed,_ = parse_savename(sn, asnamedtuple = true)
+@test typeof(parsed) <:NamedTuple
+@test parsed.a == 1.0e-7
 
 
 # Test for NaN and Inf compatibility

@@ -359,10 +359,12 @@ is delimited by `=` and the closest `connector`. This allows the user to have `c
 * `connector = "_"` : string used to connect the various entries.
 * `parsetypes = (Int, Float64)` : tuple used to define the types which should
   be tried when parsing the values given in `filename`. Fallback is `String`.
+* `asnamedtuple = false` : return parsed arguments as `NamedTuple` instead of `Dict`
 """
 function parse_savename(filename::AbstractString;
                         parsetypes = (Int, Float64),
-                        connector::AbstractString = "_")
+                        connector::AbstractString = "_",
+                        asnamedtuple = false)
     length(connector) == 1 || error(
     "Cannot parse savenames where the 'connector'"*
     " string consists of more than one character.")
@@ -423,6 +425,8 @@ function parse_savename(filename::AbstractString;
         "Values containing '$connector' are not allowed when parsing.")
     parameters[_parameters[c_idx:prevind(_parameters,first(equal_sign))]] =
         parse_from_savename_value(parsetypes,_parameters[nextind(_parameters,first(equal_sign)):end])
+
+    parameters = asnamedtuple ? (;map(x -> (Symbol(x[1]), x[2]), collect(parameters))...) : parameters
     return prefix,parameters,suffix
 end
 
