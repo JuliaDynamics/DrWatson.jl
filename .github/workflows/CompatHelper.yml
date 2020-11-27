@@ -2,14 +2,14 @@ name: CompatHelper
 
 on:
   schedule:
-    - cron: '00 00 * * *'
+    - cron: '00 * * * *'
 
 jobs:
   CompatHelper:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        julia-version: [1.2.0]
+        julia-version: [1]
         julia-arch: [x86]
         os: [ubuntu-latest]
     steps:
