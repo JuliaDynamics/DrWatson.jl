@@ -111,6 +111,7 @@ or use the DOI directly:
 * <https://github.com/JuliaDocs/Documenter.jl>
 * <https://github.com/fredrikekre/Literate.jl>
 * <https://github.com/caseykneale/Sherlock.jl>
+* <https://github.com/miguelraz/DoctorDocstrings.jl> 
 
 ### Paper-related
 * <https://github.com/Azzaare/Bibliography.jl>
