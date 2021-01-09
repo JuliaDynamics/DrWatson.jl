@@ -1,3 +1,6 @@
+# 1.17.0
+* Two new functions `tostringdict, tosymboldict` for changing dictionary key types.
+
 # 1.16.6
 * `@onlyif` now doesn't expand vector arguments if it's placed inside another vector. (#209)
 * `@onlyif` now supports chaining. See real world examples: "Defining parameter sets with restrictions". (#210)
