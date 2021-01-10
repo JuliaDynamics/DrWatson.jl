@@ -1,5 +1,8 @@
 using DrWatson, Test
 
+using LibGit2
+LibGit2.default_signature() = LibGit2.Signature("TEST", "TEST@TEST.COM", round(time(), 0), 0)
+
 @testset "DrWatson" begin
     @testset "Naming" begin include("naming_tests.jl"); end
     @testset "Parse savename" begin include("parse_tests.jl"); end

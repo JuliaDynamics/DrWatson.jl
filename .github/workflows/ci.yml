@@ -67,8 +67,6 @@ jobs:
           version: '1'
       - name: Instantiate and install dependencies
         run: |
-          - git config --global user.name "GitUser"
-          - git config --global user.email "git@us.er"
           - julia --project=docs -e '
               using Pkg
               Pkg.develop(PackageSpec(path=pwd()))
