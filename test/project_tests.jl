@@ -1,4 +1,6 @@
 using Pkg, Test, DrWatson
+using LibGit2
+LibGit2.default_signature() = LibGit2.Signature("TEST", "TEST@TEST.COM", round(time(), 0), 0)
 
 cd() # changes directory to `homedir()`
 path = "test project"
