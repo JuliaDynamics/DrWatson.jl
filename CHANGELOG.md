@@ -1,3 +1,6 @@
+# 1.16.7
+* Fix `dict_list_count` returns wrong number of elements with `@onlyif`. (#223)
+* Fix `gitpatch` for git versions not supporting submodules. (#224)
 # 1.16.6
 * `@onlyif` now doesn't expand vector arguments if it's placed inside another vector. (#209)
 * `@onlyif` now supports chaining. See real world examples: "Defining parameter sets with restrictions". (#210)
