@@ -123,7 +123,7 @@ Return the number of dictionaries that will be created by
 calling `dict_list(c)`.
 """
 function dict_list_count(c)
-    if DependentParameter in eltype.(values(c))
+    if contains_partially_restricted(c)
         return length(dict_list(c))
     end
     iterable_fields = filter(k -> typeof(c[k]) <: Vector, keys(c))
