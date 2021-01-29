@@ -73,6 +73,25 @@ function gitdescribe(gitpath = projectdir())
 end
 
 """
+    read_stdout_stderr(cmd::Cmd)
+
+Run `cmd` synchronously and capture stdout, stdin and a possible error exception. Return a `NamedTuple` with the field `exception`, `out` and `err`.
+"""
+function read_stdout_stderr(cmd::Cmd)
+    out = Pipe()
+    err = Pipe()
+    exception = nothing
+    try
+        run(pipeline(cmd,stderr=err, stdout=out), wait=true)
+    catch e
+        exception = e
+    end
+    close(out.in)
+    close(err.in)
+    return (exception = exception, out=read(out,String), err=read(err,String))
+end
+
+"""
     gitpatch(gitpath = projectdir())
 
 Generates a patch describing the changes of a dirty repository
