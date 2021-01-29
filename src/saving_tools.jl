@@ -115,20 +115,18 @@ function gitpatch(path = projectdir(); try_submodule_diff=true)
         elseif Sys.which("git") === nothing
             @warn "`git` was not found in the current PATH, "*
             "returning `nothing` instead of a patch."
-            return nothing
         elseif occursin("--submodule",result.err) && occursin("diff",result.err) && try_submodule_diff
             # Remove the submodule option as it is not supported by older git versions.
             return gitpatch(path; try_submodule_diff = false)
         else
             @warn "`gitpatch` failed with error $(result.err) $(result.exception) and , returning `nothing` instead."
-            return nothing
         end
     catch er
         if isa(er,LibGit2.GitError) && er.code == LibGit2.Error.ENOTFOUND
             @warn "The directory ('$path') is not a Git repository, "*
             "returning `nothing` instead of a patch."
         elseif isa(er,LibGit2.GitError)
-            @warn "$(er). Returning `nothing` instead of a patch."
+            @warn "$(er.msg). Returning `nothing` instead of a patch."
         else
             @warn "`gitpatch` failed with error $er, returning `nothing` instead."
         end
