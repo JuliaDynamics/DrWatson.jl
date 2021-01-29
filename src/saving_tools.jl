@@ -75,7 +75,8 @@ end
 """
     read_stdout_stderr(cmd::Cmd)
 
-Run `cmd` synchronously and capture stdout, stdin and a possible error exception. Return a `NamedTuple` with the field `exception`, `out` and `err`.
+Run `cmd` synchronously and capture stdout, stdin and a possible error exception. 
+Return a `NamedTuple` with the fields `exception`, `out` and `err`.
 """
 function read_stdout_stderr(cmd::Cmd)
     out = Pipe()
