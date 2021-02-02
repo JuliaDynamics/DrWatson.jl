@@ -27,8 +27,8 @@ the macros [`@dict`](@ref) and [`@strdict`](@ref) can help with that.
 See also [`savename`](@ref).
 """
 produce_or_load(c, f; kwargs...) = produce_or_load("", c, f; kwargs...)
-produce_or_load(f::Function, c) = produce_or_load(c, f)
-produce_or_load(f::Function, path::String, c) = produce_or_load(path, c, f)
+produce_or_load(f::Function, c; kwargs...) = produce_or_load(c, f; kwargs...)
+produce_or_load(f::Function, path::String, c; kwargs...) = produce_or_load(path, c, f; kwargs...)
 function produce_or_load(path::String, c, f::Function;
     tag::Bool = true, gitpath = projectdir(), loadfile = true,
     suffix = "bson", prefix = default_prefix(c),
