@@ -16,6 +16,7 @@ You can use [do-block](https://docs.julialang.org/en/v1/manual/functions/#Do-Blo
 produce_or_load([path="",] c) do c
     # simulation wiht config `c` runs here
 end
+```
 
 ## Keywords
 * `tag = true` : Save the file using [`tagsave`](@ref).
