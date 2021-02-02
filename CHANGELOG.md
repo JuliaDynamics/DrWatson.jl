@@ -1,4 +1,4 @@
-# 1.16.7
+# 1.17.0
 * `produce_or_load` now supports passing function as the first argument to support the do-block syntax.
 # 1.16.6
 * `@onlyif` now doesn't expand vector arguments if it's placed inside another vector. (#209)
