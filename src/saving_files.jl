@@ -13,7 +13,7 @@ the macros [`@dict`](@ref) and [`@strdict`](@ref) can help with that.
 
 You can use [do-block](https://docs.julialang.org/en/v1/manual/functions/#Do-Block-Syntax-for-Function-Arguments) instead of defining a function to pass in. For example,
 ```julia
-produce_or_load(c) do c
+produce_or_load([path="",] c) do c
     # simulation wiht config `c` runs here
 end
 
