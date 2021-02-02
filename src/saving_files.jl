@@ -11,6 +11,13 @@ that produces your data. Then save `file` as `s` and then return `file, s`.
 The function `f` must return a dictionary,
 the macros [`@dict`](@ref) and [`@strdict`](@ref) can help with that.
 
+You can use [do-block](https://docs.julialang.org/en/v1/manual/functions/#Do-Block-Syntax-for-Function-Arguments) instead of defining a function to pass in. For example,
+```julia
+produce_or_load([path="",] c) do c
+    # simulation wiht config `c` runs here
+end
+```
+
 ## Keywords
 * `tag = true` : Save the file using [`tagsave`](@ref).
 * `gitpath = projectdir()` : Path to search for a Git repo.
@@ -27,7 +34,9 @@ the macros [`@dict`](@ref) and [`@strdict`](@ref) can help with that.
 See also [`savename`](@ref).
 """
 produce_or_load(c, f; kwargs...) = produce_or_load("", c, f; kwargs...)
-function produce_or_load(path::String, c, f;
+produce_or_load(f::Function, c; kwargs...) = produce_or_load(c, f; kwargs...)
+produce_or_load(f::Function, path::String, c; kwargs...) = produce_or_load(path, c, f; kwargs...)
+function produce_or_load(path::String, c, f::Function;
     tag::Bool = true, gitpath = projectdir(), loadfile = true,
     suffix = "bson", prefix = default_prefix(c),
     force = false, verbose = true, kwargs...)
