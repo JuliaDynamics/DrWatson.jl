@@ -11,6 +11,12 @@ that produces your data. Then save `file` as `s` and then return `file, s`.
 The function `f` must return a dictionary,
 the macros [`@dict`](@ref) and [`@strdict`](@ref) can help with that.
 
+You can use [do-block](https://docs.julialang.org/en/v1/manual/functions/#Do-Block-Syntax-for-Function-Arguments) instead of defining a function to pass in. For example,
+```julia
+produce_or_load(c) do c
+    # simulation wiht config `c` runs here
+end
+
 ## Keywords
 * `tag = true` : Save the file using [`tagsave`](@ref).
 * `gitpath = projectdir()` : Path to search for a Git repo.
