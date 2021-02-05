@@ -23,6 +23,8 @@ Convenience functions are provided to shorten common function calls and easily c
 @savename
 ntuple2dict
 dict2ntuple
+tostringdict
+tosymboldict
 ```
 
 Notice that we also re-export the convenient `@pack!, @unpack` tools from [UnPack.jl](https://github.com/mauro3/UnPack.jl), because they play very well with [`@dict`](@ref) and similar functions. Be aware of the syntactic `,` difference: `d = @dict a b c` versus `@unpack a, b, c = d`.
