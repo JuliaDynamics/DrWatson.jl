@@ -276,8 +276,14 @@ function initialize_project(path, name = default_name_from_path(path);
         end
     end
 
-    if git; repo = LibGit2.init(path); end
-    git && LibGit2.commit(repo, "Initial commit")
+    if git
+        repo = LibGit2.init(path)
+        gc = LibGit2.GitConfig(repo)
+        LibGit2.get(gc, "user.name", false) || LibGit2.set!(gc, "user.name", "DrWatson")
+        LibGit2.get(gc, "user.email", false) || LibGit2.set!(gc, "user.email", "no@mail")
+        LibGit2.commit(repo, "Initial commit")
+    end
+
     Pkg.activate(path)
     try
         Pkg.add("DrWatson")

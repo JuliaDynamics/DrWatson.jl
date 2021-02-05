@@ -78,6 +78,24 @@ for ending ∈ ("bson", "jld2")
     rm(savename(simulation, ending))
     @test !isfile(savename(simulation, ending))
 
+    @test !isfile(savename(simulation, ending))
+    sim, path = produce_or_load("", simulation; suffix = ending) do simulation
+        @test typeof(simulation.T) <: Real
+        a = rand(10); b = [rand(10) for _ in 1:10]
+        return @strdict a b simulation
+    end
+    @test isfile(savename(simulation, ending))
+    @test sim["simulation"].T == T
+    @test path == savename(simulation, ending)
+    sim, path = produce_or_load("", simulation; suffix = ending) do simulation
+        @test typeof(simulation.T) <: Real
+        a = rand(10); b = [rand(10) for _ in 1:10]
+        return @strdict a b simulation
+    end
+    @test sim["simulation"].T == T
+    rm(savename(simulation, ending))
+    @test !isfile(savename(simulation, ending))
+
     p = String(@__DIR__)
     pre = "pre"
     expected = joinpath(p, savename(pre, simulation, ending))

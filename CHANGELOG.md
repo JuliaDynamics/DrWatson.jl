@@ -1,4 +1,6 @@
 # 1.17.0
+* `produce_or_load` now supports passing function as the first argument to support the do-block syntax.
+# 1.17.0
 * Two new functions `tostringdict, tosymboldict` for changing dictionary key types.
 
 # 1.16.6
