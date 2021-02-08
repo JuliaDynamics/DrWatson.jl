@@ -49,6 +49,9 @@ w = rand(50)
 @test ntuple2dict(@ntuple x y) == @dict x y
 @test sort(collect(keys(dict2ntuple(@dict x y)))) == sort(collect(keys(@ntuple x y)))
 
+@test keytype(tostringdict(d2)) == String
+@test keytype(tosymboldict(tostringdict(d2))) == Symbol
+
 a = 3; b = 4
 c = @ntuple a b
 d = 5; e = @dict c d

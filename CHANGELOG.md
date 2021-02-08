@@ -1,6 +1,10 @@
-# 1.16.7
+# 1.18.1
 * Fix `dict_list_count` returns wrong number of elements with `@onlyif`. (#223)
 * Fix `gitpatch` for git versions not supporting submodules. (#224)
+# 1.18.0
+* Two new functions `tostringdict, tosymboldict` for changing dictionary key types.
+# 1.17.0
+* `produce_or_load` now supports passing function as the first argument to support the do-block syntax.
 # 1.16.6
 * `@onlyif` now doesn't expand vector arguments if it's placed inside another vector. (#209)
 * `@onlyif` now supports chaining. See real world examples: "Defining parameter sets with restrictions". (#210)

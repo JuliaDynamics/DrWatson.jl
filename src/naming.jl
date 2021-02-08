@@ -1,6 +1,7 @@
 using Dates
 export savename, @savename, @dict, @ntuple, @strdict, parse_savename
 export ntuple2dict, dict2ntuple
+export tostringdict, tosymboldict
 
 """
     savename([prefix,], c [, suffix]; kwargs...)
@@ -60,7 +61,7 @@ See also [`parse_savename`](@ref) and [`@savename`](@ref).
   by rolling your own container type). If the `savename` of the nested
   containers is `""`, it is also skipped.
 * `sort = true` : Indicate whether the pairs are sorted alphabetically by
-  keys. If not, they are sorted by the order of `accesses`. WARNING: the 
+  keys. If not, they are sorted by the order of `accesses`. WARNING: the
   default `accesses` is not deterministic for `Dict` inputs.
 
 ## Examples
@@ -344,6 +345,17 @@ function dict2ntuple(dict::Dict{Symbol, T}) where T
     NamedTuple{Tuple(keys(dict))}(values(dict))
 end
 
+"""
+    tostringdict(d)
+Change a dictionary with key type `Symbol` to have key type `String`.
+"""
+tostringdict(d) = Dict(zip(String.(keys(d)), values(d)))
+
+"""
+    tosymboldict(d)
+Change a dictionary with key type `String` to have key type `Symbol`.
+"""
+tosymboldict(d) = Dict(zip(Symbol.(keys(d)), values(d)))
 
 """
     parse_savename(filename::AbstractString; kwargs...)
