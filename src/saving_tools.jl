@@ -73,6 +73,26 @@ function gitdescribe(gitpath = projectdir())
 end
 
 """
+    read_stdout_stderr(cmd::Cmd)
+
+Run `cmd` synchronously and capture stdout, stdin and a possible error exception. 
+Return a `NamedTuple` with the fields `exception`, `out` and `err`.
+"""
+function read_stdout_stderr(cmd::Cmd)
+    out = Pipe()
+    err = Pipe()
+    exception = nothing
+    try
+        run(pipeline(cmd,stderr=err, stdout=out), wait=true)
+    catch e
+        exception = e
+    end
+    close(out.in)
+    close(err.in)
+    return (exception = exception, out=read(out,String), err=read(err,String))
+end
+
+"""
     gitpatch(gitpath = projectdir())
 
 Generates a patch describing the changes of a dirty repository
@@ -83,27 +103,36 @@ otherwise `nothing` is returned.
 Be aware that `gitpatch` needs a working installation of Git, that 
 can be found in the current PATH.
 """
-function gitpatch(path = projectdir())
+function gitpatch(path = projectdir(); try_submodule_diff=true)
     try
         repo = LibGit2.GitRepoExt(path)
         gitpath = LibGit2.path(repo)
         gitdir = joinpath(gitpath,".git")
-        patch = read(`git --git-dir=$gitdir --work-tree=$gitpath diff --submodule=diff HEAD`, String)
-        return patch
+        optional_args = String[]
+        try_submodule_diff && push!(optional_args,"--submodule=diff")
+        result = read_stdout_stderr(`git --git-dir=$gitdir --work-tree=$gitpath diff $(optional_args) HEAD`)
+        if result.exception === nothing
+            return result.out
+        elseif Sys.which("git") === nothing
+            @warn "`git` was not found in the current PATH, "*
+            "returning `nothing` instead of a patch."
+        elseif occursin("--submodule",result.err) && occursin("diff",result.err) && try_submodule_diff
+            # Remove the submodule option as it is not supported by older git versions.
+            return gitpatch(path; try_submodule_diff = false)
+        else
+            @warn "`gitpatch` failed with error $(result.err) $(result.exception) and , returning `nothing` instead."
+        end
     catch er
         if isa(er,LibGit2.GitError) && er.code == LibGit2.Error.ENOTFOUND
             @warn "The directory ('$path') is not a Git repository, "*
             "returning `nothing` instead of a patch."
         elseif isa(er,LibGit2.GitError)
             @warn "$(er.msg). Returning `nothing` instead of a patch."
-        elseif Sys.which("git") == nothing
-            @warn "`git` was not found in the current PATH, "*
-            "returning `nothing` instead of a patch."
         else
             @warn "`gitpatch` failed with error $er, returning `nothing` instead."
         end
-        return nothing
     end
+    return nothing
     # tree = LibGit2.GitTree(repo, "HEAD^{tree}")
     # diff = LibGit2.diff_tree(repo, tree)
     # now there is no way to generate the patch with LibGit2.jl.

@@ -1,3 +1,6 @@
+# 1.18.1
+* Fix `dict_list_count` returns wrong number of elements with `@onlyif`. (#223)
+* Fix `gitpatch` for git versions not supporting submodules. (#224)
 # 1.18.0
 * Two new functions `tostringdict, tosymboldict` for changing dictionary key types.
 # 1.17.0
