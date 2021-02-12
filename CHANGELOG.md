@@ -1,3 +1,5 @@
+# 1.18.2
+* Keyword `storepatch` now exists in `produce_or_load` as well.
 # 1.18.1
 * Fix `dict_list_count` returns wrong number of elements with `@onlyif`. (#223)
 * Fix `gitpatch` for git versions not supporting submodules. (#224)

@@ -20,7 +20,7 @@ end
 
 ## Keywords
 * `tag = true` : Save the file using [`tagsave`](@ref).
-* `gitpath = projectdir()` : Path to search for a Git repo.
+* `gitpath, storepatch` : Given to [`tagsave`](@ref) if `tag` is `true`.
 * `suffix = "bson", prefix = default_prefix(c)` : Used in `savename`.
 * `force = false` : If `true` then don't check if file `s` exists and produce
   it and save it anyway.
@@ -39,7 +39,7 @@ produce_or_load(f::Function, path::String, c; kwargs...) = produce_or_load(path,
 function produce_or_load(path::String, c, f::Function;
     tag::Bool = true, gitpath = projectdir(), loadfile = true,
     suffix = "bson", prefix = default_prefix(c),
-    force = false, verbose = true, kwargs...)
+    force = false, verbose = true, storepatch = true, kwargs...)
 
     s = joinpath(path, savename(prefix, c, suffix; kwargs...))
 
@@ -59,7 +59,7 @@ function produce_or_load(path::String, c, f::Function;
         file = f(c)
         try
             if tag
-                tagsave(s, file; safe = false, gitpath = gitpath)
+                tagsave(s, file; safe = false, gitpath = gitpath, storepatch = storepatch)
             else
                 wsave(s, copy(file))
             end
