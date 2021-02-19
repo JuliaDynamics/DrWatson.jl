@@ -35,8 +35,8 @@ See also [`savename`](@ref).
 """
 produce_or_load(c, f; kwargs...) = produce_or_load("", c, f; kwargs...)
 produce_or_load(f::Function, c; kwargs...) = produce_or_load(c, f; kwargs...)
-produce_or_load(f::Function, path::String, c; kwargs...) = produce_or_load(path, c, f; kwargs...)
-function produce_or_load(path::String, c, f::Function;
+produce_or_load(f::Function, path, c; kwargs...) = produce_or_load(path, c, f; kwargs...)
+function produce_or_load(path, c, f::Function;
     tag::Bool = true, gitpath = projectdir(), loadfile = true,
     suffix = "bson", prefix = default_prefix(c),
     force = false, verbose = true, storepatch = true, kwargs...)

@@ -1,3 +1,5 @@
+# 1.18.3
+* Remove type constraints on `produce_or_load` path argument (#229)
 # 1.18.2
 * Keyword `storepatch` now exists in `produce_or_load` as well.
 # 1.18.1
