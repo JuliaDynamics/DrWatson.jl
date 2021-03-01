@@ -43,14 +43,9 @@ See also [`parse_savename`](@ref) and [`@savename`](@ref).
   tuple, see [`allignore`](@ref).
   (keys in `ignore` are ignored even if they are in `accesses`)
 * `digits = 3` : Floating point values are rounded to `digits`.
-  In addition if the following holds:
-  ```julia
-  round(val; digits = digits) == round(Int, val)
-  ```
-  then the integer value is used in the name instead.
 * `scientific = nothing` : Number of significant digits used for rounding of
   floating point values using scientific notation (e.g. `1.65e-7`).
-  If `nothing`, normal rounding is done.
+  If `nothing`, normal rounding is done, else it overwrites `digits`.
 * `connector = "_"` : string used to connect the various entries.
 * `expand::Vector{String} = default_expand(c)` : keys that will be expanded
   to the `savename` of their contents, to allow for nested containers.
@@ -140,20 +135,18 @@ Round `val`, if roundable, where `digits` defines the number of digits
 and `scientific` the number of significant digits used for rounding.
 `scientific` overwrites `digits`.
 """
-function roundval(val::Tv;digits::Td, scientific::Ts) where {Tv, Td, Ts}
+function roundval(val::Tv; digits::Td, scientific::Ts) where {Tv, Td, Ts}
     if Tv <: AbstractFloat
         if isnan(val) || isinf(val)
             return val
         end
         if Ts <: Int
-            x = round(val,sigdigits = scientific)
+            x = round(val; sigdigits = scientific)
         else
             x = round(val; digits = digits)
         end
-        y = round(Int, val)
-        return val = x == y ? y : x
+        return x
     end
-    return val
 end
 
 """
