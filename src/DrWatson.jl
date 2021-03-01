@@ -28,7 +28,7 @@ _wsave(filename, data...; kwargs...) = FileIO.save(filename, data...; kwargs...)
 
 Save `data` at `filename` by first creating the appropriate paths.
 Default fallback is `FileIO.save`. Extend `wsave` for your type
-by extending `DrWatson._wsave`.
+by extending `DrWatson._wsave(filename, data...; kwargs...)`.
 """
 function wsave(filename, data...; kwargs...)
     mkpath(dirname(filename))
