@@ -50,8 +50,8 @@ function __init__()
 end
 
 # Update messages
-const display_update = false
-const update_version = "1.8.0"
+const display_update = true
+const update_version = "1.19.0"
 const update_name = "update_v$update_version"
 if display_update
 if !isfile(joinpath(@__DIR__, update_name))
@@ -59,7 +59,8 @@ printstyled(stdout,
 """
 \nUpdate message: DrWatson v$update_version
 
-A cool new feature was added to the `@quickactivate` macro!
+`savename` no longer replaces `AbstractFloat` values with integer values
+if they two values coincide. I.e. no longer is `1.0` output as `1` in `savename`.
 \n
 """; color = :light_magenta)
 touch(joinpath(@__DIR__, update_name))

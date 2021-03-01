@@ -1,3 +1,5 @@
+# 1.19.0
+* `savename` will no longer replace a floating point number with its integer version, if they coincide with respect to rounding. Thus, "integer" `AbstractFloat`s will always end with `.0` in `savename`.
 # 1.18.3
 * Remove type constraints on `produce_or_load` path argument (#229)
 # 1.18.2
