@@ -49,7 +49,7 @@ initialize_project("DrWatson Example"; authors="Datseris", force=true)
 # This project is now active by default so we can start adding packages
 # that we will be using in the project. We'll add the following for demonstrating
 using Pkg
-Pkg.add(["Statistics", "BSON"])
+Pkg.add(["Statistics", "JLD2"])
 
 # ## 2. Write some scripts
 
@@ -161,7 +161,7 @@ end
 # ```julia
 # for (i, d) in enumerate(dicts)
 #     f = makesim(d)
-#     wsave(datadir("simulations", "sim_$(i).bson"), f)
+#     wsave(datadir("simulations", "sim_$(i).jld2"), f)
 # end
 # ```
 
@@ -171,7 +171,7 @@ end
 # Here each simulation was named according to a number.
 # But this is not how we do it in science... We typically want the input parameters
 # to be part of the file name. E.g. here we would want the file name to be something like
-# `a=2_b=3_method=linear.bson`. It would be also nice that such a naming scheme would
+# `a=2_b=3_method=linear.jld2`. It would be also nice that such a naming scheme would
 # apply to arbitrary input parameters so that we don't have to manually write
 # `a=$(a)_b=$(b)_method=$(method)` and change this code every time we change
 # a parameter name...
@@ -265,10 +265,10 @@ df = collect_results(datadir("simulations"))
 
 analysis = 42
 
-safesave(datadir("ana", "linear.bson"), @dict analysis)
+safesave(datadir("ana", "linear.jld2"), @dict analysis)
 
-# If a file `linear.bson` exists in that folder, it is not overwritten. Instead, it is
-# renamed to `linear#1.bson`, and a new `linear.bson` file is made!
+# If a file `linear.jld2` exists in that folder, it is not overwritten. Instead, it is
+# renamed to `linear#1.jld2`, and a new `linear.jld2` file is made!
 # Notice also the usage of the ultra-cool [`@dict`](@ref) macro, which creates a
 # dictionary from existing variables
 

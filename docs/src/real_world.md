@@ -12,7 +12,7 @@ include(srcdir("unitcells.jl"))
 ```
 In all projects I save data/plots using `datadir/plotdir`:
 ```julia
-@tagsave(datadir("mushrooms", "Λ_N=$N.bson"), (@dict Λ Λσ ws hs description))
+@tagsave(datadir("mushrooms", "Λ_N=$N.jld2"), (@dict Λ Λσ ws hs description))
 ```
 The advantage of this approach is that it will always work regardless of if I move the specific file to a different subfolder (which is very often necessary) or whether I move the entire project folder somewhere else!
 **Please be sure you have understood the caveat of using [`quickactivate`](@ref)!**
@@ -29,7 +29,7 @@ include(srcdir("nrmse.jl"))
 
 # stuff...
 
-save(datadir("sim", "barkley", "astonishing_results.bson"), data)
+save(datadir("sim", "barkley", "astonishing_results.jld2"), data)
 ```
 
 ## Making your project a usable module
@@ -94,7 +94,7 @@ end
 ```
 This saves files that look like:
 ```
-path/to/project/data/sim/bk_N=50_T=10050_seed=1111_ΔT=1.bson
+path/to/project/data/sim/bk_N=50_T=10050_seed=1111_ΔT=1.jld2
 ```
 and each file is a dictionary that has my data fields: `:U, :V, :simulation`, but also `:gitcommit, :script`. When I read this file I know exactly what was the source code that produced it (provided that I am not sloppy and commit code changes regularly :P).
 

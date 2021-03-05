@@ -18,7 +18,7 @@ new result-files are simply appended to the dataframe.
 
 `filename` defaults to:
 ```julia
-filename = joinpath(dirname(folder), "results_\$(basename(folder)).bson")
+filename = joinpath(dirname(folder), "results_\$(basename(folder)).jld2")
 ```
 
 See also [`collect_results`](@ref).
@@ -52,7 +52,7 @@ to be used as column name in the DataFrame. The function entry always
 takes a single argument, which is the loaded result-file (a dictionary).
 The second option is to provide just one function `func`. This function
 also takes the single dictionary argument but returns one or more
-`key => value` pairs. This second notation may be useful when one wants 
+`key => value` pairs. This second notation may be useful when one wants
 to extract values for multiple columns in a single step.
 As an example consider that each result-file
 contains a field `:longvector` too large to be included in the `df`.
@@ -67,7 +67,7 @@ In case this operation fails the values will be treated as `missing`.
 """
 collect_results!(folder; kwargs...) =
 collect_results!(
-joinpath(dirname(folder), "results_$(basename(folder)).bson"),
+joinpath(dirname(folder), "results_$(basename(folder)).jld2"),
 folder; kwargs...)
 
 function collect_results!(filename, folder;
