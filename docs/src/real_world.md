@@ -87,7 +87,7 @@ for N ∈ Ns, ΔT ∈ ΔTs
     U, V = barkley(T, N, every; seed = seed)
 
     @tagsave(
-        datadir("sim", "bk", savename(simulation, "bson")),
+        datadir("sim", "bk", savename(simulation, "jld2")),
         @dict U V simulation
     )
 end
@@ -294,7 +294,7 @@ function cross_estimation(data)
     prefix = datadir("results", data["model"])
     get(data, "noisy_training", false) && (prefix *= "_noisy")
     get(data, "symmetric_training", false) && (prefix *= "_symmetric")
-    sname = savename((@dict γ τ r c N), "bson")
+    sname = savename((@dict γ τ r c N), "jld2")
     mkpath(datadir("results", data["model"]))
     save(datadir("results", data["model"], sname), data)
     return true

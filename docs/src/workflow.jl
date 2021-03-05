@@ -183,7 +183,7 @@ savename(params)
 # `savename` takes as an input pretty much *any* Julia composite container with key-value
 # pairs and transforms it into such a name. We can even do
 
-savename(dicts[1], "bson")
+savename(dicts[1], "jld2")
 
 # `savename` is flexible and smart. As you noticed, even though the vector `v` with
 # 5 numbers is part of the input, it wasn't included in the name (on purpose).
@@ -193,7 +193,7 @@ savename(dicts[1], "bson")
 
 for (i, d) in enumerate(dicts)
     f = makesim(d)
-    wsave(datadir("simulations", savename(d, "bson")), f)
+    wsave(datadir("simulations", savename(d, "jld2")), f)
 end
 
 readdir(datadir("simulations"))
@@ -208,14 +208,14 @@ readdir(datadir("simulations"))
 # ```@setup workflow
 # for (i, d) in enumerate(dicts)
 #     f = makesim(d)
-#     @tagsave(datadir("simulations", savename(d, "bson")), f; gitpath = "../..")
+#     @tagsave(datadir("simulations", savename(d, "jld2")), f; gitpath = "../..")
 # end
 # ```
 
 # ```julia
 # for (i, d) in enumerate(dicts)
 #     f = makesim(d)
-#     @tagsave(datadir("simulations", savename(d, "bson")), f)
+#     @tagsave(datadir("simulations", savename(d, "jld2")), f)
 # end
 # ```
 
