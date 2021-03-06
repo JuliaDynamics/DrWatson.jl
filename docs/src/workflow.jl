@@ -120,19 +120,23 @@ r, y = fakesim(a, b, v, method)
 # Okay, that is fine, but it is typically the case that in scientific context
 # some simulations are done for several different combinations of parameters.
 # It is convenient to group all parameters in a dictionary, with the keys
-# being the parameters (as symbols or strings). E.g.
+# being the parameters. Depending on the package you will use to actually save the data,
+# the key type should be either `String` or `Symbol`. Here we will be using
+# JLD2.jl and therefore the key type will be `String`.
+params = @strdict a b v method
 
-params = Dict(:a => 2, :b => 3, :v => rand(5), :method => "linear")
+# Above we used the ultra-cool [`@strdict`](@ref) macro, which creates a
+# dictionary from existing variables!
 
 # Now, for every simulation we want to do, we would create such a container.
 # We can use the [`dict_list`](@ref) to ease up the process of preparing several
 # of these parameter containers
 
 allparams = Dict(
-    :a => [1, 2], # it is inside vector. It is expanded.
-    :b => [3, 4],
-    :v => [rand(5)],     # single element inside vector; no expansion
-    :method => "linear", # not in vector = not expanded, even if naturally iterable
+    "a" => [1, 2], # it is inside vector. It is expanded.
+    "b" => [3, 4],
+    "v" => [rand(5)],     # single element inside vector; no expansion
+    "method" => "linear", # not in vector = not expanded, even if naturally iterable
 )
 
 dicts = dict_list(allparams)
@@ -152,8 +156,8 @@ function makesim(d::Dict)
     @unpack a, b, v, method = d
     r, y = fakesim(a, b, v, method)
     fulld = copy(d)
-    fulld[:r] = r
-    fulld[:y] = y
+    fulld["r"] = r
+    fulld["y"] = y
     return fulld
 end
 
@@ -265,14 +269,10 @@ df = collect_results(datadir("simulations"))
 
 analysis = 42
 
-safesave(datadir("ana", "linear.jld2"), @dict analysis)
+safesave(datadir("ana", "linear.jld2"), @strdict analysis)
 
 # If a file `linear.jld2` exists in that folder, it is not overwritten. Instead, it is
 # renamed to `linear#1.jld2`, and a new `linear.jld2` file is made!
-# Notice also the usage of the ultra-cool [`@dict`](@ref) macro, which creates a
-# dictionary from existing variables
-
-@dict a b v analysis
 
 # ## 6. Share your project
 
