@@ -21,7 +21,7 @@ end
 ## Keywords
 * `tag = true` : Save the file using [`tagsave`](@ref).
 * `gitpath, storepatch` : Given to [`tagsave`](@ref) if `tag` is `true`.
-* `suffix = "bson", prefix = default_prefix(c)` : Used in `savename`.
+* `suffix = "jld2", prefix = default_prefix(c)` : Used in `savename`.
 * `force = false` : If `true` then don't check if file `s` exists and produce
   it and save it anyway.
 * `loadfile = true` : If `false`, this function does not actually load the
@@ -38,7 +38,7 @@ produce_or_load(f::Function, c; kwargs...) = produce_or_load(c, f; kwargs...)
 produce_or_load(f::Function, path, c; kwargs...) = produce_or_load(path, c, f; kwargs...)
 function produce_or_load(path, c, f::Function;
     tag::Bool = true, gitpath = projectdir(), loadfile = true,
-    suffix = "bson", prefix = default_prefix(c),
+    suffix = "jld2", prefix = default_prefix(c),
     force = false, verbose = true, storepatch = true, kwargs...)
 
     s = joinpath(path, savename(prefix, c, suffix; kwargs...))
