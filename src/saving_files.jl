@@ -133,15 +133,15 @@ end
 
 Safely save `data` in `filename` by ensuring that no existing files
 are overwritten. Do this by renaming already existing data with a backup-number
-ending like `#1, #2, ...`. For example if `filename = test.bson`, the first
+ending like `#1, #2, ...`. For example if `filename = test.jld2`, the first
 time you `safesave` it, the file is saved normally. The second time
-the existing save is renamed to `test_#1.bson` and a new file `test.bson`
+the existing save is renamed to `test_#1.jld2` and a new file `test.jld2`
 is then saved.
 
 If a backup file already exists then its backup-number is incremented
-(e.g. going from `#2` to `#3`). For example safesaving `test.bson` a third time
-will rename the old `test_#1.bson` to `test_#2.bson`, rename the old
-`test.bson` to `test_#1.bson` and then save a new `test.bson` with the latest
+(e.g. going from `#2` to `#3`). For example safesaving `test.jld2` a third time
+will rename the old `test_#1.jld2` to `test_#2.jld2`, rename the old
+`test.jld2` to `test_#1.jld2` and then save a new `test.jld2` with the latest
 `data`.
 
 See also [`tagsave`](@ref).
@@ -191,10 +191,10 @@ See also [`dict_list`](@ref).
 ## Keywords
 * `l = 8` : number of characters in the random string.
 * `prefix = ""` : prefix each temporary name will have.
-* `suffix = "bson"` : ending of the temporary names (no need for the dot).
+* `suffix = "jld2"` : ending of the temporary names (no need for the dot).
 """
 function tmpsave(dicts, tmp = projectdir("_research", "tmp");
-    l = 8, suffix = "bson", prefix = "")
+    l = 8, suffix = "jld2", prefix = "")
 
     mkpath(tmp)
     n = length(dicts)
