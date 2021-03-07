@@ -62,7 +62,7 @@ Pkg.add(["Statistics", "JLD2"])
 # ```
 
 
-# Now, with DrwWatson every script (typically) starts with the following two lines:
+# Now, with DrWatson every script (typically) starts with the following two lines:
 # ```@setup workflow
 # quickactivate("DrWatson Example", "DrWatson Example")
 # ```
@@ -242,6 +242,7 @@ wload(datadir("simulations", firstsim))
 # Cool, now we can start analyzing some simulations. The actual analysis is your job,
 # but DrWatson can help you get started with the [`collect_results`](@ref) function.
 # Notice that you need to be `using DataFrames` to access the function!
+Pkg.add(["DataFrames"])
 using DataFrames
 
 df = collect_results(datadir("simulations"))
