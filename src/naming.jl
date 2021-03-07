@@ -42,10 +42,8 @@ See also [`parse_savename`](@ref) and [`@savename`](@ref).
   to ignore with the keyword `ignores`. By default this is an empty
   tuple, see [`allignore`](@ref).
   (keys in `ignore` are ignored even if they are in `accesses`)
-* `digits = 3` : Floating point values are rounded to `digits`.
-* `scientific = nothing` : Number of significant digits used for rounding of
-  floating point values using scientific notation (e.g. `1.65e-7`).
-  If `nothing`, normal rounding is done, else it overwrites `digits`.
+* `digits = 3, sigdigits = nothing` : Floating point values are rounded using the `round`
+  function with these keywords.
 * `connector = "_"` : string used to connect the various entries.
 * `expand::Vector{String} = default_expand(c)` : keys that will be expanded
   to the `savename` of their contents, to allow for nested containers.
@@ -81,7 +79,7 @@ function savename(prefix::String, c, suffix::String;
                   allowedtypes = default_allowed(c),
                   accesses = allaccess(c), ignores = allignore(c), digits = 3,
                   connector = "_", expand::Vector{String} = default_expand(c),
-                  scientific::Union{Int,Nothing}=nothing,
+                  sigdigits::Union{Int,Nothing}=nothing,
                   sort = true)
 
     if any(sep in prefix for sep in ['/', '\\'])
@@ -91,7 +89,7 @@ function savename(prefix::String, c, suffix::String;
             `savename` (e.g. `datadir("path", "to", "folder", savename("prefix", data))`).
         """
     end
-
+    digits = sigdigits === nothing ? digits : nothing
     # Here take care of extra prefix besides default
     dpre = default_prefix(c)
     if dpre != "" && prefix != dpre
@@ -110,10 +108,10 @@ function savename(prefix::String, c, suffix::String;
         val = access(c, accesses[j])
         t = typeof(val)
         if any(x -> (t <: x), allowedtypes)
-            val = roundval(val,digits=digits,scientific=scientific)
+            val = roundval(val, digits,sigdigits)
             if label ∈ expand
                 isempty(val) && continue
-                sname = savename(val; connector=",", digits=digits, scientific=scientific)
+                sname = savename(val; connector=",", digits=digits, sigdigits=sigdigits)
                 isempty(sname) && continue
                 entry = label*"="*'('*sname*')'
             else
@@ -128,24 +126,15 @@ function savename(prefix::String, c, suffix::String;
     return s
 end
 
-"""
-    roundval(val; digits, scientific)
-
-Round `val`, if roundable, where `digits` defines the number of digits
-and `scientific` the number of significant digits used for rounding.
-`scientific` overwrites `digits`.
-"""
-function roundval(val::Tv; digits::Td, scientific::Ts) where {Tv, Td, Ts}
-    if Tv <: AbstractFloat
+function roundval(val::T, digits, sigdigits) where {T}
+    if T <: AbstractFloat
         if isnan(val) || isinf(val)
             return val
-        end
-        if Ts <: Int
-            x = round(val; sigdigits = scientific)
         else
-            x = round(val; digits = digits)
+            return round(val; digits=digits, sigdigits=sigdigits)
         end
-        return x
+    else
+        return val
     end
 end
 

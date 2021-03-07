@@ -2,7 +2,7 @@ using DrWatson, Test, Dates
 
 ps = DrWatson.PATH_SEPARATOR
 
-d = (a = 0.153456453, b = 5.0, mode = "double")
+d = (a = 0.153456453, b = 5, mode = "double")
 @test savename(d; digits = 4) == "a=0.1535_b=5_mode=double"
 @test savename("n", d) == "n_a=0.153_b=5_mode=double"
 @test savename("n$(ps)", d) == "n$(ps)a=0.153_b=5_mode=double"
@@ -39,8 +39,8 @@ n2 = (x = x, y = y, z = z)
 @test savename(n2; ignores=("y",)) == "x=3_z=lala"
 @test savename(n2; accesses=(:x, :y), ignores=(:y,)) == "x=3"
 
-@test savename(@dict x y) == "x=3_y=5"
-@test savename(@ntuple x y) == "x=3_y=5"
+@test savename(@dict x y) == "x=3_y=5.0"
+@test savename(@ntuple x y) == "x=3_y=5.0"
 w = rand(50)
 @test savename(@dict x y w) == savename(@dict x y)
 @test (@savename x y w) == savename(@dict x y)
@@ -94,24 +94,23 @@ x = A(5, (m = rand(50,50),))
 
 # Scientific notation for savename
 a = 1.2345e-7
-b = 1.0
 c = 1
 d = "test"
-di = @dict a b c d
+di = @dict a c d
 
-@test savename(di,scientific=6) == "a=1.2345e-7_b=1_c=1_d=test"
-@test savename(di,scientific=5) == "a=1.2345e-7_b=1_c=1_d=test"
-@test savename(di,scientific=4) == "a=1.234e-7_b=1_c=1_d=test"
-@test savename(di,scientific=3) == "a=1.23e-7_b=1_c=1_d=test"
-@test savename(di,scientific=2) == "a=1.2e-7_b=1_c=1_d=test"
-@test savename(di,scientific=1) == "a=1e-7_b=1_c=1_d=test"
-@test savename(di) == "a=0_b=1_c=1_d=test"
+@test savename(di,sigdigits=6) == "a=1.2345e-7_c=1_d=test"
+@test savename(di,sigdigits=5) == "a=1.2345e-7_c=1_d=test"
+@test savename(di,sigdigits=4) == "a=1.234e-7_c=1_d=test"
+@test savename(di,sigdigits=3) == "a=1.23e-7_c=1_d=test"
+@test savename(di,sigdigits=2) == "a=1.2e-7_c=1_d=test"
+@test savename(di,sigdigits=1) == "a=1e-7_c=1_d=test"
+@test savename(di) == "a=0.0_c=1_d=test"
 
-sn = savename(di,scientific=4)
+sn = savename(di,sigdigits=4)
 _,parsed,_ = parse_savename(sn)
 @test parsed["a"] == 1.234e-7
 
-sn = savename(di,scientific=1)
+sn = savename(di,sigdigits=1)
 _,parsed,_ = parse_savename(sn)
 @test parsed["a"] == 1.0e-7
 
