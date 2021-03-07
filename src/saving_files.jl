@@ -182,7 +182,9 @@ using Random
     tmpsave(dicts::Vector{Dict} [, tmp]; kwargs...) -> r
 Save each entry in `dicts` into a unique temporary file in the directory `tmp`.
 Then return the list of file names (relative to `tmp`) that were used
-for saving each dictionary.
+for saving each dictionary. Each dictionary can then be loaded back by calling
+
+    FileIO.load(nth_tmpfilename, "params")
 
 `tmp` defaults to `projectdir("_research", "tmp")`.
 
