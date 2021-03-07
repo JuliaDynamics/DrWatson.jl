@@ -219,7 +219,7 @@ HTEST = 0.1:0.1:2.0
 WS = [0.5, 1.0, 1.5]
 N = 10000; T = 10000.0
 
-toypar_h = [[] for l in HS]
+toypar_h = [[] for l in WS]
 for (wi, w) in enumerate(WS)
     println("w = $w")
     for h in HTEST
@@ -234,7 +234,7 @@ function g(d)
     HTEST = 0.1:0.1:2.0
     WS = [0.5, 1.0, 1.5]
     @unpack N, T = d
-    toypar_h = [[] for l in HS]
+    toypar_h = [[] for l in WS]
 
     for (wi, w) in enumerate(WS)
         println("w = $w")
@@ -243,17 +243,17 @@ function g(d)
             push!(toypar_h[wi], toyp)
         end
     end
-    return @dict toypar_h
+    return @strdict toypar_h
 end
 
 N = 2000; T = 2000.0
-file = produce_or_load(
+data, file = produce_or_load(
     datadir("mushrooms", "toy"), # path
     @dict(N, T), # container
     g, # function
     prefix = "fig5_toyparams" # prefix for savename
 )
-@unpack toypar_h = file
+@unpack toypar_h = data
 ```
 Now, every time I run this code block the function tests automatically whether the file exists. Only if it does not, then the code is run while the new result is saved to ensure I won't have to run it again.
 
