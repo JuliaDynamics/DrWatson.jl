@@ -107,8 +107,8 @@ for ending ∈ ("bson", "jld2")
 end
 
 @test produce_or_load(simulation, f; loadfile = false)[1] == nothing
-rm(savename(simulation, "bson"))
-@test !isfile(savename(simulation, "bson"))
+rm(savename(simulation, "jld2"))
+@test !isfile(savename(simulation, "jld2"))
 
 ################################################################################
 #                          Backup files before saving                          #
