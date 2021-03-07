@@ -1,3 +1,10 @@
+# 2.0
+## Breaking
+* DrWatson has moved entirely on using JLD2.jl instead of BSON.jl for saving files, and also suggests the same to its users through the documentation.
+* `tmpsave` now saves as JLD2.jl and requires loading explicitly the `"params"` field.
+* `collect_results` saves as JLD2.jl by default now.
+* `produce_or_load` saves as JLD2.jl by default now.
+
 # 1.19.0
 * `savename` will no longer replace a floating point number with its integer version, if they coincide with respect to rounding. Thus, "integer" `AbstractFloat`s will always end with `.0` in `savename`.
 # 1.18.3

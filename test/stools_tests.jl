@@ -256,7 +256,7 @@ tmpdir = joinpath(@__DIR__, "tmp")
 ret = tmpsave(v3, tmpdir)
 for r in ret
     @test isfile(joinpath(tmpdir, r))
-    a = load(joinpath(tmpdir, r))
+    a = load(joinpath(tmpdir, r), "params")
     @test a ∈ v3
 end
 rm(tmpdir, force = true, recursive = true)

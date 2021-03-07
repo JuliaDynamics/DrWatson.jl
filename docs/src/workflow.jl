@@ -49,7 +49,7 @@ initialize_project("DrWatson Example"; authors="Datseris", force=true)
 # This project is now active by default so we can start adding packages
 # that we will be using in the project. We'll add the following for demonstrating
 using Pkg
-Pkg.add(["Statistics", "BSON"])
+Pkg.add(["Statistics", "JLD2"])
 
 # ## 2. Write some scripts
 
@@ -62,7 +62,7 @@ Pkg.add(["Statistics", "BSON"])
 # ```
 
 
-# Now, with DrwWatson every script (typically) starts with the following two lines:
+# Now, with DrWatson every script (typically) starts with the following two lines:
 # ```@setup workflow
 # quickactivate("DrWatson Example", "DrWatson Example")
 # ```
@@ -120,19 +120,23 @@ r, y = fakesim(a, b, v, method)
 # Okay, that is fine, but it is typically the case that in scientific context
 # some simulations are done for several different combinations of parameters.
 # It is convenient to group all parameters in a dictionary, with the keys
-# being the parameters (as symbols or strings). E.g.
+# being the parameters. Depending on the package you will use to actually save the data,
+# the key type should be either `String` or `Symbol`. Here we will be using
+# JLD2.jl and therefore the key type will be `String`.
+params = @strdict a b v method
 
-params = Dict(:a => 2, :b => 3, :v => rand(5), :method => "linear")
+# Above we used the ultra-cool [`@strdict`](@ref) macro, which creates a
+# dictionary from existing variables!
 
 # Now, for every simulation we want to do, we would create such a container.
 # We can use the [`dict_list`](@ref) to ease up the process of preparing several
 # of these parameter containers
 
 allparams = Dict(
-    :a => [1, 2], # it is inside vector. It is expanded.
-    :b => [3, 4],
-    :v => [rand(5)],     # single element inside vector; no expansion
-    :method => "linear", # not in vector = not expanded, even if naturally iterable
+    "a" => [1, 2], # it is inside vector. It is expanded.
+    "b" => [3, 4],
+    "v" => [rand(5)],     # single element inside vector; no expansion
+    "method" => "linear", # not in vector = not expanded, even if naturally iterable
 )
 
 dicts = dict_list(allparams)
@@ -152,8 +156,8 @@ function makesim(d::Dict)
     @unpack a, b, v, method = d
     r, y = fakesim(a, b, v, method)
     fulld = copy(d)
-    fulld[:r] = r
-    fulld[:y] = y
+    fulld["r"] = r
+    fulld["y"] = y
     return fulld
 end
 
@@ -161,7 +165,7 @@ end
 # ```julia
 # for (i, d) in enumerate(dicts)
 #     f = makesim(d)
-#     wsave(datadir("simulations", "sim_$(i).bson"), f)
+#     wsave(datadir("simulations", "sim_$(i).jld2"), f)
 # end
 # ```
 
@@ -171,7 +175,7 @@ end
 # Here each simulation was named according to a number.
 # But this is not how we do it in science... We typically want the input parameters
 # to be part of the file name. E.g. here we would want the file name to be something like
-# `a=2_b=3_method=linear.bson`. It would be also nice that such a naming scheme would
+# `a=2_b=3_method=linear.jld2`. It would be also nice that such a naming scheme would
 # apply to arbitrary input parameters so that we don't have to manually write
 # `a=$(a)_b=$(b)_method=$(method)` and change this code every time we change
 # a parameter name...
@@ -183,7 +187,7 @@ savename(params)
 # `savename` takes as an input pretty much *any* Julia composite container with key-value
 # pairs and transforms it into such a name. We can even do
 
-savename(dicts[1], "bson")
+savename(dicts[1], "jld2")
 
 # `savename` is flexible and smart. As you noticed, even though the vector `v` with
 # 5 numbers is part of the input, it wasn't included in the name (on purpose).
@@ -193,7 +197,7 @@ savename(dicts[1], "bson")
 
 for (i, d) in enumerate(dicts)
     f = makesim(d)
-    wsave(datadir("simulations", savename(d, "bson")), f)
+    wsave(datadir("simulations", savename(d, "jld2")), f)
 end
 
 readdir(datadir("simulations"))
@@ -208,14 +212,14 @@ readdir(datadir("simulations"))
 # ```@setup workflow
 # for (i, d) in enumerate(dicts)
 #     f = makesim(d)
-#     @tagsave(datadir("simulations", savename(d, "bson")), f; gitpath = "../..")
+#     @tagsave(datadir("simulations", savename(d, "jld2")), f; gitpath = "../..")
 # end
 # ```
 
 # ```julia
 # for (i, d) in enumerate(dicts)
 #     f = makesim(d)
-#     @tagsave(datadir("simulations", savename(d, "bson")), f)
+#     @tagsave(datadir("simulations", savename(d, "jld2")), f)
 # end
 # ```
 
@@ -238,6 +242,7 @@ wload(datadir("simulations", firstsim))
 # Cool, now we can start analyzing some simulations. The actual analysis is your job,
 # but DrWatson can help you get started with the [`collect_results`](@ref) function.
 # Notice that you need to be `using DataFrames` to access the function!
+Pkg.add(["DataFrames"])
 using DataFrames
 
 df = collect_results(datadir("simulations"))
@@ -265,14 +270,10 @@ df = collect_results(datadir("simulations"))
 
 analysis = 42
 
-safesave(datadir("ana", "linear.bson"), @dict analysis)
+safesave(datadir("ana", "linear.jld2"), @strdict analysis)
 
-# If a file `linear.bson` exists in that folder, it is not overwritten. Instead, it is
-# renamed to `linear#1.bson`, and a new `linear.bson` file is made!
-# Notice also the usage of the ultra-cool [`@dict`](@ref) macro, which creates a
-# dictionary from existing variables
-
-@dict a b v analysis
+# If a file `linear.jld2` exists in that folder, it is not overwritten. Instead, it is
+# renamed to `linear#1.jld2`, and a new `linear.jld2` file is made!
 
 # ## 6. Share your project
 

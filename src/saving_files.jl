@@ -21,7 +21,7 @@ end
 ## Keywords
 * `tag = true` : Save the file using [`tagsave`](@ref).
 * `gitpath, storepatch` : Given to [`tagsave`](@ref) if `tag` is `true`.
-* `suffix = "bson", prefix = default_prefix(c)` : Used in `savename`.
+* `suffix = "jld2", prefix = default_prefix(c)` : Used in `savename`.
 * `force = false` : If `true` then don't check if file `s` exists and produce
   it and save it anyway.
 * `loadfile = true` : If `false`, this function does not actually load the
@@ -38,7 +38,7 @@ produce_or_load(f::Function, c; kwargs...) = produce_or_load(c, f; kwargs...)
 produce_or_load(f::Function, path, c; kwargs...) = produce_or_load(path, c, f; kwargs...)
 function produce_or_load(path, c, f::Function;
     tag::Bool = true, gitpath = projectdir(), loadfile = true,
-    suffix = "bson", prefix = default_prefix(c),
+    suffix = "jld2", prefix = default_prefix(c),
     force = false, verbose = true, storepatch = true, kwargs...)
 
     s = joinpath(path, savename(prefix, c, suffix; kwargs...))
@@ -133,15 +133,15 @@ end
 
 Safely save `data` in `filename` by ensuring that no existing files
 are overwritten. Do this by renaming already existing data with a backup-number
-ending like `#1, #2, ...`. For example if `filename = test.bson`, the first
+ending like `#1, #2, ...`. For example if `filename = test.jld2`, the first
 time you `safesave` it, the file is saved normally. The second time
-the existing save is renamed to `test_#1.bson` and a new file `test.bson`
+the existing save is renamed to `test_#1.jld2` and a new file `test.jld2`
 is then saved.
 
 If a backup file already exists then its backup-number is incremented
-(e.g. going from `#2` to `#3`). For example safesaving `test.bson` a third time
-will rename the old `test_#1.bson` to `test_#2.bson`, rename the old
-`test.bson` to `test_#1.bson` and then save a new `test.bson` with the latest
+(e.g. going from `#2` to `#3`). For example safesaving `test.jld2` a third time
+will rename the old `test_#1.jld2` to `test_#2.jld2`, rename the old
+`test.jld2` to `test_#1.jld2` and then save a new `test.jld2` with the latest
 `data`.
 
 See also [`tagsave`](@ref).
@@ -182,7 +182,9 @@ using Random
     tmpsave(dicts::Vector{Dict} [, tmp]; kwargs...) -> r
 Save each entry in `dicts` into a unique temporary file in the directory `tmp`.
 Then return the list of file names (relative to `tmp`) that were used
-for saving each dictionary.
+for saving each dictionary. Each dictionary can then be loaded back by calling
+
+    FileIO.load(nth_tmpfilename, "params")
 
 `tmp` defaults to `projectdir("_research", "tmp")`.
 
@@ -191,10 +193,10 @@ See also [`dict_list`](@ref).
 ## Keywords
 * `l = 8` : number of characters in the random string.
 * `prefix = ""` : prefix each temporary name will have.
-* `suffix = "bson"` : ending of the temporary names (no need for the dot).
+* `suffix = "jld2"` : ending of the temporary names (no need for the dot).
 """
 function tmpsave(dicts, tmp = projectdir("_research", "tmp");
-    l = 8, suffix = "bson", prefix = "")
+    l = 8, suffix = "jld2", prefix = "")
 
     mkpath(tmp)
     n = length(dicts)
@@ -208,7 +210,7 @@ function tmpsave(dicts, tmp = projectdir("_research", "tmp");
         end
         i += 1
         push!(r, x)
-        wsave(joinpath(tmp, x), copy(dicts[i]))
+        wsave(joinpath(tmp, x), Dict("params" => copy(dicts[i])))
     end
     r
 end

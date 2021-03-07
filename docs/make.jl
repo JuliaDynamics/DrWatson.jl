@@ -4,7 +4,7 @@ CI = get(ENV, "CI", nothing) == "true" || get(ENV, "GITHUB_TOKEN", nothing) !== 
 CI && Pkg.activate(@__DIR__)
 CI && Pkg.instantiate()
 using DrWatson
-using Documenter, DataFrames, Parameters, Dates, BSON, UnPack
+using Documenter, DataFrames, Parameters, Dates, JLD2, UnPack
 using DocumenterTools: Themes
 
 # %%
