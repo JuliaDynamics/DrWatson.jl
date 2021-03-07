@@ -1,3 +1,10 @@
+# 2.0
+## Breaking
+* DrWatson has moved entirely on using JLD2.jl instead of BSON.jl for saving files, and also suggests the same to its users through the documentation.
+* `tmpsave` now saves as JLD2.jl and requires loading explicitly the `"params"` field.
+* `collect_results` saves as JLD2.jl by default now.
+* `produce_or_load` saves as JLD2.jl by default now.
+
 # 1.18.3
 * Remove type constraints on `produce_or_load` path argument (#229)
 # 1.18.2

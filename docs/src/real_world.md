@@ -12,7 +12,7 @@ include(srcdir("unitcells.jl"))
 ```
 In all projects I save data/plots using `datadir/plotdir`:
 ```julia
-@tagsave(datadir("mushrooms", "Λ_N=$N.bson"), (@dict Λ Λσ ws hs description))
+@tagsave(datadir("mushrooms", "Λ_N=$N.jld2"), (@dict Λ Λσ ws hs description))
 ```
 The advantage of this approach is that it will always work regardless of if I move the specific file to a different subfolder (which is very often necessary) or whether I move the entire project folder somewhere else!
 **Please be sure you have understood the caveat of using [`quickactivate`](@ref)!**
@@ -29,7 +29,7 @@ include(srcdir("nrmse.jl"))
 
 # stuff...
 
-save(datadir("sim", "barkley", "astonishing_results.bson"), data)
+save(datadir("sim", "barkley", "astonishing_results.jld2"), data)
 ```
 
 ## Making your project a usable module
@@ -87,14 +87,14 @@ for N ∈ Ns, ΔT ∈ ΔTs
     U, V = barkley(T, N, every; seed = seed)
 
     @tagsave(
-        datadir("sim", "bk", savename(simulation, "bson")),
+        datadir("sim", "bk", savename(simulation, "jld2")),
         @dict U V simulation
     )
 end
 ```
 This saves files that look like:
 ```
-path/to/project/data/sim/bk_N=50_T=10050_seed=1111_ΔT=1.bson
+path/to/project/data/sim/bk_N=50_T=10050_seed=1111_ΔT=1.jld2
 ```
 and each file is a dictionary that has my data fields: `:U, :V, :simulation`, but also `:gitcommit, :script`. When I read this file I know exactly what was the source code that produced it (provided that I am not sloppy and commit code changes regularly :P).
 
@@ -219,7 +219,7 @@ HTEST = 0.1:0.1:2.0
 WS = [0.5, 1.0, 1.5]
 N = 10000; T = 10000.0
 
-toypar_h = [[] for l in HS]
+toypar_h = [[] for l in WS]
 for (wi, w) in enumerate(WS)
     println("w = $w")
     for h in HTEST
@@ -234,7 +234,7 @@ function g(d)
     HTEST = 0.1:0.1:2.0
     WS = [0.5, 1.0, 1.5]
     @unpack N, T = d
-    toypar_h = [[] for l in HS]
+    toypar_h = [[] for l in WS]
 
     for (wi, w) in enumerate(WS)
         println("w = $w")
@@ -243,17 +243,17 @@ function g(d)
             push!(toypar_h[wi], toyp)
         end
     end
-    return @dict toypar_h
+    return @strdict toypar_h
 end
 
 N = 2000; T = 2000.0
-file = produce_or_load(
+data, file = produce_or_load(
     datadir("mushrooms", "toy"), # path
     @dict(N, T), # container
     g, # function
     prefix = "fig5_toyparams" # prefix for savename
 )
-@unpack toypar_h = file
+@unpack toypar_h = data
 ```
 Now, every time I run this code block the function tests automatically whether the file exists. Only if it does not, then the code is run while the new result is saved to ensure I won't have to run it again.
 
@@ -294,7 +294,7 @@ function cross_estimation(data)
     prefix = datadir("results", data["model"])
     get(data, "noisy_training", false) && (prefix *= "_noisy")
     get(data, "symmetric_training", false) && (prefix *= "_symmetric")
-    sname = savename((@dict γ τ r c N), "bson")
+    sname = savename((@dict γ τ r c N), "jld2")
     mkpath(datadir("results", data["model"]))
     save(datadir("results", data["model"], sname), data)
     return true
@@ -331,7 +331,7 @@ end
 Now the file `runjob.jl` would have contents that look like:
 ```julia
 f = ARGS[1]
-dict = load(projectdir("_research", "tmp", f))
+dict = load(projectdir("_research", "tmp", f), "params")
 cross_estimation(dict)
 ```
 i.e. it just loads the `dict` and straightforwardly uses the "main" function `cross_estimation`. Remember to routinely clear the `tmp` directory!

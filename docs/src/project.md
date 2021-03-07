@@ -93,8 +93,8 @@ behave exactly like `projectdir` but have as root the appropriate subdirectory. 
 
 All of these functions take advantage of `joinpath`, ensuring an error-free path creation that works across different operating systems. It is heavily advised to use `projectdir` and derivatives by giving them the subpaths as arguments, instead of using multiplication between paths:
 ```julia
-datadir("foo", "test.bson") # preferred
-datadir() * "/foo/test.bson" # not recommended
+datadir("foo", "test.jld2") # preferred
+datadir() * "/foo/test.jld2" # not recommended
 ```
 
 ### Custom directory functions

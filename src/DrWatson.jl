@@ -50,8 +50,8 @@ function __init__()
 end
 
 # Update messages
-const display_update = false
-const update_version = "1.8.0"
+const display_update = true
+const update_version = "2.0.0"
 const update_name = "update_v$update_version"
 if display_update
 if !isfile(joinpath(@__DIR__, update_name))
@@ -59,7 +59,10 @@ printstyled(stdout,
 """
 \nUpdate message: DrWatson v$update_version
 
-A cool new feature was added to the `@quickactivate` macro!
+In this new major release, the following breaking changes have occured:
+1. DrWatson now uses, and suggests using, JLD2.jl instead of BSON.jl
+   for saving files.
+2. The `savename` stuff.
 \n
 """; color = :light_magenta)
 touch(joinpath(@__DIR__, update_name))
