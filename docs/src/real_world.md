@@ -331,7 +331,7 @@ end
 Now the file `runjob.jl` would have contents that look like:
 ```julia
 f = ARGS[1]
-dict = load(projectdir("_research", "tmp", f))
+dict = load(projectdir("_research", "tmp", f), "params")
 cross_estimation(dict)
 ```
 i.e. it just loads the `dict` and straightforwardly uses the "main" function `cross_estimation`. Remember to routinely clear the `tmp` directory!

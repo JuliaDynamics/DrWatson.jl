@@ -208,7 +208,7 @@ function tmpsave(dicts, tmp = projectdir("_research", "tmp");
         end
         i += 1
         push!(r, x)
-        wsave(joinpath(tmp, x), copy(dicts[i]))
+        wsave(joinpath(tmp, x), Dict("params" => copy(dicts[i])))
     end
     r
 end
