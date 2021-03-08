@@ -6,6 +6,9 @@
 * `produce_or_load` saves as JLD2.jl by default now.
 * `savename` will no longer replace a floating point number with its integer version, if they coincide with respect to rounding. Thus, "integer" `AbstractFloat`s will always end with `.0` in `savename`.
 * `savename`'s `scientific` keyword has been replaced by `sigdigits`, as this was the only thing it was doing.
+* `savename`'s default options now have `sigdigits = 3` instead of `digits = 3`.
+## Non-breaking
+* `savename` now allows a keyword `val_to_string` for customization.
 
 # 1.18.3
 * Remove type constraints on `produce_or_load` path argument (#229)

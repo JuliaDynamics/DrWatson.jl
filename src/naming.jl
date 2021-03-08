@@ -62,7 +62,7 @@ See also [`parse_savename`](@ref) and [`@savename`](@ref).
 
 ## Examples
 ```julia
-d = (a = 0.153456453, b = 5.0, mode = "double")
+d = (a = 0.153456453, b = 5, mode = "double")
 savename(d; digits = 4) == "a=0.1535_b=5_mode=double"
 savename("n", d) == "n_a=0.153_b=5_mode=double"
 savename(d, "n") == "a=0.153_b=5_mode=double.n"
