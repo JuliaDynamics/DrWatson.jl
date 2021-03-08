@@ -28,7 +28,7 @@ _wsave(filename, data...; kwargs...) = FileIO.save(filename, data...; kwargs...)
 
 Save `data` at `filename` by first creating the appropriate paths.
 Default fallback is `FileIO.save`. Extend `wsave` for your type
-by extending `DrWatson._wsave`.
+by extending `DrWatson._wsave(filename, data...; kwargs...)`.
 """
 function wsave(filename, data...; kwargs...)
     mkpath(dirname(filename))
@@ -59,10 +59,13 @@ printstyled(stdout,
 """
 \nUpdate message: DrWatson v$update_version
 
+`savename` no longer replaces `AbstractFloat` values with integer values
+if they two values coincide. I.e. no longer is `1.0` output as `1` in `savename`.
 In this new major release, the following breaking changes have occured:
 1. DrWatson now uses, and suggests using, JLD2.jl instead of BSON.jl
    for saving files.
-2. The `savename` stuff.
+2. The behavior of `savename` with respect to rounding has changed,
+   see its docstring for more.
 \n
 """; color = :light_magenta)
 touch(joinpath(@__DIR__, update_name))

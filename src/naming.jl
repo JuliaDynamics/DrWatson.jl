@@ -6,17 +6,15 @@ export tostringdict, tosymboldict
 """
     savename([prefix,], c [, suffix]; kwargs...)
 Create a shorthand name, commonly used for saving a file or as a figure title,
-based on the
-parameters in the container `c` (`Dict`, `NamedTuple` or any other Julia
-composite type). If provided use
-the `prefix` and end the name with `.suffix` (i.e. you don't have to include
-the `.` in your `suffix`).
+based on the parameters in the container `c` (`Dict`, `NamedTuple` or any other Julia
+composite type). If provided use the `prefix` and end the name with `.suffix`
+(i.e. you don't have to include the `.` in your `suffix`).
 
 The function chains keys and values into a string of the form:
 ```julia
 key1=val1_key2=val2_key3=val3
 ```
-while the keys are **sorted alphabetically** by default. If you provide
+while the keys are sorted alphabetically by default. If you provide
 the prefix/suffix the function will do:
 ```julia
 prefix_key1=val1_key2=val2_key3=val3.suffix
@@ -31,7 +29,15 @@ See [`default_prefix`](@ref) for more.
 [`@dict`](@ref) or [`@ntuple`](@ref).
 See also [`parse_savename`](@ref) and [`@savename`](@ref).
 
-## Keywords
+## Standard keywords
+* `sort = true` : Indicate whether the pairs are sorted alphabetically by
+  keys. If not, they are sorted by the order of `accesses`. WARNING: the
+  default `accesses` is not deterministic for `Dict` inputs.
+* `digits = nothing, sigdigits = 3` : Floating point values are rounded using the `round`
+  function with these keywords.
+* `connector = "_"` : string used to connect the various entries.
+
+## Customization keywords
 * `allowedtypes = default_allowed(c)` : Only values of type subtyping
   anything in `allowedtypes` are used in the name. By default
   this is `(Real, String, Symbol, TimeType)`.
@@ -42,31 +48,21 @@ See also [`parse_savename`](@ref) and [`@savename`](@ref).
   to ignore with the keyword `ignores`. By default this is an empty
   tuple, see [`allignore`](@ref).
   (keys in `ignore` are ignored even if they are in `accesses`)
-* `digits = 3` : Floating point values are rounded to `digits`.
-  In addition if the following holds:
-  ```julia
-  round(val; digits = digits) == round(Int, val)
-  ```
-  then the integer value is used in the name instead.
-* `scientific = nothing` : Number of significant digits used for rounding of
-  floating point values using scientific notation (e.g. `1.65e-7`).
-  If `nothing`, normal rounding is done.
-* `connector = "_"` : string used to connect the various entries.
+* `val_to_string = nothing` : If not `nothing`, this is a function that converts any given
+  value to a string representation, and allows for custom formatting.
+  If given, `digits, sigidigits` are ignored.
 * `expand::Vector{String} = default_expand(c)` : keys that will be expanded
   to the `savename` of their contents, to allow for nested containers.
   By default is empty. Notice that the type of the container must also be
-  allowed in `allowedtypes` for `expand` to take effect! Empty containers
-  are always skipped and the `savename` of the nested arguments is always
+  allowed in `allowedtypes` for `expand` to take effect! The `savename` of
+  the nested arguments is always
   called with its default arguments (so customization here is possible only
-  by rolling your own container type). If the `savename` of the nested
-  containers is `""`, it is also skipped.
-* `sort = true` : Indicate whether the pairs are sorted alphabetically by
-  keys. If not, they are sorted by the order of `accesses`. WARNING: the
-  default `accesses` is not deterministic for `Dict` inputs.
+  by rolling your own container type). Containers leading to empty `savename`
+  are skipped.
 
 ## Examples
 ```julia
-d = (a = 0.153456453, b = 5.0, mode = "double")
+d = (a = 0.153456453, b = 5, mode = "double")
 savename(d; digits = 4) == "a=0.1535_b=5_mode=double"
 savename("n", d) == "n_a=0.153_b=5_mode=double"
 savename(d, "n") == "a=0.153_b=5_mode=double.n"
@@ -86,7 +82,8 @@ function savename(prefix::String, c, suffix::String;
                   allowedtypes = default_allowed(c),
                   accesses = allaccess(c), ignores = allignore(c), digits = 3,
                   connector = "_", expand::Vector{String} = default_expand(c),
-                  scientific::Union{Int,Nothing}=nothing,
+                  sigdigits::Union{Int,Nothing}=nothing,
+                  val_to_string = nothing,
                   sort = true)
 
     if any(sep in prefix for sep in ['/', '\\'])
@@ -96,7 +93,8 @@ function savename(prefix::String, c, suffix::String;
             `savename` (e.g. `datadir("path", "to", "folder", savename("prefix", data))`).
         """
     end
-
+    digits = sigdigits === nothing ? digits : nothing
+    val2string = val_to_string === nothing ? (val -> valtostring(val, digits, sigdigits)) : val_to_string
     # Here take care of extra prefix besides default
     dpre = default_prefix(c)
     if dpre != "" && prefix != dpre
@@ -115,14 +113,13 @@ function savename(prefix::String, c, suffix::String;
         val = access(c, accesses[j])
         t = typeof(val)
         if any(x -> (t <: x), allowedtypes)
-            val = roundval(val,digits=digits,scientific=scientific)
             if label ∈ expand
                 isempty(val) && continue
-                sname = savename(val; connector=",", digits=digits, scientific=scientific)
+                sname = savename(val; connector=",", digits=digits, sigdigits=sigdigits)
                 isempty(sname) && continue
                 entry = label*"="*'('*sname*')'
             else
-                entry = label*"="*valtostring(val)
+                entry = label*"="*val2string(val)
             end
             !first && (s *= connector)
             s *= entry
@@ -133,28 +130,6 @@ function savename(prefix::String, c, suffix::String;
     return s
 end
 
-"""
-    roundval(val; digits, scientific)
-
-Round `val`, if roundable, where `digits` defines the number of digits
-and `scientific` the number of significant digits used for rounding.
-`scientific` overwrites `digits`.
-"""
-function roundval(val::Tv;digits::Td, scientific::Ts) where {Tv, Td, Ts}
-    if Tv <: AbstractFloat
-        if isnan(val) || isinf(val)
-            return val
-        end
-        if Ts <: Int
-            x = round(val,sigdigits = scientific)
-        else
-            x = round(val; digits = digits)
-        end
-        y = round(Int, val)
-        return val = x == y ? y : x
-    end
-    return val
-end
 
 """
     valtostring(val)
@@ -162,8 +137,19 @@ end
 Convert `val` to a string with the smallest possible representation of `val`
 that allows recovering `val` from `valtostring(val)`.
 """
-valtostring(val) = string(val)
-valtostring(val::AbstractFloat) = replace(string(val),".0e"=>"e")
+valtostring(val, digits, sigdigits) = string(val)
+function valtostring(val::AbstractFloat, digits, sigdigits)
+    val = roundval(val, digits, sigdigits)
+    return replace(string(val),".0e"=>"e")
+end
+function roundval(val, digits, sigdigits) where {T}
+    if isnan(val) || isinf(val)
+        return val
+    else
+        return round(val; digits=digits, sigdigits=sigdigits)
+    end
+end
+
 
 """
     allaccess(c)
