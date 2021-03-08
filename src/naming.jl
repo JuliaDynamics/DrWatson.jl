@@ -29,7 +29,15 @@ See [`default_prefix`](@ref) for more.
 [`@dict`](@ref) or [`@ntuple`](@ref).
 See also [`parse_savename`](@ref) and [`@savename`](@ref).
 
-## Keywords
+## Standard keywords
+* `sort = true` : Indicate whether the pairs are sorted alphabetically by
+  keys. If not, they are sorted by the order of `accesses`. WARNING: the
+  default `accesses` is not deterministic for `Dict` inputs.
+* `digits = nothing, sigdigits = 3` : Floating point values are rounded using the `round`
+  function with these keywords.
+* `connector = "_"` : string used to connect the various entries.
+
+## Customization keywords
 * `allowedtypes = default_allowed(c)` : Only values of type subtyping
   anything in `allowedtypes` are used in the name. By default
   this is `(Real, String, Symbol, TimeType)`.
@@ -40,15 +48,9 @@ See also [`parse_savename`](@ref) and [`@savename`](@ref).
   to ignore with the keyword `ignores`. By default this is an empty
   tuple, see [`allignore`](@ref).
   (keys in `ignore` are ignored even if they are in `accesses`)
-* `sort = true` : Indicate whether the pairs are sorted alphabetically by
-  keys. If not, they are sorted by the order of `accesses`. WARNING: the
-  default `accesses` is not deterministic for `Dict` inputs.
-* `digits = 3, sigdigits = nothing` : Floating point values are rounded using the `round`
-  function with these keywords.
 * `val_to_string = nothing` : If not `nothing`, this is a function that converts any given
   value to a string representation, and allows for custom formatting.
   If given, `digits, sigidigits` are ignored.
-* `connector = "_"` : string used to connect the various entries.
 * `expand::Vector{String} = default_expand(c)` : keys that will be expanded
   to the `savename` of their contents, to allow for nested containers.
   By default is empty. Notice that the type of the container must also be
@@ -92,7 +94,7 @@ function savename(prefix::String, c, suffix::String;
         """
     end
     digits = sigdigits === nothing ? digits : nothing
-    val2string === nothing ? (val -> valtostring(val, digits, sigdigits)) : val_to_string
+    val2string = val_to_string === nothing ? (val -> valtostring(val, digits, sigdigits)) : val_to_string
     # Here take care of extra prefix besides default
     dpre = default_prefix(c)
     if dpre != "" && prefix != dpre
