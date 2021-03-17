@@ -83,7 +83,7 @@ function collect_results!(filename, folder;
         df = DataFrames.DataFrame()
     else
         verbose && @info "Loading existing result collection..."
-        df = wload(filename)[:df]
+        df = wload(filename)["df"]
     end
     @info "Scanning folder $folder for result files."
 
@@ -116,7 +116,7 @@ function collect_results!(filename, folder;
         n += 1
     end
     verbose && @info "Added $n entries."
-    !newfile && wsave(filename, Dict(:df => df))
+    !newfile && wsave(filename, Dict("df" => df))
     return df
 end
 
