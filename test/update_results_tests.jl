@@ -102,7 +102,7 @@ end
 #                           Load and analyze  DataFrame                       #
 ###############################################################################
 
-df = BSON.load(defaultname)[:df]
+df = BSON.load(defaultname)["df"]
 @test size(df) == size(cres2)
 @test sort(names(df)) == sort(names(cres2))
 
