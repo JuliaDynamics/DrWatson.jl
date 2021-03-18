@@ -1,4 +1,5 @@
 using DrWatson, Test
+using BSON, JLD2
 cd(@__DIR__)
 T = 1000
 N = 50 # spatial extent
@@ -14,60 +15,62 @@ function f(simulation)
     return @strdict a b simulation
 end
 
-
+@testset "Tagsafe ($ending)" for ending ∈ ["bson", "jld2"]
 ################################################################################
 #                                 tagsave                                      #
 ################################################################################
-t = f(simulation)
-tagsave(savename(simulation, "bson"), t, gitpath=findproject())
-file = load(savename(simulation, "bson"))
-@test "gitcommit" ∈ keys(file)
-@test file["gitcommit"] |> typeof == String
-rm(savename(simulation, "bson"))
+    t = f(simulation)
+    tagsave(savename(simulation, ending), t, gitpath=findproject())
+    file = load(savename(simulation, ending))
+    @test "gitcommit" ∈ keys(file)
+    @test file["gitcommit"] |> typeof == String
+    rm(savename(simulation, ending))
 
-t = f(simulation)
-@tagsave(savename(simulation, "bson"), t, safe=false, gitpath=findproject())
-file = load(savename(simulation, "bson"))
-@test "gitcommit" ∈ keys(file)
-@test file["gitcommit"] |> typeof == String
-@test "script" ∈ keys(file)
-@test file["script"] |> typeof == String
-@test file["script"] == joinpath("test", "savefiles_tests.jl#29")
+    t = f(simulation)
+    @tagsave(savename(simulation, ending), t, safe=false, gitpath=findproject())
+    file = load(savename(simulation, ending))
+    @test "gitcommit" ∈ keys(file)
+    @test file["gitcommit"] |> typeof == String
+    @test "script" ∈ keys(file)
+    @test file["script"] |> typeof == String
+    @test file["script"] == joinpath("test", "savefiles_tests.jl#30")
 
-t = f(simulation)
-@tagsave(savename(simulation, "bson"), t, safe=true, gitpath=findproject())
-sn = savename(simulation, "bson")[1:end-5]*"_#1"*".bson"
-@test isfile(sn)
-rm(sn)
+    t = f(simulation)
+    @tagsave(savename(simulation, ending), t, safe=true, gitpath=findproject())
+    sn = savename(simulation, ending)[1:end-5]*"_#1"*"."*ending
+    @test isfile(sn)
+    rm(sn)
 
-t = f(simulation)
-tagsave(savename(simulation, "bson"), t, safe=true, gitpath=findproject())
-sn = savename(simulation, "bson")[1:end-5]*"_#1"*".bson"
-@test isfile(sn)
-rm(sn)
+    t = f(simulation)
+    tagsave(savename(simulation, ending), t, safe=true, gitpath=findproject())
+    sn = savename(simulation, ending)[1:end-5]*"_#1"*"."*ending
+    @test isfile(sn)
+    rm(sn)
 
-t = f(simulation)
-t["gitcommit"] = ""
-@test @tagsave(savename(simulation, "bson"), t, safe=true, gitpath=findproject())["gitcommit"] == ""
-@test isfile(sn)
-rm(sn)
-@test @tagsave(savename(simulation, "bson"), t, safe=true, force=true, gitpath=findproject())["gitcommit"] != ""
-@test isfile(sn)
-rm(sn)
+    t = f(simulation)
+    t["gitcommit"] = ""
+    @test @tagsave(savename(simulation, ending), t, safe=true, gitpath=findproject())["gitcommit"] == ""
+    @test isfile(sn)
+    rm(sn)
+    @test @tagsave(savename(simulation,ending), t, safe=true, force=true, gitpath=findproject())["gitcommit"] != ""
+    @test isfile(sn)
+    rm(sn)
 
-rm(savename(simulation, "bson"))
-@test !isfile(savename(simulation, "bson"))
+    rm(savename(simulation, ending))
+    @test !isfile(savename(simulation, ending))
 
-ex = @macroexpand @tagsave("testname.bson", (@dict a b c ), storepatch=false; safe=true)
-ex2 = @macroexpand @tagsave("testname.bson", @dict a b c; storepatch=false, safe=true)
-@test ex.args[1:end-1] == ex2.args[1:end-1]
+    ex = @macroexpand @tagsave("testname."*ending, (@dict a b c ), storepatch=false; safe=true)
+    ex2 = @macroexpand @tagsave("testname."*ending, @dict a b c; storepatch=false, safe=true)
+    @test ex.args[1:end-1] == ex2.args[1:end-1]
 
-# Remove leftover
+    # Remove leftover
+end
 
 ################################################################################
 #                              produce or load                                 #
 ################################################################################
-for ending ∈ ("bson", "jld2")
+
+@testset "Produce or Load ($ending)" for ending ∈ ["bson", "jld2"]
     @test !isfile(savename(simulation, ending))
     sim, path = produce_or_load(simulation, f; suffix = ending)
     @test isfile(savename(simulation, ending))
@@ -113,15 +116,18 @@ rm(savename(simulation, "jld2"))
 ################################################################################
 #                          Backup files before saving                          #
 ################################################################################
-filepath = "test.#backup.jld2"
-data = [Dict( "a" => i, "b" => rand(rand(1:10))) for i = 1:3]
-for i = 1:3
-    safesave(filepath, data[i])
-    @test data[i] == load(filepath)
+
+@testset "Backup ($ending)" for ending ∈ ["bson", "jld2"]
+    filepath = "test.#backup."*ending
+    data = [Dict( "a" => i, "b" => rand(rand(1:10))) for i = 1:3]
+    for i = 1:3
+        safesave(filepath, data[i])
+        @test data[i] == load(filepath)
+    end
+    @test data[2] == load("test.#backup_#1."*ending)
+    @test data[1] == load("test.#backup_#2."*ending)
+    @test data[3] == load("test.#backup."*ending)
+    rm("test.#backup."*ending)
+    rm("test.#backup_#1."*ending)
+    rm("test.#backup_#2."*ending)
 end
-@test data[2] == load("test.#backup_#1.jld2")
-@test data[1] == load("test.#backup_#2.jld2")
-@test data[3] == load("test.#backup.jld2")
-rm("test.#backup.jld2")
-rm("test.#backup_#1.jld2")
-rm("test.#backup_#2.jld2")

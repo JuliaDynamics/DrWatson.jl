@@ -1,5 +1,9 @@
 using DrWatson, Test
-using BSON, DataFrames, JLD2
+using BSON, DataFrames, FileIO, JLD2
+
+
+@testset "Collect Results ($ending)" for ending ∈ ["bson", "jld2"]
+
 ###############################################################################
 #                        Setup Folder structure                               #
 ###############################################################################
@@ -17,31 +21,32 @@ mkdir(datadir("results"))
 cd(datadir("results"))
 
 d = Dict("a" => 1, "b" => "2", "c" => rand(10))
-DrWatson.wsave(savename(d)*".bson", d)
+DrWatson.wsave(savename(d)*"."*ending, d)
 
 d = Dict("a" => 3, "b" => "4", "c" => rand(10), "d" => Float64)
-DrWatson.wsave(savename(d)*".bson", d)
+DrWatson.wsave(savename(d)*"."*ending, d)
 
 d = Dict("a" => 3, "c" => rand(10), "d" => Float64)
-DrWatson.wsave(savename(d)*".jld2", d)
+DrWatson.wsave(savename(d)*"."*ending, d)
 
 mkdir("subfolder")
 cd("subfolder")
 
 d = Dict("a" => 4., "b" => "twenty" , "d" => Int)
-DrWatson.wsave(savename(d)*".bson", d)
+DrWatson.wsave(savename(d)*"."*ending, d)
 
 ###############################################################################
 #                           Collect Data Into DataFrame                       #
 ###############################################################################
 using Statistics
 special_list = [ :lv_mean => data -> mean(data["c"]),
-                 :lv_var  => data -> var(data["c"])]
+                :lv_var  => data -> var(data["c"])]
 
 black_list = ["c"]
 
 folder = datadir("results")
-defaultname = joinpath(dirname(folder), "results_$(basename(folder)).bson")
+
+defaultname = joinpath(dirname(folder), "results_$(basename(folder))."*ending)
 isfile(defaultname) && rm(defaultname)
 cres = collect_results!(defaultname, folder;
     subfolders = true, special_list=special_list, black_list = black_list)
@@ -53,7 +58,7 @@ end
 @test "c" ∉ names(cres)
 @test all(startswith.(cres[!,"path"], projectdir()))
 
-relpathname = joinpath(dirname(folder), "results_relpath_$(basename(folder)).bson")
+relpathname = joinpath(dirname(folder), "results_relpath_$(basename(folder))."*ending)
 cres_relpath = collect_results!(relpathname, folder;
     subfolders = true, special_list=special_list, black_list = black_list,
     rpath = projectdir())
@@ -82,13 +87,13 @@ cres2 = collect_results!(defaultname, folder;
 ###############################################################################
 
 special_list2 = [ :lv_mean => data -> mean(data["c"]),
-                 data -> :lv_var  =>  var(data["c"]),
-                 data -> [:lv_mean2 => mean(data["c"]),
-                          :lv_var2  =>  var(data["c"])]]
+                data -> :lv_var  =>  var(data["c"]),
+                data -> [:lv_mean2 => mean(data["c"]),
+                        :lv_var2  =>  var(data["c"])]]
 black_list = ["c"]
 
 folder = datadir("results")
-defaultname2 = joinpath(dirname(folder), "results_betterspeciallist.bson")
+defaultname2 = joinpath(dirname(folder), "results_betterspeciallist."*ending)
 isfile(defaultname2) && rm(defaultname2)
 cres10 = collect_results!(defaultname2, folder;
     subfolders = true, special_list=special_list2, black_list = black_list)
@@ -102,7 +107,7 @@ end
 #                           Load and analyze  DataFrame                       #
 ###############################################################################
 
-df = BSON.load(defaultname)[:df]
+df = load(defaultname)["df"]
 @test size(df) == size(cres2)
 @test sort(names(df)) == sort(names(cres2))
 
@@ -146,3 +151,5 @@ include(joinpath("testdir", "testinclude.jl"))
 
 cd(@__DIR__)
 rm("testdir", recursive=true)
+
+end
