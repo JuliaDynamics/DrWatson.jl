@@ -15,7 +15,7 @@ function f(simulation)
     return @strdict a b simulation
 end
 
-@testset "Tagsafe - Filetype: ($ending)" for ending ∈ ["bson", "jld2"]
+@testset "Tagsafe ($ending)" for ending ∈ ["bson", "jld2"]
 ################################################################################
 #                                 tagsave                                      #
 ################################################################################
