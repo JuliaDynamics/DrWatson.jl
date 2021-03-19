@@ -10,10 +10,12 @@ DrWatson helps establishing reproducibility, and in general it makes managing a 
 
 See the [Functionality](@ref) section to get an impression of what you can do with DrWatson or see the [DrWatson Workflow Tutorial](@ref) to get a "crash course" of how DrWatson helps the typical scientific workflow.
 The [Description of DrWatson](@ref) section describes the design decisions that make it a unique software that truly helps the scientific workflow.
-Or, you can watch this 8-minutes video that introduces DrWatson in JuliaCon2020:
+If you want to see how DrWatson compares with other existing alternatives, please have a look at our paper in [Citing](@ref).
+
+You can also watch this 8-minutes video that introduces DrWatson in JuliaCon2020:
 
 ```@raw html
-<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/jKATlEAu8eE" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="560" height="400" src="https://www.youtube-nocookie.com/embed/jKATlEAu8eE" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 
 
@@ -72,7 +74,10 @@ DrWatson follows these simple principles:
 This is why we believe DrWatson can help you focus on the science and not worry about project code management.
 
 ## Citation
-If you have used DrWatson in a scientific project that lead to a publication, we'd appreciate you citing the paper associated with it:
+If you have used DrWatson in a scientific project that lead to a publication, we'd appreciate you citing the paper associated with it.
+This paper also compares DrWatson to other software that have been used to aid the scientific workflow in one way or another,
+and highlights the unique features of DrWatson.
+
 ```
 @article{Datseris2020,
   doi = {10.21105/joss.02673},
