@@ -1,4 +1,5 @@
 using Dates
+using MacroTools
 export savename, @savename, @dict, @ntuple, @strdict, parse_savename
 export ntuple2dict, dict2ntuple
 export tostringdict, tosymboldict
@@ -283,10 +284,18 @@ Same as [`@dict`](@ref) but the key type is `String`.
 """
 macro strdict(vars...)
     expr = Expr(:call, :Dict)
-    for i in 1:length(vars)
-        push!(expr.args, :(string($(QuoteNode(vars[i]))) => $(esc(vars[i]))))
-    end
-    return expr
+	for var in vars
+		# Allow assignment syntax a = b
+		if @capture(var, a_ = b_)
+			push!(expr.args, :($(string(a)) => $(esc(b))))
+		# Allow single arg syntax a   → "a" = a
+		elseif @capture(var, a_Symbol)
+			push!(expr.args, :($(string(a)) => $(esc(a))))
+		else
+			return :(throw(ArgumentError("Invalid field syntax")))
+		end
+	end
+	return expr
 end
 
 
