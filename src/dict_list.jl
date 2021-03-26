@@ -130,7 +130,10 @@ function dict_list_count(c)
     prod(length(c[i]) for i in iterable_fields)
 end
 
-# Basis taken from https://github.com/FluxML/MacroTools.jl
+# Basis taken from https://github.com/FluxML/MacroTools.jl.
+# The functions are similar to the ones from MacroTools but support an
+# additional expression to be passed. The functions are NOT exportet by
+# MacroTools, so there is no need to rename or import them.
 walk(x, inner, outer, ex) = outer(x, ex)
 walk(x::Expr, inner, outer, ex) = outer(Expr(x.head, map(y->inner(y,x), x.args)...), ex)
 postwalk(f, x, ex=:()) = walk(x, (x,y) -> postwalk(f, x, y), f, ex)
