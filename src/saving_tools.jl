@@ -57,7 +57,8 @@ function gitdescribe(gitpath = projectdir())
     suffix = ""
     if LibGit2.isdirty(repo)
         suffix = "_dirty"
-        @warn "The Git repository is dirty! Appending $(suffix) to the commit ID"
+        @warn "The Git repository ('$gitpath') is dirty! "*
+        "Appending $(suffix) to the commit ID."
     end
     # then we return the output of `git describe` or the latest commit hash
     # if no annotated tags are available
