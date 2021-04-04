@@ -121,10 +121,11 @@ or use the DOI directly:
 ### Paper-related
 * <https://github.com/Azzaare/Bibliography.jl>
 
-### Debugging, writing code
+### Writing and debugging code
 * <https://junolab.org/>
 * <https://github.com/timholy/Revise.jl>
 * <https://github.com/JuliaDebug/Debugger.jl>
+* <https://github.com/MichaelHatherly/InteractiveErrors.jl>
 
 ### Performance measures
 * <https://github.com/JuliaCI/BenchmarkTools.jl>
