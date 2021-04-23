@@ -122,3 +122,31 @@ let
     di = @dict a b
     @test savename(di) == "a=Inf_b=NaN"
 end
+
+
+# Dedicated Macro tests
+@testset "Macro Tests" begin
+    x = 3; y = 5.0; z = 42;
+    
+    @test Dict(:x=>x, :y=>y, :z=>z) == @dict x y z
+    @test Dict(:x=>x, :b=>y, :z=>z) == @dict x b=y z
+    @test Dict(:a=>x, :b=>y, :c=>z) == @dict a=x b=y c=z
+    @test Dict(:z=>x, :x=>y, :y=>z) == @dict z=x x=y y=z
+
+    @test Dict("x"=>x, "y"=>y, "z"=>z) == @strdict x y z
+    @test Dict("x"=>x, "b"=>y, "z"=>z) == @strdict x b=y z
+    @test Dict("a"=>x, "b"=>y, "c"=>z) == @strdict a=x b=y c=z
+    @test Dict("z"=>x, "x"=>y, "y"=>z) == @strdict z=x x=y y=z
+
+    @test (x=x, y=y, z=z) == @ntuple x y z
+    @test (x=x, b=y, z=z) == @ntuple x b=y z
+    @test (a=x, b=y, c=z) == @ntuple a=x b=y c=z
+    @test (z=x, x=y, y=z) == @ntuple z=x x=y y=z
+
+    @test savename((; x, y, z)) == @savename x y z
+    @test savename((; x, b=y, z)) == @savename x b=y z
+    @test savename((; a=x, b=y, c=z)) == @savename a=x b=y c=z
+    @test savename((; z=x, x=y, y=z)) == @savename z=x x=y y=z
+
+end
+

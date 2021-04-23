@@ -1,4 +1,5 @@
 using Dates
+using MacroTools
 export savename, @savename, @dict, @ntuple, @strdict, parse_savename
 export ntuple2dict, dict2ntuple
 export tostringdict, tosymboldict
@@ -234,10 +235,10 @@ is incorrect. If you want to use commas you have to do `@dict(a, b)`.
 ```jldoctest; setup = :(using DrWatson)
 julia> ω = 5; χ = "test"; ζ = π/3;
 
-julia> @dict ω χ ζ
+julia> @dict ω y=χ ζ
 Dict{Symbol,Any} with 3 entries:
   :ω => 5
-  :χ => "test"
+  :y => "test"
   :ζ => 1.0472
 ```
 """
@@ -263,7 +264,8 @@ end
 
 """
     esc_dict_expr_from_vars(vars)
-Transform a `Tuple` of `Symbol` into a dictionary where each `Symbol` in `vars`
+Transform a `Tuple` of `Symbol` and assignments (`a=b`) 
+into a dictionary where each `Symbol` in `vars`
 defines a key-value pair. The value is obtained by evaluating the `Symbol` in
 the macro calling environment.
 
@@ -272,7 +274,14 @@ This should only be called when producing an expression intended to be returned 
 function esc_dict_expr_from_vars(vars)
     expr = Expr(:call, :Dict)
     for i in 1:length(vars)
-        push!(expr.args, :($(QuoteNode(vars[i])) => $(esc(vars[i]))))
+        if @capture(vars[i], a_ = b_)
+			push!(expr.args, :($(QuoteNode(a)) => $(esc(b))))
+		# Allow single arg syntax a   → "a" = a
+		elseif @capture(vars[i], a_Symbol)
+			push!(expr.args, :($(QuoteNode(a)) => $(esc(a))))
+		else
+			return :(throw(ArgumentError("Invalid field syntax")))
+		end
     end
     return expr
 end
@@ -283,10 +292,18 @@ Same as [`@dict`](@ref) but the key type is `String`.
 """
 macro strdict(vars...)
     expr = Expr(:call, :Dict)
-    for i in 1:length(vars)
-        push!(expr.args, :(string($(QuoteNode(vars[i]))) => $(esc(vars[i]))))
-    end
-    return expr
+	for var in vars
+		# Allow assignment syntax a = b
+		if @capture(var, a_ = b_)
+			push!(expr.args, :($(string(a)) => $(esc(b))))
+		# Allow single arg syntax a   → "a" = a
+		elseif @capture(var, a_Symbol)
+			push!(expr.args, :($(string(a)) => $(esc(a))))
+		else
+			return :(throw(ArgumentError("Invalid field syntax")))
+		end
+	end
+	return expr
 end
 
 
@@ -299,17 +316,25 @@ names and as values their values.
 ```jldoctest; setup = :(using DrWatson)
 julia> ω = 5; χ = "test"; ζ = 3.14;
 
-julia> @ntuple ω χ ζ
-(ω = 5, χ = "test", ζ = 3.14)
+julia> @ntuple ω χ π=ζ
+(ω = 5, χ = "test", π = 3.14)
 ```
 """
 macro ntuple(vars...)
-   args = Any[]
-   for i in 1:length(vars)
-       push!(args, Expr(:(=), esc(vars[i]), :($(esc(vars[i])))))
-   end
-   expr = Expr(:tuple, args...)
-   return expr
+    args = Any[]
+    for var in vars
+        # Allow assignment syntax a = b
+        if @capture(var, a_ = b_)
+            push!(args, :($(a) = $(esc(b))))
+        # Allow single arg syntax a   → a = a
+        elseif @capture(var, a_Symbol)
+            push!(args, :($(a) = $(esc(a))))
+        else
+            return :(throw(ArgumentError("Invalid field syntax")))
+        end
+    end
+    expr = Expr(:tuple, args...)
+    return expr
 end
 # Credit of `ntuple` macro goes to Sebastian Pfitzner, @pfitzseb
 
