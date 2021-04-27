@@ -15,6 +15,4 @@ Please provide a piece of code that leads to the bug you encounter.
 
 If the code is **runnable**, it will help us identify the problem faster.
 
-**Agents.jl version**
-
-Please provide the version you use (you can do `Pkg.status("Agents")`.
+Please also provide the version of `DrWatson` you have installed and your Julia version.
