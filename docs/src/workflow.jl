@@ -5,7 +5,7 @@
 # ```
 
 # *Disclaimer: DrWatson assumes basic knowledge of how Julia's
-# project manager works.*
+# [project manager](https://pkgdocs.julialang.org/v1/environments/) works.*
 
 # This example page demonstrates how DrWatson's functions help a typical scientific
 # workflow, as illustrated below:
@@ -81,7 +81,7 @@ projectname()
 # that our scripts run within the context of the project and thus use the correct
 # package versions.
 
-# Second, DrWatson provides the powerful function [`projectdir`](@reF) and its derivatives
+# Second, DrWatson provides the powerful function [`projectdir`](@ref) and its derivatives
 # like `datadir, plotsdir, srcdir`, etc.
 projectdir()
 
