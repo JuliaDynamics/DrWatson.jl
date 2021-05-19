@@ -465,3 +465,52 @@ end
 
 special_list = [largestthree,]
 ```
+
+### Using savename to produce logfiles
+
+When your code runs for a long time or even runs on different machines such as a cluster
+environment it becomes important to produce logfiles. Logfiles allow you to
+view the progress of your program while it is still running, or check later
+on if everything went according to plan.
+
+```julia
+using Dates
+
+function logmessage(n, error)
+    # current time
+    time = Dates.format(now(UTC), dateformat"yyyy-mm-dd HH:MM:SS")
+
+    # memory the process is using 
+    maxrss = "$(round(Sys.maxrss()/1048576, digits=2)) MiB"
+
+    logdata = (; 
+        n, # iteration n
+        error, # some super important progress update
+        maxrss) # lastly the amount of memory being used
+
+    println(savename(time, logdata; connector=" | ", equals=" = ", sort=false, digits=2))
+end
+
+function expensive_computation(N)
+
+    for n = 1:N
+        sleep(1) # heavy computation
+        error = rand()/n # some super import progress update
+        logmessage(n, error)
+    end
+
+end
+```
+
+This yields output that is both easy to read *and* machine parseable.
+If you ever end up with too many logfiles to read, there is still `parse_savename` to
+help you.
+ 
+```julia
+julia> expensive_computation(5)
+2021-05-19 19:20:25 | n = 1 | error = 0.65 | maxrss = 326.27 MiB
+2021-05-19 19:20:26 | n = 2 | error = 0.48 | maxrss = 326.27 MiB
+2021-05-19 19:20:27 | n = 3 | error = 0.08 | maxrss = 326.27 MiB
+2021-05-19 19:20:28 | n = 4 | error = 0.11 | maxrss = 326.27 MiB
+2021-05-19 19:20:29 | n = 5 | error = 0.15 | maxrss = 326.27 MiB
+```
