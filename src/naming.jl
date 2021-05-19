@@ -60,6 +60,8 @@ See also [`parse_savename`](@ref) and [`@savename`](@ref).
   called with its default arguments (so customization here is possible only
   by rolling your own container type). Containers leading to empty `savename`
   are skipped.
+* `equals = "="` : Connector between name and value. Can be useful to modify for 
+  adding space `" = "`.
 
 ## Examples
 ```julia
@@ -69,6 +71,7 @@ savename("n", d) == "n_a=0.153_b=5_mode=double"
 savename(d, "n") == "a=0.153_b=5_mode=double.n"
 savename("n", d, "n"; connector = "-") == "n-a=0.153-b=5-mode=double.n"
 savename(d, allowedtypes = (String,)) == "mode=double"
+savename(d, connector=" | ", equals=" = ") == "a = 0.153 | b = 5 | mode = double"
 
 rick = (never = "gonna", give = "you", up = "!");
 savename(rick) == "give=you_never=gonna_up=!" # keys are sorted!
@@ -85,7 +88,7 @@ function savename(prefix::String, c, suffix::String;
                   connector = "_", expand::Vector{String} = default_expand(c),
                   sigdigits::Union{Int,Nothing}=nothing,
                   val_to_string = nothing,
-                  sort = true)
+                  sort = true, equals = "=")
 
     if any(sep in prefix for sep in ['/', '\\'])
         @warn """
@@ -116,11 +119,11 @@ function savename(prefix::String, c, suffix::String;
         if any(x -> (t <: x), allowedtypes)
             if label ∈ expand
                 isempty(val) && continue
-                sname = savename(val; connector=",", digits=digits, sigdigits=sigdigits)
+                sname = savename(val; connector=",", digits=digits, sigdigits=sigdigits, equals = equals)
                 isempty(sname) && continue
-                entry = label*"="*'('*sname*')'
+                entry = label*equals*'('*sname*')'
             else
-                entry = label*"="*val2string(val)
+                entry = label*equals*val2string(val)
             end
             !first && (s *= connector)
             s *= entry
