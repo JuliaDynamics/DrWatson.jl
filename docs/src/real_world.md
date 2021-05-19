@@ -466,7 +466,7 @@ end
 special_list = [largestthree,]
 ```
 
-### Using savename to produce logfiles
+### Using `savename` to produce logfiles
 
 When your code runs for a long time or even runs on different machines such as a cluster
 environment it becomes important to produce logfiles. Logfiles allow you to
