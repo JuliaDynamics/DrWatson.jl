@@ -1,3 +1,5 @@
+# 2.0.3
+* Added a kwarg `equals` to `savename` to extend applicability.
 # 2.0
 ## Breaking
 * DrWatson has moved entirely on using JLD2.jl instead of BSON.jl for saving files, and also suggests the same to its users through the documentation.
