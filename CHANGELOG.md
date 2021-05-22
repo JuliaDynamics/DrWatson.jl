@@ -10,6 +10,8 @@
 ## Non-breaking
 * `savename` now allows a keyword `val_to_string` for customization.
 
+# 1.19.0
+* Projects are initialized with `.gitattributes` by default
 # 1.18.3
 * Remove type constraints on `produce_or_load` path argument (#229)
 # 1.18.2
