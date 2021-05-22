@@ -11,6 +11,8 @@ d = (a = 0.153456453, b = 5, mode = "double")
 @test savename("n", d, "n") == "n_a=0.153_b=5_mode=double.n"
 @test savename("n", d, "n"; connector = "-") == "n-a=0.153-b=5-mode=double.n"
 @test savename(d, allowedtypes = (String,)) == "mode=double"
+@test savename(d, connector=" | ", equals=" = ") == "a = 0.153 | b = 5 | mode = double"
+
 tday = today()
 @test savename(@dict(tday)) == "tday=$(string(tday))"
 
