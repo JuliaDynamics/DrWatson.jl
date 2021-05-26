@@ -434,7 +434,7 @@ As `@onlyif` is meant to be used with [`dict_list`](@ref), it supports the vecto
 This is achieved by automatically broadcasting every `@onlyif` call over `Vector` arguments, which allows chaining those calls to combine conditions.
 So in terms of the result, `@onlyif( :a == 2, [5, @onlyif(:b == 4, 6)])` is equivalent to `[@onlyif( :a == 2, 5), @onlyif(:a == 2 && :b == 4, 6)]`.
 
-### Advanced Usage of collect_results
+## Advanced Usage of collect_results
 At some point in your work you may want to run a single function
 that returns multiple fields that you want to include in your
 results `DataFrame`.
@@ -466,7 +466,7 @@ end
 special_list = [largestthree,]
 ```
 
-### Using `savename` to produce logfiles
+## Using `savename` to produce logfiles
 
 When your code runs for a long time or even runs on different machines such as a cluster
 environment it becomes important to produce logfiles. Logfiles allow you to
