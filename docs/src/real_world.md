@@ -20,7 +20,7 @@ The advantage of this approach is that it will always work regardless of if I mo
 Here is an example from another project. You will notice that another advantage is that I can use identical syntax to access the data or source folders even though I have different projects!
 ```julia
 using DrWatson
-quickactivate "EmbeddingResearch"
+@quickactivate "EmbeddingResearch"
 using Parameters
 using TimeseriesPrediction, LinearAlgebra, Statistics
 
