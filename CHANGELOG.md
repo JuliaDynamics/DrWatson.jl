@@ -1,3 +1,5 @@
+# 2.0.4
+* `produce_or_load` now will not attempt to `tagsave` for inappropriate file formats, like `.csv`.
 # 2.0.3
 * Added a kwarg `equals` to `savename` to extend applicability.
 # 2.0

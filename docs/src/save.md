@@ -56,8 +56,11 @@ In addition, it attempts to minimize computing energy spent on getting a result.
 
 ```@docs
 produce_or_load
+istaggable
 ```
-See [Stopping "Did I run this?"](@ref) for an example usage of `produce_or_load`.
+
+See [Stopping "Did I run this?"](@ref) for an example usage of `produce_or_load`. While `produce_or_load` will try to by default tag your data if possible, you can also use it with other formats. An example is when your simulation function `f` returns a `DataFrame` and the file suffix is `"csv"`. In this case tagging will not happen, but `produce_or_load` will work as expected.
+
 
 ## Converting a struct to a dictionary
 [`savename`](@ref) gives great support for getting a name out of any Julia composite type. To save something though, one needs a dictionary. So the following function can be conveniently used to directly save a struct using any saving function:

@@ -1,7 +1,7 @@
 name = "DrWatson"
 uuid = "634d3b9d-ee7a-5ddf-bec9-22491ea816e1"
 repo = "https://github.com/JuliaDynamics/DrWatson.jl.git"
-version = "2.0.3"
+version = "2.0.4"
 
 [deps]
 Dates = "ade2ca70-3891-5945-98fb-dc099432e06a"
@@ -22,6 +22,7 @@ julia = "1.0"
 
 [extras]
 BSON = "fbb218c0-5317-5bc6-957e-2ee96dd4b1f0"
+CSVFiles = "5d742f6a-9f54-50ce-8119-2520741973ca"
 DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
 Dates = "ade2ca70-3891-5945-98fb-dc099432e06a"
 FileIO = "5789e2e9-d7fb-5bc7-8068-2c6fae9b9549"
@@ -31,4 +32,7 @@ Statistics = "10745b16-79ce-11e8-11f9-7d13ad32a3b2"
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 
 [targets]
-test = ["Test", "BSON", "FileIO", "Parameters", "DataFrames", "JLD2", "Statistics", "Dates"]
+test = [
+    "Test", "BSON", "FileIO", "Parameters", "DataFrames",
+    "JLD2", "Statistics", "Dates", "CSVFiles"
+]

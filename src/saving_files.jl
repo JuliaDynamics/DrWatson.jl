@@ -11,7 +11,9 @@ that produces your data. Then save `file` as `s` and then return `file, s`.
 The function `f` must return a dictionary,
 the macros [`@dict`](@ref) and [`@strdict`](@ref) can help with that.
 
-You can use [do-block](https://docs.julialang.org/en/v1/manual/functions/#Do-Block-Syntax-for-Function-Arguments) instead of defining a function to pass in. For example,
+You can use [do-block]
+(https://docs.julialang.org/en/v1/manual/functions/#Do-Block-Syntax-for-Function-Arguments)
+instead of defining a function to pass in. For example,
 ```julia
 produce_or_load([path="",] c) do c
     # simulation wiht config `c` runs here
@@ -19,9 +21,9 @@ end
 ```
 
 ## Keywords
-* `tag = true` : Save the file using [`tagsave`](@ref).
+* `suffix = "jld2", prefix = default_prefix(c)` : Used in [`savename`](@ref).
+* `tag::Bool = istaggable(suffix)` : Save the file using [`tagsave`](@ref) if `true`.
 * `gitpath, storepatch` : Given to [`tagsave`](@ref) if `tag` is `true`.
-* `suffix = "jld2", prefix = default_prefix(c)` : Used in `savename`.
 * `force = false` : If `true` then don't check if file `s` exists and produce
   it and save it anyway.
 * `loadfile = true` : If `false`, this function does not actually load the
@@ -30,15 +32,13 @@ end
   exist it is still produced and saved.
 * `verbose = true` : print info about the process, if the file doesn't exist.
 * `kwargs...` : All other keywords are propagated to `savename`.
-
-See also [`savename`](@ref).
 """
 produce_or_load(c, f; kwargs...) = produce_or_load("", c, f; kwargs...)
 produce_or_load(f::Function, c; kwargs...) = produce_or_load(c, f; kwargs...)
 produce_or_load(f::Function, path, c; kwargs...) = produce_or_load(path, c, f; kwargs...)
 function produce_or_load(path, c, f::Function;
-    tag::Bool = true, gitpath = projectdir(), loadfile = true,
     suffix = "jld2", prefix = default_prefix(c),
+    tag::Bool = istaggable(suffix), gitpath = projectdir(), loadfile = true,
     force = false, verbose = true, storepatch = true, kwargs...)
 
     s = joinpath(path, savename(prefix, c, suffix; kwargs...))
