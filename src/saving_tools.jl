@@ -1,6 +1,7 @@
 export gitdescribe, current_commit, tag!, @tag!
 export dict_list, dict_list_count
 export struct2dict, struct2ntuple
+export istaggable
 
 ########################################################################################
 # Obtaining Git information
@@ -256,9 +257,18 @@ end
 # Tagging Utilities
 ########################################################################################
 const TAGGABLE_FILE_ENDINGS = ("bson", "jld", "jld2")
+"""
+    istaggable(file::AbstractStrig) → bool
+Return `true` if the file save format (file ending) is "taggable", i.e. allows adding
+additional data fields as strings. Currently endings that can do this are:
+```
+$(TAGGABLE_FILE_ENDINGS)
+```
+
+    istaggable(x) = x isa AbstractDictionary
+"""
 istaggable(file::AbstractString) = any(endswith(file, e) for e ∈ TAGGABLE_FILE_ENDINGS)
-istaggable(d::AbstractDictionary) = true
-istaggable(x) = false
+istaggable(x) = x isa AbstractDictionary
 
 
 """
