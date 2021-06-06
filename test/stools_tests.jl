@@ -262,3 +262,8 @@ end
 rm(tmpdir, force = true, recursive = true)
 @test !isdir(tmpdir)
 
+## is taggable 
+@test DrWatson.istaggable("test.jld2")
+@test !DrWatson.istaggable("test.csv")
+@test !DrWatson.istaggable(0.5)
+@test DrWatson.istaggable(Dict(:a => 0.5))

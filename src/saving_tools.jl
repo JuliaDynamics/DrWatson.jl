@@ -1,6 +1,10 @@
 export gitdescribe, current_commit, tag!, @tag!
 export dict_list, dict_list_count
+export struct2dict, struct2ntuple
 
+########################################################################################
+# Obtaining Git information
+########################################################################################
 """
     gitdescribe(gitpath = projectdir()) -> gitstr
 
@@ -134,12 +138,11 @@ function gitpatch(path = projectdir(); try_submodule_diff=true)
         end
     end
     return nothing
-    # tree = LibGit2.GitTree(repo, "HEAD^{tree}")
-    # diff = LibGit2.diff_tree(repo, tree)
-    # now there is no way to generate the patch with LibGit2.jl.
-    # Instead use commands:
 end
 
+########################################################################################
+# Tagging
+########################################################################################
 """
     tag!(d::Dict; gitpath = projectdir(), storepatch = true, force = false) -> d
 Tag `d` by adding an extra field `gitcommit` which will have as value
@@ -201,7 +204,7 @@ function tag!(d::Dict{K,T}; gitpath = projectdir(), storepatch = true, force = f
             d[patchname] = patch
         end
     end
-    if source != nothing && !force
+    if source !== nothing && !force
         if haskey(d, scriptname)
             @warn "The dictionary already has a key named `script`. We won't "*
             "overwrite it with the script name."
@@ -249,7 +252,14 @@ macro tag!(d,args...)
     return :(tag!($(esc(d)),$(esc.(convert_to_kw.(args))...),source=$s))
 end
 
-export struct2dict
+########################################################################################
+# Tagging Utilities
+########################################################################################
+const TAGGABLE_FILE_ENDINGS = ("bson", "jld", "jld2")
+istaggable(file::AbstractString) = any(endswith(file, e) for e ∈ TAGGABLE_FILE_ENDINGS)
+istaggable(d::AbstractDictionary) = true
+istaggable(x) = false
+
 
 """
     struct2dict(s) -> d
@@ -262,8 +272,6 @@ tagsave(savename(s), struct2dict(s))
 function struct2dict(s)
     Dict(x => getfield(s, x) for x in fieldnames(typeof(s)))
 end
-
-export struct2ntuple
 
 """
     struct2ntuple(s) -> n
