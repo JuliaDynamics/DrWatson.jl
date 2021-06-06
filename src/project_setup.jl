@@ -315,6 +315,14 @@ function initialize_project(path, name = default_name_from_path(path);
     write(joinpath(path, "scripts", "intro.jl"), makeintro(name))
 
     files = vcat(".gitignore", joinpath("scripts", "intro.jl"), joinpath("test", "runtests.jl"))
+            
+    cp(joinpath(@__DIR__, "defaults", "gitattributes.txt"), joinpath(path, ".gitattributes"))
+    chmod(joinpath(path, ".gitattributes"),0o644)
+
+    write(joinpath(path, "scripts", "intro.jl"), makeintro(name))
+
+    files = vcat(".gitattributes", joinpath("scripts", "intro.jl"), joinpath("test", "runtests.jl"))
+            
     if readme
         write(joinpath(path, "README.md"), DEFAULT_README(name, authors))
         push!(files, "README.md")
