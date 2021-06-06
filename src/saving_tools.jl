@@ -268,7 +268,7 @@ $(TAGGABLE_FILE_ENDINGS)
     istaggable(x) = x isa AbstractDictionary
 """
 istaggable(file::AbstractString) = any(endswith(file, e) for e ∈ TAGGABLE_FILE_ENDINGS)
-istaggable(x) = x isa AbstractDictionary
+istaggable(x) = x isa AbstractDict
 
 
 """

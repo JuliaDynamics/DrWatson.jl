@@ -15,10 +15,10 @@ function f(simulation)
     return @strdict a b simulation
 end
 
-@testset "Tagsafe ($ending)" for ending ∈ ["bson", "jld2"]
 ################################################################################
 #                                 tagsave                                      #
 ################################################################################
+@testset "Tagsafe ($ending)" for ending ∈ ["bson", "jld2"]
     t = f(simulation)
     tagsave(savename(simulation, ending), t, gitpath=findproject())
     file = load(savename(simulation, ending))
@@ -112,6 +112,21 @@ end
 @test produce_or_load(simulation, f; loadfile = false)[1] == nothing
 rm(savename(simulation, "jld2"))
 @test !isfile(savename(simulation, "jld2"))
+
+using DataFrames
+@testset "produce_or_load with dataframe" begin
+    function makedf(c)
+        a = c[:a]
+        return DataFrame(A = a, B = rand(3))
+    end
+    c = (a = 0.5,)
+    _, spath = produce_or_load(c, makedf; suffix = "csv")
+    @test isfile(spath)
+    df = DataFrame(load(spath))
+    @test df.A == [0.5, 0.5, 0.5]
+    rm(spath)
+    @test !isfile(spath)
+end
 
 ################################################################################
 #                          Backup files before saving                          #
