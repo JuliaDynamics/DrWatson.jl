@@ -107,11 +107,11 @@ it matches the `name`.
 !!! warning
     Note that to access `quickactivate` you need to be `using DrWatson`.
     For this to be possible `DrWatson` must be already added in the
-    existing global environment. The version of `DrWatson` loaded therefore
-    will be the one of the global environment, and not of the activated project.
-    To avoid unexpected behavior take care so that these two versions coincide.
+    existing global environment. If you use `quickactivate` and share your project, do
+    note to your co-workers that they need to add `DrWatson` globally (the default
+    README.md created by `initialize_project` says this automatically).
 
-    **In addition please be very careful to write:**
+    **In addition, in your scripts write:**
     ```julia
     using DrWatson # YES
     quickactivate(@__DIR__)
@@ -219,6 +219,7 @@ function DEFAULT_README(name, authors = nothing)
     1. Open a Julia console and do:
        ```
        julia> using Pkg
+       julia> Pkg.add("DrWatson") # install globally, for using `quickactivate`
        julia> Pkg.activate("path/to/this/project")
        julia> Pkg.instantiate()
        ```
