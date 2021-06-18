@@ -120,6 +120,7 @@ or use the DOI directly:
 
 ### Paper-related
 * <https://github.com/Azzaare/Bibliography.jl>
+* <https://github.com/SebastianM-C/PkgCite.jl>
 
 ### Writing and debugging code
 * <https://junolab.org/>
