@@ -239,38 +239,25 @@ function initialize_project(path, name = default_name_from_path(path);
         @warn "Could not add DrWatson to project. Adding Pkg instead..."
         Pkg.add("Pkg")
     end
-    # Default folders
-    ph_files = String[]
-    for p in DEFAULT_PATHS
-        mkpath(joinpath(path, p))
-        if placeholder
-            write(joinpath(path, p, ".placeholder"), PLACEHOLDER_TEXT) #Create a placeholder file in each path
-            push!(ph_files, joinpath(path, p, ".placeholder"))
-        end
-    end
+
+    # Instantiate template
+    folders, ph_files = insert_folders(path, template, placeholder)
 
     git && LibGit2.add!(repo, "Project.toml")
     git && LibGit2.add!(repo, "Manifest.toml")
-    git && LibGit2.add!(repo, DEFAULT_PATHS...)
+    git && LibGit2.add!(repo, folders...)
     placeholder && git && LibGit2.add!(repo, ph_files...)
     git && LibGit2.commit(repo, "Folder setup by DrWatson")
 
     # Default files
     # chmod is needed, as the file permissions are not set correctly when adding the package with `add`.
     cp(joinpath(@__DIR__, "defaults", "gitignore.txt"), joinpath(path, ".gitignore"))
-    chmod(joinpath(path, ".gitignore"),0o644)
-
-    write(joinpath(path, "scripts", "intro.jl"), makeintro(name))
-
-    files = vcat(".gitignore", joinpath("scripts", "intro.jl"), joinpath("test", "runtests.jl"))
-            
+    chmod(joinpath(path, ".gitignore"), 0o644)
     cp(joinpath(@__DIR__, "defaults", "gitattributes.txt"), joinpath(path, ".gitattributes"))
-    chmod(joinpath(path, ".gitattributes"),0o644)
+    chmod(joinpath(path, ".gitattributes"), 0o644)
+    write(joinpath(path, "intro.jl"), makeintro(name))
 
-    write(joinpath(path, "scripts", "intro.jl"), makeintro(name))
-
-    files = vcat(".gitattributes", joinpath("scripts", "intro.jl"), joinpath("test", "runtests.jl"))
-            
+    files = [".gitignore", joinpath(path, "intro.jl")]
     if readme
         write(joinpath(path, "README.md"), DEFAULT_README(name, authors))
         push!(files, "README.md")
@@ -291,6 +278,37 @@ function initialize_project(path, name = default_name_from_path(path);
     git && LibGit2.commit(repo, "File setup by DrWatson")
     return path
 end
+
+function insert_folders(path, template, placeholder)
+    # Default folders
+    folders = String[]
+    ph_files = String[]
+    for p in template
+        _recursive_folder_insertion!(path, p, placeholder, folders, ph_files)
+    end
+    return folders, ph_files
+end
+function _recursive_folder_insertion!(path, p::String, placeholder, folders, ph_files)
+    folder = joinpath(path, p)
+    mkpath(folder)
+    push!(folders, folder)
+    if placeholder #Create a placeholder file in each path
+        write(joinpath(folder, ".placeholder"), PLACEHOLDER_TEXT)
+        push!(ph_files, joinpath(folder, ".placeholder"))
+    end
+end
+function _recursive_folder_insertion!(path, p::Pair{String, <:Any}, placeholder, folders, ph_files)
+    path = joinpath(path, p[1])
+    for z in p[2]
+        _recursive_folder_insertion!(path, z, placeholder, folders, ph_files)
+    end
+end
+function _recursive_folder_insertion!(path, p::Pair{String, String}, placeholder, folders, ph_files)
+    path = joinpath(path, p[1])
+    _recursive_folder_insertion!(path, p[2], placeholder, folders, ph_files)
+end
+
+
 
 vecstring(a::String) = [a]
 vecstring(a::Vector{String}) = a
