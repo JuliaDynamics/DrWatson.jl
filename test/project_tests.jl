@@ -2,7 +2,7 @@ using Pkg, Test, DrWatson
 using LibGit2
 LibGit2.default_signature() = LibGit2.Signature("TEST", "TEST@TEST.COM", round(time(), 0), 0)
 
-cd() # changes directory to `homedir()`
+cd(@__DIR__)
 path = "test project"
 name = "lala"
 
@@ -21,9 +21,8 @@ end
 
 @test projectname() == path
 @test typeof(findproject(@__DIR__)) == String
-for p in DrWatson.DEFAULT_PATHS
-    @test ispath(joinpath(path, p))
-end
+@test ispath(joinpath(path, "src"))
+@test ispath(joinpath(path, "data", "exp_raw"))
 
 @test ispath(projectdir("data"))
 @test isfile(joinpath(path, ".gitignore"))
@@ -72,9 +71,6 @@ cd(path)
 @test findproject(pwd()) == pwd()
 cd()
 
-rm(path, recursive = true, force = true)
-@test !isdir(path)
-
 # Test templates
 t1 = ["data", "documents" => ["a", "b"]]
 initialize_project(path, name; force = true, git = false, template = t1)
@@ -83,3 +79,6 @@ initialize_project(path, name; force = true, git = false, template = t1)
 @test ispath(joinpath(path, "documents"))
 @test ispath(joinpath(path, "documents", "a"))
 @test !ispath(joinpath(path, "src"))
+
+rm(path, recursive = true, force = true)
+@test !isdir(path)

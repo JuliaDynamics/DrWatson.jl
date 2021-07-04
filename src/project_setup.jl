@@ -280,10 +280,7 @@ function initialize_project(path, name = default_name_from_path(path);
     if !(authors === nothing)
         w *= "authors = "*sprint(show, vecstring(authors))*"\n"
     end
-    w *= """
-        [compat]
-        julia = "$(VERSION.major).$(VERSION.minor).$(VERSION.patch)"
-        """
+    w *= compat_entry()
     write(joinpath(path, "Project.toml"), w, pro)
     push!(files, "Project.toml")
     git && LibGit2.add!(repo, files...)
@@ -320,7 +317,19 @@ function _recursive_folder_insertion!(path, p::Pair{String, String}, placeholder
     _recursive_folder_insertion!(path, p[2], placeholder, folders, ph_files)
 end
 
-
+function compat_entry()
+    DrWatson_VERSION = let
+        project = joinpath(dirname(dirname(pathof(DrWatson))), "Project.toml")
+        toml = read(project, String)
+        versionline = readlines(project)[4]
+        VersionNumber(versionline[12:end-1])
+    end
+    """
+    [compat]
+    julia = "$(VERSION.major).$(VERSION.minor).$(VERSION.patch)"
+    DrWatson = "$(DrWatson_VERSION)"
+    """
+end
 
 vecstring(a::String) = [a]
 vecstring(a::Vector{String}) = a
