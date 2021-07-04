@@ -320,7 +320,6 @@ end
 function compat_entry()
     DrWatson_VERSION = let
         project = joinpath(dirname(dirname(pathof(DrWatson))), "Project.toml")
-        toml = read(project, String)
         versionline = readlines(project)[4]
         VersionNumber(versionline[12:end-1])
     end

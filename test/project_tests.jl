@@ -50,9 +50,8 @@ com = gitdescribe(path)
 @test !occursin('-', com) # no dashes = no git describe
 
 @test projectname() == name
-for p in DrWatson.DEFAULT_PATHS
-    @test ispath(joinpath(path, p))
-end
+@test ispath(joinpath(path, "src"))
+@test ispath(joinpath(path, "data", "exp_raw"))
 z = read(joinpath(path, "Project.toml"), String)
 @test occursin("[\"George\", \"Nick\"]", z)
 z = read(joinpath(path, "scripts", "intro.jl"), String)
