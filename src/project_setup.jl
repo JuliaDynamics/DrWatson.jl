@@ -202,7 +202,7 @@ The new project remains activated for you to immidiately add packages.
 * `git = true` : Make the project a Git repository.
 * `template = DrWatson.DEFAULT_TEMPLATE` : A template containing the folder structure
   of the project. It should be a vector containing strings (folder) or pairs of `String
-  => Vector{String}`, containg a folder and a subfolder. For example:
+  => Vector{String}`, containg a folder and subfolders (this can be nested further). Example:
   ```
   DEFAULT_TEMPLATE = [
     "_research", 
@@ -270,7 +270,7 @@ function initialize_project(path, name = default_name_from_path(path);
     chmod(joinpath(path, ".gitattributes"), 0o644)
     write(joinpath(path, "intro.jl"), makeintro(name))
 
-    files = [".gitignore", "intro.jl"]
+    files = [".gitignore", ".gitattributes", "intro.jl"]
     if readme
         write(joinpath(path, "README.md"), DEFAULT_README(name, authors))
         push!(files, "README.md")
@@ -286,7 +286,6 @@ function initialize_project(path, name = default_name_from_path(path);
         """
     write(joinpath(path, "Project.toml"), w, pro)
     push!(files, "Project.toml")
-
     git && LibGit2.add!(repo, files...)
     git && LibGit2.commit(repo, "File setup by DrWatson")
     return path
@@ -410,5 +409,6 @@ function makeintro(name)
     issues on GitHub, submitting feature requests,
     or even opening your own Pull Requests!
     \"\"\"
+    )
     """
 end
