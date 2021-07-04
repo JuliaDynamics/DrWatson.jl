@@ -30,7 +30,7 @@ end
 @test uperm(joinpath(path, ".gitignore")) == 0x06
 @test isfile(joinpath(path, "README.md"))
 @test isfile(joinpath(path, "Project.toml"))
-@test uperm(joinpath(path, "scripts", "intro.jl")) == 0x06
+@test uperm(joinpath(path, "intro.jl")) == 0x06
 
 for dir_type in ("data", "src", "plots", "papers", "scripts")
     fn = Symbol(dir_type * "dir")
@@ -74,3 +74,12 @@ cd()
 
 rm(path, recursive = true, force = true)
 @test !isdir(path)
+
+# Test templates
+t1 = ["data", "documents" => ["a", "b"]]
+initialize_project(path, name; force = true, git = false, template = t1)
+
+@test ispath(joinpath(path, "data"))
+@test ispath(joinpath(path, "documents"))
+@test ispath(joinpath(path, "documents", "a"))
+@test !ispath(joinpath(path, "src"))
