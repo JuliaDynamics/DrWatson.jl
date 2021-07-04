@@ -200,8 +200,23 @@ The new project remains activated for you to immidiately add packages.
 * `force = false` : If the `path` is _not_ empty then throw an error. If however `force`
   is `true` then recursively delete everything in the path and create the project.
 * `git = true` : Make the project a Git repository.
-* `placeholder = false` : Add hidden place holder files in each default folder to ensure that project
-  is maintained when the directory is cloned. Should be used only when `git = true`.
+* `template = DrWatson.DEFAULT_TEMPLATE` : A template containing the folder structure
+  of the project. It should be a vector containing strings (folder) or pairs of `String
+  => Vector{String}`, containg a folder and a subfolder. For example:
+  ```
+  DEFAULT_TEMPLATE = [
+    "_research", 
+    "src", 
+    "scripts",
+    "plots", 
+    "notebooks",
+    "papers",
+    "data" => ["sims", "exp_raw", "exp_pro"],
+  ]
+  ```
+* `placeholder = false` : Add hidden place holder files in each default folder to ensure 
+  that project folder structure is maintained when the directory is cloned.
+  Should be used only when `git = true`.
   Will throw a warning if used with `git = false`
 """
 function initialize_project(path, name = default_name_from_path(path);
@@ -209,9 +224,7 @@ function initialize_project(path, name = default_name_from_path(path);
         git = true, placeholder = false, template = DEFAULT_TEMPLATE
     )
 
-    placeholder && !git && @warn "The placeholder files are created, but you need to "*
-    "manually commit them to your version control software OR initialize project with git = true"
-
+    if git == false; placeholder = false; end
     mkpath(path)
     rd = readdir(path)
     if length(rd) != 0
@@ -257,7 +270,7 @@ function initialize_project(path, name = default_name_from_path(path);
     chmod(joinpath(path, ".gitattributes"), 0o644)
     write(joinpath(path, "intro.jl"), makeintro(name))
 
-    files = [".gitignore", joinpath(path, "intro.jl")]
+    files = [".gitignore", "intro.jl"]
     if readme
         write(joinpath(path, "README.md"), DEFAULT_README(name, authors))
         push!(files, "README.md")
@@ -381,23 +394,21 @@ const DEFAULT_TEMPLATE = [
 # Introductory file
 ##########################################################################################
 function makeintro(name)
-    f = """
+    """
     using DrWatson
     @quickactivate "$name"
-    DrWatson.greet()
-    """
-end
+    
+    println(
+    \"\"\"
+    Currently active project is: \$(projectname())
 
-function greet(name = projectname())
-    s =
-    """
-    Currently active project is: $(name)
+    Path of active project: \$(projectdir())
 
     Have fun with your new project!
 
     You can help us improve DrWatson by opening
     issues on GitHub, submitting feature requests,
     or even opening your own Pull Requests!
+    \"\"\"
     """
-    println(s)
 end
