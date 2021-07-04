@@ -185,60 +185,6 @@ end
 ##########################################################################################
 export initialize_project
 
-const DEFAULT_PATHS = [
-"_research", "src", "scripts",
-"plots", "notebooks",
-"papers",
-joinpath("data", "sims"),
-joinpath("data", "exp_raw"),
-joinpath("data", "exp_pro"),
-]
-const PLACEHOLDER_TEXT = """
-This file acts as a placeholder to ensure the project structure is copied whenever you clone the project.
-This doesn't commit any files within the folder.
-"""
-
-function DEFAULT_README(name, authors = nothing)
-    s = """
-    # $name
-
-    This code base is using the Julia Language and [DrWatson](https://juliadynamics.github.io/DrWatson.jl/stable/)
-    to make a reproducible scientific project named
-    > $name
-
-    """
-    if !(authors === nothing)
-        s *= "It is authored by "*join(vecstring(authors), ", ")*".\n\n"
-    end
-
-    s *= """
-    To (locally) reproduce this project, do the following:
-
-    0. Download this code base. Notice that raw data are typically not included in the
-       git-history and may need to be downloaded independently.
-    1. Open a Julia console and do:
-       ```
-       julia> using Pkg
-       julia> Pkg.add("DrWatson") # install globally, for using `quickactivate`
-       julia> Pkg.activate("path/to/this/project")
-       julia> Pkg.instantiate()
-       ```
-
-    This will install all necessary packages for you to be able to run the scripts and
-    everything should work out of the box.
-    """
-    return s
-end
-
-function default_name_from_path(path)
-    ap = abspath(path)
-    path, dir = splitdir(ap)
-    if length(dir) == 0
-        _, dir = splitdir(path)
-    end
-    return dir
-end
-
 """
     initialize_project(path [, name]; kwargs...)
 Initialize a scientific project expected by `DrWatson` in `path` (directory representing
@@ -259,8 +205,9 @@ The new project remains activated for you to immidiately add packages.
   Will throw a warning if used with `git = false`
 """
 function initialize_project(path, name = default_name_from_path(path);
-    force = false, readme = true, authors = nothing,
-    git = true, placeholder = false)
+        force = false, readme = true, authors = nothing,
+        git = true, placeholder = false, template = DEFAULT_TEMPLATE
+    )
 
     placeholder && !git && @warn "The placeholder files are created, but you need to "*
     "manually commit them to your version control software OR initialize project with git = true"
@@ -349,6 +296,69 @@ vecstring(a::String) = [a]
 vecstring(a::Vector{String}) = a
 vecstring(c) = [string(a) for a in c]
 
+
+function default_name_from_path(path)
+    ap = abspath(path)
+    path, dir = splitdir(ap)
+    if length(dir) == 0
+        _, dir = splitdir(path)
+    end
+    return dir
+end
+
+
+const PLACEHOLDER_TEXT = """
+This file acts as a placeholder to ensure the project structure is copied whenever you clone the project.
+This doesn't commit any files within the folder.
+"""
+
+function DEFAULT_README(name, authors = nothing)
+    s = """
+    # $name
+
+    This code base is using the Julia Language and [DrWatson](https://juliadynamics.github.io/DrWatson.jl/stable/)
+    to make a reproducible scientific project named
+    > $name
+
+    """
+    if !(authors === nothing)
+        s *= "It is authored by "*join(vecstring(authors), ", ")*".\n\n"
+    end
+
+    s *= """
+    To (locally) reproduce this project, do the following:
+
+    0. Download this code base. Notice that raw data are typically not included in the
+       git-history and may need to be downloaded independently.
+    1. Open a Julia console and do:
+       ```
+       julia> using Pkg
+       julia> Pkg.add("DrWatson") # install globally, for using `quickactivate`
+       julia> Pkg.activate("path/to/this/project")
+       julia> Pkg.instantiate()
+       ```
+
+    This will install all necessary packages for you to be able to run the scripts and
+    everything should work out of the box, including correctly finding local paths.
+    """
+    return s
+end
+
+##########################################################################################
+# Project templates
+##########################################################################################
+const DEFAULT_TEMPLATE = [
+    "_research", 
+    "src", 
+    "scripts",
+    "plots", 
+    "notebooks",
+    "papers",
+    "data" => ["sims", "exp_raw", "exp_pro"],
+]
+
+
+
 ##########################################################################################
 # Introductory file
 ##########################################################################################
@@ -360,10 +370,10 @@ function makeintro(name)
     """
 end
 
-function greet()
+function greet(name = projectname())
     s =
     """
-    Currently active project is: $(projectname())
+    Currently active project is: $(name)
 
     Have fun with your new project!
 
