@@ -119,7 +119,7 @@ or use the DOI directly:
 * <https://github.com/miguelraz/DoctorDocstrings.jl> 
 
 ### Paper-related
-* <https://github.com/Azzaare/Bibliography.jl>
+* <https://github.com/Humans-of-Julia/Bibliography.jl>
 * <https://github.com/SebastianM-C/PkgCite.jl>
 
 ### Writing and debugging code
