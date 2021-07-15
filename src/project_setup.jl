@@ -201,7 +201,7 @@ The new project remains activated for you to immidiately add packages.
   is `true` then recursively delete everything in the path and create the project.
 * `git = true` : Make the project a Git repository.
 * `template = DrWatson.DEFAULT_TEMPLATE` : A template containing the folder structure
-  of the project. It should be a vector containing strings (folder) or pairs of `String
+  of the project. It should be a vector containing strings (folders) or pairs of `String
   => Vector{String}`, containg a folder and subfolders (this can be nested further). Example:
   ```
   DEFAULT_TEMPLATE = [
@@ -214,10 +214,11 @@ The new project remains activated for you to immidiately add packages.
     "data" => ["sims", "exp_raw", "exp_pro"],
   ]
   ```
+  Obviously, the default derivative functions of [`projectdir`](@ref), such as `datadir`,
+  have been written with the default template in mind.
 * `placeholder = false` : Add hidden place holder files in each default folder to ensure 
   that project folder structure is maintained when the directory is cloned.
-  Should be used only when `git = true`.
-  Will throw a warning if used with `git = false`
+  Only used when `git = true`.
 """
 function initialize_project(path, name = default_name_from_path(path);
         force = false, readme = true, authors = nothing,
@@ -395,6 +396,15 @@ const DEFAULT_TEMPLATE = [
     "data" => ["sims", "exp_raw", "exp_pro"],
 ]
 
+const DOCUMENTS_TEMPLATE = [
+    "src", 
+    "scripts",
+    "plots", 
+    "notebooks",
+    "documents",
+    "papers",
+    "data" => ["sims", "obs", "ana"], # simulations, observations, analysis
+]
 
 
 ##########################################################################################

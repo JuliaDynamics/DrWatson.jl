@@ -62,6 +62,10 @@ initialize_project(path, name; force = true, authors = "Sophia", git = false)
 z = read(joinpath(path, "Project.toml"), String)
 @test occursin("[\"Sophia\"]", z)
 
+# test whether a DrWatson version is added to compat
+@test occursin("DrWatson =", z)
+
+
 # here we test quickactivate
 quickactivate(path)
 @test projectname() == name
