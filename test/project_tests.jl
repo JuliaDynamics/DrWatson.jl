@@ -54,7 +54,7 @@ com = gitdescribe(path)
 @test ispath(joinpath(path, "data", "exp_raw"))
 z = read(joinpath(path, "Project.toml"), String)
 @test occursin("[\"George\", \"Nick\"]", z)
-z = read(joinpath(path, "scripts", "intro.jl"), String)
+z = read(joinpath(path, "intro.jl"), String)
 @test occursin("@quickactivate", z)
 
 initialize_project(path, name; force = true, authors = "Sophia", git = false)
@@ -63,7 +63,7 @@ z = read(joinpath(path, "Project.toml"), String)
 @test occursin("[\"Sophia\"]", z)
 
 # here we test quickactivate
-quickactivate(joinpath(homedir(), path))
+quickactivate(path)
 @test projectname() == name
 
 cd(path)
