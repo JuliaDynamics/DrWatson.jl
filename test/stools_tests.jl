@@ -31,9 +31,6 @@ end
 # Tag kw-functions
 
 d = Dict(:x => 3, :y => 4)
-d_new = tag!(d)
-
-@test d == d_new
 
 d_new = tag!(d,gitpath=@__DIR__,source="foo")
 @test endswith(d_new[:script],"foo")

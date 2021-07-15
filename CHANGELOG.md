@@ -1,3 +1,5 @@
+# 2.1.0
+* `initialize_project` now allows for custom templates.
 # 2.0.4
 * `produce_or_load` now will not attempt to `tagsave` for inappropriate file formats, like `.csv`.
 # 2.0.3

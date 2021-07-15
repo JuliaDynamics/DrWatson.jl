@@ -185,14 +185,167 @@ end
 ##########################################################################################
 export initialize_project
 
-const DEFAULT_PATHS = [
-"_research", "src", "scripts",
-"plots", "notebooks",
-"papers",
-joinpath("data", "sims"),
-joinpath("data", "exp_raw"),
-joinpath("data", "exp_pro"),
-]
+"""
+    initialize_project(path [, name]; kwargs...)
+Initialize a scientific project expected by `DrWatson` in `path` (directory representing
+an empty folder).
+If `name` is not given, it is assumed to be the folder's name.
+
+The new project remains activated for you to immidiately add packages.
+
+## Keywords
+* `readme = true` : adds a README.md file.
+* `authors = nothing` : if a string or container of strings, adds the authors in the
+  Project.toml file and README.md.
+* `force = false` : If the `path` is _not_ empty then throw an error. If however `force`
+  is `true` then recursively delete everything in the path and create the project.
+* `git = true` : Make the project a Git repository.
+* `template = DrWatson.DEFAULT_TEMPLATE` : A template containing the folder structure
+  of the project. It should be a vector containing strings (folders) or pairs of `String
+  => Vector{String}`, containg a folder and subfolders (this can be nested further). Example:
+  ```
+  DEFAULT_TEMPLATE = [
+    "_research", 
+    "src", 
+    "scripts",
+    "plots", 
+    "notebooks",
+    "papers",
+    "data" => ["sims", "exp_raw", "exp_pro"],
+  ]
+  ```
+  Obviously, the default derivative functions of [`projectdir`](@ref), such as `datadir`,
+  have been written with the default template in mind.
+* `placeholder = false` : Add hidden place holder files in each default folder to ensure 
+  that project folder structure is maintained when the directory is cloned.
+  Only used when `git = true`.
+"""
+function initialize_project(path, name = default_name_from_path(path);
+        force = false, readme = true, authors = nothing,
+        git = true, placeholder = false, template = DEFAULT_TEMPLATE
+    )
+
+    if git == false; placeholder = false; end
+    mkpath(path)
+    rd = readdir(path)
+    if length(rd) != 0
+        if force
+            for d in rd
+                rm(joinpath(path, d), recursive = true, force = true)
+            end
+        else
+            error("Project path is not empty!")
+        end
+    end
+
+    if git
+        repo = LibGit2.init(path)
+        gc = LibGit2.GitConfig(repo)
+        LibGit2.get(gc, "user.name", false) || LibGit2.set!(gc, "user.name", "DrWatson")
+        LibGit2.get(gc, "user.email", false) || LibGit2.set!(gc, "user.email", "no@mail")
+        LibGit2.commit(repo, "Initial commit")
+    end
+
+    Pkg.activate(path)
+    try
+        Pkg.add("DrWatson")
+    catch
+        @warn "Could not add DrWatson to project. Adding Pkg instead..."
+        Pkg.add("Pkg")
+    end
+
+    # Instantiate template
+    folders, ph_files = insert_folders(path, template, placeholder)
+
+    git && LibGit2.add!(repo, "Project.toml")
+    git && LibGit2.add!(repo, "Manifest.toml")
+    git && LibGit2.add!(repo, folders...)
+    placeholder && git && LibGit2.add!(repo, ph_files...)
+    git && LibGit2.commit(repo, "Folder setup by DrWatson")
+
+    # Default files
+    # chmod is needed, as the file permissions are not set correctly when adding the package with `add`.
+    cp(joinpath(@__DIR__, "defaults", "gitignore.txt"), joinpath(path, ".gitignore"))
+    chmod(joinpath(path, ".gitignore"), 0o644)
+    cp(joinpath(@__DIR__, "defaults", "gitattributes.txt"), joinpath(path, ".gitattributes"))
+    chmod(joinpath(path, ".gitattributes"), 0o644)
+    write(joinpath(path, "intro.jl"), makeintro(name))
+
+    files = [".gitignore", ".gitattributes", "intro.jl"]
+    if readme
+        write(joinpath(path, "README.md"), DEFAULT_README(name, authors))
+        push!(files, "README.md")
+    end
+    pro = read(joinpath(path, "Project.toml"), String)
+    w = "name = \"$name\"\n"
+    if !(authors === nothing)
+        w *= "authors = "*sprint(show, vecstring(authors))*"\n"
+    end
+    w *= compat_entry()
+    write(joinpath(path, "Project.toml"), w, pro)
+    push!(files, "Project.toml")
+    git && LibGit2.add!(repo, files...)
+    git && LibGit2.commit(repo, "File setup by DrWatson")
+    return path
+end
+
+function insert_folders(path, template, placeholder)
+    # Default folders
+    folders = String[]
+    ph_files = String[]
+    for p in template
+        _recursive_folder_insertion!(path, p, placeholder, folders, ph_files)
+    end
+    return folders, ph_files
+end
+function _recursive_folder_insertion!(path, p::String, placeholder, folders, ph_files)
+    folder = joinpath(path, p)
+    mkpath(folder)
+    push!(folders, folder)
+    if placeholder #Create a placeholder file in each path
+        write(joinpath(folder, ".placeholder"), PLACEHOLDER_TEXT)
+        push!(ph_files, joinpath(folder, ".placeholder"))
+    end
+end
+function _recursive_folder_insertion!(path, p::Pair{String, <:Any}, placeholder, folders, ph_files)
+    path = joinpath(path, p[1])
+    for z in p[2]
+        _recursive_folder_insertion!(path, z, placeholder, folders, ph_files)
+    end
+end
+function _recursive_folder_insertion!(path, p::Pair{String, String}, placeholder, folders, ph_files)
+    path = joinpath(path, p[1])
+    _recursive_folder_insertion!(path, p[2], placeholder, folders, ph_files)
+end
+
+function compat_entry()
+    DrWatson_VERSION = let
+        project = joinpath(dirname(dirname(pathof(DrWatson))), "Project.toml")
+        versionline = readlines(project)[4]
+        VersionNumber(versionline[12:end-1])
+    end
+    """
+    [compat]
+    julia = "$(VERSION.major).$(VERSION.minor).$(VERSION.patch)"
+    DrWatson = "$(DrWatson_VERSION)"
+    """
+end
+
+vecstring(a::String) = [a]
+vecstring(a::Vector{String}) = a
+vecstring(c) = [string(a) for a in c]
+
+
+function default_name_from_path(path)
+    ap = abspath(path)
+    path, dir = splitdir(ap)
+    if length(dir) == 0
+        _, dir = splitdir(path)
+    end
+    return dir
+end
+
+
 const PLACEHOLDER_TEXT = """
 This file acts as a placeholder to ensure the project structure is copied whenever you clone the project.
 This doesn't commit any files within the folder.
@@ -225,151 +378,55 @@ function DEFAULT_README(name, authors = nothing)
        ```
 
     This will install all necessary packages for you to be able to run the scripts and
-    everything should work out of the box.
+    everything should work out of the box, including correctly finding local paths.
     """
     return s
 end
 
-function default_name_from_path(path)
-    ap = abspath(path)
-    path, dir = splitdir(ap)
-    if length(dir) == 0
-        _, dir = splitdir(path)
-    end
-    return dir
-end
+##########################################################################################
+# Project templates
+##########################################################################################
+const DEFAULT_TEMPLATE = [
+    "_research", 
+    "src", 
+    "scripts",
+    "plots", 
+    "notebooks",
+    "papers",
+    "data" => ["sims", "exp_raw", "exp_pro"],
+]
 
-"""
-    initialize_project(path [, name]; kwargs...)
-Initialize a scientific project expected by `DrWatson` in `path` (directory representing
-an empty folder).
-If `name` is not given, it is assumed to be the folder's name.
+const DOCUMENTS_TEMPLATE = [
+    "src", 
+    "scripts",
+    "plots", 
+    "notebooks",
+    "documents",
+    "papers",
+    "data" => ["sims", "obs", "ana"], # simulations, observations, analysis
+]
 
-The new project remains activated for you to immidiately add packages.
-
-## Keywords
-* `readme = true` : adds a README.md file.
-* `authors = nothing` : if a string or container of strings, adds the authors in the
-  Project.toml file and README.md.
-* `force = false` : If the `path` is _not_ empty then throw an error. If however `force`
-  is `true` then recursively delete everything in the path and create the project.
-* `git = true` : Make the project a Git repository.
-* `placeholder = false` : Add hidden place holder files in each default folder to ensure that project
-  is maintained when the directory is cloned. Should be used only when `git = true`.
-  Will throw a warning if used with `git = false`
-"""
-function initialize_project(path, name = default_name_from_path(path);
-    force = false, readme = true, authors = nothing,
-    git = true, placeholder = false)
-
-    placeholder && !git && @warn "The placeholder files are created, but you need to "*
-    "manually commit them to your version control software OR initialize project with git = true"
-
-    mkpath(path)
-    rd = readdir(path)
-    if length(rd) != 0
-        if force
-            for d in rd
-                rm(joinpath(path, d), recursive = true, force = true)
-            end
-        else
-            error("Project path is not empty!")
-        end
-    end
-
-    if git
-        repo = LibGit2.init(path)
-        gc = LibGit2.GitConfig(repo)
-        LibGit2.get(gc, "user.name", false) || LibGit2.set!(gc, "user.name", "DrWatson")
-        LibGit2.get(gc, "user.email", false) || LibGit2.set!(gc, "user.email", "no@mail")
-        LibGit2.commit(repo, "Initial commit")
-    end
-
-    Pkg.activate(path)
-    try
-        Pkg.add("DrWatson")
-    catch
-        @warn "Could not add DrWatson to project. Adding Pkg instead..."
-        Pkg.add("Pkg")
-    end
-    # Default folders
-    ph_files = String[]
-    for p in DEFAULT_PATHS
-        mkpath(joinpath(path, p))
-        if placeholder
-            write(joinpath(path, p, ".placeholder"), PLACEHOLDER_TEXT) #Create a placeholder file in each path
-            push!(ph_files, joinpath(path, p, ".placeholder"))
-        end
-    end
-
-    git && LibGit2.add!(repo, "Project.toml")
-    git && LibGit2.add!(repo, "Manifest.toml")
-    git && LibGit2.add!(repo, DEFAULT_PATHS...)
-    placeholder && git && LibGit2.add!(repo, ph_files...)
-    git && LibGit2.commit(repo, "Folder setup by DrWatson")
-
-    # Default files
-    # chmod is needed, as the file permissions are not set correctly when adding the package with `add`.
-    cp(joinpath(@__DIR__, "defaults", "gitignore.txt"), joinpath(path, ".gitignore"))
-    chmod(joinpath(path, ".gitignore"),0o644)
-
-    write(joinpath(path, "scripts", "intro.jl"), makeintro(name))
-
-    files = vcat(".gitignore", joinpath("scripts", "intro.jl"), joinpath("test", "runtests.jl"))
-            
-    cp(joinpath(@__DIR__, "defaults", "gitattributes.txt"), joinpath(path, ".gitattributes"))
-    chmod(joinpath(path, ".gitattributes"),0o644)
-
-    write(joinpath(path, "scripts", "intro.jl"), makeintro(name))
-
-    files = vcat(".gitattributes", joinpath("scripts", "intro.jl"), joinpath("test", "runtests.jl"))
-            
-    if readme
-        write(joinpath(path, "README.md"), DEFAULT_README(name, authors))
-        push!(files, "README.md")
-    end
-    pro = read(joinpath(path, "Project.toml"), String)
-    w = "name = \"$name\"\n"
-    if !(authors === nothing)
-        w *= "authors = "*sprint(show, vecstring(authors))*"\n"
-    end
-    w *= """
-        [compat]
-        julia = "$(VERSION.major).$(VERSION.minor).$(VERSION.patch)"
-        """
-    write(joinpath(path, "Project.toml"), w, pro)
-    push!(files, "Project.toml")
-
-    git && LibGit2.add!(repo, files...)
-    git && LibGit2.commit(repo, "File setup by DrWatson")
-    return path
-end
-
-vecstring(a::String) = [a]
-vecstring(a::Vector{String}) = a
-vecstring(c) = [string(a) for a in c]
 
 ##########################################################################################
 # Introductory file
 ##########################################################################################
 function makeintro(name)
-    f = """
+    """
     using DrWatson
     @quickactivate "$name"
-    DrWatson.greet()
-    """
-end
+    
+    println(
+    \"\"\"
+    Currently active project is: \$(projectname())
 
-function greet()
-    s =
-    """
-    Currently active project is: $(projectname())
+    Path of active project: \$(projectdir())
 
     Have fun with your new project!
 
     You can help us improve DrWatson by opening
     issues on GitHub, submitting feature requests,
     or even opening your own Pull Requests!
+    \"\"\"
+    )
     """
-    println(s)
 end

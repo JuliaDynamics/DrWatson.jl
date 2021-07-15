@@ -2,7 +2,7 @@ using Pkg, Test, DrWatson
 using LibGit2
 LibGit2.default_signature() = LibGit2.Signature("TEST", "TEST@TEST.COM", round(time(), 0), 0)
 
-cd() # changes directory to `homedir()`
+cd(@__DIR__)
 path = "test project"
 name = "lala"
 
@@ -21,16 +21,15 @@ end
 
 @test projectname() == path
 @test typeof(findproject(@__DIR__)) == String
-for p in DrWatson.DEFAULT_PATHS
-    @test ispath(joinpath(path, p))
-end
+@test ispath(joinpath(path, "src"))
+@test ispath(joinpath(path, "data", "exp_raw"))
 
 @test ispath(projectdir("data"))
 @test isfile(joinpath(path, ".gitignore"))
 @test uperm(joinpath(path, ".gitignore")) == 0x06
 @test isfile(joinpath(path, "README.md"))
 @test isfile(joinpath(path, "Project.toml"))
-@test uperm(joinpath(path, "scripts", "intro.jl")) == 0x06
+@test uperm(joinpath(path, "intro.jl")) == 0x06
 
 for dir_type in ("data", "src", "plots", "papers", "scripts")
     fn = Symbol(dir_type * "dir")
@@ -51,12 +50,11 @@ com = gitdescribe(path)
 @test !occursin('-', com) # no dashes = no git describe
 
 @test projectname() == name
-for p in DrWatson.DEFAULT_PATHS
-    @test ispath(joinpath(path, p))
-end
+@test ispath(joinpath(path, "src"))
+@test ispath(joinpath(path, "data", "exp_raw"))
 z = read(joinpath(path, "Project.toml"), String)
 @test occursin("[\"George\", \"Nick\"]", z)
-z = read(joinpath(path, "scripts", "intro.jl"), String)
+z = read(joinpath(path, "intro.jl"), String)
 @test occursin("@quickactivate", z)
 
 initialize_project(path, name; force = true, authors = "Sophia", git = false)
@@ -64,13 +62,26 @@ initialize_project(path, name; force = true, authors = "Sophia", git = false)
 z = read(joinpath(path, "Project.toml"), String)
 @test occursin("[\"Sophia\"]", z)
 
+# test whether a DrWatson version is added to compat
+@test occursin("DrWatson =", z)
+
+
 # here we test quickactivate
-quickactivate(joinpath(homedir(), path))
+quickactivate(path)
 @test projectname() == name
 
 cd(path)
 @test findproject(pwd()) == pwd()
 cd()
+
+# Test templates
+t1 = ["data", "documents" => ["a", "b"]]
+initialize_project(path, name; force = true, git = false, template = t1)
+
+@test ispath(joinpath(path, "data"))
+@test ispath(joinpath(path, "documents"))
+@test ispath(joinpath(path, "documents", "a"))
+@test !ispath(joinpath(path, "src"))
 
 rm(path, recursive = true, force = true)
 @test !isdir(path)
