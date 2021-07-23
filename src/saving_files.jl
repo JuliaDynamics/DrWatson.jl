@@ -65,7 +65,7 @@ function produce_or_load(path, c, f::Function;
             end
             verbose && @info "File $s saved."
         catch er
-            @warn "Could not save file. Error stacktrace:"*
+            @warn "Could not save file. Error stacktrace:"
             Base.showerror(stderr, er, stacktrace(catch_backtrace()))
         end
         if loadfile
