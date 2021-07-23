@@ -158,6 +158,21 @@ Equivalent with `quickactivate(@__DIR__)`.
 
     @quickactivate name::String
 Equivalent with `quickactivate(@__DIR__, name)`.
+
+Notice that since `@quickactivate` is a macro, standard caveats apply
+when using `Distributed` computing. Specifically, you need to import
+`DrWatson` and use `@quickactivate` in different `begin` blocks as follows:
+```julia
+using Distributed
+addprocs(8)
+@everywhere using DrWatson
+
+@everywhere begin
+    @quickactivate "TestEnv"
+    using Distributions, ...
+    # remaining imports
+end
+```
 """
 macro quickactivate(name = nothing)
     dir = get_dir_from_source(__source__.file)
