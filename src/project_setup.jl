@@ -81,8 +81,8 @@ function findproject(dir::AbstractString = pwd())
         old, dir = dir, dirname(dir)
         dir == old && break
     end
-    @warn "Could not find find a project file by recursively checking "*
-    "given `path` and its parents. Returning `nothing` instead."
+    @warn "DrWatson could not find find a project file by recursively checking "*
+    "given `path` and its parents. Returning `nothing` instead.\n(given path: $path)"
     return nothing
 end
 
