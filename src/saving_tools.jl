@@ -1,4 +1,4 @@
-export gitdescribe, current_commit, tag!, @tag!
+export gitdescribe, isdirty, current_commit, tag!, @tag!
 export dict_list, dict_list_count
 export struct2dict, struct2ntuple
 export istaggable
@@ -76,6 +76,16 @@ function gitdescribe(gitpath = projectdir())
         string(LibGit2.head_oid(repo)) * suffix
     end
     return c
+end
+
+"""
+    isdirty(gitpath = projectdir()) -> Bool
+
+Return `true` if `gitpath` is the path to a dirty Git repository, `false` otherwise.
+"""
+function isdirty(gitpath = projectdir())
+    repo = LibGit2.GitRepoExt(gitpath)
+    return LibGit2.isdirty(repo)
 end
 
 """

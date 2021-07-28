@@ -10,6 +10,13 @@ com = gitdescribe(dirname(@__DIR__))
 # TODO: why?
 # @test com[1] == 'v' # test that it has a version tag
 
+# Test isdirty.
+if isdirty(@__DIR__)
+    @test endswith(gitdescribe(@__DIR__), "_dirty")
+else
+    @test !endswith(gitdescribe(@__DIR__), "_dirty")
+end
+
 # tag!
 d1 = Dict(:x => 3, :y => 4)
 d2 = Dict("x" => 3, "y" => 4)
