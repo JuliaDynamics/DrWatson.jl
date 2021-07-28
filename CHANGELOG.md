@@ -1,3 +1,5 @@
+# 2.2.0
+* `isdirty(gitpath = projectdir())` function for checking if `gitpath` points to a dirty Git repository. (#263)
 # 2.1.0
 * `initialize_project` now allows for custom templates.
 # 2.0.4
