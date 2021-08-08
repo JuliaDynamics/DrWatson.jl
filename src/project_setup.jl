@@ -58,8 +58,8 @@ _projectname(::Nothing) = nothing
 
 
 """
-    findproject(path = pwd()) -> project_path
-Recursively search `path` and its parents for a valid Julia project file
+    findproject(dir = pwd()) -> project_path
+Recursively search `dir` and its parents for a valid Julia project file
 (anything in `Base.project_names`).
 If it is found return its path, otherwise issue a warning and return
 `nothing`.
@@ -82,7 +82,7 @@ function findproject(dir::AbstractString = pwd())
         dir == old && break
     end
     @warn "DrWatson could not find find a project file by recursively checking "*
-    "given `path` and its parents. Returning `nothing` instead.\n(given path: $path)"
+    "given `dir` and its parents. Returning `nothing` instead.\n(given dir: $dir)"
     return nothing
 end
 
