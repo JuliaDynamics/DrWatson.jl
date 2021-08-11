@@ -1,27 +1,29 @@
 export produce_or_load, tagsave, @tagsave, safesave
 
 """
-    produce_or_load([path="",] c, f; kwargs...) -> file, s
-Let `s = joinpath(path, savename(prefix, c, suffix))`.
+    produce_or_load([path="",] config, f; kwargs...) -> file, s
+Let `s = joinpath(path, savename(prefix, config, suffix))` where `config` is some kind
+of named parameter container.
 If a file named `s` exists then load it and return it, along
 with the global path that it is saved at (`s`).
 
-If the file does not exist then call `file = f(c)`, with `f` your function
-that produces your data. Then save `file` as `s` and then return `file, s`.
-The function `f` must return a dictionary,
-the macros [`@dict`](@ref) and [`@strdict`](@ref) can help with that.
+If the file does not exist then call `file = f(config)`, with `f` your function
+that produces your data. Then save the `file` as `s` and then return `file, s`.
 
-You can use [do-block]
+The function `f` should return a dictionary if the data are saved in the default 
+format of JLD2.jl., the macro [`@strdict`](@ref) can help with that.
+
+You can use a [do-block]
 (https://docs.julialang.org/en/v1/manual/functions/#Do-Block-Syntax-for-Function-Arguments)
 instead of defining a function to pass in. For example,
 ```julia
-produce_or_load([path="",] c) do c
-    # simulation wiht config `c` runs here
+produce_or_load([path="",] config) do config
+    # simulation using `config` runs here
 end
 ```
 
 ## Keywords
-* `suffix = "jld2", prefix = default_prefix(c)` : Used in [`savename`](@ref).
+* `suffix = "jld2", prefix = default_prefix(config)` : Used in [`savename`](@ref).
 * `tag::Bool = istaggable(suffix)` : Save the file using [`tagsave`](@ref) if `true`.
 * `gitpath, storepatch` : Given to [`tagsave`](@ref) if `tag` is `true`.
 * `force = false` : If `true` then don't check if file `s` exists and produce
