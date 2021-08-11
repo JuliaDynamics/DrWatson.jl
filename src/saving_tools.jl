@@ -82,6 +82,11 @@ end
     isdirty(gitpath = projectdir()) -> Bool
 
 Return `true` if `gitpath` is the path to a dirty Git repository, `false` otherwise.
+
+Note that unlike [`tag!`](@ref), `isdirty` **can** error
+(for example, if the path passed to it doesn't exist, or isn't a Git repository).
+The purpose of `isdirty` is to be used as a check before running simulations, for users
+that do not wish to tag data while having a dirty git repo.
 """
 function isdirty(gitpath = projectdir())
     repo = LibGit2.GitRepoExt(gitpath)
@@ -163,7 +168,7 @@ the project's gitpath). Do nothing if a key `gitcommit` already exists
 repository is not found. If the git repository is dirty, i.e. there
 are un-commited changes, then the output of `git diff HEAD` is stored
 in the field `gitpatch`.  Note that patches for binary files are not
-stored.
+stored. You can use [`isdirty`](@ref) to check if a repo is dirty.
 
 Notice that the key-type of the dictionary must be `String` or `Symbol`.
 If `String` is a subtype of the _value_ type of the dictionary, this operation is

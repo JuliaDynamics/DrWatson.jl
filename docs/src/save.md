@@ -42,23 +42,10 @@ tag!
 @tag!
 gitdescribe
 DrWatson.gitpatch
+isdirty
 ```
 
 Please notice that `tag!` will operate in place only when possible. If not possible then a new dictionary is returned. Also (importantly) these functions will **never error** as they are most commonly used when saving simulations and this could risk data not being saved!
-
-As described in the [`tag!`](@ref) docstring, `tag!` will check if the DrWatson project is dirty, i.e, has un-committed changes.
-If it does, `tag!` will use Git to create and store a patch in the field `gitpatch`.
-This, combined with the `gitcommit` field, provides us will all the information we need to restore the project's state to what it was for a particular model-run.
-All we need to do is checkout the commit stored in `gitcommit`, then apply the patch in `gitpatch`.
-We might prefer to not run new simulations with a dirty repository, however, so we can avoid having to apply a patch when reverting the repository state.
-To that end, DrWatson provides the [`isdirty`](@ref) function:
-```@docs
-isdirty
-```
-which we can use in our scripts to check if the repository is dirty before running a new simulation.
-Note that unlike the other low level functions above, `isdirty` **can** error (for example, if the path passed to it doesn't exist, or isn't a Git repository).
-`isdirty` should only be used **before** running simulations, to avoid possibly loosing unsaved data.
-
 
 ## Produce or Load
 
