@@ -62,7 +62,7 @@ function produce_or_load(path, c, f::Function;
         file = f(c)
         try
             if tag
-                tagsave(s, file; safe = false, gitpath = gitpath, storepatch = storepatch; wsave_kwargs...)
+                tagsave(s, file; safe = false, gitpath = gitpath, storepatch = storepatch, wsave_kwargs...)
             else
                 wsave(s, copy(file); wsave_kwargs...)
             end
