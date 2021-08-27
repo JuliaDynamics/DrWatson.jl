@@ -1,3 +1,5 @@
+# 2.3.0
+* Enable pass through of kwargs to `wsave` in `produce_or_load`, `tagsave` and `safesave` (to e.g. allow compression in JLD2 files).
 # 2.2.0
 * `isdirty(gitpath = projectdir())` function for checking if `gitpath` points to a dirty Git repository. (#263)
 # 2.1.0
