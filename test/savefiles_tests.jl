@@ -56,6 +56,20 @@ end
     @test isfile(sn)
     rm(sn)
 
+    # Check if kwargs propagation works on the example of compression.
+    # We don't actually have a way to check if compression worked, so no explicit @test here.
+    # So we rely on the fact that JLD2/BSON do not complain about being passed the `compress` kw.
+    t = f(simulation)
+    tagsave(savename(simulation, ending), t, gitpath=findproject(), compress=true)
+    file = load(savename(simulation, ending))
+    rm(savename(simulation, ending))
+
+    # Now do the same with the safe option - to also implicitly test safesave.
+    t = f(simulation)
+    tagsave(savename(simulation, ending), t, gitpath=findproject(), safe=true, compress=true)
+    file = load(savename(simulation, ending))
+    rm(savename(simulation, ending))
+
     rm(savename(simulation, ending))
     @test !isfile(savename(simulation, ending))
 
@@ -78,6 +92,14 @@ end
     @test path == savename(simulation, ending)
     sim, path = produce_or_load(simulation, f; suffix = ending)
     @test sim["simulation"].T == T
+    rm(savename(simulation, ending))
+    @test !isfile(savename(simulation, ending))
+
+    # As in `tagsave`, test passing wsave args by passing in the `compress`
+    # option. Again, we don't have a way to check if this worked other
+    # than seeing that it does not crash and burn.
+    sim, path = produce_or_load(simulation, f; suffix = ending,
+                                wsave_args = Dict("compress" => true))
     rm(savename(simulation, ending))
     @test !isfile(savename(simulation, ending))
 
