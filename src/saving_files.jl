@@ -33,7 +33,8 @@ end
   `nothing, s`, regardless of whether the file exists or not. If it doesn't
   exist it is still produced and saved.
 * `verbose = true` : print info about the process, if the file doesn't exist.
-* `wsave_kwargs = Dict()` : Keywords to pass to wsave (e.g. compression).
+* `wsave_kwargs = Dict()` : Keywords to pass to `wsave` (e.g. to enable
+  compression).
 * `kwargs...` : All other keywords are propagated to `savename`.
 """
 produce_or_load(c, f; kwargs...) = produce_or_load("", c, f; kwargs...)
@@ -93,6 +94,9 @@ Git. If the Git repository is dirty, one more field `:gitpatch` is
 added that stores the difference string.  If a dictionary already
 contains a key `:gitcommit`, it is not overwritten, unless,
 `force=true`. For more details, see [`tag!`](@ref).
+
+Any additional keyword arguments are propagated to `wsave`, to e.g.
+enable compression.
 """
 function tagsave(file, d; safe::Bool = false, gitpath = projectdir(), storepatch = true, force = false, source = nothing, kwargs...)
     d2 = tag!(d, gitpath=gitpath, storepatch=storepatch, force=force, source=source)
@@ -110,7 +114,6 @@ end
 Same as [`tagsave`](@ref) but one more field `:script` is added that records
 the local path of the script and line number that called `@tagsave`, see [`@tag!`](@ref).
 """
-# ADD kwargs passthrough to wsave!!
 macro tagsave(file,d,args...)
     args = Any[args...]
     # Keywords added after a ; are moved to the front of the expression
