@@ -56,20 +56,6 @@ end
     @test isfile(sn)
     rm(sn)
 
-    # Check if kwargs propagation works on the example of compression.
-    # We don't actually have a way to check if compression worked, so no explicit @test here.
-    # So we rely on the fact that JLD2/BSON do not complain about being passed the `compress` kw.
-    t = f(simulation)
-    tagsave(savename(simulation, ending), t, gitpath=findproject(), compress=true)
-    file = load(savename(simulation, ending))
-    rm(savename(simulation, ending))
-
-    # Now do the same with the safe option - to also implicitly test safesave.
-    t = f(simulation)
-    tagsave(savename(simulation, ending), t, gitpath=findproject(), safe=true, compress=true)
-    file = load(savename(simulation, ending))
-    rm(savename(simulation, ending))
-
     rm(savename(simulation, ending))
     @test !isfile(savename(simulation, ending))
 
@@ -78,6 +64,30 @@ end
     @test ex.args[1:end-1] == ex2.args[1:end-1]
 
     # Remove leftover
+end
+
+# Check if kwargs propagation works using the example of compression in JLD2.
+# We need to look at the actual file sizes - JLD2 handles compression transparently
+# and doesn't provide a way to check if a read dataset was compressed.
+# Run twice - once without the `safe` option and once with, to implicitly test `safesave`.
+@testset "Tagsafe with compression (safe=$safesave)" for safesave ∈ [false, true]
+    # Create some highly compressible data
+    data = Dict("data" => fill(1, 10000))
+    sn_uncomp = "uncompressed.jld2"
+    sn_comp = "compressed.jld2"
+    # Save twice - once uncompressed and once compressed
+    tagsave(sn_uncomp, data, safe=safesave, gitpath=findproject(), compress=false)
+    tagsave(sn_comp, data, safe=safesave, gitpath=findproject(), compress=true)
+    # Check if both files exist
+    @test isfile(sn_uncomp)
+    @test isfile(sn_comp)
+    # Test if the compressed file is smaller
+    size_uncomp = filesize(sn_uncomp)
+    size_comp = filesize(sn_comp)
+    @test size_uncomp > size_comp
+    # Leave no trace
+    rm(sn_uncomp)
+    rm(sn_comp)
 end
 
 ################################################################################
@@ -92,14 +102,6 @@ end
     @test path == savename(simulation, ending)
     sim, path = produce_or_load(simulation, f; suffix = ending)
     @test sim["simulation"].T == T
-    rm(savename(simulation, ending))
-    @test !isfile(savename(simulation, ending))
-
-    # As in `tagsave`, test passing wsave args by passing in the `compress`
-    # option. Again, we don't have a way to check if this worked other
-    # than seeing that it does not crash and burn.
-    sim, path = produce_or_load(simulation, f; suffix = ending,
-                                wsave_args = Dict("compress" => true))
     rm(savename(simulation, ending))
     @test !isfile(savename(simulation, ending))
 
@@ -129,6 +131,33 @@ end
     @test path == expected
     @test isfile(path)
     rm(path)
+end
+
+@testset "Produce or Load wsave keyword pass through" begin
+    # Create some highly compressible data
+    data = Dict("data" => fill(1, 10000))
+
+    sn_uncomp = savename(Dict("compress" => false), "jld2")
+    sn_comp = savename(Dict("compress" => true), "jld2")
+    # Files cannot exist yet
+    @test !isfile(sn_uncomp)
+    @test !isfile(sn_comp)
+    for compress in [false, true]
+        wsave_kwargs = Dict(:compress => compress)
+        produce_or_load("", wsave_kwargs, suffix = "jld2", wsave_kwargs=wsave_kwargs) do c
+            data
+        end
+    end
+    # Check if both files exist now
+    @test isfile(sn_uncomp)
+    @test isfile(sn_comp)
+    # Test if the compressed file is smaller
+    size_uncomp = filesize(sn_uncomp)
+    size_comp = filesize(sn_comp)
+    @test size_uncomp > size_comp
+    # Leave no trace
+    rm(sn_uncomp)
+    rm(sn_comp)
 end
 
 @test produce_or_load(simulation, f; loadfile = false)[1] == nothing
