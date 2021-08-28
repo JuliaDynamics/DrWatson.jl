@@ -33,6 +33,8 @@ end
   `nothing, s`, regardless of whether the file exists or not. If it doesn't
   exist it is still produced and saved.
 * `verbose = true` : print info about the process, if the file doesn't exist.
+* `wsave_kwargs = Dict()` : Keywords to pass to `wsave` (e.g. to enable
+  compression).
 * `kwargs...` : All other keywords are propagated to `savename`.
 """
 produce_or_load(c, f; kwargs...) = produce_or_load("", c, f; kwargs...)
@@ -41,7 +43,7 @@ produce_or_load(f::Function, path, c; kwargs...) = produce_or_load(path, c, f; k
 function produce_or_load(path, c, f::Function;
     suffix = "jld2", prefix = default_prefix(c),
     tag::Bool = istaggable(suffix), gitpath = projectdir(), loadfile = true,
-    force = false, verbose = true, storepatch = true, kwargs...)
+    force = false, verbose = true, storepatch = true, wsave_kwargs = Dict(), kwargs...)
 
     s = joinpath(path, savename(prefix, c, suffix; kwargs...))
 
@@ -61,9 +63,9 @@ function produce_or_load(path, c, f::Function;
         file = f(c)
         try
             if tag
-                tagsave(s, file; safe = false, gitpath = gitpath, storepatch = storepatch)
+                tagsave(s, file; safe = false, gitpath = gitpath, storepatch = storepatch, wsave_kwargs...)
             else
-                wsave(s, copy(file))
+                wsave(s, copy(file); wsave_kwargs...)
             end
             verbose && @info "File $s saved."
         catch er
@@ -82,7 +84,7 @@ end
 #                             tag saving                                       #
 ################################################################################
 """
-    tagsave(file::String, d::Dict; safe = false, gitpath = projectdir(), storepatch = true, force = false)
+    tagsave(file::String, d::Dict; safe = false, gitpath = projectdir(), storepatch = true, force = false, kwargs...)
 First [`tag!`](@ref) dictionary `d` and then save `d` in `file`.
 If `safe = true` save the file using [`safesave`](@ref).
 
@@ -92,13 +94,16 @@ Git. If the Git repository is dirty, one more field `:gitpatch` is
 added that stores the difference string.  If a dictionary already
 contains a key `:gitcommit`, it is not overwritten, unless,
 `force=true`. For more details, see [`tag!`](@ref).
+
+Any additional keyword arguments are propagated to `wsave`, to e.g.
+enable compression.
 """
-function tagsave(file, d; safe::Bool = false, gitpath = projectdir(), storepatch = true, force = false, source = nothing)
+function tagsave(file, d; safe::Bool = false, gitpath = projectdir(), storepatch = true, force = false, source = nothing, kwargs...)
     d2 = tag!(d, gitpath=gitpath, storepatch=storepatch, force=force, source=source)
     if safe
-        safesave(file, copy(d2))
+        safesave(file, copy(d2); kwargs...)
     else
-        wsave(file, copy(d2))
+        wsave(file, copy(d2); kwargs...)
     end
     return d2
 end
@@ -131,7 +136,7 @@ end
 
 # Implementation inspired by behavior of GROMACS
 """
-    safesave(filename, data)
+    safesave(filename, data; kwargs...)
 
 Safely save `data` in `filename` by ensuring that no existing files
 are overwritten. Do this by renaming already existing data with a backup-number
@@ -146,11 +151,14 @@ will rename the old `test_#1.jld2` to `test_#2.jld2`, rename the old
 `test.jld2` to `test_#1.jld2` and then save a new `test.jld2` with the latest
 `data`.
 
+Any additional keyword arguments are passed through to wsave (to e.g. enable
+compression).
+
 See also [`tagsave`](@ref).
 """
-function safesave(f, data)
+function safesave(f, data; kwargs...)
     recursively_clear_path(f)
-    wsave(f, data)
+    wsave(f, data; kwargs...)
 end
 
 #take a path of a results file and increment its prefix backup number
@@ -196,9 +204,10 @@ See also [`dict_list`](@ref).
 * `l = 8` : number of characters in the random string.
 * `prefix = ""` : prefix each temporary name will have.
 * `suffix = "jld2"` : ending of the temporary names (no need for the dot).
+* `kwargs...` : Any additional keywords are passed through to wsave (e.g. compression).
 """
 function tmpsave(dicts, tmp = projectdir("_research", "tmp");
-    l = 8, suffix = "jld2", prefix = "")
+    l = 8, suffix = "jld2", prefix = "", kwargs...)
 
     mkpath(tmp)
     n = length(dicts)
@@ -212,7 +221,7 @@ function tmpsave(dicts, tmp = projectdir("_research", "tmp");
         end
         i += 1
         push!(r, x)
-        wsave(joinpath(tmp, x), Dict("params" => copy(dicts[i])))
+        wsave(joinpath(tmp, x), Dict("params" => copy(dicts[i])); kwargs...)
     end
     r
 end
