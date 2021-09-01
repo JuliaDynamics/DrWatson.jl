@@ -106,6 +106,31 @@ end
     @test !isfile(savename(simulation, ending))
 
     @test !isfile(savename(simulation, ending))
+    # Produce and save data, preserve source file name and line for test below.
+    # Line needs to be saved on the same line as produce_or_load!
+    sim, path = @produce_or_load(f, "", simulation, suffix = ending); fname = @__FILE__; line = @__LINE__
+    @test isfile(savename(simulation, ending))
+    @test sim["simulation"].T == T
+    @test path == savename(simulation, ending)
+    sim, path = @produce_or_load(f, "", simulation, suffix = ending)
+    @test sim["simulation"].T == T
+    # Test if source was included and that the file name and line number matches the first invocation
+    # (and not the second!)
+    @test "script" ∈ keys(sim)
+    @test sim["script"] |> typeof == String
+    @test sim["script"] == joinpath(relpath(fname, projectdir()) * "#$(line)")
+    rm(savename(simulation, ending))
+    @test !isfile(savename(simulation, ending))
+
+    # Test if tag = true does not interfere with macro script tagging.
+    sim, path = @produce_or_load(f, "", simulation, tag = true, suffix = ending); fname = @__FILE__; line = @__LINE__
+    sim, path = @produce_or_load(f, "", simulation, suffix = ending)
+    # Test if source was included and that the file name and line number matches the first invocation
+    # (and not the second!)
+    @test sim["script"] == joinpath(relpath(fname, projectdir()) * "#$(line)")
+    rm(savename(simulation, ending))
+
+    @test !isfile(savename(simulation, ending))
     sim, path = produce_or_load("", simulation; suffix = ending) do simulation
         @test typeof(simulation.T) <: Real
         a = rand(10); b = [rand(10) for _ in 1:10]
@@ -158,6 +183,30 @@ end
     # Leave no trace
     rm(sn_uncomp)
     rm(sn_comp)
+
+    # Check the macro version
+    sn_uncomp = savename(Dict("compress" => false), "jld2")
+    sn_comp = savename(Dict("compress" => true), "jld2")
+    # Files cannot exist yet
+    @test !isfile(sn_uncomp)
+    @test !isfile(sn_comp)
+    for compress in [false, true]
+        wsave_kwargs = Dict(:compress => compress)
+        @produce_or_load("", wsave_kwargs, suffix = "jld2", wsave_kwargs=wsave_kwargs) do c
+            data
+        end
+    end
+    # Check if both files exist now
+    @test isfile(sn_uncomp)
+    @test isfile(sn_comp)
+    # Test if the compressed file is smaller
+    size_uncomp = filesize(sn_uncomp)
+    size_comp = filesize(sn_comp)
+    @test size_uncomp > size_comp
+    # Leave no trace
+    rm(sn_uncomp)
+    rm(sn_comp)
+
 end
 
 @test produce_or_load(simulation, f; loadfile = false)[1] == nothing
