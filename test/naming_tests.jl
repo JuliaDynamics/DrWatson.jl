@@ -86,6 +86,12 @@ x = A(5, (b = 3, c = 4))
 
 @test savename(x) == "a=5_p=(b=3,c=4)"
 
+# automatic string to symbol conversion in accesses of structs
+@test savename(x, accesses=("a",)) == "a=5"
+# But test that this conversion does not happen for Dicts!
+mixed_str_sym_dict = Dict("a" => 1, :b => 2)
+@test savename(mixed_str_sym_dict, accesses=("a", :b)) == "a=1_b=2"
+
 # empty container
 x = A(5, NamedTuple())
 @test !occursin("p", savename(x))

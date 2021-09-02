@@ -185,6 +185,10 @@ For example, if `c, c.k1` are `NamedTuple`s then
 access(c, keys...) = access(access(c, keys[1]), Base.tail(keys)...)
 access(c::AbstractDict, key) = getindex(c, key)
 access(c, key) = getproperty(c, key)
+# Automatically convert String keys to Symbols (for structs)...
+access(c, key::AbstractString) = access(c, Symbol(key))
+# ...but we need to explicitly allow for String keys in Dicts.
+access(c::AbstractDict, key::AbstractString) = getindex(c, key)
 
 """
     allignore(c) = ()
