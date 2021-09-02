@@ -123,12 +123,18 @@ end
     @test !isfile(savename(simulation, ending))
 
     # Test if tag = true does not interfere with macro script tagging.
-    sim, path = @produce_or_load(f, "", simulation, tag = true, suffix = ending); fname = @__FILE__; line = @__LINE__
-    sim, path = @produce_or_load(f, "", simulation, suffix = ending)
+    # Use a semicolon before the `suffix` keyword to test that code path as well.
+    sim, path = @produce_or_load(f, "", simulation, tag = true; suffix = ending); fname = @__FILE__; line = @__LINE__
+    sim, path = @produce_or_load(f, "", simulation; suffix = ending)
     # Test if source was included and that the file name and line number matches the first invocation
     # (and not the second!)
     @test sim["script"] == joinpath(relpath(fname, projectdir()) * "#$(line)")
     rm(savename(simulation, ending))
+
+    # Test that the internal function `scripttag!` properly warns if the Dict already has a `script` key.
+    # This also tests the case where the `Dict` has a `Symbol` key type.
+    @test_logs((:warn, "The dictionary already has a key named `script`. We won't overwrite it with the script name."),
+               DrWatson.scripttag!(Dict(:script => "test"), LineNumberNode(1)))
 
     @test !isfile(savename(simulation, ending))
     sim, path = produce_or_load("", simulation; suffix = ending) do simulation
