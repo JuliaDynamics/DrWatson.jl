@@ -39,6 +39,8 @@ See also [`collect_results`](@ref).
 * `rpath = nothing` : If not `nothing` stores `relpath(file,rpath)` of result-files
   in `df`. By default the absolute path is used.
 * `verbose = true` : Print (using `@info`) information about the process.
+* `update = false` : Update data from modified files and remove entries for deleted
+  files.
 * `white_list` : List of keys to use from result file. By default
   uses all keys from all loaded result-files.
 * `black_list = [:gitcommit, :gitpatch, :script]`: List of keys not to include from result-file.
@@ -75,15 +77,18 @@ function collect_results!(filename, folder;
     subfolders = false,
     rpath = nothing,
     verbose = true,
+    update = false,
     newfile = false, # keyword only for defining collect_results without !
     kwargs...)
 
     if newfile || !isfile(filename)
         !newfile && verbose && @info "Starting a new result collection..."
         df = DataFrames.DataFrame()
+        mtime_df = 0.0
     else
         verbose && @info "Loading existing result collection..."
         df = wload(filename)["df"]
+        mtime_df = mtime(filename)
     end
     @info "Scanning folder $folder for result files."
 
@@ -99,23 +104,41 @@ function collect_results!(filename, folder;
     end
 
     n = 0 # new entries added
+    u = 0 # entries updated
     existing_files = "path" in string.(names(df)) ? df[:,:path] : ()
     for file ∈ allfiles
         is_valid_file(file, valid_filetypes) || continue
         # maybe use relative path
         file = rpath === nothing ? file : relpath(file, rpath)
+        replace_entry = false
         #already added?
-        file ∈ existing_files && continue
-
+        if file ∈ existing_files
+            # older than df?
+            (!update || (mtime_df > mtime(file))) && continue
+            replace_entry = true
+        end
+            
         data = rpath === nothing ? wload(file) : wload(joinpath(rpath, file))
         df_new = to_data_row(data, file; kwargs...)
         #add filename
         df_new[!, :path] .= file
-
+        if replace_entry
+            # Delete the row with the old data
+            delete!(df, findfirst((x)->(x.path == file), eachrow(df)))
+            u += 1
+        else
+            n += 1
+        end
         df = merge_dataframes!(df, df_new)
-        n += 1
     end
-    verbose && @info "Added $n entries."
+    if update
+        # Delete entries with nonexisting files.
+        idx = findall((x)->(!isfile(x.path)), eachrow(df))
+        delete!(df, idx)
+        verbose && @info "Added $n entries. Updated $u entries. Deleted $(length(idx)) entries."
+    else
+        verbose && @info "Added $n entries."
+    end
     !newfile && wsave(filename, Dict("df" => df))
     return df
 end

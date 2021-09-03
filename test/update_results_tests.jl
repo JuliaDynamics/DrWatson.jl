@@ -133,6 +133,39 @@ subfolders = true, special_list=special_list, black_list = black_list)
 @test size(cres3) == size(cres2)
 
 ###############################################################################
+#                           test updating feature                             #
+###############################################################################
+
+folder = datadir("update_test")
+mkdir(folder)
+
+d = Dict("idx" => :keep, "b" => "some_value")
+fname_keep = joinpath(folder, savename(d, ending, ignores = ("b",)))
+DrWatson.wsave(fname_keep, d)
+
+d = Dict("idx" => :delete, "b" => "some_other_value")
+fname_delete = joinpath(folder, savename(d, ending, ignores = ("b",)))
+DrWatson.wsave(fname_delete, d)
+
+d = Dict("idx" => :to_modify, "b" => "original_value")
+fname_modify = joinpath(folder, savename(d, ending, ignores = ("b",)))
+DrWatson.wsave(fname_modify, d)
+
+cres_before = collect_results!(folder; update = true)
+
+d = Dict("idx" => :to_modify, "b" => "modified_value")
+DrWatson.wsave(fname_modify, d)
+rm(fname_delete)
+
+cres_after = collect_results!(folder; update = true)
+
+@test cres_before != cres_after
+@test ((:keep ∈ cres_before.idx) && (:keep ∈ cres_after.idx))
+@test ((:delete ∈ cres_before.idx) && (:delete ∉ cres_after.idx))
+@test cres_before.b[cres_before.idx .== :to_modify][1] == "original_value"
+@test cres_after.b[cres_after.idx .== :to_modify][1] == "modified_value"
+
+###############################################################################
 #                              Quickactivate macro                            #
 ###############################################################################
 
