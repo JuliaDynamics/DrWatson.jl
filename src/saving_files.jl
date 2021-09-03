@@ -80,27 +80,6 @@ function produce_or_load(path, c, f::Function;
     end
 end
 
-function scripttag!(d::Dict{K,T}, source::LineNumberNode; gitpath = projectdir()) where {K,T}
-    # This duplicates functionality in `tag!`, for use in `@produce_or_load` when we want to only
-    # include the `script` tag but not enable tagging generally.
-    @assert (Symbol <: K) || (String <: K)
-    if K == Symbol
-        scriptname = :script
-    else
-        scriptname = "script"
-    end
-    if haskey(d, scriptname)
-        @warn "The dictionary already has a key named `script`. We won't "*
-            "overwrite it with the script name."
-    else
-        if !(String <: T)
-            d = Dict{K, promote_type(T, String)}(d)
-        end
-        d[scriptname] = relpath(sourcename(source), gitpath)
-    end
-    return d
-end
-
 """
     @produce_or_load([path="",] config, f; kwargs...)
 Same as [`produce_or_load`](@ref) but one more field `:script` is added that records

@@ -192,45 +192,83 @@ Dict{Symbol,Any} with 3 entries:
   :x => 3
 ```
 """
-function tag!(d::Dict{K,T}; gitpath = projectdir(), storepatch = true, force = false, source = nothing) where {K,T}
+function tag!(d::Dict{K,T}; gitpath = projectdir(), storepatch = true, force = false, source = nothing) where {K<:Union{Symbol,String},T}
     c = gitdescribe(gitpath)
-    patch = gitpatch(gitpath)
-    @assert (Symbol <: K) || (String <: K)
-    if K == Symbol
-        commitname, patchname, scriptname = :gitcommit, :gitpatch, :script
-    else
-        commitname, patchname, scriptname = "gitcommit", "gitpatch", "script"
-    end
-
     c === nothing && return d # gitpath is not a git repo
+
+    # Get the appropriate keys
+    commitname = keyname(d, :gitcommit)
+    patchname = keyname(d, :gitpatch)
+
     if haskey(d, commitname) && !force
         @warn "The dictionary already has a key named `gitcommit`. We won't "*
         "add any Git information."
-        return d
-    end
-    if String <: T
-        d[commitname] = c
-        if storepatch && (patch != nothing)
-            d[patchname] = patch
-        end
     else
-        d = Dict{K, promote_type(T, String)}(d)
+        d = checktagtype!(d) 
         d[commitname] = c
-        if patch!=""
-            d[patchname] = patch
+        # Only include patch info if `storepatch` is true and if we can get the info.
+        if storepatch
+            patch = gitpatch(gitpath)
+            if (patch != nothing) && (patch != "")
+                d[patchname] = patch
+            end
         end
     end
-    if source !== nothing && !force
-        if haskey(d, scriptname)
-            @warn "The dictionary already has a key named `script`. We won't "*
-            "overwrite it with the script name."
-        else
-            d[scriptname] = relpath(sourcename(source), gitpath)
-        end
+
+    # Include source file and line number info if given.
+    if source !== nothing
+        d = scripttag!(d, source; gitpath = gitpath, force = force)
     end
+
     return d
 end
 
+"""
+    keyname(d::Dict{K,T}, key) where {K<:Union{Symbol,String},T}
+
+Check the key type of `d` and convert `key` to the appropriate type.
+"""
+function keyname(d::Dict{K,T}, key) where {K<:Union{Symbol,String},T}
+    if K == Symbol
+        return Symbol(key)
+    end
+    return String(key)
+end
+
+"""
+    checktagtype!(d::Dict{K,T}) where {K<:Union{Symbol,String},T}
+
+Check if the value type of `d` allows `String` and promote it to do so if not.
+"""
+function checktagtype!(d::Dict{K,T}) where {K<:Union{Symbol,String},T}
+    if !(String <: T)
+        d = Dict{K, promote_type(T, String)}(d)
+    end
+    d
+end
+
+"""
+    scripttag!(d::Dict{K,T}, source::LineNumberNode; gitpath = projectdir(), force = false) where {K<:Union{Symbol,String},T}
+
+Include a `script` field in `d`, containing the source file and line number in
+`source`. Do nothing if the field is already present unless `force = true`. Uses
+`gitpath` to make the source file path relative.
+"""
+function scripttag!(d::Dict{K,T}, source::LineNumberNode; gitpath = projectdir(), force = false) where {K<:Union{Symbol,String},T}
+    # We want this functionality to be separate from `tag!` to allow
+    # inclusion of this information without the git tagging
+    # functionality.
+    # To be used in `tag!` and `@produce_or_load`.
+    scriptname = keyname(d, :script)
+    if haskey(d, scriptname) && !force
+        @warn "The dictionary already has a key named `script`. We won't "*
+            "overwrite it with the script name."
+    else
+        d = checktagtype!(d)
+        d[scriptname] = relpath(sourcename(source), gitpath)
+    end
+    return d
+end
 sourcename(s) = string(s)
 sourcename(s::LineNumberNode) = string(s.file)*"#"*string(s.line)
 
