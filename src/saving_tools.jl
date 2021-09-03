@@ -192,7 +192,8 @@ Dict{Symbol,Any} with 3 entries:
   :x => 3
 ```
 """
-function tag!(d::Dict{K,T}; gitpath = projectdir(), storepatch = true, force = false, source = nothing) where {K<:Union{Symbol,String},T}
+function tag!(d::Dict{K,T}; gitpath = projectdir(), storepatch = true, force = false, source = nothing) where {K,T}
+    @assert (K <: Union{Symbol,String}) "We only know how to tag dictionaries that have keys that are strings or symbols"
     c = gitdescribe(gitpath)
     c === nothing && return d # gitpath is not a git repo
 
@@ -254,11 +255,14 @@ Include a `script` field in `d`, containing the source file and line number in
 `source`. Do nothing if the field is already present unless `force = true`. Uses
 `gitpath` to make the source file path relative.
 """
-function scripttag!(d::Dict{K,T}, source; gitpath = projectdir(), force = false) where {K<:Union{Symbol,String},T}
+function scripttag!(d::Dict{K,T}, source; gitpath = projectdir(), force = false) where {K,T}
     # We want this functionality to be separate from `tag!` to allow
     # inclusion of this information without the git tagging
     # functionality.
     # To be used in `tag!` and `@produce_or_load`.
+    # We have to assert the key type here again because `scripttag!` can be called
+    # from `@produce_or_load` without going through `tag!`.
+    @assert (K <: Union{Symbol,String}) "We only know how to tag dictionaries that have keys that are strings or symbols"
     scriptname = keyname(d, :script)
     if haskey(d, scriptname) && !force
         @warn "The dictionary already has a key named `script`. We won't "*
