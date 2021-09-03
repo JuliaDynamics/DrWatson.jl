@@ -254,7 +254,7 @@ Include a `script` field in `d`, containing the source file and line number in
 `source`. Do nothing if the field is already present unless `force = true`. Uses
 `gitpath` to make the source file path relative.
 """
-function scripttag!(d::Dict{K,T}, source::LineNumberNode; gitpath = projectdir(), force = false) where {K<:Union{Symbol,String},T}
+function scripttag!(d::Dict{K,T}, source; gitpath = projectdir(), force = false) where {K<:Union{Symbol,String},T}
     # We want this functionality to be separate from `tag!` to allow
     # inclusion of this information without the git tagging
     # functionality.
