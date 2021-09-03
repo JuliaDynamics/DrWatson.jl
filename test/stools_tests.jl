@@ -27,6 +27,11 @@ for d in (d1, d2)
     @test d[keytype(d)(:gitcommit)] |> typeof <: String
 end
 
+# Test assertion error when the data has a incompatible key type
+@test_throws AssertionError("We only know how to tag dictionaries that have keys that are strings or symbols") tag!(Dict{Int64,Any}(1 => 2))
+@test_throws AssertionError("We only know how to tag dictionaries that have keys that are strings or symbols") DrWatson.scripttag!(Dict{Int64,Any}(1 => 2), "foo")
+
+
 # @tag!
 for d in (d1, d2)
     d = @tag!(d, gitpath=@__DIR__)

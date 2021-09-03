@@ -1,3 +1,5 @@
+# 2.4.0
+* Add the macro version of `produce_or_load` to enable tagging with the calling source file and line.
 # 2.3.0
 * Enable pass through of kwargs to `wsave` in `produce_or_load`, `tagsave` and `safesave` (to e.g. allow compression in JLD2 files).
 # 2.2.0
