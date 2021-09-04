@@ -1,8 +1,10 @@
 "The perfect sidekick to your scientific inquiries"
 module DrWatson
 import Pkg, LibGit2
-
 const PATH_SEPARATOR = joinpath("_", "_")[2]
+
+using DataStructures
+export OrderedDict
 
 # Misc functions for kw-macros
 convert_to_kw(ex::Expr) = Expr(:kw,ex.args...)

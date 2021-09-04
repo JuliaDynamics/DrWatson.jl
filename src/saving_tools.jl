@@ -96,7 +96,7 @@ end
 """
     read_stdout_stderr(cmd::Cmd)
 
-Run `cmd` synchronously and capture stdout, stdin and a possible error exception. 
+Run `cmd` synchronously and capture stdout, stdin and a possible error exception.
 Return a `NamedTuple` with the fields `exception`, `out` and `err`.
 """
 function read_stdout_stderr(cmd::Cmd)
@@ -121,7 +121,7 @@ compared to its last commit; i.e. what `git diff HEAD` produces.
 The `gitpath` needs to point to a directory within a git repository,
 otherwise `nothing` is returned.
 
-Be aware that `gitpatch` needs a working installation of Git, that 
+Be aware that `gitpatch` needs a working installation of Git, that
 can be found in the current PATH.
 """
 function gitpatch(path = projectdir(); try_submodule_diff=true)
@@ -160,7 +160,7 @@ end
 # Tagging
 ########################################################################################
 """
-    tag!(d::Dict; gitpath = projectdir(), storepatch = true, force = false) -> d
+    tag!(d::AbstractDict; gitpath = projectdir(), storepatch = true, force = false) -> d
 Tag `d` by adding an extra field `gitcommit` which will have as value
 the [`gitdescribe`](@ref) of the repository at `gitpath` (by default
 the project's gitpath). Do nothing if a key `gitcommit` already exists
@@ -192,7 +192,7 @@ Dict{Symbol,Any} with 3 entries:
   :x => 3
 ```
 """
-function tag!(d::Dict{K,T}; gitpath = projectdir(), storepatch = true, force = false, source = nothing) where {K,T}
+function tag!(d::AbstractDict{K,T}; gitpath = projectdir(), storepatch = true, force = false, source = nothing) where {K,T}
     @assert (K <: Union{Symbol,String}) "We only know how to tag dictionaries that have keys that are strings or symbols"
     c = gitdescribe(gitpath)
     c === nothing && return d # gitpath is not a git repo
@@ -205,7 +205,7 @@ function tag!(d::Dict{K,T}; gitpath = projectdir(), storepatch = true, force = f
         @warn "The dictionary already has a key named `gitcommit`. We won't "*
         "add any Git information."
     else
-        d = checktagtype!(d) 
+        d = checktagtype!(d)
         d[commitname] = c
         # Only include patch info if `storepatch` is true and if we can get the info.
         if storepatch
@@ -225,11 +225,11 @@ function tag!(d::Dict{K,T}; gitpath = projectdir(), storepatch = true, force = f
 end
 
 """
-    keyname(d::Dict{K,T}, key) where {K<:Union{Symbol,String},T}
+    keyname(d::AbstractDict{K,T}, key) where {K<:Union{Symbol,String},T}
 
 Check the key type of `d` and convert `key` to the appropriate type.
 """
-function keyname(d::Dict{K,T}, key) where {K<:Union{Symbol,String},T}
+function keyname(d::AbstractDict{K,T}, key) where {K<:Union{Symbol,String},T}
     if K == Symbol
         return Symbol(key)
     end
@@ -237,11 +237,12 @@ function keyname(d::Dict{K,T}, key) where {K<:Union{Symbol,String},T}
 end
 
 """
-    checktagtype!(d::Dict{K,T}) where {K<:Union{Symbol,String},T}
+    checktagtype!(d::AbstractDict{K,T}) where {K<:Union{Symbol,String},T}
 
 Check if the value type of `d` allows `String` and promote it to do so if not.
+Currently will accept an abstract dict, but will return a dict.
 """
-function checktagtype!(d::Dict{K,T}) where {K<:Union{Symbol,String},T}
+function checktagtype!(d::AbstractDict{K,T}) where {K<:Union{Symbol,String},T}
     if !(String <: T)
         d = Dict{K, promote_type(T, String)}(d)
     end
@@ -249,13 +250,13 @@ function checktagtype!(d::Dict{K,T}) where {K<:Union{Symbol,String},T}
 end
 
 """
-    scripttag!(d::Dict{K,T}, source::LineNumberNode; gitpath = projectdir(), force = false) where {K<:Union{Symbol,String},T}
+    scripttag!(d::AbstractDict{K,T}, source::LineNumberNode; gitpath = projectdir(), force = false) where {K<:Union{Symbol,String},T}
 
 Include a `script` field in `d`, containing the source file and line number in
 `source`. Do nothing if the field is already present unless `force = true`. Uses
 `gitpath` to make the source file path relative.
 """
-function scripttag!(d::Dict{K,T}, source; gitpath = projectdir(), force = false) where {K,T}
+function scripttag!(d::AbstractDict{K,T}, source; gitpath = projectdir(), force = false) where {K,T}
     # We want this functionality to be separate from `tag!` to allow
     # inclusion of this information without the git tagging
     # functionality.
@@ -329,15 +330,21 @@ istaggable(x) = x isa AbstractDict
 
 
 """
-    struct2dict(s) -> d
+    struct2dict(s;order=false) -> d
 Convert a Julia composite type `s` to a dictionary `d` with key type `Symbol`
-that maps each field of `s` to its value. This can be useful in e.g. saving:
+that maps each field of `s` to its value. set `order` = `true` to return an
+ordered dictionary.
+This can be useful in e.g. saving:
 ```
 tagsave(savename(s), struct2dict(s))
 ```
 """
-function struct2dict(s)
-    Dict(x => getfield(s, x) for x in fieldnames(typeof(s)))
+function struct2dict(s;order=false)
+    if order
+        OrderedDict(x => getfield(s, x) for x in fieldnames(typeof(s)))
+    else
+        Dict(x => getfield(s, x) for x in fieldnames(typeof(s)))
+    end
 end
 
 """

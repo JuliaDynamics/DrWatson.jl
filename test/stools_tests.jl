@@ -239,8 +239,8 @@ p = Dict(
 
 # Testing nested @onlyif calls
 @test Set(dict_list(Dict(
-                   :a=>[1,2], 
-                   :b => [3,4], 
+                   :a=>[1,2],
+                   :b => [3,4],
                    :c => @onlyif( :a == 2, [5, @onlyif(:b == 4, 6)])
                   ))) == Set([Dict(:a => 1,:b => 3),
                               Dict(:a => 2,:b => 3,:c => 5),
@@ -271,8 +271,20 @@ end
 rm(tmpdir, force = true, recursive = true)
 @test !isdir(tmpdir)
 
-## is taggable 
+
+### test dict_list with OrderedDict and @onlyif calls
+@test Set(dict_list(OrderedDict(
+                 :b=>[1,2],
+                 :a => [3,4],
+                 :c => @onlyif( :b == 2, [5, @onlyif(:a == 4, 6)])
+                ))) == Set([OrderedDict(:b => 1,:a => 3),
+                            OrderedDict(:b => 2,:a => 3,:c => 5),
+                            OrderedDict(:b => 1,:a => 4),
+                            OrderedDict(:b => 2,:a => 4,:c => 5),
+                            OrderedDict(:b => 2,:a => 4,:c => 6)])
+## is taggable
 @test DrWatson.istaggable("test.jld2")
 @test !DrWatson.istaggable("test.csv")
 @test !DrWatson.istaggable(0.5)
 @test DrWatson.istaggable(Dict(:a => 0.5))
+@test DrWatson.istaggable(OrderedDict(:a=>0.5))
