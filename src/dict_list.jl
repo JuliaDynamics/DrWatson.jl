@@ -105,21 +105,13 @@ function _dict_list(c::AbstractDict)
         map(Iterators.product(values(iterable_dict)...)) do vals
             dd = [k=>convert(eltype(c[k]),v) for (k,v) in zip(keys(iterable_dict),vals)]
             if isempty(non_iterable_dict)
-                if isa(c,OrderedDict)
-                    OrderedDict(dd)
-                else
-                    Dict(dd)
-                end
+                Dict(dd)
             elseif isempty(iterable_dict)
                 non_iterable_dict
             else
                 # We can't use merge here because it promotes types.
                 # The uniqueness of the dictionary keys is guaranteed.
-                if isa(c,OrderedDict)
-                    OrderedDict(dd..., collect(non_iterable_dict)...)
-                else
-                    Dict(dd..., collect(non_iterable_dict)...)
-                end
+                Dict(dd..., collect(non_iterable_dict)...)
             end
         end
     )

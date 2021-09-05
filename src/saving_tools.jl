@@ -330,22 +330,20 @@ istaggable(x) = x isa AbstractDict
 
 
 """
-    struct2dict(s;order=false) -> d
+    struct2dict(::Type{DT},s) -> d where {DT<: AbstractDict}
 Convert a Julia composite type `s` to a dictionary `d` with key type `Symbol`
-that maps each field of `s` to its value. set `order` = `true` to return an
-ordered dictionary.
+that maps each field of `s` to its value. Simply passing `s` will return a regular dictionary.
 This can be useful in e.g. saving:
 ```
 tagsave(savename(s), struct2dict(s))
 ```
+
+
 """
-function struct2dict(s;order=false)
-    if order
-        OrderedDict(x => getfield(s, x) for x in fieldnames(typeof(s)))
-    else
-        Dict(x => getfield(s, x) for x in fieldnames(typeof(s)))
-    end
+function struct2dict(::Type{DT},s) where {DT<:AbstractDict}
+        DT(x => getfield(s, x) for x in fieldnames(typeof(s)))
 end
+struct2dict(s) = struct2dict(Dict,s)
 
 """
     struct2ntuple(s) -> n
