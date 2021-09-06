@@ -1,4 +1,6 @@
 using DrWatson, Test
+using DataStructures
+using JLD2
 
 # Test commit function
 com = gitdescribe(@__DIR__)
@@ -275,3 +277,54 @@ rm(tmpdir, force = true, recursive = true)
 @test !DrWatson.istaggable("test.csv")
 @test !DrWatson.istaggable(0.5)
 @test DrWatson.istaggable(Dict(:a => 0.5))
+
+## Testing OrderedDict usage
+@testset "OrderedDict Tests" begin
+    cd(@__DIR__)
+    struct TestStruct
+        z::Float64
+        y::Int
+        x::String
+    end
+
+    struct TestStruct2 #this structure allows for the if statement to be run in checktagtype!, (will promote the valuetype to Any)
+        z::Int64
+        y::Int64
+        x::Int64
+    end
+
+    #test struct2dict
+    t = TestStruct(2.0,1,"3") #this tests the case where struct2dict will by default not work
+    d1 = struct2dict(t)
+    d2 = struct2dict(OrderedDict,t)
+    @test !all(collect(fieldnames(typeof(t))).==keys(d1)) #the example struct given does not have the keys in the same order when converted to a dict
+    @test all(collect(fieldnames(typeof(t))).==keys(d2)) #OrderedDict should have the key in the same order as the struct
+
+    #test struct2dict
+    t2 = TestStruct2(1,3,4)
+    d3 = struct2dict(t2)
+    d4 = struct2dict(OrderedDict,t2)
+    @test isa(d3,Dict)
+    @test isa(d4,OrderedDict)
+
+    #test tostringdict and tosymboldict
+    d10 = tostringdict(OrderedDict,d4)
+    @test isa(d10,OrderedDict)
+    d11 = tosymboldict(OrderedDict,d10)
+    @test isa(d11,OrderedDict)
+
+    #test checktagtype!
+    @test isa(DrWatson.checktagtype!(d3),Dict)
+    @test isa(DrWatson.checktagtype!(d11),OrderedDict)
+
+    #check tagsave
+    sn = savename(d10,"jld2")
+    tagsave(sn,d10,gitpath=findproject())
+
+    file = load(sn)
+    display(file)
+    @test "gitcommit" in keys(file)
+    @test file["gitcommit"] |>typeof ==String
+    rm(sn)
+
+end

@@ -4,6 +4,7 @@ repo = "https://github.com/JuliaDynamics/DrWatson.jl.git"
 version = "2.4.1"
 
 [deps]
+DataStructures = "864edb3b-99cc-5e75-8d2d-829cb0a9cfe8"
 Dates = "ade2ca70-3891-5945-98fb-dc099432e06a"
 FileIO = "5789e2e9-d7fb-5bc7-8068-2c6fae9b9549"
 LibGit2 = "76f85450-5226-5b5a-8eaa-529ad045b433"

@@ -240,14 +240,22 @@ end
     checktagtype!(d::AbstractDict{K,T}) where {K<:Union{Symbol,String},T}
 
 Check if the value type of `d` allows `String` and promote it to do so if not.
-Currently will accept an abstract dict, but will return a dict.
 """
 function checktagtype!(d::AbstractDict{K,T}) where {K<:Union{Symbol,String},T}
+    DT = get_rawtype(typeof(d)) #concrete type of dictionary
     if !(String <: T)
-        d = Dict{K, promote_type(T, String)}(d)
+        d = DT{K, promote_type(T, String)}(d)
     end
     d
 end
+
+"""
+    get_rawtype(D::DataType) = getproperty(parentmodule(D), nameof(D))
+
+Return Concrete DataType from an `AbstractDict` `D`. Found online at:
+https://discourse.julialang.org/t/retrieve-the-type-of-abstractdict-without-parameters-from-a-concrete-dictionary-type/67567/3
+"""
+get_rawtype(D::DataType) = getproperty(parentmodule(D), nameof(D))
 
 """
     scripttag!(d::AbstractDict{K,T}, source::LineNumberNode; gitpath = projectdir(), force = false) where {K<:Union{Symbol,String},T}
@@ -337,8 +345,6 @@ This can be useful in e.g. saving:
 ```
 tagsave(savename(s), struct2dict(s))
 ```
-
-
 """
 function struct2dict(::Type{DT},s) where {DT<:AbstractDict}
         DT(x => getfield(s, x) for x in fieldnames(typeof(s)))
