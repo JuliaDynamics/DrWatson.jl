@@ -84,9 +84,9 @@ savename(c::Any, suffix::String; kwargs...) =
 savename(prefix::String, c::Any; kwargs...) = savename(prefix, c, ""; kwargs...)
 function savename(prefix::String, c, suffix::String;
                   allowedtypes = default_allowed(c),
-                  accesses = allaccess(c), ignores = allignore(c), digits = 3,
+                  accesses = allaccess(c), ignores = allignore(c), digits::Union{Int,Nothing} = nothing,
                   connector = "_", expand::Vector{String} = default_expand(c),
-                  sigdigits::Union{Int,Nothing}=nothing,
+                  sigdigits::Union{Int,Nothing} = 3,
                   val_to_string = nothing,
                   sort = true, equals = "=")
 
