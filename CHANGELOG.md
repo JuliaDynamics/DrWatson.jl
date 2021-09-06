@@ -1,5 +1,5 @@
 # 2.4.1
-* `savename`'s default options now have `sigdigits = 3` instead of `digits = 3`. (#284)
+* `savename`'s default options now have `sigdigits = 3` instead of `digits = 3` as stated in the documentation string. This was supposed to happen already since 2.0 but did not because of a bug. (#284)
 # 2.4.0
 * Add the macro version of `produce_or_load` to enable tagging with the calling source file and line.
 # 2.3.0
