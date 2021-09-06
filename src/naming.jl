@@ -97,7 +97,7 @@ function savename(prefix::String, c, suffix::String;
             `savename` (e.g. `datadir("path", "to", "folder", savename("prefix", data))`).
         """
     end
-    digits = sigdigits === nothing ? digits : nothing
+    sigdigits = digits === nothing ? sigdigits : nothing
     val2string = val_to_string === nothing ? (val -> valtostring(val, digits, sigdigits)) : val_to_string
     # Here take care of extra prefix besides default
     dpre = default_prefix(c)
