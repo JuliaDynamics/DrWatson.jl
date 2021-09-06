@@ -60,7 +60,7 @@ See also [`parse_savename`](@ref) and [`@savename`](@ref).
   called with its default arguments (so customization here is possible only
   by rolling your own container type). Containers leading to empty `savename`
   are skipped.
-* `equals = "="` : Connector between name and value. Can be useful to modify for 
+* `equals = "="` : Connector between name and value. Can be useful to modify for
   adding space `" = "`.
 
 ## Examples
@@ -271,7 +271,7 @@ end
 
 """
     esc_dict_expr_from_vars(vars)
-Transform a `Tuple` of `Symbol` and assignments (`a=b`) 
+Transform a `Tuple` of `Symbol` and assignments (`a=b`)
 into a dictionary where each `Symbol` in `vars`
 defines a key-value pair. The value is obtained by evaluating the `Symbol` in
 the macro calling environment.
@@ -356,10 +356,10 @@ ntuple2dict(nt::NamedTuple) = Dict(k => nt[k] for k in keys(nt))
 Convert a dictionary (with `Symbol` or `String` as key type) to
 a `NamedTuple`.
 """
-function dict2ntuple(dict::Dict{String, T}) where T
+function dict2ntuple(dict::AbstractDict{String, T}) where T
     NamedTuple{Tuple(Symbol.(keys(dict)))}(values(dict))
 end
-function dict2ntuple(dict::Dict{Symbol, T}) where T
+function dict2ntuple(dict::AbstractDict{Symbol, T}) where T
     NamedTuple{Tuple(keys(dict))}(values(dict))
 end
 
@@ -367,13 +367,15 @@ end
     tostringdict(d)
 Change a dictionary with key type `Symbol` to have key type `String`.
 """
-tostringdict(d) = Dict(zip(String.(keys(d)), values(d)))
+tostringdict(::Type{DT},d) where {DT<:AbstractDict} = DT(zip(String.(keys(d)), values(d)))
+tostringdict(d) = tostringdict(Dict,d)
 
 """
     tosymboldict(d)
 Change a dictionary with key type `String` to have key type `Symbol`.
 """
-tosymboldict(d) = Dict(zip(Symbol.(keys(d)), values(d)))
+tosymboldict(::Type{DT},d) where {DT<:AbstractDict} = DT(zip(Symbol.(keys(d)), values(d)))
+tosymboldict(d) = tosymboldict(Dict,d)
 
 """
     parse_savename(filename::AbstractString; kwargs...)

@@ -10,7 +10,7 @@ with the global path that it is saved at (`s`).
 If the file does not exist then call `file = f(config)`, with `f` your function
 that produces your data. Then save the `file` as `s` and then return `file, s`.
 
-The function `f` should return a dictionary if the data are saved in the default 
+The function `f` should return a dictionary if the data are saved in the default
 format of JLD2.jl., the macro [`@strdict`](@ref) can help with that.
 
 You can use a [do-block]
@@ -118,7 +118,7 @@ end
 #                             tag saving                                       #
 ################################################################################
 """
-    tagsave(file::String, d::Dict; safe = false, gitpath = projectdir(), storepatch = true, force = false, kwargs...)
+    tagsave(file::String, d::AbstractDict; safe = false, gitpath = projectdir(), storepatch = true, force = false, kwargs...)
 First [`tag!`](@ref) dictionary `d` and then save `d` in `file`.
 If `safe = true` save the file using [`safesave`](@ref).
 
@@ -144,7 +144,7 @@ end
 
 
 """
-    @tagsave(file::String, d::Dict; kwargs...)
+    @tagsave(file::String, d::AbstractDict; kwargs...)
 Same as [`tagsave`](@ref) but one more field `:script` is added that records
 the local path of the script and line number that called `@tagsave`, see [`@tag!`](@ref).
 """
