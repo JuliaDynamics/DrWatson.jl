@@ -112,7 +112,7 @@ di = @dict a c d
 @test savename(di,sigdigits=3) == "a=1.23e-7_c=1_d=test"
 @test savename(di,sigdigits=2) == "a=1.2e-7_c=1_d=test"
 @test savename(di,sigdigits=1) == "a=1e-7_c=1_d=test"
-@test savename(di) == "a=0.0_c=1_d=test"
+@test savename(di) == "a=1.23e-7_c=1_d=test" # default is sigdigits=3
 
 sn = savename(di,sigdigits=4)
 _,parsed,_ = parse_savename(sn)
