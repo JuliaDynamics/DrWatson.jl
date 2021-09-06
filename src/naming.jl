@@ -369,14 +369,13 @@ Change a dictionary with key type `Symbol` to have key type `String`.
 """
 tostringdict(::Type{DT},d) where {DT<:AbstractDict} = DT(zip(String.(keys(d)), values(d)))
 tostringdict(d) = tostringdict(Dict,d)
-#tostringdict(d) = Dict(zip(String.(keys(d)), values(d)))
 
 """
     tosymboldict(d)
 Change a dictionary with key type `String` to have key type `Symbol`.
 """
 tosymboldict(::Type{DT},d) where {DT<:AbstractDict} = DT(zip(Symbol.(keys(d)), values(d)))
-tosymboldict(d) = tosymboldict(Dict,d)#Dict(zip(Symbol.(keys(d)), values(d)))
+tosymboldict(d) = tosymboldict(Dict,d)
 
 """
     parse_savename(filename::AbstractString; kwargs...)
@@ -410,7 +409,7 @@ function parse_savename(filename::AbstractString;
     last_dot = findlast(".",savename_part)
     if last_dot == nothing || last_eq > last_dot
         # if no dot is after the last "="
-        # there is no suffixf
+        # there is no suffix
         name, suffix = savename_part,""
     else
         # Check if the last dot is part of a float number by parsing it as Int

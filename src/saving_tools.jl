@@ -338,7 +338,7 @@ istaggable(x) = x isa AbstractDict
 
 
 """
-    struct2dict(::Type{DT},s) -> d where {DT<: AbstractDict}
+    struct2dict([type = Dict,] s) -> d
 Convert a Julia composite type `s` to a dictionary `d` with key type `Symbol`
 that maps each field of `s` to its value. Simply passing `s` will return a regular dictionary.
 This can be useful in e.g. saving:
