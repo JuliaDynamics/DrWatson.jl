@@ -51,7 +51,7 @@ isfile(defaultname) && rm(defaultname)
 cres = collect_results!(defaultname, folder;
     subfolders = true, special_list=special_list, black_list = black_list)
 
-@test size(cres) == (4, 6)
+@test size(cres) == (4, 7)
 for n in ("a", "b", "lv_mean")
     @test n ∈ String.(names(cres))
 end
@@ -79,7 +79,7 @@ DrWatson.wsave(savename(d)*".jld2", d)
 cres2 = collect_results!(defaultname, folder;
     subfolders = true, special_list=special_list, black_list = black_list)
 
-@test size(cres2) == (6, 7)
+@test size(cres2) == (6, 8)
 @test all(names(cres) .∈ Ref(names(cres2)))
 
 ###############################################################################
@@ -98,7 +98,7 @@ isfile(defaultname2) && rm(defaultname2)
 cres10 = collect_results!(defaultname2, folder;
     subfolders = true, special_list=special_list2, black_list = black_list)
 
-@test size(cres10) == (6, 9)
+@test size(cres10) == (6, 10)
 for n in ("a", "b", "lv_mean", "lv_var", "lv_mean2", "lv_var2")
     @test n ∈ String.(names(cres10))
 end
@@ -119,7 +119,7 @@ rm(defaultname)
 cres_empty = collect_results!(defaultname, folder;
     subfolders = true, special_list=special_list, white_list=[])
 
-@test dropmissing(cres2[!,[:lv_mean, :lv_var, :path]]) == dropmissing(cres_empty)
+@test dropmissing(cres2[!,[:lv_mean, :lv_var, :path, :_mtime]]) == dropmissing(cres_empty)
 
 ###############################################################################
 #                           test out-of-place form                            #
@@ -136,44 +136,55 @@ subfolders = true, special_list=special_list, black_list = black_list)
 #                           test updating feature                             #
 ###############################################################################
 
-# Create a temp directory and run the tests, creating files in that folder
-# Julia takes care of removing the folder after the function is done.
-mktempdir(datadir()) do folder
-    # Create three data files with slightly different data
-    d = Dict("idx" => :keep, "b" => "some_value")
-    fname_keep = joinpath(folder, savename(d, ending, ignores = ("b",)))
-    DrWatson.wsave(fname_keep, d)
+@testset "Test updating feature $(mtime_df ? "without" : "with") :_mtime information" for mtime_df in [false, true]
+    # Create a temp directory and run the tests, creating files in that folder
+    # Julia takes care of removing the folder after the function is done.
+    mktempdir(datadir()) do folder
+        # Create three data files with slightly different data
+        d = Dict("idx" => :keep, "b" => "some_value")
+        fname_keep = joinpath(folder, savename(d, ending, ignores = ("b",)))
+        DrWatson.wsave(fname_keep, d)
 
-    d = Dict("idx" => :delete, "b" => "some_other_value")
-    fname_delete = joinpath(folder, savename(d, ending, ignores = ("b",)))
-    DrWatson.wsave(fname_delete, d)
+        d = Dict("idx" => :delete, "b" => "some_other_value")
+        fname_delete = joinpath(folder, savename(d, ending, ignores = ("b",)))
+        DrWatson.wsave(fname_delete, d)
 
-    d = Dict("idx" => :to_modify, "b" => "original_value")
-    fname_modify = joinpath(folder, savename(d, ending, ignores = ("b",)))
-    DrWatson.wsave(fname_modify, d)
+        d = Dict("idx" => :to_modify, "b" => "original_value")
+        fname_modify = joinpath(folder, savename(d, ending, ignores = ("b",)))
+        DrWatson.wsave(fname_modify, d)
 
-    # Collect our "results"
-    cres_before = collect_results!(folder; update = true)
+        # Collect our "results"
+        cres_before = collect_results!(folder; update = true)
+        if mtime_df
+            # Delete the mtime information to simulate old results collection.
+            select!(cres_before, Not(:_mtime))
+            wsave(joinpath(dirname(folder), "results_$(basename(folder)).jld2"), Dict("df" => cres_before))
+        end
 
-    # Modify one data file
-    d = Dict("idx" => :to_modify, "b" => "modified_value")
-    DrWatson.wsave(fname_modify, d)
+        # Modify one data file
+        d = Dict("idx" => :to_modify, "b" => "modified_value")
+        DrWatson.wsave(fname_modify, d)
 
-    # Delete another data file
-    rm(fname_delete)
+        # Delete another data file
+        rm(fname_delete)
 
-    # Collect the "results" again
-    cres_after = collect_results!(folder; update = true)
+        # Collect the "results" again
+        if mtime_df
+            cres_after = @test_logs (:warn, "Update of existing results collection requested, but no previously recorded modification time found. Will proceed by comparing with the database modification time, but this may miss modifications if the database is newer than the modified files.") match_mode=:any collect_results!(folder; update = true)
+        else
+            cres_after = collect_results!(folder; update = true)
+        end
 
-    # Compare the before and after - they should differ
-    @test cres_before != cres_after
-    # The unmodified entry should be the same
-    @test ((:keep ∈ cres_before.idx) && (:keep ∈ cres_after.idx))
-    # The deleted entry should be gone
-    @test ((:delete ∈ cres_before.idx) && (:delete ∉ cres_after.idx))
-    # The modified entry should differ between before and after
-    @test cres_before.b[cres_before.idx .== :to_modify][1] == "original_value"
-    @test cres_after.b[cres_after.idx .== :to_modify][1] == "modified_value"
+        # Compare the before and after - they should differ
+        @test cres_before[:,[:idx, :b]] != cres_after[:,[:idx, :b]]
+        # The unmodified entry should be the same
+        @test ((:keep ∈ cres_before.idx) && (:keep ∈ cres_after.idx))
+        # The deleted entry should be gone
+        @test ((:delete ∈ cres_before.idx) && (:delete ∉ cres_after.idx))
+            # The modified entry should differ between before and after
+        @test cres_before.b[cres_before.idx .== :to_modify][1] == "original_value"
+        @test cres_after.b[cres_after.idx .== :to_modify][1] == "modified_value"
+    end
 end
 
 ###############################################################################

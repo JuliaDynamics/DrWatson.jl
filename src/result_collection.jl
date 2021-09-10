@@ -84,11 +84,19 @@ function collect_results!(filename, folder;
     if newfile || !isfile(filename)
         !newfile && verbose && @info "Starting a new result collection..."
         df = DataFrames.DataFrame()
-        mtime_df = 0.0
+        mtime_df = nothing
     else
         verbose && @info "Loading existing result collection..."
         df = wload(filename)["df"]
-        mtime_df = mtime(filename)
+        # Check if we have pre-recorded mtimes (if not this could be because of an old results database).
+        if "_mtime" ∈ names(df)
+            mtime_df = nothing
+        else
+            @warn "Update of existing results collection requested, but no previously recorded modification time found. Will proceed by comparing with the database modification time, but this may miss modifications if the database is newer than the modified files."
+            mtime_df = mtime(filename)
+            # Insert a new column to hold mtime information
+            df[!,:_mtime] .= NaN
+        end
     end
     @info "Scanning folder $folder for result files."
 
@@ -110,18 +118,39 @@ function collect_results!(filename, folder;
         is_valid_file(file, valid_filetypes) || continue
         # maybe use relative path
         file = rpath === nothing ? file : relpath(file, rpath)
+        mtime_file = mtime(file)
         replace_entry = false
         #already added?
         if file ∈ existing_files
-            # older than df?
-            (!update || (mtime_df > mtime(file))) && continue
-            replace_entry = true
+            if update
+                # If we are instructed to update an existing collection, we need to check file modification
+                # times. We can run into old databases without individual file mtime entries (in which case
+                # `mtime_df` is not `nothing`, but the database's modification time.
+                if isnothing(mtime_df)
+                    # different mtime than recorded?
+                    recorded_mtime = df[df.path .== file, :_mtime][1]
+                    (recorded_mtime == mtime_file) && continue
+                else
+                    # older than df?
+                    if mtime_df > mtime_file
+                        # Our file does not need to be updated, but is missing mtime information in the
+                        # collection. So record this now but skip the rest of the loop body.
+                        df[df.path .== file, :_mtime] .= mtime_file
+                        continue
+                    end
+                end
+                replace_entry = true
+            else
+                continue
+            end
         end
-            
+
         data = rpath === nothing ? wload(file) : wload(joinpath(rpath, file))
         df_new = to_data_row(data, file; kwargs...)
         #add filename
         df_new[!, :path] .= file
+        # add mtime
+        df_new[!, :_mtime] .= mtime_file
         if replace_entry
             # Delete the row with the old data
             delete!(df, findfirst((x)->(x.path == file), eachrow(df)))
