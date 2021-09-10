@@ -136,34 +136,45 @@ subfolders = true, special_list=special_list, black_list = black_list)
 #                           test updating feature                             #
 ###############################################################################
 
-folder = datadir("update_test")
-mkdir(folder)
+# Create a temp directory and run the tests, creating files in that folder
+# Julia takes care of removing the folder after the function is done.
+mktempdir(datadir()) do folder
+    # Create three data files with slightly different data
+    d = Dict("idx" => :keep, "b" => "some_value")
+    fname_keep = joinpath(folder, savename(d, ending, ignores = ("b",)))
+    DrWatson.wsave(fname_keep, d)
 
-d = Dict("idx" => :keep, "b" => "some_value")
-fname_keep = joinpath(folder, savename(d, ending, ignores = ("b",)))
-DrWatson.wsave(fname_keep, d)
+    d = Dict("idx" => :delete, "b" => "some_other_value")
+    fname_delete = joinpath(folder, savename(d, ending, ignores = ("b",)))
+    DrWatson.wsave(fname_delete, d)
 
-d = Dict("idx" => :delete, "b" => "some_other_value")
-fname_delete = joinpath(folder, savename(d, ending, ignores = ("b",)))
-DrWatson.wsave(fname_delete, d)
+    d = Dict("idx" => :to_modify, "b" => "original_value")
+    fname_modify = joinpath(folder, savename(d, ending, ignores = ("b",)))
+    DrWatson.wsave(fname_modify, d)
 
-d = Dict("idx" => :to_modify, "b" => "original_value")
-fname_modify = joinpath(folder, savename(d, ending, ignores = ("b",)))
-DrWatson.wsave(fname_modify, d)
+    # Collect our "results"
+    cres_before = collect_results!(folder; update = true)
 
-cres_before = collect_results!(folder; update = true)
+    # Modify one data file
+    d = Dict("idx" => :to_modify, "b" => "modified_value")
+    DrWatson.wsave(fname_modify, d)
 
-d = Dict("idx" => :to_modify, "b" => "modified_value")
-DrWatson.wsave(fname_modify, d)
-rm(fname_delete)
+    # Delete another data file
+    rm(fname_delete)
 
-cres_after = collect_results!(folder; update = true)
+    # Collect the "results" again
+    cres_after = collect_results!(folder; update = true)
 
-@test cres_before != cres_after
-@test ((:keep ∈ cres_before.idx) && (:keep ∈ cres_after.idx))
-@test ((:delete ∈ cres_before.idx) && (:delete ∉ cres_after.idx))
-@test cres_before.b[cres_before.idx .== :to_modify][1] == "original_value"
-@test cres_after.b[cres_after.idx .== :to_modify][1] == "modified_value"
+    # Compare the before and after - they should differ
+    @test cres_before != cres_after
+    # The unmodified entry should be the same
+    @test ((:keep ∈ cres_before.idx) && (:keep ∈ cres_after.idx))
+    # The deleted entry should be gone
+    @test ((:delete ∈ cres_before.idx) && (:delete ∉ cres_after.idx))
+    # The modified entry should differ between before and after
+    @test cres_before.b[cres_before.idx .== :to_modify][1] == "original_value"
+    @test cres_after.b[cres_after.idx .== :to_modify][1] == "modified_value"
+end
 
 ###############################################################################
 #                              Quickactivate macro                            #
