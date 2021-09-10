@@ -141,7 +141,7 @@ function gitpatch(path = projectdir(); try_submodule_diff=true)
             # Remove the submodule option as it is not supported by older git versions.
             return gitpatch(path; try_submodule_diff = false)
         else
-            @warn "`gitpatch` failed with error $(result.err) $(result.exception) and , returning `nothing` instead."
+            @warn "`gitpatch` failed with error $(result.err) $(result.exception). Returning `nothing` instead."
         end
     catch er
         if isa(er,LibGit2.GitError) && er.code == LibGit2.Error.ENOTFOUND
@@ -160,7 +160,7 @@ end
 # Tagging
 ########################################################################################
 """
-    tag!(d::AbstractDict; gitpath = projectdir(), storepatch = true, force = false) -> d
+    tag!(d::AbstractDict; kwargs...) -> d
 Tag `d` by adding an extra field `gitcommit` which will have as value
 the [`gitdescribe`](@ref) of the repository at `gitpath` (by default
 the project's gitpath). Do nothing if a key `gitcommit` already exists
@@ -178,6 +178,12 @@ To restore a repository to the state of a particular model-run do:
 1. checkout the relevant commit with `git checkout xyz` where xyz is the value stored
 2. apply the patch `git apply patch`, where the string stored in the `gitpatch` field needs to be written to the file `patch`.
 
+## Keywords
+* `gitpath = projectdir()`
+* `force = false`
+* `storepatch = get(ENV, "DRWATSON_STOREPATCH", true)`: Whether to collect and store the 
+  output of [`gitpatch`](@ref) as well.
+
 ## Examples
 ```julia
 julia> d = Dict(:x => 3, :y => 4)
@@ -192,7 +198,10 @@ Dict{Symbol,Any} with 3 entries:
   :x => 3
 ```
 """
-function tag!(d::AbstractDict{K,T}; gitpath = projectdir(), storepatch = true, force = false, source = nothing) where {K,T}
+function tag!(d::AbstractDict{K,T}; 
+        gitpath = projectdir(), force = false, source = nothing,
+        storepatch::Bool = get(ENV, "DRWATSON_STOREPATCH", true), 
+    ) where {K,T}
     @assert (K <: Union{Symbol,String}) "We only know how to tag dictionaries that have keys that are strings or symbols"
     c = gitdescribe(gitpath)
     c === nothing && return d # gitpath is not a git repo
@@ -210,7 +219,7 @@ function tag!(d::AbstractDict{K,T}; gitpath = projectdir(), storepatch = true, f
         # Only include patch info if `storepatch` is true and if we can get the info.
         if storepatch
             patch = gitpatch(gitpath)
-            if (patch != nothing) && (patch != "")
+            if (patch !== nothing) && (patch != "")
                 d[patchname] = patch
             end
         end
@@ -330,11 +339,14 @@ additional data fields as strings. Currently endings that can do this are:
 ```
 $(TAGGABLE_FILE_ENDINGS)
 ```
-
-    istaggable(x) = x isa AbstractDictionary
 """
 istaggable(file::AbstractString) = any(endswith(file, e) for e ∈ TAGGABLE_FILE_ENDINGS)
-istaggable(x) = x isa AbstractDict
+
+"""
+    istaggable(x) = x isa AbstractDict
+For non-string input the function just checks if input is dictionary.
+"""
+istaggable(x) = x isa AbstractDictionary
 
 
 """

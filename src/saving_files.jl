@@ -24,7 +24,8 @@ end
 
 ## Keywords
 * `suffix = "jld2", prefix = default_prefix(config)` : Used in [`savename`](@ref).
-* `tag::Bool = istaggable(suffix)` : Save the file using [`tagsave`](@ref) if `true`.
+* `tag::Bool = get(ENV, "DRWATSON_TAG", istaggable(suffix))` : Save the file 
+  using [`tagsave`](@ref) if `true` (which is the default).
 * `gitpath, storepatch` : Given to [`tagsave`](@ref) if `tag` is `true`.
 * `force = false` : If `true` then don't check if file `s` exists and produce
   it and save it anyway.
@@ -41,9 +42,13 @@ produce_or_load(c, f; kwargs...) = produce_or_load("", c, f; kwargs...)
 produce_or_load(f::Function, c; kwargs...) = produce_or_load(c, f; kwargs...)
 produce_or_load(f::Function, path, c; kwargs...) = produce_or_load(path, c, f; kwargs...)
 function produce_or_load(path, c, f::Function;
-    suffix = "jld2", prefix = default_prefix(c),
-    tag::Bool = istaggable(suffix), gitpath = projectdir(), loadfile = true,
-    force = false, verbose = true, storepatch = true, wsave_kwargs = Dict(), kwargs...)
+        suffix = "jld2", prefix = default_prefix(c),
+        tag::Bool = get(ENV, "DRWATSON_TAG", istaggable(suffix)), 
+        gitpath = projectdir(), loadfile = true,
+        storepatch::Bool = get(ENV, "DRWATSON_STOREPATCH", true), 
+        force = false, verbose = true, wsave_kwargs = Dict(), 
+        kwargs...
+    )
 
     s = joinpath(path, savename(prefix, c, suffix; kwargs...))
 
@@ -118,21 +123,27 @@ end
 #                             tag saving                                       #
 ################################################################################
 """
-    tagsave(file::String, d::AbstractDict; safe = false, gitpath = projectdir(), storepatch = true, force = false, kwargs...)
+    tagsave(file::String, d::AbstractDict; safe = get(ENV, "DRWATSON_SAFESAVE", false), kwargs...)
 First [`tag!`](@ref) dictionary `d` and then save `d` in `file`.
 If `safe = true` save the file using [`safesave`](@ref).
 
 "Tagging" means that when saving the dictionary, an extra field
 `:gitcommit` is added to establish reproducibility of results using
-Git. If the Git repository is dirty, one more field `:gitpatch` is
-added that stores the difference string.  If a dictionary already
-contains a key `:gitcommit`, it is not overwritten, unless,
+Git. If the Git repository is dirty and `storepatch=true`, one more field `:gitpatch` is
+added that stores the difference string. If a dictionary already
+contains a key `:gitcommit`, it is not overwritten, unless
 `force=true`. For more details, see [`tag!`](@ref).
 
+Keywords `gitpath, storepatch, force,` are propagated to [`tag!`](@ref).
 Any additional keyword arguments are propagated to `wsave`, to e.g.
 enable compression.
 """
-function tagsave(file, d; safe::Bool = false, gitpath = projectdir(), storepatch = true, force = false, source = nothing, kwargs...)
+function tagsave(file, d; 
+        gitpath = projectdir(), 
+        safe::Bool = get(ENV, "DRWATSON_SAFESAVE", false), 
+        storepatch::Bool = get(ENV, "DRWATSON_STOREPATCH", true), 
+        force = false, source = nothing, kwargs...
+    )
     d2 = tag!(d, gitpath=gitpath, storepatch=storepatch, force=force, source=source)
     if safe
         safesave(file, copy(d2); kwargs...)
