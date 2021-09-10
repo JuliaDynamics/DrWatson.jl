@@ -349,7 +349,8 @@ end
     ntuple2dict(nt) -> dict
 Convert a `NamedTuple` to a dictionary.
 """
-ntuple2dict(nt::NamedTuple) = Dict(k => nt[k] for k in keys(nt))
+ntuple2dict(::Type{DT},nt::NamedTuple) where {DT<:AbstractDict} = DT(k => nt[k] for k in keys(nt))
+ntuple2dict(nt::NamedTuple) = ntuple2dict(Dict,nt)
 
 """
     dict2ntuple(dict) -> ntuple
