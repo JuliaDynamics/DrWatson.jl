@@ -346,7 +346,7 @@ end
 # Credit of `ntuple` macro goes to Sebastian Pfitzner, @pfitzseb
 
 """
-    ntuple2dict(nt) -> dict
+    ntuple2dict([type = Dict,] nt) -> dict
 Convert a `NamedTuple` to a dictionary.
 """
 ntuple2dict(::Type{DT},nt::NamedTuple) where {DT<:AbstractDict} = DT(k => nt[k] for k in keys(nt))
