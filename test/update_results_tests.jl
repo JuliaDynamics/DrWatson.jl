@@ -51,7 +51,7 @@ isfile(defaultname) && rm(defaultname)
 cres = collect_results!(defaultname, folder;
     subfolders = true, special_list=special_list, black_list = black_list)
 
-@test size(cres) == (4, 7)
+@test size(cres) == (4, 6)
 for n in ("a", "b", "lv_mean")
     @test n ∈ String.(names(cres))
 end
@@ -79,7 +79,7 @@ DrWatson.wsave(savename(d)*".jld2", d)
 cres2 = collect_results!(defaultname, folder;
     subfolders = true, special_list=special_list, black_list = black_list)
 
-@test size(cres2) == (6, 8)
+@test size(cres2) == (6, 7)
 @test all(names(cres) .∈ Ref(names(cres2)))
 
 ###############################################################################
@@ -98,7 +98,7 @@ isfile(defaultname2) && rm(defaultname2)
 cres10 = collect_results!(defaultname2, folder;
     subfolders = true, special_list=special_list2, black_list = black_list)
 
-@test size(cres10) == (6, 10)
+@test size(cres10) == (6, 9)
 for n in ("a", "b", "lv_mean", "lv_var", "lv_mean2", "lv_var2")
     @test n ∈ String.(names(cres10))
 end
@@ -119,7 +119,7 @@ rm(defaultname)
 cres_empty = collect_results!(defaultname, folder;
     subfolders = true, special_list=special_list, white_list=[])
 
-@test dropmissing(cres2[!,[:lv_mean, :lv_var, :path, :_mtime]]) == dropmissing(cres_empty)
+@test dropmissing(cres2[!,[:lv_mean, :lv_var, :path]]) == dropmissing(cres_empty)
 
 ###############################################################################
 #                           test out-of-place form                            #
@@ -156,8 +156,7 @@ subfolders = true, special_list=special_list, black_list = black_list)
         # Collect our "results"
         cres_before = collect_results!(folder; update = true)
         if mtime_df
-            # Delete the mtime information to simulate old results collection.
-            select!(cres_before, Not(:_mtime))
+            # Leave out the mtime information to simulate old results collection.
             wsave(joinpath(dirname(folder), "results_$(basename(folder)).jld2"), Dict("df" => cres_before))
         end
 

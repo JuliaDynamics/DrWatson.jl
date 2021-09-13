@@ -85,17 +85,20 @@ function collect_results!(filename, folder;
         !newfile && verbose && @info "Starting a new result collection..."
         df = DataFrames.DataFrame()
         mtime_df = nothing
+        mtimes = Dict{String,Float64}()
     else
         verbose && @info "Loading existing result collection..."
-        df = wload(filename)["df"]
+        data = wload(filename)
+        df = data["df"]
         # Check if we have pre-recorded mtimes (if not this could be because of an old results database).
-        if "_mtime" ∈ names(df)
+        if "mtime" ∈ keys(data)
+            mtimes = data["mtime"]
             mtime_df = nothing
         else
             @warn "Update of existing results collection requested, but no previously recorded modification time found. Will proceed by comparing with the database modification time, but this may miss modifications if the database is newer than the modified files."
             mtime_df = mtime(filename)
-            # Insert a new column to hold mtime information
-            df[!,:_mtime] .= NaN
+            # Insert a new field to hold mtime information
+            mtimes = Dict{String,Float64}()
         end
     end
     @info "Scanning folder $folder for result files."
@@ -128,14 +131,14 @@ function collect_results!(filename, folder;
                 # `mtime_df` is not `nothing`, but the database's modification time.
                 if isnothing(mtime_df)
                     # different mtime than recorded?
-                    recorded_mtime = df[df.path .== file, :_mtime][1]
+                    recorded_mtime = mtimes[file]
                     (recorded_mtime == mtime_file) && continue
                 else
                     # older than df?
                     if mtime_df > mtime_file
                         # Our file does not need to be updated, but is missing mtime information in the
                         # collection. So record this now but skip the rest of the loop body.
-                        df[df.path .== file, :_mtime] .= mtime_file
+                        mtimes[file] = mtime_file
                         continue
                     end
                 end
@@ -149,8 +152,6 @@ function collect_results!(filename, folder;
         df_new = to_data_row(data, file; kwargs...)
         #add filename
         df_new[!, :path] .= file
-        # add mtime
-        df_new[!, :_mtime] .= mtime_file
         if replace_entry
             # Delete the row with the old data
             delete!(df, findfirst((x)->(x.path == file), eachrow(df)))
@@ -158,6 +159,7 @@ function collect_results!(filename, folder;
         else
             n += 1
         end
+        mtimes[file] = mtime_file
         df = merge_dataframes!(df, df_new)
     end
     if update
@@ -168,7 +170,7 @@ function collect_results!(filename, folder;
     else
         verbose && @info "Added $n entries."
     end
-    !newfile && wsave(filename, Dict("df" => df))
+    !newfile && wsave(filename, Dict("df" => df, "mtime" => mtimes))
     return df
 end
 
