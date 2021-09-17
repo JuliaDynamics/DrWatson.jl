@@ -136,7 +136,7 @@ subfolders = true, special_list=special_list, black_list = black_list)
 #                           test updating feature                             #
 ###############################################################################
 
-@testset "Test updating feature $(mtime_df ? "without" : "with") :_mtime information" for mtime_df in [false, true]
+@testset "Test updating feature $(mtime_info)" for mtime_info in ["with mtime", "without initial update", "without mtime", "with corrupt mtime"]
     # Create a temp directory and run the tests, creating files in that folder
     # Julia takes care of removing the folder after the function is done.
     mktempdir(datadir()) do folder
@@ -154,37 +154,47 @@ subfolders = true, special_list=special_list, black_list = black_list)
         DrWatson.wsave(fname_modify, d)
 
         # Collect our "results"
-        cres_before = collect_results!(folder; update = true)
-        if mtime_df
+        if mtime_info == "without initial update"
+            # Test this case: https://github.com/JuliaDynamics/DrWatson.jl/pull/286#pullrequestreview-755999610
+            cres_before = collect_results!(folder; update = false)
+        else
+            cres_before = collect_results!(folder; update = true)
+        end
+
+        if mtime_info == "without mtime"
             # Leave out the mtime information to simulate old results collection.
             wsave(joinpath(dirname(folder), "results_$(basename(folder)).jld2"), Dict("df" => cres_before))
+        elseif mtime_info == "with corrupt mtime"
+            # Corrupt mtime information
+            wsave(joinpath(dirname(folder), "results_$(basename(folder)).jld2"), Dict("df" => cres_before, "mtime" => Dict{String,Float64}()))
+        else
+            # Modify one data file
+            d = Dict("idx" => :to_modify, "b" => "modified_value")
+            DrWatson.wsave(fname_modify, d)
+
+            # Delete another data file
+            rm(fname_delete)
         end
-
-        # Modify one data file
-        d = Dict("idx" => :to_modify, "b" => "modified_value")
-        DrWatson.wsave(fname_modify, d)
-
-        # Delete another data file
-        rm(fname_delete)
 
         # Collect the "results" again
-        if mtime_df
-            cres_after = @test_logs (:warn, "Update of existing results collection requested, but no previously recorded modification time found. Will proceed by comparing with the database modification time, but this may miss modifications if the database is newer than the modified files.") match_mode=:any collect_results!(folder; update = true)
+        if (mtime_info == "without mtime") || (mtime_info == "with corrupt mtime") 
+            @test_throws DrWatson.InvalidResultsCollection collect_results!(folder; update = true)
         else
             cres_after = collect_results!(folder; update = true)
-        end
 
-        # Compare the before and after - they should differ
-        @test cres_before[:,[:idx, :b]] != cres_after[:,[:idx, :b]]
-        # The unmodified entry should be the same
-        @test ((:keep ∈ cres_before.idx) && (:keep ∈ cres_after.idx))
-        # The deleted entry should be gone
-        @test ((:delete ∈ cres_before.idx) && (:delete ∉ cres_after.idx))
+            # Compare the before and after - they should differ
+            @test cres_before[:,[:idx, :b]] != cres_after[:,[:idx, :b]]
+            # The unmodified entry should be the same
+            @test ((:keep ∈ cres_before.idx) && (:keep ∈ cres_after.idx))
+            # The deleted entry should be gone
+            @test ((:delete ∈ cres_before.idx) && (:delete ∉ cres_after.idx))
             # The modified entry should differ between before and after
-        @test cres_before.b[cres_before.idx .== :to_modify][1] == "original_value"
-        @test cres_after.b[cres_after.idx .== :to_modify][1] == "modified_value"
+            @test cres_before.b[cres_before.idx .== :to_modify][1] == "original_value"
+            @test cres_after.b[cres_after.idx .== :to_modify][1] == "modified_value"
+        end
     end
 end
+
 
 ###############################################################################
 #                              Quickactivate macro                            #

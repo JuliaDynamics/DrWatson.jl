@@ -72,6 +72,11 @@ collect_results!(
 joinpath(dirname(folder), "results_$(basename(folder)).jld2"),
 folder; kwargs...)
 
+struct InvalidResultsCollection <: Exception
+    msg::AbstractString
+end
+showerror(io::IO, e::InvalidResultsCollection) = print(io, e.msg)
+
 function collect_results!(filename, folder;
     valid_filetypes = [".bson", "jld", ".jld2"],
     subfolders = false,
@@ -84,7 +89,6 @@ function collect_results!(filename, folder;
     if newfile || !isfile(filename)
         !newfile && verbose && @info "Starting a new result collection..."
         df = DataFrames.DataFrame()
-        mtime_df = nothing
         mtimes = Dict{String,Float64}()
     else
         verbose && @info "Loading existing result collection..."
@@ -93,12 +97,11 @@ function collect_results!(filename, folder;
         # Check if we have pre-recorded mtimes (if not this could be because of an old results database).
         if "mtime" ∈ keys(data)
             mtimes = data["mtime"]
-            mtime_df = nothing
         else
-            @warn "Update of existing results collection requested, but no previously recorded modification time found. Will proceed by comparing with the database modification time, but this may miss modifications if the database is newer than the modified files."
-            mtime_df = mtime(filename)
-            # Insert a new field to hold mtime information
-            mtimes = Dict{String,Float64}()
+            if update
+                throw(InvalidResultsCollection("update of existing results collection requested, but no previously recorded modification time found. Likely the existing results collection was produced with an old version of DrWatson. Recomputing the collection solves this problem."))
+            end
+            mtimes = nothing
         end
     end
     @info "Scanning folder $folder for result files."
@@ -125,28 +128,25 @@ function collect_results!(filename, folder;
         replace_entry = false
         #already added?
         if file ∈ existing_files
-            if update
-                # If we are instructed to update an existing collection, we need to check file modification
-                # times. We can run into old databases without individual file mtime entries (in which case
-                # `mtime_df` is not `nothing`, but the database's modification time.
-                if isnothing(mtime_df)
-                    # different mtime than recorded?
-                    recorded_mtime = mtimes[file]
-                    (recorded_mtime == mtime_file) && continue
-                else
-                    # older than df?
-                    if mtime_df > mtime_file
-                        # Our file does not need to be updated, but is missing mtime information in the
-                        # collection. So record this now but skip the rest of the loop body.
-                        mtimes[file] = mtime_file
-                        continue
-                    end
-                end
-                replace_entry = true
-            else
+            if !update
                 continue
             end
+
+            # Error if file is not in the mtimes database
+            if file ∉ keys(mtimes)
+                throw(InvalidResultsCollection("existing results correction is corrupt: no `mtime` entry for file $(file) found."))
+            end
+
+            # Skip if mtime is the same as the one previously recorded
+            if mtimes[file] == mtime_file
+                continue
+            end
+
+            replace_entry = true
         end
+
+        # Now update the mtime of the new or modified file
+        mtimes[file] = mtime_file
 
         data = rpath === nothing ? wload(file) : wload(joinpath(rpath, file))
         df_new = to_data_row(data, file; kwargs...)
@@ -159,7 +159,6 @@ function collect_results!(filename, folder;
         else
             n += 1
         end
-        mtimes[file] = mtime_file
         df = merge_dataframes!(df, df_new)
     end
     if update
@@ -170,7 +169,15 @@ function collect_results!(filename, folder;
     else
         verbose && @info "Added $n entries."
     end
-    !newfile && wsave(filename, Dict("df" => df, "mtime" => mtimes))
+    if !newfile
+        data = Dict{String,Any}("df" => df)
+        # mtimes is only `nothing` if we are working with an older collection
+        # We want to keep it that way, so do not try to create mtimes entry.
+        if !isnothing(mtimes)
+            data["mtime"] = mtimes
+        end
+        wsave(filename, data)
+    end
     return df
 end
 
