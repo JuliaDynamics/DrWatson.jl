@@ -1,5 +1,5 @@
 # 2.5.0
-* Add an `update` option ot `collect_results!` allowing the updating of an existing results collection if data files were modified or deleted.
+* Add an `update` option of `collect_results!` allowing the updating of an existing results collection if data files were modified or deleted.
 # 2.4.1
 * `savename`'s default options now have `sigdigits = 3` instead of `digits = 3` as stated in the documentation string. This was supposed to happen already since 2.0 but did not because of a bug. (#284)
 * Any subtypes of `AbstractDict` now work with DrWatson (#283).
