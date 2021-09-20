@@ -60,7 +60,7 @@ See also [`parse_savename`](@ref) and [`@savename`](@ref).
   called with its default arguments (so customization here is possible only
   by rolling your own container type). Containers leading to empty `savename`
   are skipped.
-* `equals = "="` : Connector between name and value. Can be useful to modify for 
+* `equals = "="` : Connector between name and value. Can be useful to modify for
   adding space `" = "`.
 
 ## Examples
@@ -84,9 +84,9 @@ savename(c::Any, suffix::String; kwargs...) =
 savename(prefix::String, c::Any; kwargs...) = savename(prefix, c, ""; kwargs...)
 function savename(prefix::String, c, suffix::String;
                   allowedtypes = default_allowed(c),
-                  accesses = allaccess(c), ignores = allignore(c), digits = 3,
+                  accesses = allaccess(c), ignores = allignore(c), digits::Union{Int,Nothing} = nothing,
                   connector = "_", expand::Vector{String} = default_expand(c),
-                  sigdigits::Union{Int,Nothing}=nothing,
+                  sigdigits::Union{Int,Nothing} = 3,
                   val_to_string = nothing,
                   sort = true, equals = "=")
 
@@ -97,7 +97,7 @@ function savename(prefix::String, c, suffix::String;
             `savename` (e.g. `datadir("path", "to", "folder", savename("prefix", data))`).
         """
     end
-    digits = sigdigits === nothing ? digits : nothing
+    sigdigits = digits === nothing ? sigdigits : nothing
     val2string = val_to_string === nothing ? (val -> valtostring(val, digits, sigdigits)) : val_to_string
     # Here take care of extra prefix besides default
     dpre = default_prefix(c)
@@ -271,7 +271,7 @@ end
 
 """
     esc_dict_expr_from_vars(vars)
-Transform a `Tuple` of `Symbol` and assignments (`a=b`) 
+Transform a `Tuple` of `Symbol` and assignments (`a=b`)
 into a dictionary where each `Symbol` in `vars`
 defines a key-value pair. The value is obtained by evaluating the `Symbol` in
 the macro calling environment.
@@ -346,20 +346,21 @@ end
 # Credit of `ntuple` macro goes to Sebastian Pfitzner, @pfitzseb
 
 """
-    ntuple2dict(nt) -> dict
+    ntuple2dict([type = Dict,] nt) -> dict
 Convert a `NamedTuple` to a dictionary.
 """
-ntuple2dict(nt::NamedTuple) = Dict(k => nt[k] for k in keys(nt))
+ntuple2dict(::Type{DT},nt::NamedTuple) where {DT<:AbstractDict} = DT(k => nt[k] for k in keys(nt))
+ntuple2dict(nt::NamedTuple) = ntuple2dict(Dict,nt)
 
 """
     dict2ntuple(dict) -> ntuple
 Convert a dictionary (with `Symbol` or `String` as key type) to
 a `NamedTuple`.
 """
-function dict2ntuple(dict::Dict{String, T}) where T
+function dict2ntuple(dict::AbstractDict{String, T}) where T
     NamedTuple{Tuple(Symbol.(keys(dict)))}(values(dict))
 end
-function dict2ntuple(dict::Dict{Symbol, T}) where T
+function dict2ntuple(dict::AbstractDict{Symbol, T}) where T
     NamedTuple{Tuple(keys(dict))}(values(dict))
 end
 
@@ -367,13 +368,15 @@ end
     tostringdict(d)
 Change a dictionary with key type `Symbol` to have key type `String`.
 """
-tostringdict(d) = Dict(zip(String.(keys(d)), values(d)))
+tostringdict(::Type{DT},d) where {DT<:AbstractDict} = DT(zip(String.(keys(d)), values(d)))
+tostringdict(d) = tostringdict(Dict,d)
 
 """
     tosymboldict(d)
 Change a dictionary with key type `String` to have key type `Symbol`.
 """
-tosymboldict(d) = Dict(zip(Symbol.(keys(d)), values(d)))
+tosymboldict(::Type{DT},d) where {DT<:AbstractDict} = DT(zip(Symbol.(keys(d)), values(d)))
+tosymboldict(d) = tosymboldict(Dict,d)
 
 """
     parse_savename(filename::AbstractString; kwargs...)

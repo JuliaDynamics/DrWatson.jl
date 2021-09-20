@@ -1,4 +1,4 @@
-export produce_or_load, tagsave, @tagsave, safesave
+export produce_or_load, @produce_or_load, tagsave, @tagsave, safesave
 
 """
     produce_or_load([path="",] config, f; kwargs...) -> file, s
@@ -10,7 +10,7 @@ with the global path that it is saved at (`s`).
 If the file does not exist then call `file = f(config)`, with `f` your function
 that produces your data. Then save the `file` as `s` and then return `file, s`.
 
-The function `f` should return a dictionary if the data are saved in the default 
+The function `f` should return a dictionary if the data are saved in the default
 format of JLD2.jl., the macro [`@strdict`](@ref) can help with that.
 
 You can use a [do-block]
@@ -80,11 +80,45 @@ function produce_or_load(path, c, f::Function;
     end
 end
 
+"""
+    @produce_or_load([path="",] config, f; kwargs...)
+Same as [`produce_or_load`](@ref) but one more field `:script` is added that records
+the local path of the script and line number that called `@produce_or_load`, see [`@tag!`](@ref).
+"""
+macro produce_or_load(f, path, config, args...)
+    args = Any[args...]
+    # Keywords added after a ; are moved to the front of the expression
+    # that is passed to the macro. So instead of getting the function in f
+    # an Expr is passed.
+    if f isa Expr && f.head == :parameters
+        length(args) > 0 || return :(throw(MethodError(@produce_or_load,$(esc(f)),$(esc(path)),$(esc(config)),$(esc.(args)...))))
+        extra_kw_def = f.args
+        f = path
+        path = config
+        config = popfirst!(args)
+        append!(args,extra_kw_def)
+    end
+    # Save the source file name and line number of the calling line.
+    s = QuoteNode(__source__)
+    # Wrap the function f, such that the source can be saved in the data Dict.
+    return quote
+        produce_or_load($(esc(path)), $(esc(config)), $(esc.(convert_to_kw.(args))...)) do k
+            data = $(esc(f))(k)
+            # Extract the `gitpath` kw arg if it's there
+            kws = ((;kwargs...)->Dict(kwargs...))($(esc.(convert_to_kw.(args))...))
+            gitpath = get(kws, :gitpath, projectdir())
+            # Include the script tag with checking for the type of dict keys, etc.
+            scripttag!(data, $s; gitpath = gitpath)
+            data
+        end
+    end
+end
+
 ################################################################################
 #                             tag saving                                       #
 ################################################################################
 """
-    tagsave(file::String, d::Dict; safe = false, gitpath = projectdir(), storepatch = true, force = false, kwargs...)
+    tagsave(file::String, d::AbstractDict; safe = false, gitpath = projectdir(), storepatch = true, force = false, kwargs...)
 First [`tag!`](@ref) dictionary `d` and then save `d` in `file`.
 If `safe = true` save the file using [`safesave`](@ref).
 
@@ -110,7 +144,7 @@ end
 
 
 """
-    @tagsave(file::String, d::Dict; kwargs...)
+    @tagsave(file::String, d::AbstractDict; kwargs...)
 Same as [`tagsave`](@ref) but one more field `:script` is added that records
 the local path of the script and line number that called `@tagsave`, see [`@tag!`](@ref).
 """

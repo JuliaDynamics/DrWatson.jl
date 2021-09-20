@@ -1,4 +1,6 @@
 using DrWatson, Test
+using DataStructures
+using JLD2
 
 # Test commit function
 com = gitdescribe(@__DIR__)
@@ -26,6 +28,11 @@ for d in (d1, d2)
     @test haskey(d, keytype(d)(:gitcommit))
     @test d[keytype(d)(:gitcommit)] |> typeof <: String
 end
+
+# Test assertion error when the data has a incompatible key type
+@test_throws AssertionError("We only know how to tag dictionaries that have keys that are strings or symbols") tag!(Dict{Int64,Any}(1 => 2))
+@test_throws AssertionError("We only know how to tag dictionaries that have keys that are strings or symbols") DrWatson.scripttag!(Dict{Int64,Any}(1 => 2), "foo")
+
 
 # @tag!
 for d in (d1, d2)
@@ -234,8 +241,8 @@ p = Dict(
 
 # Testing nested @onlyif calls
 @test Set(dict_list(Dict(
-                   :a=>[1,2], 
-                   :b => [3,4], 
+                   :a=>[1,2],
+                   :b => [3,4],
                    :c => @onlyif( :a == 2, [5, @onlyif(:b == 4, 6)])
                   ))) == Set([Dict(:a => 1,:b => 3),
                               Dict(:a => 2,:b => 3,:c => 5),
@@ -265,9 +272,65 @@ for r in ret
 end
 rm(tmpdir, force = true, recursive = true)
 @test !isdir(tmpdir)
-
-## is taggable 
+## is taggable
 @test DrWatson.istaggable("test.jld2")
 @test !DrWatson.istaggable("test.csv")
 @test !DrWatson.istaggable(0.5)
 @test DrWatson.istaggable(Dict(:a => 0.5))
+
+## Testing OrderedDict usage
+@testset "OrderedDict Tests" begin
+    cd(@__DIR__)
+    struct TestStruct
+        z::Float64
+        y::Int
+        x::String
+    end
+
+    struct TestStruct2 #this structure allows for the if statement to be run in checktagtype!, (will promote the valuetype to Any)
+        z::Int64
+        y::Int64
+        x::Int64
+    end
+
+    #test struct2dict
+    t = TestStruct(2.0,1,"3") #this tests the case where struct2dict will by default not work
+    d1 = struct2dict(t)
+    d2 = struct2dict(OrderedDict,t)
+    @test !all(collect(fieldnames(typeof(t))).==keys(d1)) #the example struct given does not have the keys in the same order when converted to a dict
+    @test all(collect(fieldnames(typeof(t))).==keys(d2)) #OrderedDict should have the key in the same order as the struct
+
+    #test struct2dict
+    t2 = TestStruct2(1,3,4)
+    d3 = struct2dict(t2)
+    d4 = struct2dict(OrderedDict,t2)
+    @test isa(d3,Dict)
+    @test isa(d4,OrderedDict)
+
+    #test tostringdict and tosymboldict
+    d10 = tostringdict(OrderedDict,d4)
+    @test isa(d10,OrderedDict)
+    d11 = tosymboldict(OrderedDict,d10)
+    @test isa(d11,OrderedDict)
+
+    #test ntuple2dict
+    x = 3; y = 5.0;
+    n = @ntuple x y
+    @test isa(ntuple2dict(n),Dict)
+    @test isa(ntuple2dict(OrderedDict,n),OrderedDict)
+    
+    #test checktagtype!
+    @test isa(DrWatson.checktagtype!(d3),Dict)
+    @test isa(DrWatson.checktagtype!(d11),OrderedDict)
+
+    #check tagsave
+    sn = savename(d10,"jld2")
+    tagsave(sn,d10,gitpath=findproject())
+
+    file = load(sn)
+    display(file)
+    @test "gitcommit" in keys(file)
+    @test file["gitcommit"] |>typeof ==String
+    rm(sn)
+
+end

@@ -1,5 +1,5 @@
 """
-    dict_list(c::Dict)
+    dict_list(c::AbstractDict)
 Expand the dictionary `c` into a vector of dictionaries.
 Each entry has a unique combination from the product of the `Vector`
 values of the dictionary while the non-`Vector` values are kept constant
@@ -47,7 +47,7 @@ julia> dict_list(c)
  Dict(:a=>2,:b=>4,:run=>"tri",:e=>[3, 5],:model=>"linear")
 ```
 """
-function dict_list(c::Dict)
+function dict_list(c::AbstractDict)
     if contains_partially_restricted(c)
         # The method for generating the restricted parameter set is as follows:
         # 1. Remove any nested parameter restrictions (#209)
@@ -94,7 +94,7 @@ function is_solution_subset_of_existing(trial, trial_solutions)
     return false
 end
 
-function _dict_list(c::Dict)
+function _dict_list(c::AbstractDict)
     iterable_fields = filter(k -> typeof(c[k]) <: Vector, keys(c))
     non_iterables = setdiff(keys(c), iterable_fields)
 
@@ -152,7 +152,7 @@ function DependentParameter(value::DependentParameter, condition::Function)
     DependentParameter(value.value, new_condition)
 end
 
-contains_partially_restricted(d::Dict) = any(contains_partially_restricted,values(d))
+contains_partially_restricted(d::AbstractDict) = any(contains_partially_restricted,values(d))
 contains_partially_restricted(d::Vector) = any(contains_partially_restricted,d)
 contains_partially_restricted(::DependentParameter) = true
 contains_partially_restricted(::Any) = false
@@ -170,7 +170,7 @@ In a case like this:
 
 Broadcasting is obviously not wanted as `:b` should retain it's type of `Vector{Int}`.
 """
-function unexpand_restricted(c::Dict{T}) where T
+function unexpand_restricted(c::AbstractDict{T}) where T
     _c = Dict{T,Any}() # There are hardly any cases where this will not be any.
     for k in keys(c)
         if c[k] isa AbstractVector && any(el->eltype(el) <: DependentParameter, c[k])

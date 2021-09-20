@@ -96,7 +96,7 @@ end
 """
     read_stdout_stderr(cmd::Cmd)
 
-Run `cmd` synchronously and capture stdout, stdin and a possible error exception. 
+Run `cmd` synchronously and capture stdout, stdin and a possible error exception.
 Return a `NamedTuple` with the fields `exception`, `out` and `err`.
 """
 function read_stdout_stderr(cmd::Cmd)
@@ -121,7 +121,7 @@ compared to its last commit; i.e. what `git diff HEAD` produces.
 The `gitpath` needs to point to a directory within a git repository,
 otherwise `nothing` is returned.
 
-Be aware that `gitpatch` needs a working installation of Git, that 
+Be aware that `gitpatch` needs a working installation of Git, that
 can be found in the current PATH.
 """
 function gitpatch(path = projectdir(); try_submodule_diff=true)
@@ -160,7 +160,7 @@ end
 # Tagging
 ########################################################################################
 """
-    tag!(d::Dict; gitpath = projectdir(), storepatch = true, force = false) -> d
+    tag!(d::AbstractDict; gitpath = projectdir(), storepatch = true, force = false) -> d
 Tag `d` by adding an extra field `gitcommit` which will have as value
 the [`gitdescribe`](@ref) of the repository at `gitpath` (by default
 the project's gitpath). Do nothing if a key `gitcommit` already exists
@@ -192,45 +192,96 @@ Dict{Symbol,Any} with 3 entries:
   :x => 3
 ```
 """
-function tag!(d::Dict{K,T}; gitpath = projectdir(), storepatch = true, force = false, source = nothing) where {K,T}
+function tag!(d::AbstractDict{K,T}; gitpath = projectdir(), storepatch = true, force = false, source = nothing) where {K,T}
+    @assert (K <: Union{Symbol,String}) "We only know how to tag dictionaries that have keys that are strings or symbols"
     c = gitdescribe(gitpath)
-    patch = gitpatch(gitpath)
-    @assert (Symbol <: K) || (String <: K)
-    if K == Symbol
-        commitname, patchname, scriptname = :gitcommit, :gitpatch, :script
-    else
-        commitname, patchname, scriptname = "gitcommit", "gitpatch", "script"
-    end
-
     c === nothing && return d # gitpath is not a git repo
+
+    # Get the appropriate keys
+    commitname = keyname(d, :gitcommit)
+    patchname = keyname(d, :gitpatch)
+
     if haskey(d, commitname) && !force
         @warn "The dictionary already has a key named `gitcommit`. We won't "*
         "add any Git information."
-        return d
-    end
-    if String <: T
-        d[commitname] = c
-        if storepatch && (patch != nothing)
-            d[patchname] = patch
-        end
     else
-        d = Dict{K, promote_type(T, String)}(d)
+        d = checktagtype!(d)
         d[commitname] = c
-        if patch!=""
-            d[patchname] = patch
+        # Only include patch info if `storepatch` is true and if we can get the info.
+        if storepatch
+            patch = gitpatch(gitpath)
+            if (patch != nothing) && (patch != "")
+                d[patchname] = patch
+            end
         end
     end
-    if source !== nothing && !force
-        if haskey(d, scriptname)
-            @warn "The dictionary already has a key named `script`. We won't "*
-            "overwrite it with the script name."
-        else
-            d[scriptname] = relpath(sourcename(source), gitpath)
-        end
+
+    # Include source file and line number info if given.
+    if source !== nothing
+        d = scripttag!(d, source; gitpath = gitpath, force = force)
     end
+
     return d
 end
 
+"""
+    keyname(d::AbstractDict{K,T}, key) where {K<:Union{Symbol,String},T}
+
+Check the key type of `d` and convert `key` to the appropriate type.
+"""
+function keyname(d::AbstractDict{K,T}, key) where {K<:Union{Symbol,String},T}
+    if K == Symbol
+        return Symbol(key)
+    end
+    return String(key)
+end
+
+"""
+    checktagtype!(d::AbstractDict{K,T}) where {K<:Union{Symbol,String},T}
+
+Check if the value type of `d` allows `String` and promote it to do so if not.
+"""
+function checktagtype!(d::AbstractDict{K,T}) where {K<:Union{Symbol,String},T}
+    DT = get_rawtype(typeof(d)) #concrete type of dictionary
+    if !(String <: T)
+        d = DT{K, promote_type(T, String)}(d)
+    end
+    d
+end
+
+"""
+    get_rawtype(D::DataType) = getproperty(parentmodule(D), nameof(D))
+
+Return Concrete DataType from an `AbstractDict` `D`. Found online at:
+https://discourse.julialang.org/t/retrieve-the-type-of-abstractdict-without-parameters-from-a-concrete-dictionary-type/67567/3
+"""
+get_rawtype(D::DataType) = getproperty(parentmodule(D), nameof(D))
+
+"""
+    scripttag!(d::AbstractDict{K,T}, source::LineNumberNode; gitpath = projectdir(), force = false) where {K<:Union{Symbol,String},T}
+
+Include a `script` field in `d`, containing the source file and line number in
+`source`. Do nothing if the field is already present unless `force = true`. Uses
+`gitpath` to make the source file path relative.
+"""
+function scripttag!(d::AbstractDict{K,T}, source; gitpath = projectdir(), force = false) where {K,T}
+    # We want this functionality to be separate from `tag!` to allow
+    # inclusion of this information without the git tagging
+    # functionality.
+    # To be used in `tag!` and `@produce_or_load`.
+    # We have to assert the key type here again because `scripttag!` can be called
+    # from `@produce_or_load` without going through `tag!`.
+    @assert (K <: Union{Symbol,String}) "We only know how to tag dictionaries that have keys that are strings or symbols"
+    scriptname = keyname(d, :script)
+    if haskey(d, scriptname) && !force
+        @warn "The dictionary already has a key named `script`. We won't "*
+            "overwrite it with the script name."
+    else
+        d = checktagtype!(d)
+        d[scriptname] = relpath(sourcename(source), gitpath)
+    end
+    return d
+end
 sourcename(s) = string(s)
 sourcename(s::LineNumberNode) = string(s.file)*"#"*string(s.line)
 
@@ -287,16 +338,18 @@ istaggable(x) = x isa AbstractDict
 
 
 """
-    struct2dict(s) -> d
+    struct2dict([type = Dict,] s) -> d
 Convert a Julia composite type `s` to a dictionary `d` with key type `Symbol`
-that maps each field of `s` to its value. This can be useful in e.g. saving:
+that maps each field of `s` to its value. Simply passing `s` will return a regular dictionary.
+This can be useful in e.g. saving:
 ```
 tagsave(savename(s), struct2dict(s))
 ```
 """
-function struct2dict(s)
-    Dict(x => getfield(s, x) for x in fieldnames(typeof(s)))
+function struct2dict(::Type{DT},s) where {DT<:AbstractDict}
+        DT(x => getfield(s, x) for x in fieldnames(typeof(s)))
 end
+struct2dict(s) = struct2dict(Dict,s)
 
 """
     struct2ntuple(s) -> n

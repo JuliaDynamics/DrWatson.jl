@@ -1,7 +1,6 @@
 "The perfect sidekick to your scientific inquiries"
 module DrWatson
 import Pkg, LibGit2
-
 const PATH_SEPARATOR = joinpath("_", "_")[2]
 
 # Misc functions for kw-macros

@@ -56,6 +56,7 @@ In addition, it attempts to minimize computing energy spent on getting a result.
 
 ```@docs
 produce_or_load
+@produce_or_load
 istaggable
 ```
 
