@@ -148,8 +148,8 @@ function collect_results!(filename, folder;
         # Now update the mtime of the new or modified file
         mtimes[file] = mtime_file
 
-        data = rpath === nothing ? wload(file) : wload(joinpath(rpath, file))
-        df_new = to_data_row(data, file; kwargs...)
+        fpath = rpath === nothing ? file : joinpath(rpath, file)
+        df_new = to_data_row(fpath; kwargs...)
         #add filename
         df_new[!, :path] .= file
         if replace_entry
@@ -208,6 +208,28 @@ end
 
 is_valid_file(file, valid_filetypes) =
     any(endswith(file, v) for v in valid_filetypes)
+
+# Register for file extensions -> load functions mapping
+ext_register = Dict{String,Function}()
+# Use wload per default when nothing else is available
+function default_load_func(f, path)
+    @debug "Opening $(path) with fallback wload."
+    return f(wload(path))
+end
+
+function to_data_row(fpath; kwargs...)
+    # Check if there is a special load function for the given extension.
+    # Use wload as a fallback if not.
+    ext = lowercase(splitext(file)[2])
+    load_func = get(ext_register, ext, default_load_func)
+    # Wrap to_data_row to give to load function
+    # We do this make use of e.g. jldopen's do block automatic closing.
+    function local_to_data_row(data)
+        return to_data_row(data, file; kwargs...)
+    end
+    # Need to use invokelatest here, due to lazy loading to avoid direct dependencies.
+    return Base.@invokelatest load_func(local_to_data_row, fpath)
+end
 
 function to_data_row(data, file;
         white_list = collect(keys(data)),

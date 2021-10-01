@@ -195,6 +195,27 @@ subfolders = true, special_list=special_list, black_list = black_list)
     end
 end
 
+###############################################################################
+#                           test jldopen                                      #
+###############################################################################
+
+mktempdir(datadir()) do folder
+    # Create a data file
+    d = Dict("idx" => 1, "value" => rand(100000))
+    fname = joinpath(folder, savename(d, ending, ignores = ("value",)))
+    DrWatson.wsave(fname, d)
+
+    if ending == "jld2"
+        msg_re = r"Opening .* with jldopen."
+    else
+        msg_re = r"Opening .* with fallback wload."
+    end
+    @test_logs (:debug, msg_re) min_level=Base.CoreLogging.Debug match_mode=:any cres = collect_results(folder, black_list = ("value",))
+
+    @test cres.idx[1] == 1 # It's what we've saved above.
+    @test size(cres,1) == 1 # only one file
+    @test size(cres,2) == 2 # idx and path
+end
 
 ###############################################################################
 #                              Quickactivate macro                            #

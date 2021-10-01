@@ -45,6 +45,19 @@ using Requires
 function __init__()
     @require DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0" begin
         include("result_collection.jl")
+        @require JLD2 = "033835bb-8acc-5ee8-8aae-3f567f8a3819" begin
+            using .JLD2
+            # This allows us to use the much faster jldopen in collect_results
+            function load_jld2(f, path)
+                @debug "Opening $(path) with jldopen."
+                jldopen(path) do data
+                    return f(data)
+                end
+            end
+            ext_register[".jld2"] = load_jld2
+            # JLD2 doesn't define keytype, but only supports Strings anyway.
+            Base.keytype(f::JLD2.JLDFile) = String
+        end
     end
 end
 
