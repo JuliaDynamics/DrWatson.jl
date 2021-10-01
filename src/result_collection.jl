@@ -220,12 +220,12 @@ end
 function to_data_row(fpath; kwargs...)
     # Check if there is a special load function for the given extension.
     # Use wload as a fallback if not.
-    ext = lowercase(splitext(file)[2])
+    ext = lowercase(splitext(fpath)[2])
     load_func = get(ext_register, ext, default_load_func)
     # Wrap to_data_row to give to load function
     # We do this make use of e.g. jldopen's do block automatic closing.
     function local_to_data_row(data)
-        return to_data_row(data, file; kwargs...)
+        return to_data_row(data, fpath; kwargs...)
     end
     # Need to use invokelatest here, due to lazy loading to avoid direct dependencies.
     return Base.@invokelatest load_func(local_to_data_row, fpath)
