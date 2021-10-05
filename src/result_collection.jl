@@ -217,6 +217,25 @@ function default_load_func(f, path)
     return f(wload(path))
 end
 
+try
+    # Try to load JLD2
+    JLD2 = Base.require(Base.PkgId(Base.UUID("033835bb-8acc-5ee8-8aae-3f567f8a3819"), "JLD2"))
+    # This allows us to use the much faster jldopen in collect_results
+    function load_jld2(f, path)
+        @debug "Opening $(path) with jldopen."
+        JLD2.jldopen(path) do data
+            return f(data)
+        end
+    end
+    ext_register[".jld2"] = load_jld2
+    # JLD2 doesn't define keytype, but only supports Strings anyway.
+    Base.keytype(f::JLD2.JLDFile) = String
+catch e
+    if !isa(e, ArgumentError)
+        rethrow()
+    end
+end
+
 function to_data_row(fpath; kwargs...)
     # Check if there is a special load function for the given extension.
     # Use wload as a fallback if not.
