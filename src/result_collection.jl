@@ -148,8 +148,8 @@ function collect_results!(filename, folder;
         # Now update the mtime of the new or modified file
         mtimes[file] = mtime_file
 
-        data = rpath === nothing ? wload(file) : wload(joinpath(rpath, file))
-        df_new = to_data_row(data, file; kwargs...)
+        fpath = rpath === nothing ? file : joinpath(rpath, file)
+        df_new = to_data_row(FileIO.query(fpath); kwargs...)
         #add filename
         df_new[!, :path] .= file
         if replace_entry
@@ -209,6 +209,20 @@ end
 is_valid_file(file, valid_filetypes) =
     any(endswith(file, v) for v in valid_filetypes)
 
+# Use wload per default when nothing else is available
+function to_data_row(file::File; kwargs...)
+    fpath = filename(file)
+    @debug "Opening $(filename(file)) with fallback wload."
+    return to_data_row(wload(fpath), fpath; kwargs...)
+end
+# Specialize for JLD2 files, can do much faster mmapped access
+function to_data_row(file::File{format"JLD2"}; kwargs...)
+    fpath = filename(file)
+    @debug "Opening $(filename(file)) with jldopen."
+    JLD2.jldopen(filename(file), "r") do data
+        return to_data_row(data, fpath; kwargs...)
+    end
+end
 function to_data_row(data, file;
         white_list = collect(keys(data)),
         black_list = keytype(data).((:gitcommit, :gitpatch, :script)),
