@@ -1,3 +1,5 @@
+# 2.6.0
+* Use `JLD2`'s jldopen in `collect_results!` to speed up loading of metadata.
 # 2.5.0
 * Add an `update` option of `collect_results!` allowing the updating of an existing results collection if data files were modified or deleted.
 # 2.4.1
