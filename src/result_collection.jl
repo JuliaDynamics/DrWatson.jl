@@ -149,7 +149,7 @@ function collect_results!(filename, folder;
         mtimes[file] = mtime_file
 
         fpath = rpath === nothing ? file : joinpath(rpath, file)
-        df_new = to_data_row(fpath; kwargs...)
+        df_new = to_data_row(FileIO.query(fpath); kwargs...)
         #add filename
         df_new[!, :path] .= file
         if replace_entry
@@ -209,47 +209,20 @@ end
 is_valid_file(file, valid_filetypes) =
     any(endswith(file, v) for v in valid_filetypes)
 
-# Register for file extensions -> load functions mapping
-ext_register = Dict{String,Function}()
 # Use wload per default when nothing else is available
-function default_load_func(f, path)
-    @debug "Opening $(path) with fallback wload."
-    return f(wload(path))
+function to_data_row(file::File; kwargs...)
+    fpath = filename(file)
+    @debug "Opening $(filename(file)) with fallback wload."
+    return to_data_row(wload(fpath), fpath; kwargs...)
 end
-
-try
-    # Try to load JLD2
-    JLD2 = Base.require(Base.PkgId(Base.UUID("033835bb-8acc-5ee8-8aae-3f567f8a3819"), "JLD2"))
-    # This allows us to use the much faster jldopen in collect_results
-    function load_jld2(f, path)
-        @debug "Opening $(path) with jldopen."
-        JLD2.jldopen(path) do data
-            return f(data)
-        end
-    end
-    ext_register[".jld2"] = load_jld2
-    # JLD2 doesn't define keytype, but only supports Strings anyway.
-    Base.keytype(f::JLD2.JLDFile) = String
-catch e
-    if !isa(e, ArgumentError)
-        rethrow()
-    end
-end
-
-function to_data_row(fpath; kwargs...)
-    # Check if there is a special load function for the given extension.
-    # Use wload as a fallback if not.
-    ext = lowercase(splitext(fpath)[2])
-    load_func = get(ext_register, ext, default_load_func)
-    # Wrap to_data_row to give to load function
-    # We do this make use of e.g. jldopen's do block automatic closing.
-    function local_to_data_row(data)
+# Specialize for JLD2 files, can do much faster mmapped access
+function to_data_row(file::File{format"JLD2"}; kwargs...)
+    fpath = filename(file)
+    @debug "Opening $(filename(file)) with jldopen."
+    JLD2.jldopen(filename(file), "r") do data
         return to_data_row(data, fpath; kwargs...)
     end
-    # Need to use invokelatest here, due to lazy loading to avoid direct dependencies.
-    return Base.@invokelatest load_func(local_to_data_row, fpath)
 end
-
 function to_data_row(data, file;
         white_list = collect(keys(data)),
         black_list = keytype(data).((:gitcommit, :gitpatch, :script)),

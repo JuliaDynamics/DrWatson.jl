@@ -17,6 +17,7 @@ export @pack!, @unpack
 
 # Functionality that saves/loads
 using FileIO
+using JLD2
 export save, load
 export wsave, wload
 
