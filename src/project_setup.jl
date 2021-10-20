@@ -176,8 +176,8 @@ end
 
 !!! warning "Usage in Pluto.jl"
     Pluto.jl understands the `@quickactivate` macro and will switch to
-    using the standard Julia package manager once it encounters the commands
-    `using DrWatson` and/or `@quickactivate`. But, because `@quickactivate` is a macro
+    using the standard Julia package manager once it encounters it (or `quickactivate`).
+    But, because `@quickactivate` is a macro
     it needs to be executed in a new cell, after `using DrWatson`. I.e., you need to split
     ```julia
     begin
