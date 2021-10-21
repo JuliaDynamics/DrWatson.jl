@@ -274,12 +274,8 @@ function initialize_project(path, name = default_name_from_path(path);
 
     if git
         repo = LibGit2.init(path)
-        gc = LibGit2.GitConfig(repo)
-        LibGit2.get(gc, "user.name", LibGit2.getconfig("user.name", false)) ||
-            LibGit2.set!(gc, "user.name", "DrWatson")
-        LibGit2.get(gc, "user.email", LibGit2.getconfig("user.email", false)) ||
-            LibGit2.set!(gc, "user.email", "no@mail")
-        LibGit2.commit(repo, "Initial commit")
+        sig = LibGit2.Signature("DrWatson", "no@mail", round(Int, time()), 0)
+        LibGit2.commit(repo, "Initial commit"; author=sig, committer=sig)
     end
 
     Pkg.activate(path)
@@ -293,11 +289,14 @@ function initialize_project(path, name = default_name_from_path(path);
     # Instantiate template
     folders, ph_files = insert_folders(path, template, placeholder)
 
-    git && LibGit2.add!(repo, "Project.toml")
-    git && LibGit2.add!(repo, "Manifest.toml")
-    git && LibGit2.add!(repo, folders...)
-    placeholder && git && LibGit2.add!(repo, ph_files...)
-    git && LibGit2.commit(repo, "Folder setup by DrWatson")
+    if git
+        LibGit2.add!(repo, "Project.toml")
+        LibGit2.add!(repo, "Manifest.toml")
+        LibGit2.add!(repo, folders...)
+        placeholder && LibGit2.add!(repo, ph_files...)
+        sig = LibGit2.Signature("DrWatson", "no@mail", round(Int, time()), 0)
+        LibGit2.commit(repo, "Folder setup by DrWatson"; author=sig, committer=sig)
+    end
 
     # Default files
     # chmod is needed, as the file permissions are not set correctly when adding the package with `add`.
@@ -320,8 +319,11 @@ function initialize_project(path, name = default_name_from_path(path);
     w *= compat_entry()
     write(joinpath(path, "Project.toml"), w, pro)
     push!(files, "Project.toml")
-    git && LibGit2.add!(repo, files...)
-    git && LibGit2.commit(repo, "File setup by DrWatson")
+    if git
+        LibGit2.add!(repo, files...)
+        sig = LibGit2.Signature("DrWatson", "no@mail", round(Int, time()), 0)
+        LibGit2.commit(repo, "File setup by DrWatson"; author=sig, committer=sig)
+    end
     return path
 end
 
