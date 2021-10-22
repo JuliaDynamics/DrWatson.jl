@@ -1,6 +1,8 @@
 using Pkg, Test, DrWatson
 using LibGit2
 LibGit2.default_signature() = LibGit2.Signature("TEST", "TEST@TEST.COM", round(time(), 0), 0)
+global_user_name = LibGit2.getconfig("user.name", "")
+global_user_email = LibGit2.getconfig("user.email", "")
 
 cd(@__DIR__)
 path = "test project"
@@ -12,6 +14,9 @@ Pkg.activate()
 # @test DrWatson.is_standard_julia_project() # we cant test this on CI
 
 initialize_project(path, force = true)
+repo = LibGit2.GitRepo(path)
+@test LibGit2.getconfig(repo, "user.name", "") == global_user_name
+@test LibGit2.getconfig(repo, "user.email", "") == global_user_email
 
 cd(path) do
     @test DrWatson.default_name_from_path(".") == path
@@ -45,6 +50,9 @@ end
 @test_throws ErrorException initialize_project(path, name)
 
 initialize_project(path, name; force = true, authors = ["George", "Nick"])
+repo = LibGit2.GitRepo(path)
+@test LibGit2.getconfig(repo, "user.name", "") == global_user_name
+@test LibGit2.getconfig(repo, "user.email", "") == global_user_email
 # test gitdescribe:
 com = gitdescribe(path)
 @test !occursin('-', com) # no dashes = no git describe
