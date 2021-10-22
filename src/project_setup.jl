@@ -89,7 +89,7 @@ end
 """
     quickactivate(path [, name::String])
 Activate the project found by recursively searching the `path`
-and its parents for a valid Julia project file.
+and its parents for a valid Julia project file via the [`findproject`](@ref) function.
 Optionally check if `name` is the same as the activated project's name.
 If it is not, throw an error. See also [`@quickactivate`](@ref).
 Do nothing if the project found is already active, or if no
@@ -173,6 +173,25 @@ addprocs(8)
     # remaining imports
 end
 ```
+
+!!! warning "Usage in Pluto.jl"
+    Pluto.jl understands the `@quickactivate` macro and will switch to
+    using the standard Julia package manager once it encounters it (or `quickactivate`).
+    But, because `@quickactivate` is a macro
+    it needs to be executed in a new cell, after `using DrWatson`. I.e., you need to split
+    ```julia
+    begin
+        using DrWatson
+        @quickactivate "Whatever"
+    end
+    ```
+    to two different cells:
+    ```julia
+    using DrWatson
+    ```
+    ```julia
+    @quickcativate "Whatever"
+    ```
 """
 macro quickactivate(name = nothing)
     dir = get_dir_from_source(__source__.file)

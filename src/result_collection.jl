@@ -39,6 +39,8 @@ See also [`collect_results`](@ref).
 * `rpath = nothing` : If not `nothing` stores `relpath(file,rpath)` of result-files
   in `df`. By default the absolute path is used.
 * `verbose = true` : Print (using `@info`) information about the process.
+* `update = false` : Update data from modified files and remove entries for deleted
+  files.
 * `white_list` : List of keys to use from result file. By default
   uses all keys from all loaded result-files.
 * `black_list = [:gitcommit, :gitpatch, :script]`: List of keys not to include from result-file.
@@ -70,20 +72,37 @@ collect_results!(
 joinpath(dirname(folder), "results_$(basename(folder)).jld2"),
 folder; kwargs...)
 
+struct InvalidResultsCollection <: Exception
+    msg::AbstractString
+end
+showerror(io::IO, e::InvalidResultsCollection) = print(io, e.msg)
+
 function collect_results!(filename, folder;
     valid_filetypes = [".bson", "jld", ".jld2"],
     subfolders = false,
     rpath = nothing,
     verbose = true,
+    update = false,
     newfile = false, # keyword only for defining collect_results without !
     kwargs...)
 
     if newfile || !isfile(filename)
         !newfile && verbose && @info "Starting a new result collection..."
         df = DataFrames.DataFrame()
+        mtimes = Dict{String,Float64}()
     else
         verbose && @info "Loading existing result collection..."
-        df = wload(filename)["df"]
+        data = wload(filename)
+        df = data["df"]
+        # Check if we have pre-recorded mtimes (if not this could be because of an old results database).
+        if "mtime" ∈ keys(data)
+            mtimes = data["mtime"]
+        else
+            if update
+                throw(InvalidResultsCollection("update of existing results collection requested, but no previously recorded modification time found. Likely the existing results collection was produced with an old version of DrWatson. Recomputing the collection solves this problem."))
+            end
+            mtimes = nothing
+        end
     end
     @info "Scanning folder $folder for result files."
 
@@ -99,24 +118,66 @@ function collect_results!(filename, folder;
     end
 
     n = 0 # new entries added
+    u = 0 # entries updated
     existing_files = "path" in string.(names(df)) ? df[:,:path] : ()
     for file ∈ allfiles
         is_valid_file(file, valid_filetypes) || continue
         # maybe use relative path
         file = rpath === nothing ? file : relpath(file, rpath)
+        mtime_file = mtime(file)
+        replace_entry = false
         #already added?
-        file ∈ existing_files && continue
+        if file ∈ existing_files
+            if !update
+                continue
+            end
 
-        data = rpath === nothing ? wload(file) : wload(joinpath(rpath, file))
-        df_new = to_data_row(data, file; kwargs...)
+            # Error if file is not in the mtimes database
+            if file ∉ keys(mtimes)
+                throw(InvalidResultsCollection("existing results correction is corrupt: no `mtime` entry for file $(file) found."))
+            end
+
+            # Skip if mtime is the same as the one previously recorded
+            if mtimes[file] == mtime_file
+                continue
+            end
+
+            replace_entry = true
+        end
+
+        # Now update the mtime of the new or modified file
+        mtimes[file] = mtime_file
+
+        fpath = rpath === nothing ? file : joinpath(rpath, file)
+        df_new = to_data_row(FileIO.query(fpath); kwargs...)
         #add filename
         df_new[!, :path] .= file
-
+        if replace_entry
+            # Delete the row with the old data
+            delete!(df, findfirst((x)->(x.path == file), eachrow(df)))
+            u += 1
+        else
+            n += 1
+        end
         df = merge_dataframes!(df, df_new)
-        n += 1
     end
-    verbose && @info "Added $n entries."
-    !newfile && wsave(filename, Dict("df" => df))
+    if update
+        # Delete entries with nonexisting files.
+        idx = findall((x)->(!isfile(x.path)), eachrow(df))
+        delete!(df, idx)
+        verbose && @info "Added $n entries. Updated $u entries. Deleted $(length(idx)) entries."
+    else
+        verbose && @info "Added $n entries."
+    end
+    if !newfile
+        data = Dict{String,Any}("df" => df)
+        # mtimes is only `nothing` if we are working with an older collection
+        # We want to keep it that way, so do not try to create mtimes entry.
+        if !isnothing(mtimes)
+            data["mtime"] = mtimes
+        end
+        wsave(filename, data)
+    end
     return df
 end
 
@@ -148,6 +209,20 @@ end
 is_valid_file(file, valid_filetypes) =
     any(endswith(file, v) for v in valid_filetypes)
 
+# Use wload per default when nothing else is available
+function to_data_row(file::File; kwargs...)
+    fpath = filename(file)
+    @debug "Opening $(filename(file)) with fallback wload."
+    return to_data_row(wload(fpath), fpath; kwargs...)
+end
+# Specialize for JLD2 files, can do much faster mmapped access
+function to_data_row(file::File{format"JLD2"}; kwargs...)
+    fpath = filename(file)
+    @debug "Opening $(filename(file)) with jldopen."
+    JLD2.jldopen(filename(file), "r") do data
+        return to_data_row(data, fpath; kwargs...)
+    end
+end
 function to_data_row(data, file;
         white_list = collect(keys(data)),
         black_list = keytype(data).((:gitcommit, :gitpatch, :script)),

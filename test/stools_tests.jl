@@ -313,6 +313,12 @@ rm(tmpdir, force = true, recursive = true)
     d11 = tosymboldict(OrderedDict,d10)
     @test isa(d11,OrderedDict)
 
+    #test ntuple2dict
+    x = 3; y = 5.0;
+    n = @ntuple x y
+    @test isa(ntuple2dict(n),Dict)
+    @test isa(ntuple2dict(OrderedDict,n),OrderedDict)
+    
     #test checktagtype!
     @test isa(DrWatson.checktagtype!(d3),Dict)
     @test isa(DrWatson.checktagtype!(d11),OrderedDict)
