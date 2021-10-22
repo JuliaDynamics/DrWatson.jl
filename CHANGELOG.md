@@ -1,3 +1,5 @@
+# 2.7.0
+* DrWatson-related `ENV`ironment variables are now available to globally set the default values for e.g. story git patches, tagging, or safe-saving in various functions like `tagsave` or `produce_or_load`.
 # 2.6.0
 * Use `JLD2`'s jldopen in `collect_results!` to speed up loading of metadata.
 # 2.5.0
