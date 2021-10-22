@@ -123,9 +123,8 @@ end
 #                             tag saving                                       #
 ################################################################################
 """
-    tagsave(file::String, d::AbstractDict; safe = get(ENV, "DRWATSON_SAFESAVE", false), kwargs...)
+    tagsave(file::String, d::AbstractDict; kwargs...)
 First [`tag!`](@ref) dictionary `d` and then save `d` in `file`.
-If `safe = true` save the file using [`safesave`](@ref).
 
 "Tagging" means that when saving the dictionary, an extra field
 `:gitcommit` is added to establish reproducibility of results using
@@ -137,6 +136,9 @@ contains a key `:gitcommit`, it is not overwritten, unless
 Keywords `gitpath, storepatch, force,` are propagated to [`tag!`](@ref).
 Any additional keyword arguments are propagated to `wsave`, to e.g.
 enable compression.
+
+The keyword `safe = get(ENV, "DRWATSON_SAFESAVE", false)` decides whether
+to save the file using [`safesave`](@ref).
 """
 function tagsave(file, d; 
         gitpath = projectdir(), 
@@ -211,7 +213,7 @@ function increment_backup_num(filepath)
     path, filename = splitdir(filepath)
     fname, suffix = splitext(filename)
     m = match(r"^(.*)_#([0-9]+)$", fname)
-    if m == nothing
+    if m === nothing
         return joinpath(path, "$(fname)_#1$(suffix)")
     end
     newnum = string(parse(Int, m.captures[2]) +1)
@@ -239,7 +241,7 @@ Save each entry in `dicts` into a unique temporary file in the directory `tmp`.
 Then return the list of file names (relative to `tmp`) that were used
 for saving each dictionary. Each dictionary can then be loaded back by calling
 
-    FileIO.load(nth_tmpfilename, "params")
+    wload(nth_tmpfilename, "params")
 
 `tmp` defaults to `projectdir("_research", "tmp")`.
 

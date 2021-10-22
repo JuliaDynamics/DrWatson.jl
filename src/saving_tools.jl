@@ -346,7 +346,7 @@ istaggable(file::AbstractString) = any(endswith(file, e) for e ∈ TAGGABLE_FILE
     istaggable(x) = x isa AbstractDict
 For non-string input the function just checks if input is dictionary.
 """
-istaggable(x) = x isa AbstractDictionary
+istaggable(x) = x isa AbstractDict
 
 
 """
