@@ -200,7 +200,7 @@ Dict{Symbol,Any} with 3 entries:
 """
 function tag!(d::AbstractDict{K,T}; 
         gitpath = projectdir(), force = false, source = nothing,
-        storepatch::Bool = get(ENV, "DRWATSON_STOREPATCH", true), 
+        storepatch::Bool = get(ENV, "DRWATSON_STOREPATCH", false), 
     ) where {K,T}
     @assert (K <: Union{Symbol,String}) "We only know how to tag dictionaries that have keys that are strings or symbols"
     c = gitdescribe(gitpath)
