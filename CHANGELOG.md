@@ -1,3 +1,5 @@
+# 2.7.2
+* By default `storepatch` keywords are `false`. This means that `gitpatch` is NOT stored by default. This is a BUGFIX, because there is an unknown problem of non-halting when storing the patch.
 # 2.7.0
 * DrWatson-related `ENV`ironment variables are now available to globally set the default values for e.g. story git patches, tagging, or safe-saving in various functions like `tagsave` or `produce_or_load`.
 # 2.6.0

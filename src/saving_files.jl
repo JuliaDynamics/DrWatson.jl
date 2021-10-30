@@ -45,7 +45,7 @@ function produce_or_load(path, c, f::Function;
         suffix = "jld2", prefix = default_prefix(c),
         tag::Bool = get(ENV, "DRWATSON_TAG", istaggable(suffix)), 
         gitpath = projectdir(), loadfile = true,
-        storepatch::Bool = get(ENV, "DRWATSON_STOREPATCH", true), 
+        storepatch::Bool = get(ENV, "DRWATSON_STOREPATCH", false), 
         force = false, verbose = true, wsave_kwargs = Dict(), 
         kwargs...
     )
@@ -143,7 +143,7 @@ to save the file using [`safesave`](@ref).
 function tagsave(file, d; 
         gitpath = projectdir(), 
         safe::Bool = get(ENV, "DRWATSON_SAFESAVE", false), 
-        storepatch::Bool = get(ENV, "DRWATSON_STOREPATCH", true), 
+        storepatch::Bool = get(ENV, "DRWATSON_STOREPATCH", false), 
         force = false, source = nothing, kwargs...
     )
     d2 = tag!(d, gitpath=gitpath, storepatch=storepatch, force=force, source=source)
