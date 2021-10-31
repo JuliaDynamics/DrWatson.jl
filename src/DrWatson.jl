@@ -50,11 +50,17 @@ function __init__()
 end
 
 # Update messages
+using Scratch
 const display_update = true
 const update_version = "2.7.3"
 const update_name = "update_v$update_version"
 if display_update
+
+# Get scratch space for this package
+versions_dir = @get_scratch!("versions")
+
 if !isfile(joinpath(@__DIR__, update_name))
+
 printstyled(stdout,
 """
 \nUpdate message: DrWatson v$update_version
@@ -71,4 +77,5 @@ touch(joinpath(@__DIR__, update_name))
 end
 end
 
-end
+
+end # Module
