@@ -51,7 +51,7 @@ end
 
 # Update messages
 const display_update = true
-const update_version = "2.0.0"
+const update_version = "2.7.3"
 const update_name = "update_v$update_version"
 if display_update
 if !isfile(joinpath(@__DIR__, update_name))
@@ -59,11 +59,12 @@ printstyled(stdout,
 """
 \nUpdate message: DrWatson v$update_version
 
-In this new major release, the following breaking changes have occured:
-1. DrWatson now uses, and suggests using, JLD2.jl instead of BSON.jl
-   for saving files.
-2. The behavior of `savename` with respect to rounding has changed,
-   see its docstring for more. (no longer is `1.0` output as `1` in `savename`)
+* New section "Taking project input-output automation to 11" in the documentation.
+  It showcases how to eliminate code duplicate and streamline your simulation setup
+  phase using `savename` and `produce_or_load`.
+* By default now `gitpatch` is NOT saved when calling `tag!` and derivative functions.
+  This is due to an unknown problem that causes collecting the git patch to 
+  never hault, potentially not saving a user's output.
 \n
 """; color = :light_magenta)
 touch(joinpath(@__DIR__, update_name))

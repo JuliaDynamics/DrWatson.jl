@@ -514,14 +514,14 @@ julia> expensive_computation(5)
 2021-05-19 19:20:29 | n = 5 | error = 0.15 | maxrss = 326.27 MiB
 ```
 
-## Taking project output automation to 11
-The point of this section is to show how far one can take the interplay between [`savename`](@ref) and [`produce_or_load`](@ref) to automate project output and eliminate as many lines of code as possible. Have a read first at [Customizing `savename`](@ref), as knowledge of this section is used here.
+## Taking project input-output automation to 11
+The point of this section is to show how far one can take the interplay between [`savename`](@ref) and [`produce_or_load`](@ref) to **automate project input-to-output and eliminate as many duplicate lines of code as possible**. Have a read first at [Customizing `savename`](@ref), as knowledge of that section is used here.
 
-The key ingredient is that [`produce_or_load`](@ref) was made to work well with [`savename`](@ref). You can use this to automate the input-output pipeline of your project by following these steps:
-1. Define a custom struct that represents the input configuration for a (numerical) experiment/simulation/whatever. 
+The key ingredient is that [`produce_or_load`](@ref) was made to work well with [`savename`](@ref). You can use this to automate the input-to-output pipeline of your project by following these steps:
+1. Define a custom struct that represents the input configuration for an experiment/simulation/whatever. 
 2. Extend [`savename`](@ref) appropriately for it. 
 3. Define a "main" function that takes as an input an instance of this configuration type, and returns the output of the experiment/simulation as a dictionary. (we're not changing here the "default" way to save files in Julia as `.jld2` files. To save files this way you need your data to be in a dictionary with `Symbol` as keys)
-4. You can replace all your input-output scripts with simply first defining the input configuration type, and then calling [`produce_or_load`](@ref) with your pre-defined "main" function.
+4. You can replace all your input-output scripts with simply first defining the input configuration type, and then calling [`produce_or_load`](@ref) with your pre-defined "main" function. Alternatively, your "main" function can internally call `produce_or_load` and return something else that is of special interest to your specific case.
 
 An example of where this approach is used in the "real world" is e.g. in our paper [Effortless estimation of basins of attraction](https://arxiv.org/abs/2110.04358). It's codebase is here: https://github.com/Datseris/EffortlessBasinsOfAttraction. Don't worry, you need to know nothing about the title to follow the rest. The point is that we needed to run some kind of simulations for many different dynamical systems. These have different parameters, different dimensionality, etc... But they did have one thing in common: our output was always coming from the same function, `basins_of_attraction`, which allowed using the pipeline we discuss here using [`produce_or_load`](@ref). 
 
@@ -530,7 +530,7 @@ So we defined a struct called .`BasinConfig` that stored configuration options a
 The benefit? All of our scripts that actually produce what we care about are this short:
 ```julia
 using DrWatson
-@quickactivate :BasinsPaper # exports DynamicalSystems, GLMakie, see `src`
+@quickactivate :EffortlessBasinsOfAttraction
 
 a, b = 1.4, 0.3
 p = @ntuple a b
