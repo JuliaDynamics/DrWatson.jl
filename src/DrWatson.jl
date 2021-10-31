@@ -66,8 +66,8 @@ printstyled(stdout,
 \nUpdate message: DrWatson v$update_version
 
 * New section "Taking project input-output automation to 11" in the documentation.
-  It showcases how to eliminate code duplicate and streamline your simulation setup
-  phase using `savename` and `produce_or_load`.
+  It showcases how to eliminate code duplication and streamline your simulation setup
+  and run phase using `savename` and `produce_or_load`.
 * By default now `gitpatch` is NOT saved when calling `tag!` and derivative functions.
   This is due to an unknown problem that causes collecting the git patch to 
   never hault, potentially not saving a user's output.

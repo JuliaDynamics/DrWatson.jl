@@ -525,7 +525,7 @@ The key ingredient is that [`produce_or_load`](@ref) was made to work well with 
 
 An example of where this approach is used in the "real world" is e.g. in our paper [Effortless estimation of basins of attraction](https://arxiv.org/abs/2110.04358). It's codebase is here: https://github.com/Datseris/EffortlessBasinsOfAttraction. Don't worry, you need to know nothing about the title to follow the rest. The point is that we needed to run some kind of simulations for many different dynamical systems. These have different parameters, different dimensionality, etc... But they did have one thing in common: our output was always coming from the same function, `basins_of_attraction`, which allowed using the pipeline we discuss here using [`produce_or_load`](@ref). 
 
-So we defined a struct called .`BasinConfig` that stored configuration options and system parameters. Then we extended `savename` for it. We defined some function `produce_basins` that takes this configuration file, initializes a dynamical system accordingly, and then makes the output **using `produce_or_load`**. This ensures that we're not running simulations twice if they exist. And keep in mind when you have so many parameters and different possible systems, it is quite easy to run the same simulation twice because you "forgot about it". All of this is found in this file: https://github.com/Datseris/EffortlessBasinsOfAttraction/blob/master/src/produce_basins.jl 
+So we defined a struct called `BasinConfig` that stored configuration options and system parameters. Then we extended `savename` for it. We defined some function `produce_basins` that takes this configuration file, initializes a dynamical system accordingly, and then makes the output **using `produce_or_load`**. This ensures that we're not running simulations twice if they exist. And keep in mind when you have so many parameters and different possible systems, it is quite easy to run the same simulation twice because you "forgot about it". All of this is found in this file: https://github.com/Datseris/EffortlessBasinsOfAttraction/blob/master/src/produce_basins.jl 
 
 The benefit? All of our scripts that actually produce what we care about are this short:
 ```julia
@@ -543,6 +543,6 @@ yg = range(-0.5, 0.5; length = Z)
 grid = (xg, yg)
 
 config = BasinConfig(; system, p, basin_kwargs, grid)
-basins, attractors = produce_basins(config; force = true)
+basins, attractors = produce_basins(config)
 ```
-and importantly, the only lines that are genuinely "copy-pasted" from script to script are the last two. All other lines are unique for each script. This minimization of copy-pasting duplicate information makes the workflow more robust and makes bugs harder to hide.
+and importantly, the only lines that are genuinely "copy-pasted" from script to script are the last two. All other lines are unique for each script. This minimization of copy-pasting duplicate information makes the workflow robust and makes bugs harder to hide.
