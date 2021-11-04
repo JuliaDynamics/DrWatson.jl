@@ -59,7 +59,7 @@ if display_update
 # Get scratch space for this package
 versions_dir = @get_scratch!("versions")
 
-if !isfile(joinpath(@__DIR__, update_name))
+if !isfile(joinpath(versions_dir, update_name))
 
 printstyled(stdout,
 """
@@ -73,7 +73,7 @@ printstyled(stdout,
   never hault, potentially not saving a user's output.
 \n
 """; color = :light_magenta)
-touch(joinpath(@__DIR__, update_name))
+touch(joinpath(versions_dir, update_name))
 end
 end
 
