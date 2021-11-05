@@ -18,7 +18,6 @@ You can also watch this 8-minutes video that introduces DrWatson in JuliaCon2020
 <iframe width="560" height="400" src="https://www.youtube-nocookie.com/embed/jKATlEAu8eE" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 
-
 To install, simply type `] add DrWatson` in your Julia session.
 DrWatson is part of [JuliaDynamics](https://juliadynamics.github.io/JuliaDynamics/), check out our [website](https://juliadynamics.github.io/JuliaDynamics/) for more cool stuff!
 

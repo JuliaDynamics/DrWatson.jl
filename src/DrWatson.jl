@@ -43,31 +43,39 @@ include("dict_list.jl")
 
 # Functionality that requires Dataframes and other heavy dependencies:
 using Requires
+
+# Update messages
+using Scratch
+const display_update = true
+const update_version = "2.7.3"
+const update_name = "update_v$update_version"
+
+# Get scratch space for this package
 function __init__()
     @require DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0" begin
         include("result_collection.jl")
     end
+    if display_update
+        versions_dir = @get_scratch!("versions")
+
+        if !isfile(joinpath(versions_dir, update_name))
+
+        printstyled(stdout,
+        """
+        \nUpdate message: DrWatson v$update_version
+
+        * New section "Taking project input-output automation to 11" in the documentation.
+          It showcases how to eliminate code duplication and streamline your simulation setup
+          and run phase using `savename` and `produce_or_load`.
+        * By default now `gitpatch` is NOT saved when calling `tag!` and derivative functions.
+          This is due to an unknown problem that causes collecting the git patch to 
+          never hault, potentially not saving a user's output.
+        \n
+        """; color = :light_magenta)
+        touch(joinpath(versions_dir, update_name))
+        end
+    end
 end
 
-# Update messages
-const display_update = true
-const update_version = "2.0.0"
-const update_name = "update_v$update_version"
-if display_update
-if !isfile(joinpath(@__DIR__, update_name))
-printstyled(stdout,
-"""
-\nUpdate message: DrWatson v$update_version
 
-In this new major release, the following breaking changes have occured:
-1. DrWatson now uses, and suggests using, JLD2.jl instead of BSON.jl
-   for saving files.
-2. The behavior of `savename` with respect to rounding has changed,
-   see its docstring for more. (no longer is `1.0` output as `1` in `savename`)
-\n
-"""; color = :light_magenta)
-touch(joinpath(@__DIR__, update_name))
-end
-end
-
-end
+end # Module

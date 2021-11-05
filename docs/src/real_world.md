@@ -100,12 +100,11 @@ and each file is a dictionary that has my data fields: `:U, :V, :simulation`, bu
 
 ## Customizing `savename`
 Here is a simple example for customizing [`savename`](@ref). We are using a common struct `Experiment` across different experiments with cats and mice.
-In this example we are also using Parameters.jl for a convenient default constructor.
 
 We first define the relevant types.
 ```@example customizing
 using DrWatson, Dates
-using Base: @kwdef
+using Base: @kwdef # for defining structs with keyword values
 
 # Define a type hierarchy we use at experiments
 abstract type Species end
@@ -126,7 +125,7 @@ e1 = Experiment()
 e2 = Experiment(species = Cat())
 ```
 
-For analyzing our experiments we need information about the species used, and to use multiple dispatch latter on we decided to make this information associated with a Type. This is why we defined `Species`.
+For analyzing our experiments we need information about the species used, and to use multiple dispatch later on we decided to make this information associated with a Type. This is why we defined `Species`.
 
 Now, we want to customize [`savename`](@ref). We start by extending [`DrWatson.default_prefix`](@ref):
 ```@example customizing
@@ -514,3 +513,36 @@ julia> expensive_computation(5)
 2021-05-19 19:20:28 | n = 4 | error = 0.11 | maxrss = 326.27 MiB
 2021-05-19 19:20:29 | n = 5 | error = 0.15 | maxrss = 326.27 MiB
 ```
+
+## Taking project input-output automation to 11
+The point of this section is to show how far one can take the interplay between [`savename`](@ref) and [`produce_or_load`](@ref) to **automate project input-to-output and eliminate as many duplicate lines of code as possible**. Read [Customizing `savename`](@ref) first, as knowledge of that section is used here.
+
+The key ingredient is that [`produce_or_load`](@ref) was made to work well with [`savename`](@ref). You can use this to automate the input-to-output pipeline of your project by following these steps:
+1. Define a custom struct that represents the input configuration for an experiment or a simulation. 
+2. Extend [`savename`](@ref) appropriately for it. 
+3. Define a "main" function that takes as input an instance of this configuration type, and returns the output of the experiment or simulation as dictionary (We're not changing here the "default" way to save files in Julia as `.jld2` files. To save files this way you need your data to be in a dictionary with `Symbol` as keys).
+4. All your input-output scripts are simply put together by first defining the input configuration type, and then calling [`produce_or_load`](@ref) with your pre-defined "main" function (Alternatively, this function can internally call `produce_or_load` and return something else that is of special interest to your specific case).
+
+An example of where this approach is used in the "real world" is e.g. in our paper [Effortless estimation of basins of attraction](https://arxiv.org/abs/2110.04358). Its codebase is here: https://github.com/Datseris/EffortlessBasinsOfAttraction. Don't worry, you need to know nothing about the topic to follow the rest. The point is that we needed to run some kind of simulations for many different dynamical systems, which have different parameters, different dimensionality, etc. But they did have one thing in common: our output was always coming from the same function, `basins_of_attraction`, which allowed using the pipeline we discuss here using [`produce_or_load`](@ref). 
+
+So we defined a struct called `BasinConfig` that stored configuration options and system parameters. Then we extended `savename` for it. We defined some function `produce_basins` that takes this configuration file, initializes a dynamical system accordingly, and then makes the output **using `produce_or_load`**. This ensures that we're not running simulations twice if they exist. And keep in mind when you have so many parameters and different possible systems, it is quite easy to unintentionally run the same simulation twice because you "forgot about it". All of this can be found in this file: https://github.com/Datseris/EffortlessBasinsOfAttraction/blob/master/src/produce_basins.jl 
+
+The benefit? All of our scripts that actually produce what we care about are this short:
+```julia
+using DrWatson
+@quickactivate :EffortlessBasinsOfAttraction
+
+a, b = 1.4, 0.3
+p = @ntuple a b
+system = :henon
+
+basin_kwargs = (horizon_limit=100.0, mx_chk_fnd_att=30, mx_chk_lost=2)
+Z = 201
+xg = range(-1.5, 1.5; length = Z)
+yg = range(-0.5, 0.5; length = Z)
+grid = (xg, yg)
+
+config = BasinConfig(; system, p, basin_kwargs, grid)
+basins, attractors = produce_basins(config)
+```
+and more importantly, the only lines that are genuinely "copy-pasted" from script to script are the last two. All other lines are unique for each script. This minimization of copy-pasting duplicate information makes the workflow robust and makes bugs easier to find.
