@@ -43,11 +43,6 @@ include("dict_list.jl")
 
 # Functionality that requires Dataframes and other heavy dependencies:
 using Requires
-function __init__()
-    @require DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0" begin
-        include("result_collection.jl")
-    end
-end
 
 # Update messages
 using Scratch
@@ -57,6 +52,9 @@ const update_name = "update_v$update_version"
 
 # Get scratch space for this package
 function __init__()
+    @require DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0" begin
+        include("result_collection.jl")
+    end
     if display_update
         versions_dir = @get_scratch!("versions")
 
