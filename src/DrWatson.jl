@@ -54,27 +54,29 @@ using Scratch
 const display_update = true
 const update_version = "2.7.3"
 const update_name = "update_v$update_version"
-if display_update
 
 # Get scratch space for this package
-versions_dir = @get_scratch!("versions")
+function __init__()
+    if display_update
+        versions_dir = @get_scratch!("versions")
 
-if !isfile(joinpath(versions_dir, update_name))
+        if !isfile(joinpath(versions_dir, update_name))
 
-printstyled(stdout,
-"""
-\nUpdate message: DrWatson v$update_version
+        printstyled(stdout,
+        """
+        \nUpdate message: DrWatson v$update_version
 
-* New section "Taking project input-output automation to 11" in the documentation.
-  It showcases how to eliminate code duplication and streamline your simulation setup
-  and run phase using `savename` and `produce_or_load`.
-* By default now `gitpatch` is NOT saved when calling `tag!` and derivative functions.
-  This is due to an unknown problem that causes collecting the git patch to 
-  never hault, potentially not saving a user's output.
-\n
-"""; color = :light_magenta)
-touch(joinpath(versions_dir, update_name))
-end
+        * New section "Taking project input-output automation to 11" in the documentation.
+          It showcases how to eliminate code duplication and streamline your simulation setup
+          and run phase using `savename` and `produce_or_load`.
+        * By default now `gitpatch` is NOT saved when calling `tag!` and derivative functions.
+          This is due to an unknown problem that causes collecting the git patch to 
+          never hault, potentially not saving a user's output.
+        \n
+        """; color = :light_magenta)
+        touch(joinpath(versions_dir, update_name))
+        end
+    end
 end
 
 
