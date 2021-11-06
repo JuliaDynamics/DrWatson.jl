@@ -69,7 +69,7 @@ function __init__()
           and run phase using `savename` and `produce_or_load`.
         * By default now `gitpatch` is NOT saved when calling `tag!` and derivative functions.
           This is due to an unknown problem that causes collecting the git patch to 
-          never hault, potentially not saving a user's output.
+          never halt, potentially not saving a user's output.
         \n
         """; color = :light_magenta)
         touch(joinpath(versions_dir, update_name))
