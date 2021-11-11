@@ -222,9 +222,9 @@ end
 
 #recursively move files to increased backup number
 function recursively_clear_path(cur_path)
-    isfile(cur_path) || return
+    ispath(cur_path) || return
     new_path=increment_backup_num(cur_path)
-    if isfile(new_path)
+    if ispath(new_path)
         recursively_clear_path(new_path)
     end
     mv(cur_path, new_path)
