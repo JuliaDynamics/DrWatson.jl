@@ -98,11 +98,11 @@ or use the DOI directly:
 
 ## Other useful packages
 
-### Running simulations
+### Simulation related
 * <https://github.com/baggepinnen/Hyperopt.jl>
+* <https://github.com/rafaqz/ModelParameters.jl>
 
 ### Efficient code writing
-* <https://github.com/mauro3/Parameters.jl>
 * <https://github.com/docopt/DocOpt.jl>
 * <https://github.com/vtjnash/Glob.jl>
 
