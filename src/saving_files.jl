@@ -24,7 +24,7 @@ end
 
 ## Keywords
 * `suffix = "jld2", prefix = default_prefix(config)` : Used in [`savename`](@ref).
-* `tag::Bool = get(ENV, "DRWATSON_TAG", istaggable(suffix))` : Save the file 
+* `tag::Bool = get(ENV, "DRWATSON_TAG", istaggable(suffix))` : Save the file
   using [`tagsave`](@ref) if `true` (which is the default).
 * `gitpath, storepatch` : Given to [`tagsave`](@ref) if `tag` is `true`.
 * `force = false` : If `true` then don't check if file `s` exists and produce
@@ -43,10 +43,10 @@ produce_or_load(f::Function, c; kwargs...) = produce_or_load(c, f; kwargs...)
 produce_or_load(f::Function, path, c; kwargs...) = produce_or_load(path, c, f; kwargs...)
 function produce_or_load(path, c, f::Function;
         suffix = "jld2", prefix = default_prefix(c),
-        tag::Bool = get(ENV, "DRWATSON_TAG", istaggable(suffix)), 
+        tag::Bool = get(ENV, "DRWATSON_TAG", istaggable(suffix)),
         gitpath = projectdir(), loadfile = true,
-        storepatch::Bool = get(ENV, "DRWATSON_STOREPATCH", false), 
-        force = false, verbose = true, wsave_kwargs = Dict(), 
+        storepatch::Bool = get(ENV, "DRWATSON_STOREPATCH", false),
+        force = false, verbose = true, wsave_kwargs = Dict(),
         kwargs...
     )
 
@@ -140,10 +140,10 @@ enable compression.
 The keyword `safe = get(ENV, "DRWATSON_SAFESAVE", false)` decides whether
 to save the file using [`safesave`](@ref).
 """
-function tagsave(file, d; 
-        gitpath = projectdir(), 
-        safe::Bool = get(ENV, "DRWATSON_SAFESAVE", false), 
-        storepatch::Bool = get(ENV, "DRWATSON_STOREPATCH", false), 
+function tagsave(file, d;
+        gitpath = projectdir(),
+        safe::Bool = get(ENV, "DRWATSON_SAFESAVE", false),
+        storepatch::Bool = get(ENV, "DRWATSON_STOREPATCH", false),
         force = false, source = nothing, kwargs...
     )
     d2 = tag!(d, gitpath=gitpath, storepatch=storepatch, force=force, source=source)
@@ -222,9 +222,9 @@ end
 
 #recursively move files to increased backup number
 function recursively_clear_path(cur_path)
-    isfile(cur_path) || return
+    ispath(cur_path) || return
     new_path=increment_backup_num(cur_path)
-    if isfile(new_path)
+    if ispath(new_path)
         recursively_clear_path(new_path)
     end
     mv(cur_path, new_path)

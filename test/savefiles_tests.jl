@@ -252,3 +252,24 @@ end
     rm("test.#backup_#1."*ending)
     rm("test.#backup_#2."*ending)
 end
+
+@testset "Backup (dir)" begin
+    # Save contents as individual file(s) within a parent directory:
+    struct Composite x end
+    DrWatson._wsave(dir, data::Composite) = wsave(joinpath(dir, "x.jld2"), data.x)
+    load_composite(dir) = load(joinpath(dir, "x.jld2"))
+
+    filepath = "test.#backup.dir"
+    data = [Composite(Dict( "a" => i, "b" => rand(rand(1:10)))) for i = 1:3]
+    for i = 1:3
+        safesave(filepath, data[i])
+        @test isdir(filepath)
+        @test data[i].x == load_composite(filepath)
+    end
+    @test data[2].x == load_composite("test.#backup_#1.dir")
+    @test data[1].x == load_composite("test.#backup_#2.dir")
+    @test data[3].x == load_composite("test.#backup.dir")
+    rm("test.#backup.dir"; recursive=true)
+    rm("test.#backup_#1.dir"; recursive=true)
+    rm("test.#backup_#2.dir"; recursive=true)
+end
