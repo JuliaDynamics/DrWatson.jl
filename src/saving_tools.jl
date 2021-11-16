@@ -181,7 +181,7 @@ To restore a repository to the state of a particular model-run do:
 ## Keywords
 * `gitpath = projectdir()`
 * `force = false`
-* `storepatch = get(ENV, "DRWATSON_STOREPATCH", true)`: Whether to collect and store the
+* `storepatch = readenv("DRWATSON_STOREPATCH", false)`: Whether to collect and store the
   output of [`gitpatch`](@ref) as well.
 
 ## Examples
@@ -200,7 +200,7 @@ Dict{Symbol,Any} with 3 entries:
 """
 function tag!(d::AbstractDict{K,T};
         gitpath = projectdir(), force = false, source = nothing,
-        storepatch::Bool = get(ENV, "DRWATSON_STOREPATCH", false),
+        storepatch::Bool = readenv("DRWATSON_STOREPATCH", false),
     ) where {K,T}
     @assert (K <: Union{Symbol,String}) "We only know how to tag dictionaries that have keys that are strings or symbols"
     c = gitdescribe(gitpath)

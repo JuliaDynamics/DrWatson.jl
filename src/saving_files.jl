@@ -24,7 +24,7 @@ end
 
 ## Keywords
 * `suffix = "jld2", prefix = default_prefix(config)` : Used in [`savename`](@ref).
-* `tag::Bool = get(ENV, "DRWATSON_TAG", istaggable(suffix))` : Save the file
+* `tag::Bool = readenv("DRWATSON_TAG", istaggable(suffix))` : Save the file
   using [`tagsave`](@ref) if `true` (which is the default).
 * `gitpath, storepatch` : Given to [`tagsave`](@ref) if `tag` is `true`.
 * `force = false` : If `true` then don't check if file `s` exists and produce
@@ -43,9 +43,9 @@ produce_or_load(f::Function, c; kwargs...) = produce_or_load(c, f; kwargs...)
 produce_or_load(f::Function, path, c; kwargs...) = produce_or_load(path, c, f; kwargs...)
 function produce_or_load(path, c, f::Function;
         suffix = "jld2", prefix = default_prefix(c),
-        tag::Bool = get(ENV, "DRWATSON_TAG", istaggable(suffix)),
+        tag::Bool = readenv("DRWATSON_TAG", istaggable(suffix)),
         gitpath = projectdir(), loadfile = true,
-        storepatch::Bool = get(ENV, "DRWATSON_STOREPATCH", false),
+        storepatch::Bool = readenv("DRWATSON_STOREPATCH", false),
         force = false, verbose = true, wsave_kwargs = Dict(),
         kwargs...
     )
@@ -137,13 +137,13 @@ Keywords `gitpath, storepatch, force,` are propagated to [`tag!`](@ref).
 Any additional keyword arguments are propagated to `wsave`, to e.g.
 enable compression.
 
-The keyword `safe = get(ENV, "DRWATSON_SAFESAVE", false)` decides whether
+The keyword `safe = readenv("DRWATSON_SAFESAVE", false)` decides whether
 to save the file using [`safesave`](@ref).
 """
 function tagsave(file, d;
         gitpath = projectdir(),
-        safe::Bool = get(ENV, "DRWATSON_SAFESAVE", false),
-        storepatch::Bool = get(ENV, "DRWATSON_STOREPATCH", false),
+        safe::Bool = readenv("DRWATSON_SAFESAVE", false),
+        storepatch::Bool = readenv("DRWATSON_STOREPATCH", false),
         force = false, source = nothing, kwargs...
     )
     d2 = tag!(d, gitpath=gitpath, storepatch=storepatch, force=force, source=source)

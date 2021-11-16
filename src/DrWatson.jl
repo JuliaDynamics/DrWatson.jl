@@ -7,6 +7,9 @@ const PATH_SEPARATOR = joinpath("_", "_")[2]
 convert_to_kw(ex::Expr) = Expr(:kw,ex.args...)
 convert_to_kw(ex) = error("invalid keyword argument syntax \"$ex\"")
 
+# Misc helpers
+readenv(var, default::T) where {T} = something(tryparse(T, get(ENV, var, "")), Some(default))
+
 # Pure Julia implementation
 include("project_setup.jl")
 include("naming.jl")
