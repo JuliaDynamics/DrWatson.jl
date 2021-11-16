@@ -68,7 +68,7 @@ function __init__()
           It showcases how to eliminate code duplication and streamline your simulation setup
           and run phase using `savename` and `produce_or_load`.
         * By default now `gitpatch` is NOT saved when calling `tag!` and derivative functions.
-          This is due to an unknown problem that causes collecting the git patch to 
+          This is due to an unknown problem that causes collecting the git patch to
           never halt, potentially not saving a user's output.
         \n
         """; color = :light_magenta)
