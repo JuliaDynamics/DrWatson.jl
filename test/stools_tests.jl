@@ -17,9 +17,10 @@ com = gitdescribe(dirname(@__DIR__))
 function _setup_repo(dirty)
     path = mktempdir(cleanup=true) # delete path on process exit
     repo = LibGit2.init(path)
+    john = LibGit2.Signature("Dr. John H. Watson", "snail mail only")
     write(joinpath(path, "foo.txt"), "bar\n")
     LibGit2.add!(repo, "foo.txt")
-    LibGit2.commit(repo, "tmp repo commit")
+    LibGit2.commit(repo, "tmp repo commit", author=john, committer=john)
     dirty && write(joinpath(path, "foo.txt"), "baz\n")
     return path
 end
