@@ -1,6 +1,7 @@
 using DrWatson, Test
 using DataStructures
 using JLD2
+using LibGit2
 
 # Test commit function
 com = gitdescribe(@__DIR__)
@@ -12,22 +13,62 @@ com = gitdescribe(dirname(@__DIR__))
 # TODO: why?
 # @test com[1] == 'v' # test that it has a version tag
 
-# Test isdirty.
-if isdirty(@__DIR__)
-    @test endswith(gitdescribe(@__DIR__), "_dirty")
-else
-    @test !endswith(gitdescribe(@__DIR__), "_dirty")
+# Set up a clean and a dirty repo.
+function _setup_repo(dirty)
+    path = mktempdir(cleanup=true) # delete path on process exit
+    repo = LibGit2.init(path)
+    john = LibGit2.Signature("Dr. John H. Watson", "snail mail only")
+    write(joinpath(path, "foo.txt"), "bar\n")
+    LibGit2.add!(repo, "foo.txt")
+    LibGit2.commit(repo, "tmp repo commit", author=john, committer=john)
+    dirty && write(joinpath(path, "foo.txt"), "baz\n")
+    return path
 end
+dpath = _setup_repo(true) # dirty
+cpath = _setup_repo(false) # clean
+
+@test isdirty(dpath)
+@test endswith(gitdescribe(dpath), "_dirty")
+@test !isdirty(cpath)
+@test !endswith(gitdescribe(cpath), "_dirty")
 
 # tag!
+function _test_tag!(d, path, haspatch, DRWATSON_STOREPATCH)
+    d = copy(d)
+    withenv("DRWATSON_STOREPATCH" => DRWATSON_STOREPATCH) do
+        d = tag!(d, gitpath=path)
+        commitname = keytype(d)(:gitcommit)
+        @test haskey(d, commitname)
+        @test d[commitname] isa String
+        if haspatch
+            patchname = keytype(d)(:gitpatch)
+            @test haskey(d, patchname)
+            @test d[patchname] isa String
+            @test d[patchname] != ""
+        end
+    end
+end
+
 d1 = Dict(:x => 3, :y => 4)
 d2 = Dict("x" => 3, "y" => 4)
-for d in (d1, d2)
-    d = tag!(d, gitpath=@__DIR__)
-
-    @test haskey(d, keytype(d)(:gitcommit))
-    @test d[keytype(d)(:gitcommit)] |> typeof <: String
+@testset "tag! ($(keytype(d)))" for d in (d1, d2)
+    @testset "no patch ($(dirty ? "dirty" : "clean"))" for dirty in (true, false)
+        path = dirty ? dpath : cpath
+        _test_tag!(d, path, false, nothing) # variable unset
+        _test_tag!(d, path, false, "") # variable set but empty
+        _test_tag!(d, path, false, "false") # variable parses as false
+        _test_tag!(d, path, false, "0") # variable parses as false
+        _test_tag!(d, path, false, "rubbish") # variable not a Bool
+    end
+    @testset "patch" begin
+        _test_tag!(d, dpath, true, "true") # variable parses as true
+        _test_tag!(d, dpath, true, "1") # variable parses as true
+    end
 end
+
+# Ensure that above tests operated out-of-place.
+@test d1 == Dict(:x => 3, :y => 4)
+@test d2 == Dict("x" => 3, "y" => 4)
 
 # Test assertion error when the data has a incompatible key type
 @test_throws AssertionError("We only know how to tag dictionaries that have keys that are strings or symbols") tag!(Dict{Int64,Any}(1 => 2))
@@ -35,7 +76,7 @@ end
 
 
 # @tag!
-for d in (d1, d2)
+@testset "@tag! ($(keytype(d)))" for d in (d1, d2)
     d = @tag!(d, gitpath=@__DIR__)
     @test haskey(d, keytype(d)(:gitcommit))
     @test d[keytype(d)(:gitcommit)] |> typeof <: String
@@ -318,7 +359,7 @@ rm(tmpdir, force = true, recursive = true)
     n = @ntuple x y
     @test isa(ntuple2dict(n),Dict)
     @test isa(ntuple2dict(OrderedDict,n),OrderedDict)
-    
+
     #test checktagtype!
     @test isa(DrWatson.checktagtype!(d3),Dict)
     @test isa(DrWatson.checktagtype!(d11),OrderedDict)

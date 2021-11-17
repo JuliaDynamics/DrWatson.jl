@@ -7,6 +7,15 @@ const PATH_SEPARATOR = joinpath("_", "_")[2]
 convert_to_kw(ex::Expr) = Expr(:kw,ex.args...)
 convert_to_kw(ex) = error("invalid keyword argument syntax \"$ex\"")
 
+# Misc helpers
+"""
+    readenv(var, default::T) where {T}
+
+Try to read the environment variable `var` and parse it as a `::T`.
+If that fails, return `default`.
+"""
+readenv(var, default::T) where {T} = something(tryparse(T, get(ENV, var, "")), Some(default))
+
 # Pure Julia implementation
 include("project_setup.jl")
 include("naming.jl")
@@ -68,7 +77,7 @@ function __init__()
           It showcases how to eliminate code duplication and streamline your simulation setup
           and run phase using `savename` and `produce_or_load`.
         * By default now `gitpatch` is NOT saved when calling `tag!` and derivative functions.
-          This is due to an unknown problem that causes collecting the git patch to 
+          This is due to an unknown problem that causes collecting the git patch to
           never halt, potentially not saving a user's output.
         \n
         """; color = :light_magenta)
