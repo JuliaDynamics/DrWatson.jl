@@ -181,7 +181,7 @@ To restore a repository to the state of a particular model-run do:
 ## Keywords
 * `gitpath = projectdir()`
 * `force = false`
-* `storepatch = readenv("DRWATSON_STOREPATCH", false)`: Whether to collect and store the
+* `storepatch = DrWatson.readenv("DRWATSON_STOREPATCH", false)`: Whether to collect and store the
   output of [`gitpatch`](@ref) as well.
 
 ## Examples

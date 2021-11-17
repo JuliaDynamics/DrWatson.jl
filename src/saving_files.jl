@@ -24,7 +24,7 @@ end
 
 ## Keywords
 * `suffix = "jld2", prefix = default_prefix(config)` : Used in [`savename`](@ref).
-* `tag::Bool = readenv("DRWATSON_TAG", istaggable(suffix))` : Save the file
+* `tag::Bool = DrWatson.readenv("DRWATSON_TAG", istaggable(suffix))` : Save the file
   using [`tagsave`](@ref) if `true` (which is the default).
 * `gitpath, storepatch` : Given to [`tagsave`](@ref) if `tag` is `true`.
 * `force = false` : If `true` then don't check if file `s` exists and produce
@@ -137,7 +137,7 @@ Keywords `gitpath, storepatch, force,` are propagated to [`tag!`](@ref).
 Any additional keyword arguments are propagated to `wsave`, to e.g.
 enable compression.
 
-The keyword `safe = readenv("DRWATSON_SAFESAVE", false)` decides whether
+The keyword `safe = DrWatson.readenv("DRWATSON_SAFESAVE", false)` decides whether
 to save the file using [`safesave`](@ref).
 """
 function tagsave(file, d;

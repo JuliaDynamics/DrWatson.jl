@@ -8,6 +8,12 @@ convert_to_kw(ex::Expr) = Expr(:kw,ex.args...)
 convert_to_kw(ex) = error("invalid keyword argument syntax \"$ex\"")
 
 # Misc helpers
+"""
+    readenv(var, default::T) where {T}
+
+Try to read the environment variable `var` and parse it as a `::T`.
+If that fails, return `default`.
+"""
 readenv(var, default::T) where {T} = something(tryparse(T, get(ENV, var, "")), Some(default))
 
 # Pure Julia implementation
