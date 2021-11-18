@@ -28,9 +28,11 @@ dpath = _setup_repo(true) # dirty
 cpath = _setup_repo(false) # clean
 
 @test isdirty(dpath)
-@test endswith(gitdescribe(dpath), "_dirty")
+@test endswith(gitdescribe(dpath), "-dirty")
+@test endswith(gitdescribe(dpath, dirty_suffix="-verydirty"), "-verydirty")
+@test !endswith(gitdescribe(dpath, dirty_suffix=""), "-dirty")
 @test !isdirty(cpath)
-@test !endswith(gitdescribe(cpath), "_dirty")
+@test !endswith(gitdescribe(cpath), "-dirty")
 
 # tag!
 function _test_tag!(d, path, haspatch, DRWATSON_STOREPATCH)
