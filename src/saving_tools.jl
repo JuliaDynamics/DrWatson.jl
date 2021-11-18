@@ -7,20 +7,20 @@ export istaggable
 # Obtaining Git information
 ########################################################################################
 """
-    gitdescribe(gitpath = projectdir()) -> gitstr
+    gitdescribe(gitpath = projectdir(); dirty_suffix = "-dirty") -> gitstr
 
 Return a string `gitstr` with the output of `git describe` if an annotated git tag exists,
 otherwise the current active commit id of the Git repository present
 in `gitpath`, which by default is the currently active project. If the repository
 is dirty when this function is called the string will end
-with `"_dirty"`.
+with `dirty_suffix`.
 
 Return `nothing` if `gitpath` is not a Git repository, i.e. a directory within a git
 repository.
 
 The format of the `git describe` output in general is
 
-    `"TAGNAME-[NUMBER_OF_COMMITS_AHEAD-]gLATEST_COMMIT_HASH[_dirty]"`
+    `"TAGNAME-[NUMBER_OF_COMMITS_AHEAD-]gLATEST_COMMIT_HASH[-dirty]"`
 
 If the latest tag is `v1.2.3` and there are 5 additional commits while the
 latest commit hash is 334a0f225d9fba86161ab4c8892d4f023688159c, the output
@@ -41,10 +41,10 @@ julia> gitdescribe() # a tag doesn't exist
 "96df587e45b29e7a46348a3d780db1f85f41de04"
 
 julia> gitdescribe(path_to_a_dirty_repo)
-"3bf684c6a115e3dce484b7f200b66d3ced8b0832_dirty"
+"3bf684c6a115e3dce484b7f200b66d3ced8b0832-dirty"
 ```
 """
-function gitdescribe(gitpath = projectdir())
+function gitdescribe(gitpath = projectdir(); dirty_suffix::String = "-dirty")
     # Here we test if the gitpath is a git repository.
     try
         repo = LibGit2.GitRepoExt(gitpath)
@@ -61,7 +61,7 @@ function gitdescribe(gitpath = projectdir())
     end
     suffix = ""
     if LibGit2.isdirty(repo)
-        suffix = "_dirty"
+        suffix = dirty_suffix
         @warn "The Git repository ('$gitpath') is dirty! "*
         "Appending $(suffix) to the commit ID."
     end
