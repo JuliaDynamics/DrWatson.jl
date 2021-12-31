@@ -234,6 +234,53 @@ using DataFrames
     @test !isfile(spath)
 end
 
+@testset "produce_or_load with custom type" begin
+    struct Custom
+        a
+        b
+        simulation
+    end
+
+    Custom(d::Dict{String}) = Custom(d["a"], d["b"], d["simulation"])
+
+    function DrWatson._wsave(path, c::Custom)
+        wsave(joinpath(path, "a.jld2"), c.a)
+        wsave(joinpath(path, "b.jld2"), c.b)
+        wsave(joinpath(path, "simulation.jld2"), c.simulation)
+    end
+
+    function DrWatson.wload(::Type{Custom}, path)
+        a = wload(joinpath(path, "a.jld2"))
+        b = wload(joinpath(path, "b.jld2"))
+        simulation = wload(joinpath(path, "simulation.jld2"))
+        return Custom(a, b, simulation)
+    end
+
+    Base.copy(c::Custom) = c
+
+    @test !ispath(savename(simulation))
+    sim, path = produce_or_load(simulation, Custom∘f; returntype=Custom, suffix="dir")
+    @test isdir(savename(simulation))
+    @test sim.simulation.T == T
+    @test path == savename(simulation)
+    @test sim == wload(Custom, path)
+
+    # Not specifying a return type while having an overload for `_wsave` defined issues a warning:
+    msg = r"^The return type of `f` does not match"
+    rm(savename(simulation))
+    @test !isfile(savename(simulation))
+    @test_logs (:warn, msg) sim, path = produce_or_load(simulation, Custom∘f, suffix="dir")
+    @test isfile(savename(simulation))
+    @test sim == wload(Custom, path)
+
+    # Specifying the wrong return type issues a warning:
+    rm(savename(simulation))
+    @test !isfile(savename(simulation))
+    @test_logs (:warn, msg) sim, path = produce_or_load(simulation, Custom∘f; returntype=Int, suffix="dir")
+    @test isfile(savename(simulation))
+    @test sim == wload(Custom, path)
+end
+
 ################################################################################
 #                          Backup files before saving                          #
 ################################################################################

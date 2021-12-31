@@ -36,6 +36,10 @@ end
 * `verbose = true` : print info about the process, if the file doesn't exist.
 * `wsave_kwargs = Dict()` : Keywords to pass to `wsave` (e.g. to enable
   compression).
+* `returntype::DataType = Any` : First argument passed to `wload`.
+  Set this if you defined a custom method for `wload`.
+  If `f` does not return a `returntype`, this function will issue a warning.
+  The data is still produced and saved.
 * `kwargs...` : All other keywords are propagated to `savename`.
 """
 produce_or_load(c, f; kwargs...) = produce_or_load("", c, f; kwargs...)
@@ -47,6 +51,7 @@ function produce_or_load(path, c, f::Function;
         gitpath = projectdir(), loadfile = true,
         storepatch::Bool = readenv("DRWATSON_STOREPATCH", false),
         force = false, verbose = true, wsave_kwargs = Dict(),
+        returntype::DataType=Any,
         kwargs...
     )
 
@@ -54,7 +59,7 @@ function produce_or_load(path, c, f::Function;
 
     if !force && isfile(s)
         if loadfile
-            file = wload(s)
+            file = wload(returntype, s)
             return file, s
         else
             return nothing, s
@@ -66,6 +71,9 @@ function produce_or_load(path, c, f::Function;
             verbose && @info "File $s does not exist. Producing it now..."
         end
         file = f(c)
+        if !(file isa returntype)
+            @warn "Data returned from `f` is not a `$returntype`. Saving anyway, but `produce_or_load` might not be able to load the data back."
+        end
         try
             if tag
                 tagsave(s, file; safe = false, gitpath = gitpath, storepatch = storepatch, wsave_kwargs...)

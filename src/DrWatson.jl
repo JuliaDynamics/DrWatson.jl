@@ -44,8 +44,21 @@ function wsave(filename, data...; kwargs...)
     return _wsave(filename, data...; kwargs...)
 end
 
-"Currently equivalent with `FileIO.load`."
+"""
+    wload([::DataType], args...; kwargs...)
+
+Default fallback is `FileIO.load`, discarding the (optional) first argument.
+Extend this for your types as the first argument:
+
+```julia
+struct TheAnswer end
+
+DrWatson.wload(::Type{TheAnswer}) = TheAnswer()
+```
+"""
+function wload end
 wload(data...; kwargs...) = FileIO.load(data...; kwargs...)
+wload(::DataType, data...; kwargs...) = FileIO.load(data...; kwargs...)
 
 include("saving_files.jl")
 include("dict_list.jl")
