@@ -234,6 +234,15 @@ using DataFrames
     @test !isfile(spath)
 end
 
+# Regression test for https://github.com/JuliaDynamics/DrWatson.jl/issues/309
+@testset "@produce_or_load with value-type widening" begin
+    d, spath = @produce_or_load("", Dict("a" => 5.0)) do config
+        return Dict("field" => config)
+    end
+    @test haskey(d, "script")
+    rm(spath)
+end
+
 ################################################################################
 #                          Backup files before saving                          #
 ################################################################################

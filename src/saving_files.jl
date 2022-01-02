@@ -113,7 +113,7 @@ macro produce_or_load(f, path, config, args...)
             kws = ((;kwargs...)->Dict(kwargs...))($(esc.(convert_to_kw.(args))...))
             gitpath = get(kws, :gitpath, projectdir())
             # Include the script tag with checking for the type of dict keys, etc.
-            scripttag!(data, $s; gitpath = gitpath)
+            data = scripttag!(data, $s; gitpath = gitpath)
             data
         end
     end
