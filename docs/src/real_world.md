@@ -12,7 +12,7 @@ include(srcdir("unitcells.jl"))
 ```
 In all projects I save data/plots using `datadir/plotdir`:
 ```julia
-@tagsave(datadir("mushrooms", "Λ_N=$N.jld2"), (@dict Λ Λσ ws hs description))
+@tagsave(datadir("mushrooms", "Λ_N=$N.jld2"), (@strdict Λ Λσ ws hs description))
 ```
 The advantage of this approach is that it will always work regardless of if I move the specific file to a different subfolder (which is very often necessary) or whether I move the entire project folder somewhere else!
 **Please be sure you have understood the caveat of using [`quickactivate`](@ref)!**
