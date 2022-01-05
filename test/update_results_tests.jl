@@ -68,6 +68,15 @@ cres_relpath = collect_results!(relpathname, folder;
 #                           Exclude or exclude files                          #
 ###############################################################################
 
+df = collect_results(datadir("results"); include=[r"a=1"])
+@test all(df[:,"a"] .== 1)
+
+df = collect_results(datadir("results"); exclude=[r"a=3"])
+@test all(df[:,"a"] .!== 3)
+
+df = collect_results(datadir("results"); include=["a=3"], exclude=[r"a=3"])
+@test isempty(df)
+
 ###############################################################################
 #                           Add another file in a sub sub folder              #
 ###############################################################################
