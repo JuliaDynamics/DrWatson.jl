@@ -41,6 +41,8 @@ See also [`collect_results`](@ref).
 * `verbose = true` : Print (using `@info`) information about the process.
 * `update = false` : Update data from modified files and remove entries for deleted
   files.
+* `include = [r""]` : Only include files whose name matches any of these Regex expressions.
+* `exclude = [r"^\b$"]` : Exclude any files whose name matches any of these Regex expressions.
 * `white_list` : List of keys to use from result file. By default
   uses all keys from all loaded result-files.
 * `black_list = [:gitcommit, :gitpatch, :script]`: List of keys not to include from result-file.
@@ -84,6 +86,8 @@ function collect_results!(filename, folder;
     verbose = true,
     update = false,
     newfile = false, # keyword only for defining collect_results without !
+    include = [r""],
+    exclude = [r"^\b$"],
     kwargs...)
 
     if newfile || !isfile(filename)
@@ -116,6 +120,18 @@ function collect_results!(filename, folder;
     else
         allfiles = joinpath.(Ref(folder), readdir(folder))
     end
+    
+    # Filter through entries
+    idx_del = Int[]
+    for i in eachindex(allfiles)
+        file = allfiles[i]
+        include_bool = any(match.(include, file) .!== nothing)
+        exclude_bool = any(match.(exclude, file) .!== nothing)
+        if include_bool == false || exclude_bool == true
+            push!(idx_del, i)
+        end 
+    end
+    deleteat!(allfiles, idx_del)
 
     n = 0 # new entries added
     u = 0 # entries updated
