@@ -88,7 +88,7 @@ for N ∈ Ns, ΔT ∈ ΔTs
 
     @tagsave(
         datadir("sim", "bk", savename(simulation, "jld2")),
-        @dict U V simulation
+        @strdict U V simulation
     )
 end
 ```
