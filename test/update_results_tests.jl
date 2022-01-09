@@ -65,11 +65,13 @@ cres_relpath = collect_results!(relpathname, folder;
 @info all(startswith.(cres[!,"path"], "data"))
 
 ###############################################################################
-#                           Exclude or exclude files                          #
+#                           Ixclude or exclude files                          #
 ###############################################################################
 
-df = collect_results(datadir("results"); rinclude=[r"a=1"])
-@test all(df[:,"a"] .== 1)
+@test_throws AssertionError collect_results(datadir("results"); rinclude=["a=1"])
+
+df = collect_results(datadir("results"); rinclude=[r"a=1", r"b=3"])
+@test all(row -> row["a"] == 1 || row["b"] == "2", eachrow(df))
 
 df = collect_results(datadir("results"); rexclude=[r"a=3"])
 @test all(df[:,"a"] .!== 3)

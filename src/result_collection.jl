@@ -41,8 +41,8 @@ See also [`collect_results`](@ref).
 * `verbose = true` : Print (using `@info`) information about the process.
 * `update = false` : Update data from modified files and remove entries for deleted
   files.
-* `rinclude = [r\"\"]` : Only include files whose name matches any of these Regex expressions.
-* `rexclude = [r\"^\\b\$\"]` : Exclude any files whose name matches any of these Regex expressions.
+* `rinclude = [r\"\"]` : Only include files whose name matches any of these Regex expressions. Default value includes all files.
+* `rexclude = [r\"^\\b\$\"]` : Exclude any files whose name matches any of these Regex expressions. Default value does not exclude any files.
 * `white_list` : List of keys to use from result file. By default
   uses all keys from all loaded result-files.
 * `black_list = [:gitcommit, :gitpatch, :script]`: List of keys not to include from result-file.
@@ -90,6 +90,8 @@ function collect_results!(filename, folder;
     rexclude = [r"^\b$"],
     kwargs...)
 
+    @assert all(eltype(r) <: Regex for r in (rinclude, rexclude)) "Elements of `rinclude` and `rexclude` must be Regex expressions."
+
     if newfile || !isfile(filename)
         !newfile && verbose && @info "Starting a new result collection..."
         df = DataFrames.DataFrame()
@@ -121,17 +123,18 @@ function collect_results!(filename, folder;
         allfiles = joinpath.(Ref(folder), readdir(folder))
     end
     
-    # Filter through entries
-    idx_del = Int[]
-    for i in eachindex(allfiles)
-        file = allfiles[i]
-        include_bool = any(match.(rinclude, file) .!== nothing)
-        exclude_bool = any(match.(rexclude, file) .!== nothing)
-        if include_bool == false || exclude_bool == true
-            push!(idx_del, i)
-        end 
+    if (rinclude == [r""] && rexclude == [r"^\b$"]) == false
+        idx_filt = Int[]
+        for i in eachindex(allfiles)
+            file = allfiles[i]
+            include_bool = any(match(rgx, file) !== nothing for rgx in rinclude)
+            exclude_bool = any(match(rgx, file) !== nothing for rgx in rexclude)
+            if include_bool == false || exclude_bool == true
+                push!(idx_filt, i)
+            end 
+        end
+        deleteat!(allfiles, idx_filt)
     end
-    deleteat!(allfiles, idx_del)
 
     n = 0 # new entries added
     u = 0 # entries updated

@@ -433,7 +433,22 @@ As `@onlyif` is meant to be used with [`dict_list`](@ref), it supports the vecto
 This is achieved by automatically broadcasting every `@onlyif` call over `Vector` arguments, which allows chaining those calls to combine conditions.
 So in terms of the result, `@onlyif( :a == 2, [5, @onlyif(:b == 4, 6)])` is equivalent to `[@onlyif( :a == 2, 5), @onlyif(:a == 2 && :b == 4, 6)]`.
 
-## Advanced Usage of collect_results
+## Filtering by name with collect_results
+
+Using [`collect_results`](@ref) on a folder with many (e.g. 1,000) files in it can be noticeably slow. To speed this up, you can use the `rinclude` and `rexclude` keyword arguments, both of which are vectors of [Regex expressions](https://docs.julialang.org/en/v1/manual/strings/#man-regex-literals). The results returned will have a filename which matches **any** of the Regex expressions in `rinclude` and does not match **any** of the Regex expressions in `rexclude`.
+
+```julia
+df = collect_results(datadir("results"); rinclude=[r"a=1"])
+# Only include results whose filename contains "a=1"
+
+df = collect_results(datadir("results"); rexclude=[r"a=3"])
+# Exclude any results whose filename contains "a=3"
+
+df = collect_results(datadir("results"); rinclude=[r"a=1", r"b=5"], rexclude=[r"a=3"])
+# Only include results whose filename contains "a=1" OR "b=5" and exclude any which contain "a=3"
+```
+
+## Advanced usage of collect_results
 At some point in your work you may want to run a single function
 that returns multiple fields that you want to include in your
 results `DataFrame`.
