@@ -1,4 +1,4 @@
-# 2.7.7
+# 2.8.0
 * Add filtering of `collect_results` using `rinclude` and `rexclude` keyword arguments.
 # 2.7.2
 * By default `storepatch` keywords are `false`. This means that `gitpatch` is NOT stored by default. This is a BUGFIX, because there is an unknown problem of non-halting when storing the patch.
