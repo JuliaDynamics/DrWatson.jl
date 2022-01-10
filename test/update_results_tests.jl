@@ -65,7 +65,7 @@ cres_relpath = collect_results!(relpathname, folder;
 @info all(startswith.(cres[!,"path"], "data"))
 
 ###############################################################################
-#                           Ixclude or exclude files                          #
+#                           Include or exclude files                          #
 ###############################################################################
 
 @test_throws AssertionError collect_results(datadir("results"); rinclude=["a=1"])
