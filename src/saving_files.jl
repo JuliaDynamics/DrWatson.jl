@@ -1,14 +1,15 @@
 export produce_or_load, @produce_or_load, tagsave, @tagsave, safesave
 
 """
-    produce_or_load([path="",] config, f; kwargs...) -> file, s
-Let `s = joinpath(path, savename(prefix, config, suffix))` where `config` is some kind
-of named parameter container.
-If a file named `s` exists then load it and return it, along
-with the global path that it is saved at (`s`).
+    produce_or_load([path="",] config, f; kwargs...) -> data, filename
+Let `filename = joinpath(path, savename(prefix, config, suffix))` where
+`config` is some kind of named parameter container.
+If `filename` exists then load it and return the contained `data`, along
+with the global path that it is saved at (`filename`).
 
-If the file does not exist then call `file = f(config)`, with `f` your function
-that produces your data. Then save the `file` as `s` and then return `file, s`.
+If the file does not exist then call `data = f(config)`, with `f` your function
+that produces your data. Then save the `data` as `filename` and then return
+`data, filename`.
 
 The function `f` should return a dictionary if the data are saved in the default
 format of JLD2.jl., the macro [`@strdict`](@ref) can help with that.
@@ -27,11 +28,11 @@ end
 * `tag::Bool = DrWatson.readenv("DRWATSON_TAG", istaggable(suffix))` : Save the file
   using [`tagsave`](@ref) if `true` (which is the default).
 * `gitpath, storepatch` : Given to [`tagsave`](@ref) if `tag` is `true`.
-* `force = false` : If `true` then don't check if file `s` exists and produce
+* `force = false` : If `true` then don't check if `filename` exists and produce
   it and save it anyway.
 * `loadfile = true` : If `false`, this function does not actually load the
   file, but only checks if it exists. The return value in this case is always
-  `nothing, s`, regardless of whether the file exists or not. If it doesn't
+  `nothing, filename`, regardless of whether the file exists or not. If it doesn't
   exist it is still produced and saved.
 * `verbose = true` : print info about the process, if the file doesn't exist.
 * `wsave_kwargs = Dict()` : Keywords to pass to `wsave` (e.g. to enable
@@ -50,37 +51,37 @@ function produce_or_load(path, c, f::Function;
         kwargs...
     )
 
-    s = joinpath(path, savename(prefix, c, suffix; kwargs...))
+    filename = joinpath(path, savename(prefix, c, suffix; kwargs...))
 
-    if !force && isfile(s)
+    if !force && isfile(filename)
         if loadfile
-            file = wload(s)
-            return file, s
+            data = wload(filename)
+            return data, filename
         else
-            return nothing, s
+            return nothing, filename
         end
     else
         if force
-            verbose && @info "Producing file $s now..."
+            verbose && @info "Producing file $filename now..."
         else
-            verbose && @info "File $s does not exist. Producing it now..."
+            verbose && @info "File $filename does not exist. Producing it now..."
         end
-        file = f(c)
+        data = f(c)
         try
             if tag
-                tagsave(s, file; safe = false, gitpath = gitpath, storepatch = storepatch, wsave_kwargs...)
+                tagsave(filename, data; safe = false, gitpath = gitpath, storepatch = storepatch, wsave_kwargs...)
             else
-                wsave(s, copy(file); wsave_kwargs...)
+                wsave(filename, copy(data); wsave_kwargs...)
             end
-            verbose && @info "File $s saved."
+            verbose && @info "File $filename saved."
         catch er
             @warn "Could not save file. Error stacktrace:"
             Base.showerror(stderr, er, stacktrace(catch_backtrace()))
         end
         if loadfile
-            return file, s
+            return data, filename
         else
-            return nothing, s
+            return nothing, filename
         end
     end
 end
