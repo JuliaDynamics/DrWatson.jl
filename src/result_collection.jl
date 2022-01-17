@@ -41,6 +41,8 @@ See also [`collect_results`](@ref).
 * `verbose = true` : Print (using `@info`) information about the process.
 * `update = false` : Update data from modified files and remove entries for deleted
   files.
+* `rinclude = [r\"\"]` : Only include files whose name matches any of these Regex expressions. Default value includes all files.
+* `rexclude = [r\"^\\b\$\"]` : Exclude any files whose name matches any of these Regex expressions. Default value does not exclude any files.
 * `white_list` : List of keys to use from result file. By default
   uses all keys from all loaded result-files.
 * `black_list = [:gitcommit, :gitpatch, :script]`: List of keys not to include from result-file.
@@ -84,7 +86,11 @@ function collect_results!(filename, folder;
     verbose = true,
     update = false,
     newfile = false, # keyword only for defining collect_results without !
+    rinclude = [r""],
+    rexclude = [r"^\b$"],
     kwargs...)
+
+    @assert all(eltype(r) <: Regex for r in (rinclude, rexclude)) "Elements of `rinclude` and `rexclude` must be Regex expressions."
 
     if newfile || !isfile(filename)
         !newfile && verbose && @info "Starting a new result collection..."
@@ -115,6 +121,19 @@ function collect_results!(filename, folder;
         end
     else
         allfiles = joinpath.(Ref(folder), readdir(folder))
+    end
+    
+    if (rinclude == [r""] && rexclude == [r"^\b$"]) == false
+        idx_filt = Int[]
+        for i in eachindex(allfiles)
+            file = allfiles[i]
+            include_bool = any(match(rgx, file) !== nothing for rgx in rinclude)
+            exclude_bool = any(match(rgx, file) !== nothing for rgx in rexclude)
+            if include_bool == false || exclude_bool == true
+                push!(idx_filt, i)
+            end 
+        end
+        deleteat!(allfiles, idx_filt)
     end
 
     n = 0 # new entries added

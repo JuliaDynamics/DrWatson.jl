@@ -65,6 +65,21 @@ cres_relpath = collect_results!(relpathname, folder;
 @info all(startswith.(cres[!,"path"], "data"))
 
 ###############################################################################
+#                           Include or exclude files                          #
+###############################################################################
+
+@test_throws AssertionError collect_results(datadir("results"); rinclude=["a=1"])
+
+df = collect_results(datadir("results"); rinclude=[r"a=1", r"b=3"])
+@test all(row -> row["a"] == 1 || row["b"] == "2", eachrow(df))
+
+df = collect_results(datadir("results"); rexclude=[r"a=3"])
+@test all(df[:,"a"] .!== 3)
+
+df = collect_results(datadir("results"); rinclude=[r"a=3"], rexclude=[r"a=3"])
+@test isempty(df)
+
+###############################################################################
 #                           Add another file in a sub sub folder              #
 ###############################################################################
 
