@@ -34,7 +34,10 @@ end
   file, but only checks if it exists. The return value in this case is always
   `nothing, filename`, regardless of whether the file exists or not. If it doesn't
   exist it is still produced and saved.
-* `verbose = true` : print info about the process, if the file doesn't exist.
+* `dry_run = DrWatson.readenv("DRWATSON_DRY_RUN", false): If `true`, do not
+  produce or save anything. The return value in this case is always `nothing, filename`.
+* `verbose = readenv("DRWATSON_VERBOSE", true)` : print info about the process,
+  if the file doesn't exist.
 * `wsave_kwargs = Dict()` : Keywords to pass to `wsave` (e.g. to enable
   compression).
 * `kwargs...` : All other keywords are propagated to `savename`.
@@ -47,7 +50,10 @@ function produce_or_load(path, c, f::Function;
         tag::Bool = readenv("DRWATSON_TAG", istaggable(suffix)),
         gitpath = projectdir(), loadfile = true,
         storepatch::Bool = readenv("DRWATSON_STOREPATCH", false),
-        force = false, verbose = true, wsave_kwargs = Dict(),
+        dry_run::Bool = readenv("DRWATSON_DRY_RUN", false),
+        force = false,
+        verbose = readenv("DRWATSON_VERBOSE", true),
+        wsave_kwargs = Dict(),
         kwargs...
     )
 
@@ -55,7 +61,11 @@ function produce_or_load(path, c, f::Function;
 
     if !force && isfile(filename)
         if loadfile
-            data = wload(filename)
+            if dry_run
+                data = nothing
+            else
+                data = wload(filename)
+            end
             return data, filename
         else
             return nothing, filename
@@ -66,17 +76,24 @@ function produce_or_load(path, c, f::Function;
         else
             verbose && @info "File $filename does not exist. Producing it now..."
         end
-        data = f(c)
-        try
-            if tag
-                tagsave(filename, data; safe = false, gitpath = gitpath, storepatch = storepatch, wsave_kwargs...)
-            else
-                wsave(filename, copy(data); wsave_kwargs...)
+        if dry_run
+            data = nothing
+            verbose && @info "File $filename not saved (dry-run)."
+        else
+            data = f(c)
+            try
+                if tag
+                    tagsave(filename, data;
+                            safe = false, gitpath = gitpath, storepatch = storepatch,
+                            wsave_kwargs...)
+                else
+                    wsave(filename, copy(data); wsave_kwargs...)
+                end
+                verbose && @info "File $filename saved."
+            catch er
+                @warn "Could not save file. Error stacktrace:"
+                Base.showerror(stderr, er, stacktrace(catch_backtrace()))
             end
-            verbose && @info "File $filename saved."
-        catch er
-            @warn "Could not save file. Error stacktrace:"
-            Base.showerror(stderr, er, stacktrace(catch_backtrace()))
         end
         if loadfile
             return data, filename

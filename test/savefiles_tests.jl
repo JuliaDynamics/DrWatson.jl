@@ -95,6 +95,26 @@ end
 ################################################################################
 
 @testset "Produce or Load ($ending)" for ending ∈ ["bson", "jld2"]
+
+    # Test a dry-run
+    @test !isfile(savename(simulation, ending))
+    sim, path = @test_logs(
+        (:info, "File $(savename(simulation, ending)) not saved (dry-run)."),
+        match_mode=:any,
+        produce_or_load(simulation, f; suffix = ending, dry_run = true)
+    )
+    @test isnothing(sim)
+    @test path == savename(simulation, ending)
+    @test !isfile(savename(simulation, ending))
+    sim, path = @test_logs(
+        # no logs (verbose = false)
+        produce_or_load(simulation, f; suffix = ending, dry_run = true, verbose = false)
+    )
+    @test isnothing(sim)
+    @test path == savename(simulation, ending)
+    @test !isfile(savename(simulation, ending))
+
+    # Test a normal run
     @test !isfile(savename(simulation, ending))
     sim, path = produce_or_load(simulation, f; suffix = ending)
     @test isfile(savename(simulation, ending))
