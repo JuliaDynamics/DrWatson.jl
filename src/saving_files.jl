@@ -30,6 +30,9 @@ end
 * `gitpath, storepatch` : Given to [`tagsave`](@ref) if `tag` is `true`.
 * `force = false` : If `true` then don't check if `filename` exists and produce
   it and save it anyway.
+* `touch = readenv("DRWATSON_TOUCH_FILES", false)`: If `true`, run `touch` on
+  `filename` after reading it, marking it as "up to date" via its
+  modification time stamp.
 * `loadfile = true` : If `false`, this function does not actually load the
   file, but only checks if it exists. The return value in this case is always
   `nothing, filename`, regardless of whether the file exists or not. If it doesn't
@@ -52,6 +55,7 @@ function produce_or_load(path, c, f::Function;
         storepatch::Bool = readenv("DRWATSON_STOREPATCH", false),
         dry_run::Bool = readenv("DRWATSON_DRY_RUN", false),
         force = false,
+        touch = readenv("DRWATSON_TOUCH_FILES", false),
         verbose = readenv("DRWATSON_VERBOSE", true),
         wsave_kwargs = Dict(),
         kwargs...
@@ -65,6 +69,9 @@ function produce_or_load(path, c, f::Function;
                 data = nothing
             else
                 data = wload(filename)
+                if touch
+                    Base.touch(filename)
+                end
             end
             return data, filename
         else

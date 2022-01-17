@@ -125,6 +125,21 @@ end
     rm(savename(simulation, ending))
     @test !isfile(savename(simulation, ending))
 
+    # Test touching output files
+    @test !isfile(savename(simulation, ending))
+    sim, path = produce_or_load(simulation, f; suffix = ending)
+    time1 = mtime(path)
+    @test time1 > 0.0
+    sleep(0.1)
+    sim, path = produce_or_load(simulation, f; suffix = ending)
+    time2 = mtime(path)
+    @test time2 == time1
+    sleep(0.1)
+    sim, path = produce_or_load(simulation, f; suffix = ending, touch = true)
+    time3 = mtime(path)
+    @test time3 > time2
+    rm(path)
+
     @test !isfile(savename(simulation, ending))
     # Produce and save data, preserve source file name and line for test below.
     # Line needs to be saved on the same line as produce_or_load!
