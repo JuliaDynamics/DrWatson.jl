@@ -169,10 +169,10 @@ end
     # test with empty `path`
     filename = joinpath(mktempdir(), "out.$ending")
     @test !isfile(filename)
-    sim, p = @produce_or_load(simulation, filename=filename) do config
+    sim, file = @produce_or_load(simulation, filename=filename) do config
         f(config)
     end
-    @test p == filename
+    @test file == filename
     @test isfile(filename)
     @test sim["simulation"].T == T
     @test "script" ∈ keys(sim)
@@ -182,14 +182,14 @@ end
     path = mktempdir()
     filename = joinpath("sub", "out.$ending")
     @test !isfile(joinpath(path, filename))
-    sim, p = @produce_or_load(path, simulation, filename=filename) do config
+    sim, file = @produce_or_load(path, simulation, filename=filename) do config
         f(config)
     end
-    @test p == joinpath(path, filename)
-    @test isfile(p)
+    @test file == joinpath(path, filename)
+    @test isfile(file)
     @test sim["simulation"].T == T
     @test "script" ∈ keys(sim)
-    rm(p)
+    rm(file)
 
 end
 
