@@ -2,8 +2,8 @@ export produce_or_load, @produce_or_load, tagsave, @tagsave, safesave
 
 """
     produce_or_load([path="",] config, f; kwargs...) -> data, filename
-Let `filename = joinpath(path, savename(prefix, config, suffix))` where
-`config` is some kind of named parameter container.
+Let `filename = joinpath(path, savename(prefix, config, suffix))` by default,
+where `config` is some kind of named parameter container.
 If `filename` exists then load it and return the contained `data`, along
 with the global path that it is saved at (`filename`).
 
@@ -24,6 +24,8 @@ end
 ```
 
 ## Keywords
+* `filename = savename(prefix, config, suffix; kwargs...)` : Name of the file
+  to produce or load, relative to `path`. The output `filename` includes `path`.
 * `suffix = "jld2", prefix = default_prefix(config)` : Used in [`savename`](@ref).
 * `tag::Bool = DrWatson.readenv("DRWATSON_TAG", istaggable(suffix))` : Save the file
   using [`tagsave`](@ref) if `true` (which is the default).
@@ -48,10 +50,12 @@ function produce_or_load(path, c, f::Function;
         gitpath = projectdir(), loadfile = true,
         storepatch::Bool = readenv("DRWATSON_STOREPATCH", false),
         force = false, verbose = true, wsave_kwargs = Dict(),
+        filename::Union{Nothing, AbstractString} = nothing,
         kwargs...
     )
 
-    filename = joinpath(path, savename(prefix, c, suffix; kwargs...))
+    isnothing(filename) && (filename = savename(prefix, c, suffix; kwargs...))
+    filename = joinpath(path, filename)
 
     if !force && isfile(filename)
         if loadfile
