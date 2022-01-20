@@ -164,6 +164,35 @@ end
     rm(path)
 end
 
+@testset "Produce or Load with manual filename ($ending)" for ending ∈ ["bson", "jld2"]
+
+    # test with empty `path`
+    filename = joinpath(mktempdir(), "out.$ending")
+    @test !isfile(filename)
+    sim, file = @produce_or_load(simulation, filename=filename) do config
+        f(config)
+    end
+    @test file == filename
+    @test isfile(filename)
+    @test sim["simulation"].T == T
+    @test "script" ∈ keys(sim)
+    rm(filename)
+
+    # test with both `path` and filename
+    path = mktempdir()
+    filename = joinpath("sub", "out.$ending")
+    @test !isfile(joinpath(path, filename))
+    sim, file = @produce_or_load(path, simulation, filename=filename) do config
+        f(config)
+    end
+    @test file == joinpath(path, filename)
+    @test isfile(file)
+    @test sim["simulation"].T == T
+    @test "script" ∈ keys(sim)
+    rm(file)
+
+end
+
 @testset "Produce or Load wsave keyword pass through" begin
     # Create some highly compressible data
     data = Dict("data" => fill(1, 10000))

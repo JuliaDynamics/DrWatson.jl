@@ -1,15 +1,15 @@
 export produce_or_load, @produce_or_load, tagsave, @tagsave, safesave
 
 """
-    produce_or_load([path="",] config, f; kwargs...) -> data, filename
-Let `filename = joinpath(path, savename(prefix, config, suffix))` where
-`config` is some kind of named parameter container.
-If `filename` exists then load it and return the contained `data`, along
-with the global path that it is saved at (`filename`).
+    produce_or_load([path="",] config, f; kwargs...) -> data, file
+Let `file = joinpath(path, savename(prefix, config, suffix))` by default,
+where `config` is some kind of named parameter container.
+If `file` exists then load it and return the contained `data`, along
+with the global path that it is saved at (`file`).
 
 If the file does not exist then call `data = f(config)`, with `f` your function
-that produces your data. Then save the `data` as `filename` and then return
-`data, filename`.
+that produces your data. Then save the `data` as `file` and then return
+`data, file`.
 
 The function `f` should return a dictionary if the data are saved in the default
 format of JLD2.jl., the macro [`@strdict`](@ref) can help with that.
@@ -24,15 +24,19 @@ end
 ```
 
 ## Keywords
+* `filename = savename(prefix, config, suffix; kwargs...)` : Name of the file
+  to produce or load, relative to `path`. This may be useful in situations
+  where `config` has too many parameters for [`savename`](@ref) to be useful, and an
+  explicitly specified name is more suitable.
 * `suffix = "jld2", prefix = default_prefix(config)` : Used in [`savename`](@ref).
 * `tag::Bool = DrWatson.readenv("DRWATSON_TAG", istaggable(suffix))` : Save the file
   using [`tagsave`](@ref) if `true` (which is the default).
 * `gitpath, storepatch` : Given to [`tagsave`](@ref) if `tag` is `true`.
-* `force = false` : If `true` then don't check if `filename` exists and produce
+* `force = false` : If `true` then don't check if `file` exists and produce
   it and save it anyway.
 * `loadfile = true` : If `false`, this function does not actually load the
   file, but only checks if it exists. The return value in this case is always
-  `nothing, filename`, regardless of whether the file exists or not. If it doesn't
+  `nothing, file`, regardless of whether the file exists or not. If it doesn't
   exist it is still produced and saved.
 * `verbose = true` : print info about the process, if the file doesn't exist.
 * `wsave_kwargs = Dict()` : Keywords to pass to `wsave` (e.g. to enable
@@ -48,40 +52,42 @@ function produce_or_load(path, c, f::Function;
         gitpath = projectdir(), loadfile = true,
         storepatch::Bool = readenv("DRWATSON_STOREPATCH", false),
         force = false, verbose = true, wsave_kwargs = Dict(),
+        filename::Union{Nothing, AbstractString} = nothing,
         kwargs...
     )
 
-    filename = joinpath(path, savename(prefix, c, suffix; kwargs...))
+    isnothing(filename) && (filename = savename(prefix, c, suffix; kwargs...))
+    file = joinpath(path, filename)
 
-    if !force && isfile(filename)
+    if !force && isfile(file)
         if loadfile
-            data = wload(filename)
-            return data, filename
+            data = wload(file)
+            return data, file
         else
-            return nothing, filename
+            return nothing, file
         end
     else
         if force
-            verbose && @info "Producing file $filename now..."
+            verbose && @info "Producing file $file now..."
         else
-            verbose && @info "File $filename does not exist. Producing it now..."
+            verbose && @info "File $file does not exist. Producing it now..."
         end
         data = f(c)
         try
             if tag
-                tagsave(filename, data; safe = false, gitpath = gitpath, storepatch = storepatch, wsave_kwargs...)
+                tagsave(file, data; safe = false, gitpath = gitpath, storepatch = storepatch, wsave_kwargs...)
             else
-                wsave(filename, copy(data); wsave_kwargs...)
+                wsave(file, copy(data); wsave_kwargs...)
             end
-            verbose && @info "File $filename saved."
+            verbose && @info "File $file saved."
         catch er
             @warn "Could not save file. Error stacktrace:"
             Base.showerror(stderr, er, stacktrace(catch_backtrace()))
         end
         if loadfile
-            return data, filename
+            return data, file
         else
-            return nothing, filename
+            return nothing, file
         end
     end
 end
