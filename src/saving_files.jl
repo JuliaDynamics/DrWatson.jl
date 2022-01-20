@@ -2,7 +2,8 @@ export produce_or_load, @produce_or_load, tagsave, @tagsave, safesave
 
 """
     produce_or_load([path="",] config, f; kwargs...) -> data, filename
-Let `filename = joinpath(path, savename(prefix, config, suffix))` where
+If not given as a keyword argument, let
+`filename = joinpath(path, savename(prefix, config, suffix))` where
 `config` is some kind of named parameter container.
 If `filename` exists then load it and return the contained `data`, along
 with the global path that it is saved at (`filename`).
@@ -24,7 +25,11 @@ end
 ```
 
 ## Keywords
-* `suffix = "jld2", prefix = default_prefix(config)` : Used in [`savename`](@ref).
+* `filename=nothing`: Full path and name of the file to produce or load. The
+   option is mutually exclusive with `path`, `suffix`, `prefix` and `kwargs...`
+   (see below). If `nothing`, the filename will be determined via [`savename`](@ref).
+* `suffix = "jld2", prefix = default_prefix(config)` : Used in
+  [`savename`](@ref). Must not be given together with `filename`.
 * `tag::Bool = DrWatson.readenv("DRWATSON_TAG", istaggable(suffix))` : Save the file
   using [`tagsave`](@ref) if `true` (which is the default).
 * `gitpath, storepatch` : Given to [`tagsave`](@ref) if `tag` is `true`.
@@ -37,13 +42,16 @@ end
 * `verbose = true` : print info about the process, if the file doesn't exist.
 * `wsave_kwargs = Dict()` : Keywords to pass to `wsave` (e.g. to enable
   compression).
-* `kwargs...` : All other keywords are propagated to `savename`.
+* `kwargs...` : All other keywords are propagated to `savename`, or ignored if
+  `filename` is given.
 """
 produce_or_load(c, f; kwargs...) = produce_or_load("", c, f; kwargs...)
 produce_or_load(f::Function, c; kwargs...) = produce_or_load(c, f; kwargs...)
 produce_or_load(f::Function, path, c; kwargs...) = produce_or_load(path, c, f; kwargs...)
 function produce_or_load(path, c, f::Function;
-        suffix = "jld2", prefix = default_prefix(c),
+        filename::Union{Nothing, AbstractString}=nothing,
+        suffix = (isnothing(filename) ? "jld2" : replace(splitext(filename)[2], "."=>"")),
+        prefix = default_prefix(c),
         tag::Bool = readenv("DRWATSON_TAG", istaggable(suffix)),
         gitpath = projectdir(), loadfile = true,
         storepatch::Bool = readenv("DRWATSON_STOREPATCH", false),
@@ -51,7 +59,14 @@ function produce_or_load(path, c, f::Function;
         kwargs...
     )
 
-    filename = joinpath(path, savename(prefix, c, suffix; kwargs...))
+    if isnothing(filename)
+        filename = joinpath(path, savename(prefix, c, suffix; kwargs...))
+    else
+        if !(isempty(path) && isempty(prefix) && isempty(kwargs))
+            @warn "filename overrides path, prefix, and kwargs..."
+        end
+        endswith(filename, suffix) || error("$filename does not end with $suffix")
+    end
 
     if !force && isfile(filename)
         if loadfile
