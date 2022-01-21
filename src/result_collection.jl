@@ -36,8 +36,9 @@ See also [`collect_results`](@ref).
   for result-files.
 * `valid_filetypes = [".bson", ".jld", ".jld2"]`: Only files that have these
   endings are interpreted as result-files. Other files are skipped.
-* `rpath = nothing` : If not `nothing` stores `relpath(file,rpath)` of result-files
-  in `df`. By default the absolute path is used.
+* `rpath = nothing` : If not `nothing`, then it must be a path to a folder. The `path`
+  column of the result-files is then `relpath(file, rpath)`, instead of the absolute
+  path, which is used by default.
 * `verbose = true` : Print (using `@info`) information about the process.
 * `update = false` : Update data from modified files and remove entries for deleted
   files.
