@@ -282,8 +282,12 @@ safesave(datadir("ana", "linear.jld2"), @strdict analysis)
 # What is demonstrated there is that it is truly trivial to share your project
 # with a colleague, and this project is guaranteed to work for them!
 
-
 # ---
 
 # And that's it! We hope that DrWatson will take some stress out of the absurdly stressfull
 # scientific life!
+
+# Attempt to remove the folder at the end #src
+# ```@setup workflow
+# rm(joinpath(@__DIR__, "DrWatson Example"); force=true, recursive=true)
+# ```
