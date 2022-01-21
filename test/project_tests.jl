@@ -92,7 +92,7 @@ initialize_project(path, name; force = true, git = false, template = t1)
 @test !ispath(joinpath(path, "src"))
 
 @info "I am now attempting to delete path."
-rm(path; recursive = true, force = true)
+rm(joinpath(@__DIR__, path); recursive = true, force = true)
 rm(path; recursive = true, force = true)
 @info "I have called the `rm` function."
 @test !isdir(path)
