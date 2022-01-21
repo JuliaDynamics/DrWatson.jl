@@ -24,10 +24,6 @@ tmpsave
 An example usage is shown in [Using a Serial Cluster](@ref).
 
 ## Collecting Results
-!!! note "Requires `DataFrames`"
-    The function `collect_results!` is only available if you do
-    `using DataFrames` in your Julia session.
-
 There are cases where you have saved a bunch of simulation results in a bunch of different files in a folder. It is useful to be able to collect all of these results into a single table, in this case a `DataFrame`. The function [`collect_results!`](@ref) provides this functionality. Importantly, the function is "future-proof" which means that it works nicely even if you add new parameters or remove old parameters from your results as your project progresses!
 
 ```@docs

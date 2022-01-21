@@ -5,7 +5,7 @@ global_user_name = LibGit2.getconfig("user.name", "")
 global_user_email = LibGit2.getconfig("user.email", "")
 
 cd(@__DIR__)
-path = "test project"
+path = "test_project"
 name = "lala"
 
 Pkg.activate()
@@ -91,5 +91,8 @@ initialize_project(path, name; force = true, git = false, template = t1)
 @test ispath(joinpath(path, "documents", "a"))
 @test !ispath(joinpath(path, "src"))
 
-rm(path, recursive = true, force = true)
-@test !isdir(path)
+@info "I am now attempting to delete path."
+rm(joinpath(@__DIR__, path); recursive = true, force = true)
+@info "I have called the `rm` function."
+@test !isdir(joinpath(@__DIR__, path))
+@info "`isdir` test also passed."
