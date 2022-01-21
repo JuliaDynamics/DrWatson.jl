@@ -3,6 +3,10 @@ export collect_results, collect_results!
 """
     collect_results!([filename,] folder; kwargs...) -> df
 
+!!! note "Requires `DataFrames`"
+    The function `collect_results!` is only available if you do
+    `using DataFrames` in your Julia session.
+
 Search the `folder` (and possibly all subfolders) for new result-files and add
 them to `df` which is a `DataFrame` containing all the information from
 each result-file.
@@ -23,13 +27,10 @@ filename = joinpath(dirname(folder), "results_\$(basename(folder)).jld2")
 
 See also [`collect_results`](@ref).
 
-!!! warning
+!!! warning "Don't use `:path` as a parameter name."
     `df` contains a column `:path` which is the path where each result-file
     is saved to. This is used to not reload and reprocess files already
     present in `df` when searching for new ones.
-
-    If you have an entry `:path` in your saved result-files this will probably
-    break `collect_results` (untested).
 
 ## Keyword Arguments
 * `subfolders::Bool = false` : If `true` also scan all subfolders of `folder`
