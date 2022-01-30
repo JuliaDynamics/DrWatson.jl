@@ -53,6 +53,13 @@ include("dict_list.jl")
 # Functionality that requires Dataframes and other heavy dependencies:
 using Requires
 
+# Functionality for managing multiple output files, or files with too
+# many parameters, and metadata (previously DrWatsonSim)
+
+include("locking.jl")
+include("metadata.jl")
+include("simulation.jl")
+
 # Update messages
 using Scratch
 const display_update = true
