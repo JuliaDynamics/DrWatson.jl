@@ -1,7 +1,6 @@
 using Dates
 export simdir, simid, @run, @runsync, @rerun, @rerunsync, in_simulation_mode, @SimulationEnvironment
 
-
 const ENV_SIM_FOLDER = "SIMULATION_FOLDER"
 const ENV_SIM_ID = "SIMULATION_ID"
 

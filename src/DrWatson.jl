@@ -56,7 +56,6 @@ using Requires
 # Functionality for managing multiple output files, or files with too
 # many parameters, and metadata (previously DrWatsonSim)
 
-include("locking.jl")
 include("metadata.jl")
 include("simulation.jl")
 
