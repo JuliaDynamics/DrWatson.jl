@@ -9,60 +9,28 @@ include("helper_functions.jl")
 
 @testset "Metadata and Simulation" begin
     @testset "Metadata" begin
-        @eval ds max_lock_retries = 10
+        # @eval ds max_lock_retries = 10
 
-        dummy_project() do folder
-            @testset "Locking functions" begin 
-                @test_logs (:info, r"creating") ds.assert_metadata_directory()
-                # Check if index file was created
-                ds.iolock("metadata")
-                @test isdir(ds.metadatadir("metadata.lck"))
-                ds.iolock("foo")
-                @test isdir(ds.metadatadir("foo.lck"))
-                @test_throws ErrorException ds.iolock("foo")
-                ds.iounlock("foo")
-                ds.iolock("foo")
-                ds.iounlock("foo")
-                @test_throws ErrorException ds.iolock("metadata")
-                @test_throws ErrorException ds.iolock("metadata")
-                ds.iounlock("metadata")
-                @test_throws ErrorException ds.iounlock("metadata")
-                ds.iolock("metadata")
-                ds.iounlock("metadata")
-                @test ds.semaphore_status("bar") == 0
-                ds.semaphore_enter("bar")
-                @test isfile(ds.metadatadir("bar.sem"))
-                ds.semaphore_enter("bar")
-                ds.semaphore_enter("bar")
-                @test ds.semaphore_status("bar") == 3
-                ds.semaphore_exit("bar")
-                @test ds.semaphore_status("bar") == 2
-                ds.semaphore_exit("bar")
-                @test ds.semaphore_status("bar") == 1
-                ds.semaphore_exit("bar")
-                @test ds.semaphore_status("bar") == 0
-                @test !isfile(ds.metadatadir("bar.sem"))
-                @test_throws ErrorException ds.semaphore_exit("bar")
-                function sem_test()
-                    function blocked_worker(v)
-                        ds.iolock("foo", wait_for_semaphore="bar")
-                        v[1]=1
-                        ds.iounlock("foo")
-                    end
-                    v = [0]
-                    ds.semaphore_enter("bar")
-                    @async blocked_worker(v)
-                    @test v[1] == 0
-                    ds.semaphore_enter("bar")
-                    @test v[1] == 0
-                    ds.semaphore_exit("bar")
-                    ds.semaphore_exit("bar")
-                    yield()
-                    @test v[1] == 1
-                end
-                @sync sem_test()
-            end
-        end
+        # dummy_project() do folder
+        #     @testset "Locking functions" begin 
+        #         @test_logs (:info, r"creating") ds.assert_metadata_directory()
+        #         # Check if index file was created
+        #         ds.iolock("metadata")
+        #         @test isdir(ds.metadatadir("metadata.lck"))
+        #         ds.iolock("foo")
+        #         @test isdir(ds.metadatadir("foo.lck"))
+        #         @test_throws ErrorException ds.iolock("foo")
+        #         ds.iounlock("foo")
+        #         ds.iolock("foo")
+        #         ds.iounlock("foo")
+        #         @test_throws ErrorException ds.iolock("metadata")
+        #         @test_throws ErrorException ds.iolock("metadata")
+        #         ds.iounlock("metadata")
+        #         @test_throws ErrorException ds.iounlock("metadata")
+        #         ds.iolock("metadata")
+        #         ds.iounlock("metadata")
+        #     end
+        # end
 
         dummy_project() do folder
             @testset "Identifer Creation" begin

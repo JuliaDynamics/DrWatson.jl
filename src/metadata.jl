@@ -19,11 +19,7 @@ function Metadata(path::String; overwrite=false)
     assert_metadata_directory()
     rel_path = project_rel_path(path)
     # Check if there is already an entry for that file in the index
-    iolock("metadata")
-    semaphore_enter("indexread")
-    iounlock("metadata")
     _path = find_file_in_index(path)
-    semaphore_exit("indexread")
     if _path !== nothing && !overwrite
         m = load_metadata(_path)
         if m.mtime != mtime(path) && isfile(path)
@@ -33,13 +29,8 @@ function Metadata(path::String; overwrite=false)
         m = Metadata(rel_path, mtime(path), Dict{String,Any}())
         save_metadata(m)
     else
-        iolock("metadata", wait_for_semaphore="indexread")
-        try
-            m = Metadata(rel_path, mtime(path), Dict{String,Any}())
-            save_metadata(m)
-        finally
-            iounlock("metadata")
-        end
+        m = Metadata(rel_path, mtime(path), Dict{String,Any}())
+        save_metadata(m)
     end
     return m
 end
@@ -106,36 +97,23 @@ end
 function rename!(m::Metadata, path)
     rel_path = project_rel_path(path)
     assert_metadata_directory()
-    iolock("metadata", wait_for_semaphore="indexread")
-    try
-        if find_file_in_index(rel_path) !== nothing 
-            iounlock("metadata")
-            error("There is already metadata stored for '$path'.")
-        end
-        new_metadata_file = metadatadir(hash_path(path)|>to_file_name)
-        old_metadata_file = metadatadir(hash_path(m.path)|>to_file_name)
-        mv(old_metadata_file, new_metadata_file)
-        setfield!(m, :path, rel_path)
-        save_metadata(m)
-    finally
-        iounlock("metadata")
+    if find_file_in_index(rel_path) !== nothing 
+        error("There is already metadata stored for '$path'.")
     end
+    new_metadata_file = metadatadir(hash_path(path)|>to_file_name)
+    old_metadata_file = metadatadir(hash_path(m.path)|>to_file_name)
+    mv(old_metadata_file, new_metadata_file)
+    setfield!(m, :path, rel_path)
+    save_metadata(m)
 end
 
 function Base.delete!(m::Metadata)
     assert_metadata_directory()
-    iolock("metadata", wait_for_semaphore="indexread")
-    try
-        file = metadatadir(to_file_name(hash_path(m.path)))
-        if !isfile(file)
-            iounlock("metadata")
-            error("There is no metadata storage for id $(m.path)")
-        end
-        rm(file)
-        remove_index_entry(m.id, get_stored_path(m))
-    finally
-        iounlock("metadata")
+    file = metadatadir(to_file_name(hash_path(m.path)))
+    if !isfile(file)
+        error("There is no metadata storage for id $(m.path)")
     end
+    rm(file)
 end
 
 function save_metadata(m::Metadata)
@@ -184,7 +162,7 @@ function get_metadata(f::Function)
     return ms
 end
 
-function get_metadata() 
+function get_metadata()
     return get_metadata() do m
         true
     end
