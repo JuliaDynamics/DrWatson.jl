@@ -142,8 +142,6 @@ include("helper_functions.jl")
                 m = Metadata(datadir("sims","2"))
                 m["Foo"] = "Baz"
                 @test length(get_metadata()) == 2
-                @test length(get_metadata("Foo","Baz")) == 1
-                @test get_metadata("Foo","Baz")[1].path == m.path
             end
         end
     end
