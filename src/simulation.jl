@@ -7,9 +7,44 @@ const ENV_SIM_ID = "SIMULATION_ID"
 """
     AbstractSimulationEnvironment
 
-    # Examples
-```julia-repl
-julia> 
+Defines the simulation environment and the functions used for starting simulations.
+In most cases, only the following functions require changes:
+
+- [`add_simulation_metadata!`](@ref)
+- [`submit_command`](@ref)
+
+Adapting those function allows using different methods for dispatching simulations,
+like usage of schedulers.
+
+# Examples
+
+Custom environment for Slurm
+
+```julia
+# Define Slurm specific parameters
+struct Slurm <: DrWatson.AbstractSimulationEnvironment
+    cpus # Number of cpus to use in the simulation
+    prefix # Some prefix for the name
+    est_time # The estimated time for the scheduler
+end
+
+# Define the new submit command
+function DrWatson.submit_command(conf::Slurm, id, env)
+    # Extract the working directory from the environmental variables.
+    # `simdir()` can't be used as `submit_command` runs before the simulation
+    # is actually started.
+    wd = env[DrWatson.ENV_SIM_FOLDER]
+    log_out = joinpath(wd,"output.log")
+    cmd_str = string(`$(Base.julia_cmd()) $(PROGRAM_FILE)`)[2:end-1]
+    `sbatch --export=ALL --nodes=1 --ntasks=$(conf.cpus) --job-name=$(conf.prefix)-$(id) --time=$(conf.est_time) --output=$(log_out) --wrap $(cmd_str)`
+end
+
+# ...
+# Define `f` and generate `parameters`
+# ...
+# Run the simulation using Slurm. Here, the sequential version can be used,
+# as the jobs are just submit command just schedules the jobs.
+@runsync Slurm(4, "ID", "6") f parameters datadir("sims")
 ```
 """
 abstract type AbstractSimulationEnvironment end
