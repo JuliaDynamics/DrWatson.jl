@@ -256,7 +256,7 @@ data, file = produce_or_load(
 ```
 Now, every time I run this code block the function tests automatically whether the file exists. Only if it does not, then the code is run while the new result is saved to ensure I won't have to run it again.
 
-The extra step is that I have to extract the useful data I need from the container `file`. Thankfully the `@unpack` macro from [Parameters.jl](https://mauro3.github.io/Parameters.jl/stable/manual.html) makes this super easy.
+The extra step is that I have to extract the useful data I need from the container `file`. Thankfully the `@unpack` macro from [UnPack.jl](https://github.com/mauro3/UnPack.jl) makes this super easy.
 
 ## Preparing & running jobs
 ### Preparing the dictionaries
