@@ -95,11 +95,14 @@ function is_solution_subset_of_existing(trial, trial_solutions)
 end
 
 function _dict_list(c::AbstractDict)
+
+    dict = typeof(c)
+
     iterable_fields = filter(k -> typeof(c[k]) <: Vector, keys(c))
     non_iterables = setdiff(keys(c), iterable_fields)
 
-    iterable_dict = Dict(iterable_fields .=> getindex.(Ref(c), iterable_fields))
-    non_iterable_dict = Dict(non_iterables .=> getindex.(Ref(c), non_iterables))
+    iterable_dict = dict(iterable_fields .=> getindex.(Ref(c), iterable_fields))
+    non_iterable_dict = dict(non_iterables .=> getindex.(Ref(c), non_iterables))
 
     vec(
         map(Iterators.product(values(iterable_dict)...)) do vals
@@ -111,7 +114,7 @@ function _dict_list(c::AbstractDict)
             else
                 # We can't use merge here because it promotes types.
                 # The uniqueness of the dictionary keys is guaranteed.
-                Dict(dd..., collect(non_iterable_dict)...)
+                dict(dd..., collect(non_iterable_dict)...)
             end
         end
     )
