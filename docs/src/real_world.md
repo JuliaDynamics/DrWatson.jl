@@ -529,6 +529,92 @@ julia> expensive_computation(5)
 2021-05-19 19:20:29 | n = 5 | error = 0.15 | maxrss = 326.27 MiB
 ```
 
+## Saving plots
+At this stage after you have generated data and used [`collect_results`](@ref) to gather your data. Now you may be starting to make plots/figures and wanting to save them, then you can just overload the save tool `wsave` as discussed in [Saving Tools](@ref) to handle your plot data types. Most likely you will only get [`safesave`](@ref) automatically. Here is an example:
+
+!!! note
+    The example below assumes your using the [Plots.jl](https://github.com/JuliaPlots/Plots.jl) package and for the most part should work with any backend. The `Plots.savefig` function handles the image type based on the extension used, for example, `savefig(example,"example.png")`
+
+```julia
+using DrWatson
+using Plots
+DrWatson._wsave(filename,plot::T) where T<: Plots.Plot = begin
+    mkpath(dirname(filename));
+    savefig(plot,filename)
+end
+```
+The `filename` can be provided by [`savename`](@ref) to assist with adding parameters used to generate the data returned by [`collect_results`](@ref). Nothing new really here, but this raises the question, what if we want to get information from [`tagsave`](@ref) which provides critical details from `git` and the macro [`@tagsave`](@ref) gives us information about the script that ran and line number. We need to then work with text based plots.
+
+### Adding provenance details to text based plots
+ There are many instances where you will want to know what script generated a plot. This is hard to do consistently with plots stored in formats like `pdf` or `png`, but text-based vector formats like [`PGF/tikz`](https://en.wikipedia.org/wiki/PGF/TikZ) (or [`svg`](https://en.wikipedia.org/wiki/Scalable_Vector_Graphics)) are just mark-up text and allow for in-file comments. Therefore, one can store comments in the actual plot file providing provenance information which enables reproducing plots/figures more easily. To do this in `DrWatson`, we have to create a new [`tagsave`](@ref) method for our data type and `Dict` of `info` we want to write. Below is an example:
+ 
+!!! note
+    The example below assumes you've add the [`PGFPlotsX.jl`](https://kristofferc.github.io/PGFPlotsX.jl/stable/) backend for [`Plots.jl`](https://github.com/JuliaPlots/Plots.jl) but this can easily be adapted for other plotting packages.
+
+```julia
+using DrWatson
+using Plots; pgfplotsx()
+
+# Puts info as comments at eof
+function insert_latex_comment(file, string::String)
+    open(file, "r+") do io
+        readlines(io)
+        @assert eof(io)
+        mark(io)
+        buf = IOBuffer()
+        seekstart(buf)
+        reset(io)
+        write(io, "% "*strip(string,'%')*"\n";)
+    end
+end
+
+DrWatson._wsave(filename, plot::T, info::Dict) where T<:Plots.Plot  = begin
+    mkpath(dirname(filename));
+    savefig(plot,filename)
+    if info["plotbackend"] == Plots.PGFPlotsXBackend
+        for (k,v) in info
+            outstr = "$k => $v"
+            insert_latex_comment(filename,outstr)
+        end
+    end
+end
+
+DrWatson.safesave(file, plot::T, info::Dict; kwargs...) where T<:Plots.Plot = begin
+    recursively_clear_path(file)
+    wsave(file,plot,info;kwargs...)
+end
+
+DrWatson.tagsave(file, plot::T;
+                 gitpath=projectdir(),
+                 safe::Bool=DrWatson.readenv("DRWATSON_SAFESAVE", false),
+                 storepatch::Bool=DrWatson.readenv("DRWATSON_STOREPATCH", false),
+                 force=false, source=nothing, kwargs...
+                 ) where T<: Plots.Plot  = begin
+
+     info = tag!(Dict("plotbackend" => typeof(plot.backend)), 
+               gitpath=gitpath, 
+               storepatch=storepatch, 
+               force=force, source=source)
+    if safe
+        safesave(file, plot, copy(info); kwargs...)
+    else
+        wsave(file,plot,copy(info); kwargs...)
+    end
+    return info
+end
+
+x = range(0,4π,length=10);
+y = sin.(x);
+
+p = plot(x,y,label="function");
+
+@tagsave("example.tikz",p);
+```
+
+This will generate a `tikz` file having comments at the end of that file with whatever is stored in `info` in addition to critical `gitpath` and `gitpatch` details. Notice that we can use [`@tagsave`](@ref) which gives information about which script was used and the line number; this is almost always desirable so using [`@tagsave`](@ref) is perfered to ensure true provenance and reproducibilty.
+
+One of the limitations of this implementation is that we need to include these method extensions in every file we want to use `DrWatson`. The way to most easily do this is to put these into a script (ex. `scripts/DrWatsonSaveMods.jl`) and then add `include(scriptsdir("DrWatsonSaveMods.jl"))` to your current file.
+
 ## Taking project input-output automation to 11
 The point of this section is to show how far one can take the interplay between [`savename`](@ref) and [`produce_or_load`](@ref) to **automate project input-to-output and eliminate as many duplicate lines of code as possible**. Read [Customizing `savename`](@ref) first, as knowledge of that section is used here.
 
