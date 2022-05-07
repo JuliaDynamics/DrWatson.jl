@@ -255,7 +255,7 @@ df = collect_results(datadir("simulations"))
 #   this dataframe.
 # * If you create new simulations that have **new parameters**, that don't exist in the
 #   simulations already saved, that's no problem. `collect_results` will appropriately
-#   and automatically add `missing` to all parameter values that don't exist in previews
+#   and automatically add `missing` to all parameter values that don't exist in previous
 #   and/or current simulations. This is demonstrated explicitly in the
 #   [Adapting to new data/parameters](@ref) real world example, so it is not repeated here.
 # * Similarly with e.g. `savename`, `collect_results` is a flexible function. It has
