@@ -10,7 +10,7 @@ DrWatson helps establishing reproducibility, and in general it makes managing a 
 
 See the [Functionality](@ref) section to get an impression of what you can do with DrWatson or see the [DrWatson Workflow Tutorial](@ref) to get a "crash course" of how DrWatson helps the typical scientific workflow.
 The [Description of DrWatson](@ref) section describes the design decisions that make it a unique software that truly helps the scientific workflow.
-If you want to see how DrWatson compares with other existing alternatives, please have a look at our paper in [Citing](@ref).
+If you want to see how DrWatson compares with other existing alternatives, please have a look at our paper in [Citation](@ref).
 
 You can also watch this 8-minutes video that introduces DrWatson in JuliaCon2020:
 
