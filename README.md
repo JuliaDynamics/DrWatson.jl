@@ -1,8 +1,10 @@
 ![DrWatson](https://github.com/JuliaDynamics/JuliaDynamics/blob/master/videos/drwatson/DrWatson-banner.png?raw=true)
 
-| **Documentation**   |  **Tests**     | **CodeCov**  | **Gitter** | Citation|
-|:--------:|:---------------:|:-------:|:------:|:-----:|
-|[![](https://img.shields.io/badge/docs-online-blue.svg)](https://JuliaDynamics.github.io/DrWatson.jl/dev)| [![CI](https://github.com/juliadynamics/DrWatson.jl/workflows/CI/badge.svg)](https://github.com/JuliaDynamics/DrWatson.jl/actions) | [![codecov](https://codecov.io/gh/JuliaDynamics/DrWatson.jl/branch/master/graph/badge.svg)](https://codecov.io/gh/JuliaDynamics/DrWatson.jl) | [![Gitter](https://img.shields.io/gitter/room/nwjs/nw.js.svg)](https://gitter.im/JuliaDynamics/Lobby) | [![DOI](https://joss.theoj.org/papers/10.21105/joss.02673/status.svg)](https://doi.org/10.21105/joss.02673)
+[![](https://img.shields.io/badge/docs-latest-blue.svg)](https://JuliaDynamics.github.io/DrWatson.jl/dev)
+[![CI](https://github.com/juliadynamics/DrWatson.jl/workflows/CI/badge.svg)](https://github.com/JuliaDynamics/DrWatson.jl/actions)
+[![codecov](https://codecov.io/gh/JuliaDynamics/DrWatson.jl/branch/master/graph/badge.svg)](https://codecov.io/gh/JuliaDynamics/DrWatson.jl)
+[![DOI](https://joss.theoj.org/papers/10.21105/joss.02673/status.svg)](https://doi.org/10.21105/joss.02673)
+[![Package Downloads](https://shields.io/endpoint?url=https://pkgs.genieframework.com/api/v1/badge/DrWatson)](https://pkgs.genieframework.com?packages=DrWatson)
 
 DrWatson is a **scientific project assistant** software.
 It helps people manage their scientific projects (or any project for that matter).
