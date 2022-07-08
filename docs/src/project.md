@@ -127,7 +127,7 @@ This way, any data result obtained at any moment can be truly reproduced simply 
 If you already have an existing project with scripts and data etc., then there is no reason to use the [`initialize_project`](@ref) function.
 The only requirement is that everything that belongs to your project is contained within a single folder (which can have an arbitrary amount of subfolders).
 If your project is already a Julia project (which means it has its own Project.toml and Manifest.toml files), then there is nothing more necessary to be done,
-you can immediatelly start using DrWatson with it.
+you can immediately start using DrWatson with it.
 Although we recommend following the [Default Project Setup](@ref), you don't have to do this either, since you can create your own [Custom directory functions](@ref).
 
 If your project is _not_ also a Julia project, the steps necessary are still quite simple. You can do:

@@ -98,7 +98,7 @@ project file is found.
 Example:
 ```julia
 using DrWatson
-quickactivate("path/to/project", "Best project in the WOLRLDD")
+quickactivate("path/to/project", "Best project in the WOLRLD")
 ```
 
 Notice that this function is _first_ activating the project and _then_ checking if

@@ -132,7 +132,7 @@ end
 
 # Basis taken from https://github.com/FluxML/MacroTools.jl.
 # The functions are similar to the ones from MacroTools but support an
-# additional expression to be passed. The functions are NOT exportet by
+# additional expression to be passed. The functions are NOT exported by
 # MacroTools, so there is no need to rename or import them.
 walk(x, inner, outer, ex) = outer(x, ex)
 walk(x::Expr, inner, outer, ex) = outer(Expr(x.head, map(y->inner(y,x), x.args)...), ex)
