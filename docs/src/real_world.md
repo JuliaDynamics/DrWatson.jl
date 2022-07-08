@@ -160,7 +160,7 @@ println( savename(e2) )
 ## `savename` and nested containers
 In the case of user-defined structs and projects of significant complexity, it is often necessary that your "main" container has other containers as subfields.
 `savename` can adapt to these situations as well.
-Consider the following example, where I need a core struct that represents a spatio temporal system, and its simulation:
+Consider the following example, where I need a core struct that represents a spatiotemporal system, and its simulation:
 ```@example customizing
 struct SpatioTemporalSystem
     model::String # system codeword
