@@ -1,4 +1,3 @@
-
       - name: Generate documentation and deploy
         env: # needed for pushing to gh-pages branch
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
