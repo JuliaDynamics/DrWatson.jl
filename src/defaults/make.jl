@@ -2,8 +2,8 @@ CI = get(ENV, "CI", nothing) == "true" || get(ENV, "GITHUB_TOKEN", nothing) !== 
 using DrWatson, Documenter
 @quickactivate "<NAME-PLACEHOLDER>"
 
-# Here you include files using `srcdir`
-include(srcdir("dummy_source_file.jl"))
+# Here you may include files from the source directory
+include(srcdir("dummy_src_file.jl"))
 
 @info "Building Documentation"
 makedocs(;

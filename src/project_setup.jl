@@ -343,7 +343,8 @@ function initialize_project(path, name = default_name_from_path(path);
     cp(defaultdir("gitattributes.txt"), pathdir(".gitattributes"))
     chmod(pathdir(".gitattributes"), 0o644)
     write(pathdir("scripts", "intro.jl"), rename(defaultdir("intro.jl")))
-    files = [".gitignore", ".gitattributes", "scripts/intro.jl"]
+    write(pathdir("src", "dummy_src_file.jl"), rename(defaultdir("dummy_src_file.jl")))
+    files = [".gitignore", ".gitattributes", "scripts/intro.jl", "src/dummy_src_file.jl"]
     if readme
         write(pathdir("README.md"), DEFAULT_README(name, authors))
         push!(files, "README.md")
