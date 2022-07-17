@@ -8,7 +8,7 @@ using DrWatson, Test
 println("Starting tests")
 ti = time()
 
-@testset "$<NAME-PLACEHOLDER> tests" begin
+@testset "<NAME-PLACEHOLDER> tests" begin
     @test 1 == 1
 end
 

@@ -242,10 +242,8 @@ The new project remains activated for you to immidiately add packages.
   is also generated and hosted during continuous integration using Documenter.jl
   (if hosted on GitHub). If this option is enabled, `Documenter` also becomes a
   dependency of the project. Additionally, a GitHub repo directory
-  needs to be settled in `docs/make.jl`, in the keyword `repo` of the `makedocs` function.
-  We try to deduce one by combining the `authors` and `name`, but in 99% of cases
-  this will be wrong and needs to be set manually by the user.
-  Typically, documentation is not necessary for most projects, because README.md can
+  needs to be set in `docs/make.jl`, in the keyword `repo` of the `makedocs` function.
+  Typically, a full documentation is not necessary for most projects, because README.md can
   serve as the documentation, hence this feature is `false` by default.
 * `template = DrWatson.DEFAULT_TEMPLATE` : A template containing the folder structure
   of the project. It should be a vector containing strings (folders) or pairs of `String
@@ -292,6 +290,18 @@ function initialize_project(path, name = default_name_from_path(path);
         repo = LibGit2.init(path)
         sig = LibGit2.Signature("DrWatson", "no@mail", round(Int, time()), 0)
         LibGit2.commit(repo, "Initial commit"; author=sig, committer=sig)
+        # Attempt to rename branch to `main`
+        try
+            default = LibGit2.branch(repo)
+            branch = "main"
+            if branch != default
+                LibGit2.branch!(repo, branch)
+                LibGit2.delete_branch(GitReference(repo, "refs/heads/$default"))
+            end
+        catch err
+            @warn "We couldn't rename default branch to `main`, please do it manually. "*
+            "We got error: \n$(sprint(showerror, err))"
+        end
     end
     # Add packages
     Pkg.activate(path)
