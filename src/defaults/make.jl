@@ -1,6 +1,7 @@
 CI = get(ENV, "CI", nothing) == "true" || get(ENV, "GITHUB_TOKEN", nothing) !== nothing
-using DrWatson, Documenter
+using DrWatson
 @quickactivate "<NAME-PLACEHOLDER>"
+using Documenter
 
 # Here you may include files from the source directory
 include(srcdir("dummy_src_file.jl"))

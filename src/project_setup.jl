@@ -248,7 +248,7 @@ The new project remains activated for you to immidiately add packages.
 * `template = DrWatson.DEFAULT_TEMPLATE` : A template containing the folder structure
   of the project. It should be a vector containing strings (folders) or pairs of `String
   => Vector{String}`, containg a folder and subfolders (this can be nested further). Example:
-  ```
+  ```julia
   DEFAULT_TEMPLATE = [
     "_research",
     "src",
@@ -346,7 +346,7 @@ function initialize_project(path, name = default_name_from_path(path);
     write(pathdir("src", "dummy_src_file.jl"), rename(defaultdir("dummy_src_file.jl")))
     files = [".gitignore", ".gitattributes", "scripts/intro.jl", "src/dummy_src_file.jl"]
     if readme
-        write(pathdir("README.md"), DEFAULT_README(name, authors))
+        write(pathdir("README.md"), DEFAULT_README(name, authors; add_docs))
         push!(files, "README.md")
     end
     # Update Project.toml with name, version, and authors
@@ -451,11 +451,11 @@ It ensures the project structure is copied whenever you clone the project.
 This doesn't commit any files within the folder.
 """
 
-function DEFAULT_README(name, authors = nothing)
+function DEFAULT_README(name, authors = nothing; add_docs = false)
     s = """
     # $name
 
-    This code base is using the Julia Language and
+    This code base is using the [Julia Language](https://julialang.org/) and
     [DrWatson](https://juliadynamics.github.io/DrWatson.jl/stable/)
     to make a reproducible scientific project named
     > $name
@@ -480,7 +480,23 @@ function DEFAULT_README(name, authors = nothing)
 
     This will install all necessary packages for you to be able to run the scripts and
     everything should work out of the box, including correctly finding local paths.
+
+    You may notice that most scripts start with the commands:
+    ```julia
+    using DrWatson
+    @quickactivate "$name"
+    ```
+    which auto-activate the project and enable local path handling from DrWatson.
     """
+    if add_docs
+        s *= """
+        \n\n
+        Some documentation has been set up for this project. It can be viewed by
+        running the file `docs/make.jl`, and then launching the generated file
+        `docs/build/index.html`.
+        Alternatively, the documentation may be already hosted online.
+        """
+    end
     return s
 end
 
