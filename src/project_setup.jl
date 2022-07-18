@@ -241,8 +241,11 @@ The new project remains activated for you to immidiately add packages.
   for the project, which can be generated locally by running `docs/make.jl` but
   is also generated and hosted during continuous integration using Documenter.jl
   (if hosted on GitHub). If this option is enabled, `Documenter` also becomes a
-  dependency of the project. Additionally, a GitHub repo directory
-  needs to be set in `docs/make.jl`, in the keyword `repo` of the `makedocs` function.
+  dependency of the project. To host the docs online, (1) a GitHub repo directory
+  needs to be set in `docs/make.jl`, in the keyword `repo` of the `makedocs` function,
+  and (b) you need to manually enable the `gh-pages` deployment by going to settings/pages
+  of your GitHub repo, and choosing "Source" the `gh-pages` branch.
+
   Typically, a full documentation is not necessary for most projects, because README.md can
   serve as the documentation, hence this feature is `false` by default.
 * `template = DrWatson.DEFAULT_TEMPLATE` : A template containing the folder structure
@@ -262,9 +265,9 @@ The new project remains activated for you to immidiately add packages.
   ```
   Obviously, the default derivative functions of [`projectdir`](@ref), such as `datadir`,
   have been written with the default template in mind.
-* `placeholder = false` : Add hidden place holder files in each default folder to ensure
-  that project folder structure is maintained when the directory is cloned.
-  Only used when `git = true`.
+* `placeholder = false` : Add "hidden" placeholder files in each default folder to ensure
+  that project folder structure is maintained when the directory is cloned (because
+  empty folders are not pushed to a remote). Only used when `git = true`.
 """
 function initialize_project(path, name = default_name_from_path(path);
         force = false, readme = true, authors = nothing,
@@ -317,13 +320,12 @@ function initialize_project(path, name = default_name_from_path(path);
     # Instantiate template
     add_test && push!(template, "test", ".github/workflows")
     add_docs && push!(template, "docs", "docs/src")
-    folders, placeholder_files = insert_folders(path, template, placeholder)
+    folders = insert_folders(path, template, placeholder)
     # Add standard files to git
     if git
         LibGit2.add!(repo, "Project.toml")
         LibGit2.add!(repo, "Manifest.toml")
         LibGit2.add!(repo, folders...)
-        placeholder && LibGit2.add!(repo, placeholder_files...)
         sig = LibGit2.Signature("DrWatson", "no@mail", round(Int, time()), 0)
         LibGit2.commit(repo, "Folder setup by DrWatson"; author=sig, committer=sig)
     end
@@ -344,10 +346,8 @@ function initialize_project(path, name = default_name_from_path(path);
     chmod(pathdir(".gitattributes"), 0o644)
     write(pathdir("scripts", "intro.jl"), rename(defaultdir("intro.jl")))
     write(pathdir("src", "dummy_src_file.jl"), rename(defaultdir("dummy_src_file.jl")))
-    files = [".gitignore", ".gitattributes", "scripts/intro.jl", "src/dummy_src_file.jl"]
     if readme
         write(pathdir("README.md"), DEFAULT_README(name, authors; add_docs))
-        push!(files, "README.md")
     end
     # Update Project.toml with name, version, and authors
     pro = read(pathdir("Project.toml"), String)
@@ -357,25 +357,21 @@ function initialize_project(path, name = default_name_from_path(path);
     end
     w *= compat_entry()
     write(pathdir("Project.toml"), w, pro)
-    push!(files, "Project.toml")
     # Then, add optional files for tests and/or docs
     if add_test
         write(pathdir("test", "runtests.jl"), rename(defaultdir("runtests.jl")))
-        push!(files, "test/runtests.jl")
         ci_file = rename(defaultdir("ci.yml"))
         if add_docs
             docs_file = rename(defaultdir("ci_docs.yml"))
             ci_file = ci_file*'\n'*docs_file
             write(pathdir("docs", "make.jl"), rename(defaultdir("make.jl")))
             write(pathdir("docs", "src", "index.md"), rename(defaultdir("index.md")))
-            push!(files, "docs/make.jl", "docs/src/index.md")
         end
         write(pathdir(".github", "workflows", "CI.yml"), ci_file)
-        push!(files, ".github/workflows/CI.yml")
     end
     # Lastly, commit everything via git
     if git
-        LibGit2.add!(repo, files...)
+        LibGit2.add!(repo, ".")
         sig = LibGit2.Signature("DrWatson", "no@mail", round(Int, time()), 0)
         LibGit2.commit(repo, "File setup by DrWatson"; author=sig, committer=sig)
     end
@@ -385,36 +381,34 @@ end
 function insert_folders(path, template, placeholder)
     # Default folders
     folders = String[]
-    placeholder_files = String[]
     for p in template
-        _recursive_folder_insertion!(path, p, placeholder, folders, placeholder_files)
+        _recursive_folder_insertion!(path, p, placeholder, folders)
     end
-    return folders, placeholder_files
+    return folders
 end
 function _recursive_folder_insertion!(
-        path, p::String, placeholder, folders, placeholder_files
+        path, p::String, placeholder, folders
     )
     folder = joinpath(path, p)
     mkpath(folder)
     push!(folders, folder)
     if placeholder #Create a placeholder file in each path
         write(joinpath(folder, ".placeholder"), PLACEHOLDER_TEXT)
-        push!(placeholder_files, joinpath(folder, ".placeholder"))
     end
 end
 function _recursive_folder_insertion!(
-        path, p::Pair{String, <:Any}, placeholder, folders, placeholder_files
+        path, p::Pair{String, <:Any}, placeholder, folders
     )
     path = joinpath(path, p[1])
     for z in p[2]
-        _recursive_folder_insertion!(path, z, placeholder, folders, placeholder_files)
+        _recursive_folder_insertion!(path, z, placeholder, folders)
     end
 end
 function _recursive_folder_insertion!(
-        path, p::Pair{String, String}, placeholder, folders, placeholder_files
+        path, p::Pair{String, String}, placeholder, folders
     )
     path = joinpath(path, p[1])
-    _recursive_folder_insertion!(path, p[2], placeholder, folders, placeholder_files)
+    _recursive_folder_insertion!(path, p[2], placeholder, folders)
 end
 
 function compat_entry()
