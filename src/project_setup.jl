@@ -278,6 +278,10 @@ function initialize_project(path, name = default_name_from_path(path);
     )
     if git == false; placeholder = false; end
     if add_docs == true; add_test = true; end
+    if add_docs == true && github_name == "PutYourGitHubNameHere"
+        @warn "Docs will be generated but `github_name` is not set. "*
+        "You'd need to manually change paths to GitHub in `make.jl`."
+    end
     # Set up and potentially clean path
     mkpath(path)
     rd = readdir(path)
@@ -494,8 +498,9 @@ function DEFAULT_README(name, authors = nothing;
         Some documentation has been set up for this project. It can be viewed by
         running the file `docs/make.jl`, and then launching the generated file
         `docs/build/index.html`.
-        Alternatively, the documentation may be already hosted online. If this is the case
-        it should be at:
+        Alternatively, the documentation may be already hosted online.
+        If this is the case it should be at:
+
         https://$(github_name).github.io/$(name)/dev/
         """
     end
