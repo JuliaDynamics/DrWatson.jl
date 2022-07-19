@@ -241,10 +241,11 @@ The new project remains activated for you to immidiately add packages.
   for the project, which can be generated locally by running `docs/make.jl` but
   is also generated and hosted during continuous integration using Documenter.jl
   (if hosted on GitHub). If this option is enabled, `Documenter` also becomes a
-  dependency of the project. To host the docs online, (1) a GitHub repo directory
-  needs to be set in `docs/make.jl`, in the keyword `repo` of the `makedocs` function,
-  and (b) you need to manually enable the `gh-pages` deployment by going to settings/pages
-  of your GitHub repo, and choosing "Source" the `gh-pages` branch.
+  dependency of the project.
+
+  To host the docs online, set the keyword `github_name` with the name of the GitHub account
+  you plan to upload at, and then manually enable the `gh-pages` deployment by going to
+  settings/pages of the GitHub repo, and choosing as "Source" the `gh-pages` branch.
 
   Typically, a full documentation is not necessary for most projects, because README.md can
   serve as the documentation, hence this feature is `false` by default.
@@ -273,6 +274,7 @@ function initialize_project(path, name = default_name_from_path(path);
         force = false, readme = true, authors = nothing,
         git = true, placeholder = false, template = DEFAULT_TEMPLATE,
         add_test = true, add_docs = false,
+        github_name = "PutYourGitHubNameHere"
     )
     if git == false; placeholder = false; end
     if add_docs == true; add_test = true; end
@@ -364,7 +366,9 @@ function initialize_project(path, name = default_name_from_path(path);
         if add_docs
             docs_file = rename(defaultdir("ci_docs.yml"))
             ci_file = ci_file*'\n'*docs_file
-            write(pathdir("docs", "make.jl"), rename(defaultdir("make.jl")))
+            write(pathdir("docs", "make.jl"),
+                replace(rename(defaultdir("make.jl")), "PutYourGitHubNameHere"=>github_name)
+            )
             write(pathdir("docs", "src", "index.md"), rename(defaultdir("index.md")))
         end
         write(pathdir(".github", "workflows", "CI.yml"), ci_file)
@@ -445,7 +449,9 @@ It ensures the project structure is copied whenever you clone the project.
 This doesn't commit any files within the folder.
 """
 
-function DEFAULT_README(name, authors = nothing; add_docs = false)
+function DEFAULT_README(name, authors = nothing;
+        add_docs = false, github_name = "PutYourGitHubNameHere"
+    )
     s = """
     # $name
 
@@ -488,7 +494,9 @@ function DEFAULT_README(name, authors = nothing; add_docs = false)
         Some documentation has been set up for this project. It can be viewed by
         running the file `docs/make.jl`, and then launching the generated file
         `docs/build/index.html`.
-        Alternatively, the documentation may be already hosted online.
+        Alternatively, the documentation may be already hosted online. If this is the case
+        it should be at:
+        https://$(github_name).github.io/$(name)/dev/
         """
     end
     return s

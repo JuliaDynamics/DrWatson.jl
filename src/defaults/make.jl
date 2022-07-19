@@ -21,7 +21,9 @@ makedocs(;
 @info "Deploying Documentation"
 if CI
     deploydocs(
-        # `repo` MUST be set correctly
+        # `repo` MUST be set correctly. Once your GitHub name is set
+        # the auto-generated documentation will be hosted at:
+        # https://PutYourGitHubNameHere.github.io/<NAME-PLACEHOLDER>/dev/
         repo = "github.com/PutYourGitHubNameHere/<NAME-PLACEHOLDER>.git",
         target = "build",
         push_preview = true,
