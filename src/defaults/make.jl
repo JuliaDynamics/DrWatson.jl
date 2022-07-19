@@ -24,6 +24,7 @@ if CI
         # `repo` MUST be set correctly. Once your GitHub name is set
         # the auto-generated documentation will be hosted at:
         # https://PutYourGitHubNameHere.github.io/<NAME-PLACEHOLDER>/dev/
+        # (assuming you have enabled `gh-pages` deployment)
         repo = "github.com/PutYourGitHubNameHere/<NAME-PLACEHOLDER>.git",
         target = "build",
         push_preview = true,

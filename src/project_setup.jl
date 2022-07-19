@@ -353,7 +353,7 @@ function initialize_project(path, name = default_name_from_path(path);
     write(pathdir("scripts", "intro.jl"), rename(defaultdir("intro.jl")))
     write(pathdir("src", "dummy_src_file.jl"), rename(defaultdir("dummy_src_file.jl")))
     if readme
-        write(pathdir("README.md"), DEFAULT_README(name, authors; add_docs))
+        write(pathdir("README.md"), DEFAULT_README(name, authors; add_docs, github_name))
     end
     # Update Project.toml with name, version, and authors
     pro = read(pathdir("Project.toml"), String)
