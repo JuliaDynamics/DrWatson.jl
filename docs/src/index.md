@@ -110,6 +110,7 @@ or use the DOI directly:
 * <https://github.com/JuliaLang/IJulia.jl>
 * <https://github.com/JunoLab/Weave.jl>
 * <https://github.com/fonsp/Pluto.jl>
+* <https://quarto.org/docs/computations/julia.html>
 
 ### Documenting your code
 * <https://github.com/JuliaDocs/Documenter.jl>
