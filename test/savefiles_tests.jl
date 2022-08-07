@@ -244,7 +244,7 @@ end
 
 end
 
-@test produce_or_load(simulation, f; loadfile = false)[1] == nothing
+@test produce_or_load(simulation, f; loadfile = false)[1] === nothing
 rm(savename(simulation, "jld2"))
 @test !isfile(savename(simulation, "jld2"))
 

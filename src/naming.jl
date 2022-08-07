@@ -278,7 +278,7 @@ This should only be called when producing an expression intended to be returned 
 """
 function esc_dict_expr_from_vars(vars)
     expr = Expr(:call, :Dict)
-    for i in 1:length(vars)
+    for i in eachindex(vars)
         if @capture(vars[i], a_ = b_)
 			push!(expr.args, :($(QuoteNode(a)) => $(esc(b))))
 		# Allow single arg syntax a   → "a" = a
@@ -406,13 +406,13 @@ function parse_savename(filename::AbstractString;
     # after the last "=".
     last_eq = findlast("=",savename_part)
     last_dot = findlast(".",savename_part)
-    if last_dot == nothing || last_eq > last_dot
+    if last_dot === nothing || last_eq > last_dot
         # if no dot is after the last "="
         # there is no suffix
         name, suffix = savename_part,""
     else
         # Check if the last dot is part of a float number by parsing it as Int
-        if tryparse(Int,savename_part[first(last_dot)+1:end]) == nothing
+        if tryparse(Int,savename_part[first(last_dot)+1:end]) === nothing
             # no int, so the part after the last dot is the suffix
             name, suffix = savename_part[1:first(last_dot)-1], savename_part[first(last_dot)+1:end]
         else
@@ -424,7 +424,7 @@ function parse_savename(filename::AbstractString;
     # an "=".
     first_eq = findfirst("=",name)
     first_connector = findfirst(connector,name)
-    if first_connector == nothing || first(first_eq) < first(first_connector)
+    if first_connector === nothing || first(first_eq) < first(first_connector)
         prefix, _parameters = "", name
     else
         # There is a connector symbol before, so there might be a connector.
@@ -441,7 +441,7 @@ function parse_savename(filename::AbstractString;
     # var_with_underscore_1[=foo_]var[=123.32_]var_name_with_underscore=4.4
     name_seperator = Regex("=[^$connector]+$connector")
     c_idx = 1
-    while (next_range = findnext(name_seperator,_parameters,c_idx)) != nothing
+    while (next_range = findnext(name_seperator,_parameters,c_idx)) !== nothing
         equal_sign, end_of_value = first(next_range), prevind(_parameters,last(next_range))
         parameters[_parameters[c_idx:prevind(_parameters,equal_sign)]] =
             parse_from_savename_value(parsetypes,_parameters[nextind(_parameters,equal_sign):end_of_value])
@@ -449,7 +449,7 @@ function parse_savename(filename::AbstractString;
     end
     # The last = cannot be followed by a connector, so it's not captured by the regex.
     equal_sign = findnext("=",_parameters,c_idx)
-    equal_sign == nothing && error(
+    equal_sign === nothing && error(
         "Savename cannot be parsed. There is a '$connector' after the last '='. "*
         "Values containing '$connector' are not allowed when parsing.")
     parameters[_parameters[c_idx:prevind(_parameters,first(equal_sign))]] =
@@ -465,7 +465,7 @@ Fallback is `String` ie. `str` is returned.
 function parse_from_savename_value(types::NTuple{N,<:Type},str::AbstractString) where N
     for t in types
         res = tryparse(t,str)
-        res == nothing || return res
+        res === nothing || return res
     end
     return str
 end
