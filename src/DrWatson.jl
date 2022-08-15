@@ -55,6 +55,7 @@ using Requires
 
 # Update messages
 using Scratch
+const env_var = "DRWATSON_UPDATE_MSG"
 const display_update = true
 const update_version = "2.7.3"
 const update_name = "update_v$update_version"
@@ -64,7 +65,7 @@ function __init__()
     @require DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0" begin
         include("result_collection.jl")
     end
-    if display_update
+    if env_var in keys(ENV) ? parse(Bool, ENV[env_var]) : display_update
         versions_dir = @get_scratch!("versions")
 
         if !isfile(joinpath(versions_dir, update_name))
