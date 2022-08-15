@@ -65,7 +65,18 @@ function __init__()
     @require DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0" begin
         include("result_collection.jl")
     end
-    if env_var in keys(ENV) ? parse(Bool, ENV[env_var]) : display_update
+
+    _display_update = if env_var in keys(ENV)
+        try 
+            parse(Bool, ENV[env_var]) 
+        catch
+            display_update
+        end
+    else
+        display_update
+    end
+
+    if _display_update
         versions_dir = @get_scratch!("versions")
 
         if !isfile(joinpath(versions_dir, update_name))
@@ -80,6 +91,8 @@ function __init__()
         * By default now `gitpatch` is NOT saved when calling `tag!` and derivative functions.
           This is due to an unknown problem that causes collecting the git patch to
           never halt, potentially not saving a user's output.
+
+          To disable future update messages see: https://juliadynamics.github.io/DrWatson.jl/dev/#Installing-and-Updating-1
         \n
         """; color = :light_magenta)
         touch(joinpath(versions_dir, update_name))

@@ -137,17 +137,3 @@ pkg> activate .
 pkg> add Package1 Package2 ...
 ```
 Julia will automatically make the Project.toml and Manifest.toml files for you as you add packages used by your project.
-
-## Suppressing Update Messages
-By default, DrWatson displays a message after an update to inform the user of any major package changes. However, when using DrWatson for autogenerating documents with tools such as [Quarto](https://quarto.org/docs/computations/julia.html) or [Weave.jl](https://github.com/JunoLab/Weave.jl) this update message will be displayed in the resulting document. This may be undesirable. 
-
-To suppress the DrWatson update message one can set an OS level environmental variable that will be checked when DrWatson is loaded, e.g.
-
-```bash
-export DRWATSON_UPDATE_MSG=0
-julia
-```
-
-Setting `DRWATSON_UPDATE_MSG` to `0` will turn off the update message, while `1` will turn the update message on.
-
-Note that this environmental variable must be set prior to starting you Julia session.
