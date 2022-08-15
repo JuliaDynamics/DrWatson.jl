@@ -92,7 +92,7 @@ function __init__()
           This is due to an unknown problem that causes collecting the git patch to
           never halt, potentially not saving a user's output.
 
-          To disable future update messages see: https://juliadynamics.github.io/DrWatson.jl/dev/#Installing-and-Updating-1
+        To disable future update messages see: https://juliadynamics.github.io/DrWatson.jl/dev/#Installing-and-Updating-1
         \n
         """; color = :light_magenta)
         touch(joinpath(versions_dir, update_name))
