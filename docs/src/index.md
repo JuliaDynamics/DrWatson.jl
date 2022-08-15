@@ -110,7 +110,11 @@ or use the DOI directly:
 * <https://github.com/JuliaLang/IJulia.jl>
 * <https://github.com/JunoLab/Weave.jl>
 * <https://github.com/fonsp/Pluto.jl>
+
+### Papers/books and code
 * <https://quarto.org/docs/computations/julia.html>
+* <https://nextjournal.com/>
+* <https://github.com/JuliaBooks/Books.jl>
 
 ### Documenting your code
 * <https://github.com/JuliaDocs/Documenter.jl>
@@ -133,11 +137,11 @@ or use the DOI directly:
 * <https://github.com/timholy/ProgressMeter.jl>
 * <https://github.com/KristofferC/TimerOutputs.jl>
 * <https://github.com/JuliaDebug/Cthulhu.jl>
-* ProfileViews.jl (similar available in Juno with `@profiler`)
+* ProfileViews.jl (similar available in VSCode with `@profview`)
 
 ### Saving Data
-* BSON.jl
 * JLD2.jl
+* BSON.jl
 * CSV.jl
 
 ### Data management & data bases
