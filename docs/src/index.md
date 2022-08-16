@@ -18,11 +18,16 @@ You can also watch this 8-minutes video that introduces DrWatson in JuliaCon2020
 <iframe width="560" height="400" src="https://www.youtube-nocookie.com/embed/jKATlEAu8eE" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 ```
 
-To install, simply type `] add DrWatson` in your Julia session.
 DrWatson is part of [JuliaDynamics](https://juliadynamics.github.io/JuliaDynamics/), check out our [website](https://juliadynamics.github.io/JuliaDynamics/) for more cool stuff!
 
 !!! note "Star us on GitHub!"
     If you like DrWatson the please consider starring the [GitHub repository](https://github.com/JuliaDynamics/DrWatson.jl). This gives as an accurate lower bound of the number of people the software has helped!
+
+## Installing and Updating
+To install or update DrWatson, simply type `] add DrWatson` or `] up DrWatson`, respectively, in your Julia session.
+
+!!! note "Update messages"
+    Upon update DrWatson will display a message highlighting any major changes. To disable these messages set the environment variable `DRWATSON_UPDATE_MSG` to `0` prior to `using DrWatson`. 
 
 ## Rationale
 Have you thought things like:
