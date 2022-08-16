@@ -26,7 +26,7 @@ DrWatson is part of [JuliaDynamics](https://juliadynamics.github.io/JuliaDynamic
 ## Installing and Updating
 To install or update DrWatson, simply type `] add DrWatson` or `] up DrWatson`, respectively, in your Julia session.
 
-!!! note Pro-Tip
+!!! note "Update messages"
     Upon update DrWatson will display a message highlighting any major changes. To disable these messages set the environment variable `DRWATSON_UPDATE_MSG=0` prior to starting your Julia session. 
 
 ## Rationale
