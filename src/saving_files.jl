@@ -190,7 +190,7 @@ end
 
 # Implementation inspired by behavior of GROMACS
 """
-    safesave(filename, data; kwargs...)
+    safesave(filename, data...; kwargs...)
 
 Safely save `data` in `filename` by ensuring that no existing files
 are overwritten. Do this by renaming already existing data with a backup-number
@@ -210,9 +210,9 @@ compression).
 
 See also [`tagsave`](@ref).
 """
-function safesave(f, data; kwargs...)
+function safesave(f, data...; kwargs...)
     recursively_clear_path(f)
-    wsave(f, data; kwargs...)
+    wsave(f, data...; kwargs...)
 end
 
 #take a path of a results file and increment its prefix backup number
