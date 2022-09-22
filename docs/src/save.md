@@ -7,7 +7,7 @@ In DrWatson we save and load files with the functions `wsave(filename, data)` an
 
 In addition, `wsave` **ensures** that `mkpath` is always called on the path you are trying to save your file at. We all know how unpleasant it is to run a 2-hour simulation and save no data because `FileIO.save` complains that the path you are trying to save at does not exist...
 
-To overload the saving part, add a new method to `DrWatson._wsave(filename, ::YourType)` (notice the `_`). By overloading `_wsave` you get all the extra functionality of [`tagsave`](@ref), [`safesave`](@ref), etc., for free for your own types (`tagsave` requires that you save your data as a dictionary).
+To overload the saving part, add a new method to `DrWatson._wsave(filename, ::YourType, args...; kwargs...)` (notice the `_`!). By overloading `_wsave` you get all the extra functionality of [`tagsave`](@ref), [`safesave`](@ref), etc., for free for your own types (`tagsave` requires that you save your data as a dictionary, or extend [`tag!`](@ref) for your own type).
 
 !!! warning "Saving and loading fallback"
     By default we fallback to `FileIO.save` and `FileIO.load` for and types.
