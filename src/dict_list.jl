@@ -298,10 +298,43 @@ julia> dict_list(p)
  Dict(:α => 1, :solver => "SolverB", :β => 1)
  Dict(:α => 2, :solver => "SolverB", :β => 4)
 ```
+
+A vector of parameter names can also be passed when the accompanying function uses multiple arguments:
+```julia
+ julia> p2 = Dict(:α => [1, 2],
+           :β => [10,100],
+           :solver => [SolverA,SolverB],
+           :γ => ComputedParameter([:α,:β], (x,y) -> x^2 + 2y),
+           )
+Dict{Symbol, Any} with 4 entries:
+  :α      => [1, 2]
+  :γ      => ComputedParameter{Symbol}([:α, :β], #7)
+  :solver => DataType[SolverA, SolverB]
+  :β      => [10, 100]
+
+julia> dict_list(p2)
+8-element Vector{Dict{Symbol, Any}}:
+ Dict(:α => 1, :γ => 21, :solver => SolverA, :β => 10)
+ Dict(:α => 2, :γ => 24, :solver => SolverA, :β => 10)
+ Dict(:α => 1, :γ => 21, :solver => SolverB, :β => 10)
+ Dict(:α => 2, :γ => 24, :solver => SolverB, :β => 10)
+ Dict(:α => 1, :γ => 201, :solver => SolverA, :β => 100)
+ Dict(:α => 2, :γ => 204, :solver => SolverA, :β => 100)
+ Dict(:α => 1, :γ => 201, :solver => SolverB, :β => 100)
+ Dict(:α => 2, :γ => 204, :solver => SolverB, :β => 100)
+```
 """
 struct ComputedParameter{T}
-    independentP::T
+    independentParam::Vector{T}
     func::Function
+end
+
+"""
+    ComputedParameter(independentP <: Union{String,Symbol}, func :: Function)
+Constructs a ComputedParameter from a single independent parameter.
+"""
+function ComputedParameter(independentP :: Union{String,Symbol}, func :: Function) 
+    return ComputedParameter([independentP], func)
 end
 
 export ComputedParameter
@@ -313,7 +346,11 @@ Receive an array of parameter dictionaries, and for each one, evaluates the comp
 function produce_computed_parameters(dicts)
     map(dicts) do dict
         replace!(dict) do (k,v)
-            isa(v,ComputedParameter) ? k => v.func(dict[v.independentP]) : k => v
+           if isa(v,ComputedParameter) 
+            k => v.func((dict[param] for param in v.independentParam)...) 
+           else
+            return k => v
+           end
         end
     end
 end

@@ -383,10 +383,27 @@ p = Dict(:α => [1, 2],
     :β => ComputedParameter(:α, x -> x^2),
     )
 
+
 @test Set([ Dict(:α => 1, :solver => SolverA, :β => 1),
     Dict(:α => 2, :solver => SolverA, :β => 4),
     Dict(:α => 1, :solver => SolverB, :β => 1),
     Dict(:α => 2, :solver => SolverB, :β => 4),
-   ]) == Set(dict_list(p))
+    ]) == Set(dict_list(p))
+
+p2 = Dict(:α => [1, 2],
+    :β => [10,100],
+    :solver => [SolverA,SolverB],
+    :γ => ComputedParameter([:α,:β], (x,y) -> x^2 + 2y),
+    )
+
+@test Set([ Dict(:α => 1, :solver => SolverA, :β => 10, :γ => 21),
+    Dict(:α => 2, :solver => SolverA, :β => 10, :γ => 24),
+    Dict(:α => 1, :solver => SolverB, :β => 10, :γ => 21),
+    Dict(:α => 2, :solver => SolverB, :β => 10, :γ => 24),
+    Dict(:α => 1, :solver => SolverA, :β => 100, :γ => 201),
+    Dict(:α => 2, :solver => SolverA, :β => 100, :γ => 204),
+    Dict(:α => 1, :solver => SolverB, :β => 100, :γ => 201),
+    Dict(:α => 2, :solver => SolverB, :β => 100, :γ => 204),
+   ]) == Set(dict_list(p2))
 
 end
