@@ -166,7 +166,7 @@ the [`gitdescribe`](@ref) of the repository at `gitpath` (by default
 the project's gitpath). Do nothing if a key `gitcommit` already exists
 (unless `force=true` then replace with the new value) or if the Git
 repository is not found. If the git repository is dirty, i.e. there
-are un-commited changes, then the output of `git diff HEAD` is stored
+are un-commited changes, and `storepatch` is true, then the output of `git diff HEAD` is stored
 in the field `gitpatch`.  Note that patches for binary files are not
 stored. You can use [`isdirty`](@ref) to check if a repo is dirty.
 
