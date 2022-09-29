@@ -77,11 +77,11 @@ function dict_list(c::AbstractDict)
                                  end
                                  Dict([k=>lookup_candidate(c,trial,k) for k in keys(trial)])
                              end)
-        return collect(filter(parameter_sets) do trial
+        return produce_computed_parameters(collect(filter(parameter_sets) do trial
             !is_solution_subset_of_existing(trial, parameter_sets)
-        end)
+        end))
     end
-    return _dict_list(c)
+    return produce_computed_parameters(_dict_list(c))
 end
 
 function is_solution_subset_of_existing(trial, trial_solutions)
@@ -275,3 +275,45 @@ julia> dict_list(d) # only in case `:a` is `1` the dictionary will get key `:c`
      end
      :(toDependentParameter($(esc(value)),$(esc(condition))))
  end
+
+"""
+   ComputedParameter{T}
+Type that holds the name of a parameter (independentP) and a function (func). After the possible parameter combinations are created, dict_list will replace instances of ComputedParameter to the result of the function func, evaluated with the value of the parameter independentP.
+
+Examples:
+```
+julia> p = Dict(:α => [1, 2],
+           :solver => ["SolverA","SolverB"],
+           :β => ComputedParameter(:α, x -> x^2),
+           )
+Dict{Symbol, Any} with 3 entries:
+  :α      => [1, 2]
+  :solver => ["SolverA", "SolverB"]
+  :β      => ComputedParameter{Symbol}(:α, #51)
+
+julia> dict_list(p)
+4-element Vector{Dict{Symbol, Any}}:
+ Dict(:α => 1, :solver => "SolverA", :β => 1)
+ Dict(:α => 2, :solver => "SolverA", :β => 4)
+ Dict(:α => 1, :solver => "SolverB", :β => 1)
+ Dict(:α => 2, :solver => "SolverB", :β => 4)
+```
+"""
+struct ComputedParameter{T}
+    independentP::T
+    func::Function
+end
+
+export ComputedParameter
+
+"""
+   produce_computed_parameter(dicts)
+Receive an array of parameter dictionaries, and for each one, evaluates the computed parameters after the possible combination of parameters has been created.
+"""
+function produce_computed_parameters(dicts)
+    map(dicts) do dict
+        replace!(dict) do (k,v)
+            isa(v,ComputedParameter) ? k => v.func(dict[v.independentP]) : k => v
+        end
+    end
+end

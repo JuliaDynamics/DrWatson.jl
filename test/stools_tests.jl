@@ -376,17 +376,17 @@ rm(tmpdir, force = true, recursive = true)
     @test file["gitcommit"] |>typeof ==String
     rm(sn)
 
-## Tests for @produced
+## Tests for ComputedParameter
 
 p = Dict(:α => [1, 2],
     :solver => [SolverA,SolverB],
-    :β => @produced(:α -> :α + 1 ),
+    :β => ComputedParameter(:α, x -> x^2),
     )
 
-@test Set([ Dict(:α => 1, :solver => SolverA, :β => 2),
-    Dict(:α => 1, :solver => SolverA, :β => 3),
-    Dict(:α => 1, :solver => SolverB, :β => 2),
-    Dict(:α => 1, :solver => SolverB, :β => 3),
+@test Set([ Dict(:α => 1, :solver => SolverA, :β => 1),
+    Dict(:α => 2, :solver => SolverA, :β => 4),
+    Dict(:α => 1, :solver => SolverB, :β => 1),
+    Dict(:α => 2, :solver => SolverB, :β => 4),
    ]) == Set(dict_list(p))
 
 end
