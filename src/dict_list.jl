@@ -15,7 +15,7 @@ To restrict some values in the dictionary so that they only appear in the
 resulting dictionaries, if a certain condition is met, the macro
 [`@onlyif`](@ref) can be used on those values.
 
-To compute some parameters on creation of dict_lists as a function 
+To compute some parameters on creation of `dict_list` as a function 
 of other specified parameters, use the type [`Derived`](@ref).
 
 Use the function [`dict_list_count`](@ref) to get the number of
