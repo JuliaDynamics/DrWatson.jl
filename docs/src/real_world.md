@@ -289,7 +289,7 @@ general_args2 = Dict(
     "noise2" => [1.0, ComputedParameter(["noise", "N"], (x,y) -> 2x + y)],
     "noisy_training" => true,
     "N" => 100,
-       )
+)
 ```
 ```@example customizing
 dicts2 = dict_list(general_args2)

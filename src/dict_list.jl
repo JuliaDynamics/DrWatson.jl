@@ -300,9 +300,9 @@ julia> dict_list(d) # only in case `:a` is `1` the dictionary will get key `:c`
  end
 
 """
-   Derived(parameters::Vector{Union{String,Symbol}},function::Function)
+   Derived(parameters::Vector{Union{String,Symbol}}, function::Function)
 Wrap the name(s) of a parameter(s) and a function. After the 
-possible parameter combinations are created, dict_list will replace instances of 
+possible parameter combinations are created, [`dict_list`](@ref) will replace instances of 
 Derived by the result of the function func, evaluated with the value of 
 the parameter(s).
 
@@ -366,7 +366,9 @@ end
 
 """
    produce_computed_parameter(dicts)
-Receive an array of parameter dictionaries, and for each one, evaluates the computed parameters after the possible combination of parameters has been created.
+Receive an array of parameter dictionaries, and for each one, evaluate
+the computed parameters after the possible combination of 
+parameters has been created.
 """
 function produce_derived_parameters(dicts)
     for dict in dicts
