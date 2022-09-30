@@ -369,7 +369,7 @@ end
 Receive an array of parameter dictionaries, and for each one, evaluates the computed parameters after the possible combination of parameters has been created.
 """
 function produce_derived_parameters(dicts)
-    map(dicts) do dict
+    for dict in dicts
         replace!(dict) do (k,v)
            if isa(v,Derived) 
             k => v.func((dict[param] for param in v.independentParam)...) 
@@ -378,4 +378,5 @@ function produce_derived_parameters(dicts)
            end
         end
     end
+    return dicts
 end
