@@ -1,3 +1,5 @@
+# 2.11.0
+* Add `Derived` type and function to allow `dict_list` to compute some parameters from the value of other parameters.
 # 2.10.0
 * Add `DRWATSON_UPDATE_MSG` ENV VAR for suppressing update messages
 # 2.9.0

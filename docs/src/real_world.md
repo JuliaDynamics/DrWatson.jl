@@ -279,6 +279,24 @@ dicts = dict_list(general_args)
 println("Total dictionaries made: ", length(dicts))
 dicts[1]
 ```
+Also, using the type [`Derived`](@ref), we can have parameters that are computed depending on the value of other parameters:
+```@example customizing
+using DrWatson
+
+general_args2 = Dict(
+    "model" => "barkley",
+    "noise" => [0.075, 0.050, 0.025],
+    "noise2" => [1.0, ComputedParameter(["noise", "N"], (x,y) -> 2x + y)],
+    "noisy_training" => true,
+    "N" => 100,
+)
+```
+```@example customizing
+dicts2 = dict_list(general_args2)
+println("Total dictionaries made: ", length(dicts2))
+dicts2[1]
+```
+
 Now, how you use these dictionaries is up to you. Typically each dictionary is given to a `main`-like Julia function which extracts the necessary data and calls the necessary functions.
 
 Let's say I have written a function that takes in one of these dictionaries and saves the file somewhere locally:
