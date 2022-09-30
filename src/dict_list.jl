@@ -77,11 +77,11 @@ function dict_list(c::AbstractDict)
                                  end
                                  Dict([k=>lookup_candidate(c,trial,k) for k in keys(trial)])
                              end)
-        return produce_computed_parameters(collect(filter(parameter_sets) do trial
+        return produce_derived_parameters(collect(filter(parameter_sets) do trial
             !is_solution_subset_of_existing(trial, parameter_sets)
         end))
     end
-    return produce_computed_parameters(_dict_list(c))
+    return produce_derived_parameters(_dict_list(c))
 end
 
 function is_solution_subset_of_existing(trial, trial_solutions)
@@ -277,19 +277,19 @@ julia> dict_list(d) # only in case `:a` is `1` the dictionary will get key `:c`
  end
 
 """
-   ComputedParameter{T}
+   Derived{T}
 Type that holds the name of a parameter (independentP) and a function (func). After the possible parameter combinations are created, dict_list will replace instances of ComputedParameter to the result of the function func, evaluated with the value of the parameter independentP.
 
 Examples:
 ```
 julia> p = Dict(:α => [1, 2],
            :solver => ["SolverA","SolverB"],
-           :β => ComputedParameter(:α, x -> x^2),
+           :β => Derived(:α, x -> x^2),
            )
 Dict{Symbol, Any} with 3 entries:
   :α      => [1, 2]
   :solver => ["SolverA", "SolverB"]
-  :β      => ComputedParameter{Symbol}(:α, #51)
+  :β      => Derived{Symbol}(:α, #51)
 
 julia> dict_list(p)
 4-element Vector{Dict{Symbol, Any}}:
@@ -304,11 +304,11 @@ A vector of parameter names can also be passed when the accompanying function us
  julia> p2 = Dict(:α => [1, 2],
            :β => [10,100],
            :solver => [SolverA,SolverB],
-           :γ => ComputedParameter([:α,:β], (x,y) -> x^2 + 2y),
+           :γ => Derived([:α,:β], (x,y) -> x^2 + 2y),
            )
 Dict{Symbol, Any} with 4 entries:
   :α      => [1, 2]
-  :γ      => ComputedParameter{Symbol}([:α, :β], #7)
+  :γ      => Derived{Symbol}([:α, :β], #7)
   :solver => DataType[SolverA, SolverB]
   :β      => [10, 100]
 
@@ -324,7 +324,7 @@ julia> dict_list(p2)
  Dict(:α => 2, :γ => 204, :solver => SolverB, :β => 100)
 ```
 """
-struct ComputedParameter{T}
+struct Derived{T}
     independentParam::Vector{T}
     func::Function
 end
@@ -333,20 +333,20 @@ end
     ComputedParameter(independentP <: Union{String,Symbol}, func :: Function)
 Constructs a ComputedParameter from a single independent parameter.
 """
-function ComputedParameter(independentP :: Union{String,Symbol}, func :: Function) 
-    return ComputedParameter([independentP], func)
+function Derived(independentP :: Union{String,Symbol}, func :: Function) 
+    return Derived([independentP], func)
 end
 
-export ComputedParameter
+export Derived
 
 """
    produce_computed_parameter(dicts)
 Receive an array of parameter dictionaries, and for each one, evaluates the computed parameters after the possible combination of parameters has been created.
 """
-function produce_computed_parameters(dicts)
+function produce_derived_parameters(dicts)
     map(dicts) do dict
         replace!(dict) do (k,v)
-           if isa(v,ComputedParameter) 
+           if isa(v,Derived) 
             k => v.func((dict[param] for param in v.independentParam)...) 
            else
             return k => v

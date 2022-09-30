@@ -380,7 +380,7 @@ rm(tmpdir, force = true, recursive = true)
 
 p = Dict(:α => [1, 2],
     :solver => [SolverA,SolverB],
-    :β => ComputedParameter(:α, x -> x^2),
+    :β => Derived(:α, x -> x^2),
     )
 
 
@@ -393,7 +393,7 @@ p = Dict(:α => [1, 2],
 p2 = Dict(:α => [1, 2],
     :β => [10,100],
     :solver => [SolverA,SolverB],
-    :γ => ComputedParameter([:α,:β], (x,y) -> x^2 + 2y),
+    :γ => Derived([:α,:β], (x,y) -> x^2 + 2y),
     )
 
 @test Set([ Dict(:α => 1, :solver => SolverA, :β => 10, :γ => 21),
