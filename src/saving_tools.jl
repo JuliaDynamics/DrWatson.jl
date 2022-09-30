@@ -1,5 +1,4 @@
 export gitdescribe, isdirty, current_commit, tag!, @tag!
-export dict_list, dict_list_count
 export struct2dict, struct2ntuple
 export istaggable
 

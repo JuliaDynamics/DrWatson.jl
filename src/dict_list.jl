@@ -1,3 +1,6 @@
+export dict_list, dict_list_count
+export Derived, @onlyif
+
 """
     dict_list(c::AbstractDict)
 Expand the dictionary `c` into a vector of dictionaries.
@@ -11,6 +14,9 @@ the function considers as "iterable" only subtypes of `Vector`.
 To restrict some values in the dictionary so that they only appear in the
 resulting dictionaries, if a certain condition is met, the macro
 [`@onlyif`](@ref) can be used on those values.
+
+To compute some parameters on creation of dict_lists as a function 
+of other specified parameters, use the type [`Derived`](@ref).
 
 Use the function [`dict_list_count`](@ref) to get the number of
 dictionaries that `dict_list` will produce.
@@ -45,6 +51,25 @@ julia> dict_list(c)
  Dict(:a=>2,:b=>4,:run=>"bi",:e=>[3, 5],:model=>"linear")
  Dict(:a=>1,:b=>4,:run=>"tri",:e=>[3, 5],:model=>"linear")
  Dict(:a=>2,:b=>4,:run=>"tri",:e=>[3, 5],:model=>"linear")
+```
+
+## Example using Derived
+```
+julia> p = Dict(:α => [1, 2],
+           :solver => ["SolverA","SolverB"],
+           :β => Derived(:α, x -> x^2),
+           )
+Dict{Symbol, Any} with 3 entries:
+  :α      => [1, 2]
+  :solver => ["SolverA", "SolverB"]
+  :β      => Derived{Symbol}(:α, #51)
+
+julia> dict_list(p)
+4-element Vector{Dict{Symbol, Any}}:
+ Dict(:α => 1, :solver => "SolverA", :β => 1)
+ Dict(:α => 2, :solver => "SolverA", :β => 4)
+ Dict(:α => 1, :solver => "SolverB", :β => 1)
+ Dict(:α => 2, :solver => "SolverB", :β => 4)
 ```
 """
 function dict_list(c::AbstractDict)
@@ -137,8 +162,6 @@ end
 walk(x, inner, outer, ex) = outer(x, ex)
 walk(x::Expr, inner, outer, ex) = outer(Expr(x.head, map(y->inner(y,x), x.args)...), ex)
 postwalk(f, x, ex=:()) = walk(x, (x,y) -> postwalk(f, x, y), f, ex)
-
-export @onlyif
 
 struct DependentParameter{T}
     value::T
@@ -277,10 +300,13 @@ julia> dict_list(d) # only in case `:a` is `1` the dictionary will get key `:c`
  end
 
 """
-   Derived{T}
-Type that holds the name of a parameter (independentP) and a function (func). After the possible parameter combinations are created, dict_list will replace instances of ComputedParameter to the result of the function func, evaluated with the value of the parameter independentP.
+   Derived(parameters :: Vector{Union{String,Symbol}},function :: Function)
+Wrap the name(s) of a parameter(s) and a function. After the 
+possible parameter combinations are created, dict_list will replace instances of 
+Derived by the result of the function func, evaluated with the value of 
+the parameter(s).
 
-Examples:
+## Examples
 ```
 julia> p = Dict(:α => [1, 2],
            :solver => ["SolverA","SolverB"],
@@ -298,30 +324,30 @@ julia> dict_list(p)
  Dict(:α => 1, :solver => "SolverB", :β => 1)
  Dict(:α => 2, :solver => "SolverB", :β => 4)
 ```
-
-A vector of parameter names can also be passed when the accompanying function uses multiple arguments:
+A vector of parameter names can also be passed when the accompanying function 
+uses multiple arguments:
 ```julia
  julia> p2 = Dict(:α => [1, 2],
            :β => [10,100],
-           :solver => [SolverA,SolverB],
+           :solver => ["SolverA","SolverB"],
            :γ => Derived([:α,:β], (x,y) -> x^2 + 2y),
            )
 Dict{Symbol, Any} with 4 entries:
   :α      => [1, 2]
   :γ      => Derived{Symbol}([:α, :β], #7)
-  :solver => DataType[SolverA, SolverB]
+  :solver => ["SolverA", "SolverB"]
   :β      => [10, 100]
 
 julia> dict_list(p2)
 8-element Vector{Dict{Symbol, Any}}:
- Dict(:α => 1, :γ => 21, :solver => SolverA, :β => 10)
- Dict(:α => 2, :γ => 24, :solver => SolverA, :β => 10)
- Dict(:α => 1, :γ => 21, :solver => SolverB, :β => 10)
- Dict(:α => 2, :γ => 24, :solver => SolverB, :β => 10)
- Dict(:α => 1, :γ => 201, :solver => SolverA, :β => 100)
- Dict(:α => 2, :γ => 204, :solver => SolverA, :β => 100)
- Dict(:α => 1, :γ => 201, :solver => SolverB, :β => 100)
- Dict(:α => 2, :γ => 204, :solver => SolverB, :β => 100)
+ Dict(:α => 1, :γ => 21, :solver => "SolverA", :β => 10)
+ Dict(:α => 2, :γ => 24, :solver => "SolverA", :β => 10)
+ Dict(:α => 1, :γ => 21, :solver => "SolverB", :β => 10)
+ Dict(:α => 2, :γ => 24, :solver => "SolverB", :β => 10)
+ Dict(:α => 1, :γ => 201, :solver => "SolverA", :β => 100)
+ Dict(:α => 2, :γ => 204, :solver => "SolverA", :β => 100)
+ Dict(:α => 1, :γ => 201, :solver => "SolverB", :β => 100)
+ Dict(:α => 2, :γ => 204, :solver => "SolverB", :β => 100)
 ```
 """
 struct Derived{T}
@@ -330,14 +356,13 @@ struct Derived{T}
 end
 
 """
-    ComputedParameter(independentP <: Union{String,Symbol}, func :: Function)
-Constructs a ComputedParameter from a single independent parameter.
+    Derived(independentP <: Union{String,Symbol}, func :: Function)
+Constructs a Derived from a single independent parameter.
 """
 function Derived(independentP :: Union{String,Symbol}, func :: Function) 
     return Derived([independentP], func)
 end
 
-export Derived
 
 """
    produce_computed_parameter(dicts)
