@@ -300,7 +300,7 @@ julia> dict_list(d) # only in case `:a` is `1` the dictionary will get key `:c`
  end
 
 """
-   Derived(parameters :: Vector{Union{String,Symbol}},function :: Function)
+   Derived(parameters::Vector{Union{String,Symbol}},function::Function)
 Wrap the name(s) of a parameter(s) and a function. After the 
 possible parameter combinations are created, dict_list will replace instances of 
 Derived by the result of the function func, evaluated with the value of 
@@ -356,10 +356,10 @@ struct Derived{T}
 end
 
 """
-    Derived(independentP <: Union{String,Symbol}, func :: Function)
+    Derived(independentP :: Union{String,Symbol}, func::Function)
 Constructs a Derived from a single independent parameter.
 """
-function Derived(independentP :: Union{String,Symbol}, func :: Function) 
+function Derived(independentP::Union{String,Symbol}, func::Function) 
     return Derived([independentP], func)
 end
 
