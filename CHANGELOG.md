@@ -1,3 +1,6 @@
+# 2.10.1
+* Add `Derived` type and function to allow `dict_list` to compute some parameters from the value of other parameters.
+* Moved `export` statements to the top of the file in `dict_list.jl`
 # 2.10.0
 * Add `DRWATSON_UPDATE_MSG` ENV VAR for suppressing update messages
 # 2.9.0
