@@ -279,7 +279,7 @@ dicts = dict_list(general_args)
 println("Total dictionaries made: ", length(dicts))
 dicts[1]
 ```
-Also, using the type [`ComputedParameter`](@ref), we can have parameters that are computed depending on the value of other parameters:
+Also, using the type [`Derived`](@ref), we can have parameters that are computed depending on the value of other parameters:
 ```@example customizing
 using DrWatson
 
