@@ -88,7 +88,8 @@ end
 ################################################################################
 
 @testset "Produce or Load ($ending)" for ending ∈ ["bson", "jld2"]
-    sim, path = produce_or_load(f, simulation, ""; suffix = ending)
+    gitpath = findproject()
+    sim, path = produce_or_load(f, simulation, ""; suffix = ending, gitpath = gitpath)
     @test isfile(savename(simulation, ending))
     @test "gitcommit" ∈ keys(sim)
     @test sim["simulation"].T == T
@@ -98,7 +99,7 @@ end
 
     # Produce and save data, preserve source file name and line for test below.
     # Line needs to be saved on the same line as produce_or_load!
-    sim, path = @produce_or_load(f, simulation, ""; suffix = ending, force = true)
+    sim, path = @produce_or_load(f, simulation, ""; suffix = ending, force = true, gitpath = gitpath)
     @test isfile(savename(simulation, ending))
     @test sim["simulation"].T == T
     @test path == savename(simulation, ending)
@@ -109,9 +110,8 @@ end
     rm(savename(simulation, ending))
     @test !isfile(savename(simulation, ending))
 
-    # Test if tag = true does not interfere with macro script tagging.
-    # Use a semicolon before the `suffix` keyword to test that code path as well.
-    sim, path = @produce_or_load(f, simulation, ""; tag = false, suffix = ending)
+    # Test if tag = false does not interfere with macro script tagging.
+    sim, = @produce_or_load(f, simulation, ""; tag = false, suffix = ending)
     @test endswith(sim["script"], "savefiles_tests.jl#114")
     @test "gitcommit" ∉ keys(sim)
     rm(savename(simulation, ending))
