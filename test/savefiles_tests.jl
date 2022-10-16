@@ -106,7 +106,7 @@ end
     @test "script" ∈ keys(sim)
     @test "gitcommit" ∈ keys(sim)
     @test sim["script"] |> typeof == String
-    @test endswith(sim["script"], "savefiles_tests.jl#101")
+    @test endswith(sim["script"], "savefiles_tests.jl#102")
     rm(savename(simulation, ending))
     @test !isfile(savename(simulation, ending))
 
