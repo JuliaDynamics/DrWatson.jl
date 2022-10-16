@@ -13,7 +13,7 @@ Pkg.activate()
 @show Base.load_path_expand("@v$(VERSION.major).$(VERSION.minor)")
 # @test DrWatson.is_standard_julia_project() # we cant test this on CI
 
-initialize_project(path, force = true)
+initialize_project(path; force = true)
 repo = LibGit2.GitRepo(path)
 @test LibGit2.getconfig(repo, "user.name", "") == global_user_name
 @test LibGit2.getconfig(repo, "user.email", "") == global_user_email
@@ -34,7 +34,7 @@ end
 @test uperm(joinpath(path, ".gitignore")) == 0x06
 @test isfile(joinpath(path, "README.md"))
 @test isfile(joinpath(path, "Project.toml"))
-@test uperm(joinpath(path, "intro.jl")) == 0x06
+@test uperm(joinpath(path, "scripts", "intro.jl")) == 0x06
 
 for dir_type in ("data", "src", "plots", "papers", "scripts")
     fn = Symbol(dir_type * "dir")
@@ -62,7 +62,7 @@ com = gitdescribe(path)
 @test ispath(joinpath(path, "data", "exp_raw"))
 z = read(joinpath(path, "Project.toml"), String)
 @test occursin("[\"George\", \"Nick\"]", z)
-z = read(joinpath(path, "intro.jl"), String)
+z = read(joinpath(path, "scripts", "intro.jl"), String)
 @test occursin("@quickactivate", z)
 
 initialize_project(path, name; force = true, authors = "Sophia", git = false)
@@ -91,8 +91,5 @@ initialize_project(path, name; force = true, git = false, template = t1)
 @test ispath(joinpath(path, "documents", "a"))
 @test !ispath(joinpath(path, "src"))
 
-@info "I am now attempting to delete path."
 rm(joinpath(@__DIR__, path); recursive = true, force = true)
-@info "I have called the `rm` function."
 @test !isdir(joinpath(@__DIR__, path))
-@info "`isdir` test also passed."

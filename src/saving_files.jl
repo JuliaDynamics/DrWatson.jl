@@ -1,7 +1,7 @@
 export produce_or_load, @produce_or_load, tagsave, @tagsave, safesave
 
 """
-    produce_or_load([path="",] config, f; kwargs...) -> data, file
+    produce_or_load(f::Function, config, path = ""; kwargs...) -> data, file
 Let `file = joinpath(path, savename(prefix, config, suffix))` by default,
 where `config` is some kind of named parameter container.
 If `file` exists then load it and return the contained `data`, along
@@ -18,7 +18,7 @@ You can use a [do-block]
 (https://docs.julialang.org/en/v1/manual/functions/#Do-Block-Syntax-for-Function-Arguments)
 instead of defining a function to pass in. For example,
 ```julia
-produce_or_load([path="",] config) do config
+produce_or_load(config, path) do config
     # simulation using `config` runs here
 end
 ```
@@ -43,10 +43,7 @@ end
   compression).
 * `kwargs...` : All other keywords are propagated to `savename`.
 """
-produce_or_load(c, f; kwargs...) = produce_or_load("", c, f; kwargs...)
-produce_or_load(f::Function, c; kwargs...) = produce_or_load(c, f; kwargs...)
-produce_or_load(f::Function, path, c; kwargs...) = produce_or_load(path, c, f; kwargs...)
-function produce_or_load(path, c, f::Function;
+function produce_or_load(f::Function, c, path::String = "";
         suffix = "jld2", prefix = default_prefix(c),
         tag::Bool = readenv("DRWATSON_TAG", istaggable(suffix)),
         gitpath = projectdir(), loadfile = true,
@@ -91,13 +88,21 @@ function produce_or_load(path, c, f::Function;
         end
     end
 end
+# Deprecations for the old way of doing `produce_or_load`.
+produce_or_load(c, f::Function; kwargs...) = produce_or_load(f, c; kwargs...)
+produce_or_load(path::String, c, f::Function; kwargs...) = produce_or_load(f, c, path; kwargs...)
+produce_or_load(f::Function, path::String, c; kwargs...) = produce_or_load(f, c, path; kwargs...)
+
 
 """
-    @produce_or_load([path="",] config, f; kwargs...)
+    @produce_or_load(f, config, path; kwargs...)
 Same as [`produce_or_load`](@ref) but one more field `:script` is added that records
-the local path of the script and line number that called `@produce_or_load`, see [`@tag!`](@ref).
+the local path of the script and line number that called `@produce_or_load`,
+see [`@tag!`](@ref).
+
+Notice that `path` here is mandatory in contrast to [`produce_or_load`](@ref).
 """
-macro produce_or_load(f, path, config, args...)
+macro produce_or_load(f, config, path, args...)
     args = Any[args...]
     # Keywords added after a ; are moved to the front of the expression
     # that is passed to the macro. So instead of getting the function in f
@@ -105,19 +110,20 @@ macro produce_or_load(f, path, config, args...)
     if f isa Expr && f.head == :parameters
         length(args) > 0 || return :(throw(MethodError(@produce_or_load,$(esc(f)),$(esc(path)),$(esc(config)),$(esc.(args)...))))
         extra_kw_def = f.args
-        f = path
-        path = config
-        config = popfirst!(args)
-        append!(args,extra_kw_def)
+        f = config
+        config = path
+        path = popfirst!(args)
+        append!(args, extra_kw_def)
     end
+
     # Save the source file name and line number of the calling line.
     s = QuoteNode(__source__)
     # Wrap the function f, such that the source can be saved in the data Dict.
     return quote
-        produce_or_load($(esc(path)), $(esc(config)), $(esc.(convert_to_kw.(args))...)) do k
+        produce_or_load($(esc(config)), $(esc(path)), $(esc.(convert_to_kw.(args))...)) do k
             data = $(esc(f))(k)
             # Extract the `gitpath` kw arg if it's there
-            kws = ((;kwargs...)->Dict(kwargs...))($(esc.(convert_to_kw.(args))...))
+            kws = ((;kwargs...) -> Dict(kwargs...))($(esc.(convert_to_kw.(args))...))
             gitpath = get(kws, :gitpath, projectdir())
             # Include the script tag with checking for the type of dict keys, etc.
             data = scripttag!(data, $s; gitpath = gitpath)
@@ -125,6 +131,7 @@ macro produce_or_load(f, path, config, args...)
         end
     end
 end
+
 
 ################################################################################
 #                             tag saving                                       #
