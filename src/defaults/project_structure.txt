@@ -23,6 +23,9 @@
 │                       structures and modules that are used throughout
 │                       the project and in multiple scripts.
 │
+├── test             <- Folder containing tests for `src`.
+│   └── runtests.jl  <- Main test file, also run via continuous integration.
+│
 ├── README.md        <- Optional top-level README for anyone using this project.
 ├── .gitignore       <- by default ignores _research, data, plots, videos,
 │                       notebooks and latex-compilation related files.

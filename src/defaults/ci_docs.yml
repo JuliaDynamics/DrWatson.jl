@@ -1,0 +1,6 @@
+      - name: Generate documentation and deploy
+        env: # needed for pushing to gh-pages branch
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DOCUMENTER_KEY: ${{ secrets.DOCUMENTER_KEY }}
+        run: >
+          julia --project=. --color=yes docs/make.jl

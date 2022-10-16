@@ -6,9 +6,9 @@ export projectname
 export findproject, quickactivate, @quickactivate
 
 """
-    function is_standard_julia_project()
+    is_standard_julia_project()
 
-Returns true if the standard Julia project is active.
+Return `true` if the standard Julia project is active.
 """
 function is_standard_julia_project()
     Base.active_project() == Base.load_path_expand("@v#.#")
@@ -234,15 +234,31 @@ The new project remains activated for you to immidiately add packages.
 * `force = false` : If the `path` is _not_ empty then throw an error. If however `force`
   is `true` then recursively delete everything in the path and create the project.
 * `git = true` : Make the project a Git repository.
+* `add_test = true` : Add some additional files for testing the project.
+  This is done automatically during continuous integration (if hosted on GitHub),
+  or manually by running the contents of the `test/runtests.jl` file.
+* `add_docs = false` : Add some additional files for generating documentation
+  for the project, which can be generated locally by running `docs/make.jl` but
+  is also generated and hosted during continuous integration using Documenter.jl
+  (if hosted on GitHub). If this option is enabled, `Documenter` also becomes a
+  dependency of the project.
+
+  To host the docs online, set the keyword `github_name` with the name of the GitHub account
+  you plan to upload at, and then manually enable the `gh-pages` deployment by going to
+  settings/pages of the GitHub repo, and choosing as "Source" the `gh-pages` branch.
+
+  Typically, a full documentation is not necessary for most projects, because README.md can
+  serve as the documentation, hence this feature is `false` by default.
 * `template = DrWatson.DEFAULT_TEMPLATE` : A template containing the folder structure
   of the project. It should be a vector containing strings (folders) or pairs of `String
   => Vector{String}`, containg a folder and subfolders (this can be nested further). Example:
-  ```
+  ```julia
   DEFAULT_TEMPLATE = [
-    "_research", 
-    "src", 
+    "_research",
+    "src",
     "scripts",
-    "plots", 
+    "data",
+    "plots",
     "notebooks",
     "papers",
     "data" => ["sims", "exp_raw", "exp_pro"],
@@ -250,16 +266,23 @@ The new project remains activated for you to immidiately add packages.
   ```
   Obviously, the default derivative functions of [`projectdir`](@ref), such as `datadir`,
   have been written with the default template in mind.
-* `placeholder = false` : Add hidden place holder files in each default folder to ensure 
-  that project folder structure is maintained when the directory is cloned.
-  Only used when `git = true`.
+* `placeholder = false` : Add "hidden" placeholder files in each default folder to ensure
+  that project folder structure is maintained when the directory is cloned (because
+  empty folders are not pushed to a remote). Only used when `git = true`.
 """
 function initialize_project(path, name = default_name_from_path(path);
         force = false, readme = true, authors = nothing,
-        git = true, placeholder = false, template = DEFAULT_TEMPLATE
+        git = true, placeholder = false, template = DEFAULT_TEMPLATE,
+        add_test = true, add_docs = false,
+        github_name = "PutYourGitHubNameHere"
     )
-
     if git == false; placeholder = false; end
+    if add_docs == true; add_test = true; end
+    if add_docs == true && github_name == "PutYourGitHubNameHere"
+        @warn "Docs will be generated but `github_name` is not set. "*
+        "You'd need to manually change paths to GitHub in `make.jl`."
+    end
+    # Set up and potentially clean path
     mkpath(path)
     rd = readdir(path)
     if length(rd) != 0
@@ -271,56 +294,92 @@ function initialize_project(path, name = default_name_from_path(path);
             error("Project path is not empty!")
         end
     end
-
+    # Instantiate git repository
     if git
         repo = LibGit2.init(path)
         sig = LibGit2.Signature("DrWatson", "no@mail", round(Int, time()), 0)
         LibGit2.commit(repo, "Initial commit"; author=sig, committer=sig)
+        # Attempt to rename branch to `main`
+        try
+            default = LibGit2.branch(repo)
+            branch = "main"
+            if branch != default
+                LibGit2.branch!(repo, branch)
+                LibGit2.delete_branch(GitReference(repo, "refs/heads/$default"))
+            end
+        catch err
+            @warn "We couldn't rename default branch to `main`, please do it manually. "*
+            "We got error: \n$(sprint(showerror, err))"
+        end
     end
-
+    # Add packages
     Pkg.activate(path)
     try
         Pkg.add("DrWatson")
+        if add_docs
+            Pkg.add("Documenter")
+        end
     catch
         @warn "Could not add DrWatson to project. Adding Pkg instead..."
         Pkg.add("Pkg")
     end
-
     # Instantiate template
-    folders, ph_files = insert_folders(path, template, placeholder)
-
+    add_test && push!(template, "test", ".github/workflows")
+    add_docs && push!(template, "docs", "docs/src")
+    folders = insert_folders(path, template, placeholder)
+    # Add standard files to git
     if git
         LibGit2.add!(repo, "Project.toml")
         LibGit2.add!(repo, "Manifest.toml")
         LibGit2.add!(repo, folders...)
-        placeholder && LibGit2.add!(repo, ph_files...)
         sig = LibGit2.Signature("DrWatson", "no@mail", round(Int, time()), 0)
         LibGit2.commit(repo, "Folder setup by DrWatson"; author=sig, committer=sig)
     end
-
-    # Default files
-    # chmod is needed, as the file permissions are not set correctly when adding the package with `add`.
-    cp(joinpath(@__DIR__, "defaults", "gitignore.txt"), joinpath(path, ".gitignore"))
-    chmod(joinpath(path, ".gitignore"), 0o644)
-    cp(joinpath(@__DIR__, "defaults", "gitattributes.txt"), joinpath(path, ".gitattributes"))
-    chmod(joinpath(path, ".gitattributes"), 0o644)
-    write(joinpath(path, "intro.jl"), makeintro(name))
-
-    files = [".gitignore", ".gitattributes", "intro.jl"]
-    if readme
-        write(joinpath(path, "README.md"), DEFAULT_README(name, authors))
-        push!(files, "README.md")
+    # Define some default pathing functions
+    defaultdir(args...) = joinpath(@__DIR__, "defaults", args...)
+    pathdir(args...) = joinpath(path, args...)
+    function rename(file)
+        s = read(file, String)
+        replace(s, "<NAME-PLACEHOLDER>" => name)
     end
-    pro = read(joinpath(path, "Project.toml"), String)
+    # Create and add files
+    # chmod is needed, as the file permissions are not
+    # set correctly when adding the package with `add`.
+    # First, add all default files
+    cp(defaultdir("gitignore.txt"), pathdir(".gitignore"))
+    chmod(pathdir(".gitignore"), 0o644)
+    cp(defaultdir("gitattributes.txt"), pathdir(".gitattributes"))
+    chmod(pathdir(".gitattributes"), 0o644)
+    write(pathdir("scripts", "intro.jl"), rename(defaultdir("intro.jl")))
+    write(pathdir("src", "dummy_src_file.jl"), rename(defaultdir("dummy_src_file.jl")))
+    if readme
+        write(pathdir("README.md"), DEFAULT_README(name, authors; add_docs, github_name))
+    end
+    # Update Project.toml with name, version, and authors
+    pro = read(pathdir("Project.toml"), String)
     w = "name = \"$name\"\n"
     if !(authors === nothing)
         w *= "authors = "*sprint(show, vecstring(authors))*"\n"
     end
     w *= compat_entry()
-    write(joinpath(path, "Project.toml"), w, pro)
-    push!(files, "Project.toml")
+    write(pathdir("Project.toml"), w, pro)
+    # Then, add optional files for tests and/or docs
+    if add_test
+        write(pathdir("test", "runtests.jl"), rename(defaultdir("runtests.jl")))
+        ci_file = rename(defaultdir("ci.yml"))
+        if add_docs
+            docs_file = rename(defaultdir("ci_docs.yml"))
+            ci_file = ci_file*'\n'*docs_file
+            write(pathdir("docs", "make.jl"),
+                replace(rename(defaultdir("make.jl")), "PutYourGitHubNameHere"=>github_name)
+            )
+            write(pathdir("docs", "src", "index.md"), rename(defaultdir("index.md")))
+        end
+        write(pathdir(".github", "workflows", "CI.yml"), ci_file)
+    end
+    # Lastly, commit everything via git
     if git
-        LibGit2.add!(repo, files...)
+        LibGit2.add!(repo, ".")
         sig = LibGit2.Signature("DrWatson", "no@mail", round(Int, time()), 0)
         LibGit2.commit(repo, "File setup by DrWatson"; author=sig, committer=sig)
     end
@@ -330,30 +389,34 @@ end
 function insert_folders(path, template, placeholder)
     # Default folders
     folders = String[]
-    ph_files = String[]
     for p in template
-        _recursive_folder_insertion!(path, p, placeholder, folders, ph_files)
+        _recursive_folder_insertion!(path, p, placeholder, folders)
     end
-    return folders, ph_files
+    return folders
 end
-function _recursive_folder_insertion!(path, p::String, placeholder, folders, ph_files)
+function _recursive_folder_insertion!(
+        path, p::String, placeholder, folders
+    )
     folder = joinpath(path, p)
     mkpath(folder)
     push!(folders, folder)
     if placeholder #Create a placeholder file in each path
         write(joinpath(folder, ".placeholder"), PLACEHOLDER_TEXT)
-        push!(ph_files, joinpath(folder, ".placeholder"))
     end
 end
-function _recursive_folder_insertion!(path, p::Pair{String, <:Any}, placeholder, folders, ph_files)
+function _recursive_folder_insertion!(
+        path, p::Pair{String, <:Any}, placeholder, folders
+    )
     path = joinpath(path, p[1])
     for z in p[2]
-        _recursive_folder_insertion!(path, z, placeholder, folders, ph_files)
+        _recursive_folder_insertion!(path, z, placeholder, folders)
     end
 end
-function _recursive_folder_insertion!(path, p::Pair{String, String}, placeholder, folders, ph_files)
+function _recursive_folder_insertion!(
+        path, p::Pair{String, String}, placeholder, folders
+    )
     path = joinpath(path, p[1])
-    _recursive_folder_insertion!(path, p[2], placeholder, folders, ph_files)
+    _recursive_folder_insertion!(path, p[2], placeholder, folders)
 end
 
 function compat_entry()
@@ -385,15 +448,19 @@ end
 
 
 const PLACEHOLDER_TEXT = """
-This file acts as a placeholder to ensure the project structure is copied whenever you clone the project.
+This file acts as a placeholder.
+It ensures the project structure is copied whenever you clone the project.
 This doesn't commit any files within the folder.
 """
 
-function DEFAULT_README(name, authors = nothing)
+function DEFAULT_README(name, authors = nothing;
+        add_docs = false, github_name = "PutYourGitHubNameHere"
+    )
     s = """
     # $name
 
-    This code base is using the Julia Language and [DrWatson](https://juliadynamics.github.io/DrWatson.jl/stable/)
+    This code base is using the [Julia Language](https://julialang.org/) and
+    [DrWatson](https://juliadynamics.github.io/DrWatson.jl/stable/)
     to make a reproducible scientific project named
     > $name
 
@@ -417,7 +484,26 @@ function DEFAULT_README(name, authors = nothing)
 
     This will install all necessary packages for you to be able to run the scripts and
     everything should work out of the box, including correctly finding local paths.
+
+    You may notice that most scripts start with the commands:
+    ```julia
+    using DrWatson
+    @quickactivate "$name"
+    ```
+    which auto-activate the project and enable local path handling from DrWatson.
     """
+    if add_docs
+        s *= """
+        \n\n
+        Some documentation has been set up for this project. It can be viewed by
+        running the file `docs/make.jl`, and then launching the generated file
+        `docs/build/index.html`.
+        Alternatively, the documentation may be already hosted online.
+        If this is the case it should be at:
+
+        https://$(github_name).github.io/$(name)/dev/
+        """
+    end
     return s
 end
 
@@ -425,46 +511,21 @@ end
 # Project templates
 ##########################################################################################
 const DEFAULT_TEMPLATE = [
-    "_research", 
-    "src", 
+    "_research",
+    "src",
     "scripts",
-    "plots", 
+    "plots",
     "notebooks",
     "papers",
     "data" => ["sims", "exp_raw", "exp_pro"],
 ]
 
 const DOCUMENTS_TEMPLATE = [
-    "src", 
+    "src",
     "scripts",
-    "plots", 
+    "plots",
     "notebooks",
     "documents",
     "papers",
-    "data" => ["sims", "obs", "ana"], # simulations, observations, analysis
+    "data" => ["simulations", "observations", "analysis"],
 ]
-
-
-##########################################################################################
-# Introductory file
-##########################################################################################
-function makeintro(name)
-    """
-    using DrWatson
-    @quickactivate "$name"
-    
-    println(
-    \"\"\"
-    Currently active project is: \$(projectname())
-
-    Path of active project: \$(projectdir())
-
-    Have fun with your new project!
-
-    You can help us improve DrWatson by opening
-    issues on GitHub, submitting feature requests,
-    or even opening your own Pull Requests!
-    \"\"\"
-    )
-    """
-end
