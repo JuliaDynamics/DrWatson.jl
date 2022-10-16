@@ -1,3 +1,7 @@
+# 2.11.0
+- Now the default project with `initialize_project` will include a documentation and a test folder, and setup CI for both automatically.
+- `@produce_or_load` was broken but because CI was disabled this was silently ignored. `produce_or_load` now has call signature `produce_or_load(f::Function, config, path::String = "")` and same signature for the macro with `path` mandatory.
+
 # 2.10.0
 * Add `Derived` type and function to allow `dict_list` to compute some parameters from the value of other parameters.
 * Add `DRWATSON_UPDATE_MSG` ENV VAR for suppressing update messages

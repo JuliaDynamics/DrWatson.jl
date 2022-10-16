@@ -10,7 +10,6 @@ seed = 1111
 simulation = @ntuple T N Δt every seed
 
 function f(simulation)
-    @test typeof(simulation.T) <: Real
     a = rand(10); b = [rand(10) for _ in 1:10]
     return @strdict a b simulation
 end
@@ -33,7 +32,7 @@ end
     @test file["gitcommit"] |> typeof == String
     @test "script" ∈ keys(file)
     @test file["script"] |> typeof == String
-    @test file["script"] == joinpath("test", "savefiles_tests.jl#30")
+    @test file["script"] == joinpath("test", "savefiles_tests.jl#29")
 
     t = f(simulation)
     @tagsave(savename(simulation, ending), t; safe=true, gitpath=findproject())
@@ -58,12 +57,6 @@ end
 
     rm(savename(simulation, ending))
     @test !isfile(savename(simulation, ending))
-
-    ex = @macroexpand @tagsave("testname."*ending, (@dict a b c ), storepatch=false; safe=true)
-    ex2 = @macroexpand @tagsave("testname."*ending, @dict a b c; storepatch=false, safe=true)
-    @test ex.args[1:end-1] == ex2.args[1:end-1]
-
-    # Remove leftover
 end
 
 # Check if kwargs propagation works using the example of compression in JLD2.
@@ -95,34 +88,31 @@ end
 ################################################################################
 
 @testset "Produce or Load ($ending)" for ending ∈ ["bson", "jld2"]
-    @test !isfile(savename(simulation, ending))
-    sim, path = produce_or_load(simulation, f; suffix = ending)
+    sim, path = produce_or_load(f, simulation, ""; suffix = ending)
     @test isfile(savename(simulation, ending))
+    @test "gitcommit" ∈ keys(sim)
     @test sim["simulation"].T == T
     @test path == savename(simulation, ending)
-    sim, path = produce_or_load(simulation, f; suffix = ending)
-    @test sim["simulation"].T == T
     rm(savename(simulation, ending))
     @test !isfile(savename(simulation, ending))
 
-    @test !isfile(savename(simulation, ending))
     # Produce and save data, preserve source file name and line for test below.
     # Line needs to be saved on the same line as produce_or_load!
-    sim, path = @produce_or_load("", simulation, f; suffix = ending)
+    sim, path = @produce_or_load(f, simulation, ""; suffix = ending, force = true)
     @test isfile(savename(simulation, ending))
     @test sim["simulation"].T == T
     @test path == savename(simulation, ending)
     @test "script" ∈ keys(sim)
     @test "gitcommit" ∈ keys(sim)
     @test sim["script"] |> typeof == String
-    @test endswith(sim["script"], "savefiles_tests.jl#111")
+    @test endswith(sim["script"], "savefiles_tests.jl#101")
     rm(savename(simulation, ending))
     @test !isfile(savename(simulation, ending))
 
     # Test if tag = true does not interfere with macro script tagging.
     # Use a semicolon before the `suffix` keyword to test that code path as well.
-    sim, path = @produce_or_load("", simulation, f; tag = false, suffix = ending)
-    @test endswith(sim["script"], "savefiles_tests.jl#124")
+    sim, path = @produce_or_load(f, simulation, ""; tag = false, suffix = ending)
+    @test endswith(sim["script"], "savefiles_tests.jl#114")
     @test "gitcommit" ∉ keys(sim)
     rm(savename(simulation, ending))
 
@@ -132,7 +122,7 @@ end
                DrWatson.scripttag!(Dict(:script => "test"), LineNumberNode(1)))
 
     @test !isfile(savename(simulation, ending))
-    sim, path = produce_or_load("", simulation; suffix = ending) do simulation
+    sim, path = produce_or_load(simulation, ""; suffix = ending) do simulation
         @test typeof(simulation.T) <: Real
         a = rand(10); b = [rand(10) for _ in 1:10]
         return @strdict a b simulation
@@ -140,7 +130,7 @@ end
     @test isfile(savename(simulation, ending))
     @test sim["simulation"].T == T
     @test path == savename(simulation, ending)
-    sim, path = produce_or_load("", simulation; suffix = ending) do simulation
+    sim, path = produce_or_load("", simulation; suffix = ending, force=true) do simulation
         @test typeof(simulation.T) <: Real
         a = rand(10); b = [rand(10) for _ in 1:10]
         return @strdict a b simulation

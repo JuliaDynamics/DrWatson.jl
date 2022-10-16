@@ -57,7 +57,7 @@ using Requires
 using Scratch
 const env_var = "DRWATSON_UPDATE_MSG"
 const display_update = true
-const update_version = "2.7.3"
+const update_version = "2.11.0"
 const update_name = "update_v$update_version"
 
 # Get scratch space for this package
@@ -67,8 +67,8 @@ function __init__()
     end
 
     _display_update = if env_var in keys(ENV)
-        try 
-            parse(Bool, ENV[env_var]) 
+        try
+            parse(Bool, ENV[env_var])
         catch
             display_update
         end
@@ -85,14 +85,18 @@ function __init__()
         """
         \nUpdate message: DrWatson v$update_version
 
-        * New section "Taking project input-output automation to 11" in the documentation.
-          It showcases how to eliminate code duplication and streamline your simulation setup
-          and run phase using `savename` and `produce_or_load`.
-        * By default now `gitpatch` is NOT saved when calling `tag!` and derivative functions.
-          This is due to an unknown problem that causes collecting the git patch to
-          never halt, potentially not saving a user's output.
+        - Now the default project with `initialize_project` will include a documentation
+          and a test folder, as well as scripts to trigger them.
+        - It will also set up CI for both automatically, if a GitHub repo is given.
+        - This new template is showcased in the Good Scientific Code Workshop,
+          see https://youtu.be/x3swaMSCcYk
+        - `@produce_or_load` was broken but because CI was disabled this was
+          silently ignored. `produce_or_load` now has call signature
+          `produce_or_load(f::Function, config, path::String = "")` and
+          same signature for the macro with `path` mandatory.
 
-        To disable future update messages see: https://juliadynamics.github.io/DrWatson.jl/dev/#Installing-and-Updating-1
+        To disable future update messages see:
+        https://juliadynamics.github.io/DrWatson.jl/dev/#Installing-and-Updating-1
         \n
         """; color = :light_magenta)
         touch(joinpath(versions_dir, update_name))

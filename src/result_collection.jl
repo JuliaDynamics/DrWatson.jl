@@ -79,7 +79,7 @@ folder; kwargs...)
 struct InvalidResultsCollection <: Exception
     msg::AbstractString
 end
-showerror(io::IO, e::InvalidResultsCollection) = print(io, e.msg)
+ Base.showerror(io::IO, e::InvalidResultsCollection) = print(io, e.msg)
 
 function collect_results!(filename, folder;
     valid_filetypes = [".bson", "jld", ".jld2"],
@@ -124,7 +124,7 @@ function collect_results!(filename, folder;
     else
         allfiles = joinpath.(Ref(folder), readdir(folder))
     end
-    
+
     if (rinclude == [r""] && rexclude == [r"^\b$"]) == false
         idx_filt = Int[]
         for i in eachindex(allfiles)
@@ -133,7 +133,7 @@ function collect_results!(filename, folder;
             exclude_bool = any(match(rgx, file) !== nothing for rgx in rexclude)
             if include_bool == false || exclude_bool == true
                 push!(idx_filt, i)
-            end 
+            end
         end
         deleteat!(allfiles, idx_filt)
     end
