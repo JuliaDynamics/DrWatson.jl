@@ -110,6 +110,11 @@ end
     rm(savename(simulation, ending))
     @test !isfile(savename(simulation, ending))
 
+    # Test without keywords as well.
+    sim, path = @produce_or_load(f, simulation, "")
+    @test isfile(savename(simulation, ending))
+    rm(savename(simulation, ending))
+
     # Test if tag = false does not interfere with macro script tagging.
     sim, = @produce_or_load(f, simulation, ""; tag = false, suffix = ending)
     @test endswith(sim["script"], "savefiles_tests.jl#114")
