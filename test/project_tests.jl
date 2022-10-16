@@ -34,7 +34,7 @@ end
 @test uperm(joinpath(path, ".gitignore")) == 0x06
 @test isfile(joinpath(path, "README.md"))
 @test isfile(joinpath(path, "Project.toml"))
-@test uperm(joinpath(path, "intro.jl")) == 0x06
+@test uperm(joinpath(path, "scripts", "intro.jl")) == 0x06
 
 for dir_type in ("data", "src", "plots", "papers", "scripts")
     fn = Symbol(dir_type * "dir")
@@ -62,7 +62,7 @@ com = gitdescribe(path)
 @test ispath(joinpath(path, "data", "exp_raw"))
 z = read(joinpath(path, "Project.toml"), String)
 @test occursin("[\"George\", \"Nick\"]", z)
-z = read(joinpath(path, "intro.jl"), String)
+z = read(joinpath(path, "scripts", "intro.jl"), String)
 @test occursin("@quickactivate", z)
 
 initialize_project(path, name; force = true, authors = "Sophia", git = false)
