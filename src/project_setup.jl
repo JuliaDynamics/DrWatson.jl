@@ -225,7 +225,7 @@ Initialize a scientific project expected by `DrWatson` in `path` (directory repr
 an empty folder).
 If `name` is not given, it is assumed to be the folder's name.
 
-The new project remains activated for you to immidiately add packages.
+The new project remains activated for you to immediately add packages.
 
 ## Keywords
 * `readme = true` : adds a README.md file.
