@@ -1,15 +1,21 @@
 export produce_or_load, @produce_or_load, tagsave, @tagsave, safesave
 
 """
-    produce_or_load(f::Function, config, path = ""; kwargs...) -> data, file
-Let `file = joinpath(path, savename(prefix, config, suffix))` by default,
-where `config` is some kind of named parameter container.
-If `file` exists then load it and return the contained `data`, along
-with the global path that it is saved at (`file`).
+    produce_or_load(f::Function, config, path = "") -> data, file
+The goal of `produce_or_load` is to avoid re-running data-producing code.
+If the output of some function `f` exists, `produce_or_load` will load
+it and return it, and if not, it will produce it, save it, and then return it.
 
+Here is how it works. The output data are saved in a file named `name = filename(config)`.
+I.e., the output file's name is created from the configuration container `config`.
+By default, this is `name = `[`savename`](@ref)`(config)`,
+but can be configured differently, using e.g. `objectid`, see keyword `filename` below.
+Now, let `file = joinpath(path, prefix*name*'.'*suffix)`.
+If `file` exists, load it and return
+the contained `data`, along with the global path that it is saved at (`file`).
 If the file does not exist then call `data = f(config)`, with `f` your function
-that produces your data. Then save the `data` as `file` and then return
-`data, file`.
+that produces your data from the configuration container.
+Then save the `data` as `file` and then return `data, file`.
 
 The function `f` should return a dictionary if the data are saved in the default
 format of JLD2.jl., the macro [`@strdict`](@ref) can help with that.
@@ -24,11 +30,19 @@ end
 ```
 
 ## Keywords
-* `filename = savename(prefix, config, suffix; kwargs...)` : Name of the file
-  to produce or load, relative to `path`. This may be useful in situations
-  where `config` has too many parameters for [`savename`](@ref) to be useful, and an
-  explicitly specified name is more suitable.
-* `suffix = "jld2", prefix = default_prefix(config)` : Used in [`savename`](@ref).
+### Name deciding
+* `filename::Union{Function, String} = savename` :
+  Configures the `name` of the file to produce or load given the configuration container.
+  It may be a one-argument function of `config`, [`savename`](@ref) by default, so that
+  `name = filename(config)`. Useful alternative to `savename` is `objectid`,
+  for cases when important options in `config` are difficult
+  to transform into a string via [`savename`](@ref). The keyword `filename` could also be
+  a `String` directly, possibly extracted from `config` before calling `produce_or_load`,
+  in which case `name = filename`.
+* `suffix = "jld2", prefix = default_prefix(config)` : Added to `name`,
+  as `name = prefix*name*'.'*suffix` (i.e., same way it would work in [`savename`](@ref)).
+
+### Saving
 * `tag::Bool = DrWatson.readenv("DRWATSON_TAG", istaggable(suffix))` : Save the file
   using [`tagsave`](@ref) if `true` (which is the default).
 * `gitpath, storepatch` : Given to [`tagsave`](@ref) if `tag` is `true`.
@@ -41,7 +55,6 @@ end
 * `verbose = true` : print info about the process, if the file doesn't exist.
 * `wsave_kwargs = Dict()` : Keywords to pass to `wsave` (e.g. to enable
   compression).
-* `kwargs...` : All other keywords are propagated to `savename`.
 """
 function produce_or_load(f::Function, c, path::String = "";
         suffix = "jld2", prefix = default_prefix(c),
@@ -49,13 +62,30 @@ function produce_or_load(f::Function, c, path::String = "";
         gitpath = projectdir(), loadfile = true,
         storepatch::Bool = readenv("DRWATSON_STOREPATCH", false),
         force = false, verbose = true, wsave_kwargs = Dict(),
-        filename::Union{Nothing, AbstractString} = nothing,
+        filename::Union{Nothing, Function, AbstractString} = nothing,
         kwargs...
     )
-
-    isnothing(filename) && (filename = savename(prefix, c, suffix; kwargs...))
-    file = joinpath(path, filename)
-
+    # Deprecations
+    # TODO: Remove this in future versions and make `filename = savename` as keyword.
+    if !isempty(kwargs)
+        @warn """
+        Passing arbitrary keyword arguments in `produce_or_load`, with the goal of
+        forwarding them to `savename` is deprecated. Instead, just create a function
+        for the keyword `filename` as `filename = config -> savename(config; kwargs...)`
+        """
+    end
+    if filename === nothing
+        filename = config -> savename(config; kwargs...)
+    end
+    # Prepare absolute file name
+    if filename isa AbstractString
+        name = filename
+    else
+        name = string(filename(config))
+    end
+    name = prefix*name*'.'*suffix
+    file = joinpath(path, name)
+    # Run the remaining logic on whether to produce or load
     if !force && isfile(file)
         if loadfile
             data = wload(file)
@@ -88,6 +118,7 @@ function produce_or_load(f::Function, c, path::String = "";
         end
     end
 end
+# TODO: Remove this in future version!
 # Deprecations for the old way of doing `produce_or_load`.
 produce_or_load(c, f::Function; kwargs...) = produce_or_load(f, c; kwargs...)
 produce_or_load(path::String, c, f::Function; kwargs...) = produce_or_load(f, c, path; kwargs...)
