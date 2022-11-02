@@ -3,19 +3,23 @@ export produce_or_load, @produce_or_load, tagsave, @tagsave, safesave
 """
     produce_or_load(f::Function, config, path = "") -> data, file
 The goal of `produce_or_load` is to avoid re-running data-producing code.
-If the output of some function `f` exists, `produce_or_load` will load
+If the output of some function `f` exists on disk, `produce_or_load` will load
 it and return it, and if not, it will produce it, save it, and then return it.
 
-Here is how it works. The output data are saved in a file named `name = filename(config)`.
-I.e., the output file's name is created from the configuration container `config`.
-By default, this is `name = `[`savename`](@ref)`(config)`,
-but can be configured differently, using e.g. `objectid`, see keyword `filename` below.
-Now, let `file = joinpath(path, prefix*name*'.'*suffix)`.
-If `file` exists, load it and return
-the contained `data`, along with the global path that it is saved at (`file`).
-If the file does not exist then call `data = f(config)`, with `f` your function
-that produces your data from the configuration container.
-Then save the `data` as `file` and then return `data, file`.
+Here is how it works:
+
+1. The output data are saved in a file named `name = filename(config)`.
+   I.e., the output file's name is created from the configuration container `config`.
+   By default, this is `name = `[`savename`](@ref)`(config)`,
+   but can be configured differently, using e.g. `objectid`, see keyword `filename` below.
+   See also [`produce_or_load` with Object IDs](@ref) for an example where part of the
+   `config` are functions, which would otherwise be hard to put into `name` with `savename`.
+2. Now, let `file = joinpath(path, prefix*name*'.'*suffix)`.
+3. If `file` exists, load it and return
+   the contained `data`, along with the global path that it is saved at (`file`).
+4. If the file does not exist then call `data = f(config)`, with `f` your function
+   that produces your data from the configuration container.
+5. Then save the `data` as `file` and then return `data, file`.
 
 The function `f` should return a dictionary if the data are saved in the default
 format of JLD2.jl., the macro [`@strdict`](@ref) can help with that.
@@ -56,7 +60,7 @@ end
 * `wsave_kwargs = Dict()` : Keywords to pass to `wsave` (e.g. to enable
   compression).
 """
-function produce_or_load(f::Function, c, path::String = "";
+function produce_or_load(f::Function, config, path::String = "";
         suffix = "jld2", prefix = default_prefix(c),
         tag::Bool = readenv("DRWATSON_TAG", istaggable(suffix)),
         gitpath = projectdir(), loadfile = true,
@@ -99,7 +103,7 @@ function produce_or_load(f::Function, c, path::String = "";
         else
             verbose && @info "File $file does not exist. Producing it now..."
         end
-        data = f(c)
+        data = f(config)
         try
             if tag
                 tagsave(file, data; safe = false, gitpath = gitpath, storepatch = storepatch, wsave_kwargs...)

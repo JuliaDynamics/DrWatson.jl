@@ -237,6 +237,9 @@ wload(datadir("simulations", firstsim))
 # that called the `@tagsave` command. This information is in the `:script` field of the
 # saved data!
 
+# Lastly, have a look at [`produce_or_load`](@ref) to establish a workflow
+# that helps you run data-producing simulations only once.
+
 # ## 5. Analyze results
 
 # Cool, now we can start analyzing some simulations. The actual analysis is your job,
