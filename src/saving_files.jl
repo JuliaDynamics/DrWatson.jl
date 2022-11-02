@@ -43,7 +43,7 @@ end
   to transform into a string via [`savename`](@ref). The keyword `filename` could also be
   a `String` directly, possibly extracted from `config` before calling `produce_or_load`,
   in which case `name = filename`.
-* `suffix = "jld2", prefix = default_prefix(config)` : Added to `name`,
+* `suffix = "jld2", prefix = default_prefix(config)` : If not empty, added to `name`
   as `name = prefix*'_'*name*'.'*suffix` (i.e., like in [`savename`](@ref)).
 
 ### Saving
@@ -87,7 +87,7 @@ function produce_or_load(f::Function, config, path::String = "";
     else
         name = string(filename(config))
     end
-    name = prefix*'_'*name*'.'*suffix
+    name = append_prefix_suffix(name)
     file = joinpath(path, name)
     # Run the remaining logic on whether to produce or load
     if !force && isfile(file)
@@ -128,6 +128,15 @@ produce_or_load(c, f::Function; kwargs...) = produce_or_load(f, c; kwargs...)
 produce_or_load(path::String, c, f::Function; kwargs...) = produce_or_load(f, c, path; kwargs...)
 produce_or_load(f::Function, path::String, c; kwargs...) = produce_or_load(f, c, path; kwargs...)
 
+function append_prefix_suffix(name, prefix, suffix)
+    if prefix != ""
+        name = prefix*'_'*name
+    end
+    if suffix != ""
+        name *= '.'*suffix
+    end
+    return name
+end
 
 """
     @produce_or_load(f, config, path; kwargs...)

@@ -1,3 +1,8 @@
+# 2.12.0
+- Arbitrary functions extracting strings from data can be used in `produce_or_load` instead of `savename`. `hash` is the most useful function here. An example in Real World Examples highlights this.
+- Additional keywords in `produce_or_load` propagated to `savename` are deprecated.
+- The example project created in the Workflow Tutorial no longer has spaces in its name
+
 # 2.11.0
 - Now the default project with `initialize_project` will include a documentation and a test folder, and setup CI for both automatically.
 - `@produce_or_load` was broken but because CI was disabled this was silently ignored. `produce_or_load` now has call signature `produce_or_load(f::Function, config, path::String = "")` and same signature for the macro with `path` mandatory.
