@@ -2,8 +2,9 @@ export produce_or_load, @produce_or_load, tagsave, @tagsave, safesave
 
 """
     produce_or_load(f::Function, config, path = "") -> data, file
-The goal of `produce_or_load` is to avoid re-running data-producing code.
-If the output of some function `f` exists on disk, `produce_or_load` will load
+The goal of `produce_or_load` is to avoid running some data-producing code that has
+already been run with a given configuration container `config`.
+If the output of some function `f(config)` exists on disk, `produce_or_load` will load
 it and return it, and if not, it will produce it, save it, and then return it.
 
 Here is how it works:
@@ -21,15 +22,16 @@ Here is how it works:
    that produces your data from the configuration container.
 5. Then save the `data` as `file` and then return `data, file`.
 
-The function `f` should return a dictionary if the data are saved in the default
-format of JLD2.jl., the macro [`@strdict`](@ref) can help with that.
+The function `f` should return a string-keyed dictionary if the data are saved in the
+default format of JLD2.jl., the macro [`@strdict`](@ref) can help with that.
 
 You can use a [do-block]
 (https://docs.julialang.org/en/v1/manual/functions/#Do-Block-Syntax-for-Function-Arguments)
 instead of defining a function to pass in. For example,
 ```julia
 produce_or_load(config, path) do config
-    # simulation using `config` runs here
+    # code using `config` runs here
+    # and then returns a dictionary to be saved
 end
 ```
 

@@ -106,18 +106,18 @@ end
     @test "script" ∈ keys(sim)
     @test "gitcommit" ∈ keys(sim)
     @test sim["script"] |> typeof == String
-    @test endswith(sim["script"], "savefiles_tests.jl#103")
+    @test endswith(sim["script"], "savefiles_tests.jl#102")
     rm(savename(simulation, ending))
     @test !isfile(savename(simulation, ending))
 
     # Test without keywords as well.
-    sim, path = @produce_or_load(f, simulation, "")
+    sim, path = @produce_or_load(f, simulation, ""; suffix = ending)
     @test isfile(savename(simulation, ending))
     rm(savename(simulation, ending))
 
     # Test if tag = false does not interfere with macro script tagging.
     sim, = @produce_or_load(f, simulation, ""; tag = false, suffix = ending)
-    @test endswith(sim["script"], "savefiles_tests.jl#120")
+    @test endswith(sim["script"], "savefiles_tests.jl#119")
     @test "gitcommit" ∉ keys(sim)
     rm(savename(simulation, ending))
 
@@ -157,25 +157,25 @@ end
 @testset "Produce or Load with manual filename ($ending)" for ending ∈ ["bson", "jld2"]
 
     # test with empty `path`
-    filename = joinpath(mktempdir(), "out.$ending")
+    filename = joinpath(mktempdir(), "out")
     @test !isfile(filename)
-    sim, file = @produce_or_load(simulation, filename=filename) do config
+    sim, file = @produce_or_load(simulation; filename=filename, suffix=ending) do config
         f(config)
     end
-    @test file == filename
-    @test isfile(filename)
+    @test file == filename*'.'*ending
+    @test isfile(filename*'.'*ending)
     @test sim["simulation"].T == T
     @test "script" ∈ keys(sim)
-    rm(filename)
+    rm(file)
 
     # test with both `path` and filename
     path = mktempdir()
-    filename = joinpath("sub", "out.$ending")
+    filename = joinpath("sub", "out")
     @test !isfile(joinpath(path, filename))
-    sim, file = @produce_or_load(path, simulation, filename=filename) do config
+    sim, file = @produce_or_load(path, simulation, filename=filename, suffix=ending) do config
         f(config)
     end
-    @test file == joinpath(path, filename)
+    @test file == joinpath(path, filename*'.'*ending)
     @test isfile(file)
     @test sim["simulation"].T == T
     @test "script" ∈ keys(sim)
