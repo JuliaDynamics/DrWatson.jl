@@ -131,7 +131,9 @@ produce_or_load(path::String, c, f::Function; kwargs...) = produce_or_load(f, c,
 produce_or_load(f::Function, path::String, c; kwargs...) = produce_or_load(f, c, path; kwargs...)
 
 function append_prefix_suffix(name, prefix, suffix)
-    if prefix != ""
+    if isempty(name)
+        name = prefix*'.'*suffix
+    elseif prefix != ""
         name = prefix*'_'*name
     end
     if suffix != ""

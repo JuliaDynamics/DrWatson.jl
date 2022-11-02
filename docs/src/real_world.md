@@ -275,7 +275,6 @@ rng = Random.MersenneTwister(1234)
 configs = Dict(
     "x" => [rand(Random.MersenneTwister(1234), 1000),
             randn(Random.MersenneTwister(1234), 20)],
-    # :f => [x -> sum(cos.(x)), x -> maximum(abs.(x))],
     "f" => [f1, f2],
 )
 configs = dict_list(configs)
