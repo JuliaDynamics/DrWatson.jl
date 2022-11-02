@@ -134,10 +134,10 @@ params = @strdict a b v method
 # of these parameter containers
 
 allparams = Dict(
-    "a" => [1, 2], # it is inside vector. It is expanded.
-    "b" => [3, 4],
-    "v" => [rand(5)],     # single element inside vector; no expansion
-    "method" => "linear", # not in vector = not expanded, even if naturally iterable
+    "a" => [1, 2],         # it is inside vector. It is expanded.
+    "b" => [3, 4],         # same
+    "v" => [rand(1:2, 2)], # single element inside vector; no expansion
+    "method" => "linear",  # not in vector = not expanded, even if naturally iterable
 )
 
 dicts = dict_list(allparams)
@@ -173,9 +173,10 @@ end
 # *(`wsave` is a function from DrWatson, that ensures that the directory you try to
 # save the data exists. It then calls `FileIO.save`)*
 
-# Here each simulation was named according to a number.
-# But this is not how we do it in science... We typically want the input parameters
-# to be part of the file name. E.g. here we would want the file name to be something like
+# Here each simulation was named according to a somewhat arbitrary integer.
+# Surely we can do better though! We typically want the input parameters
+# to be part of the file name, if the parameters are few and simple, like here.
+# E.g. here we would want the file name to be something like
 # `a=2_b=3_method=linear.jld2`. It would be also nice that such a naming scheme would
 # apply to arbitrary input parameters so that we don't have to manually write
 # `a=$(a)_b=$(b)_method=$(method)` and change this code every time we change
@@ -239,7 +240,8 @@ wload(datadir("simulations", firstsim))
 # saved data!
 
 # Lastly, have a look at [`produce_or_load`](@ref) to establish a workflow
-# that helps you run data-producing simulations only once.
+# that helps you run data-producing simulations only once, saving you both
+# headaches but also precious electricity!
 
 # ## 5. Analyze results
 
