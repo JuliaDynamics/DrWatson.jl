@@ -61,7 +61,7 @@ end
   compression).
 """
 function produce_or_load(f::Function, config, path::String = "";
-        suffix = "jld2", prefix = default_prefix(c),
+        suffix = "jld2", prefix = default_prefix(config),
         tag::Bool = readenv("DRWATSON_TAG", istaggable(suffix)),
         gitpath = projectdir(), loadfile = true,
         storepatch::Bool = readenv("DRWATSON_STOREPATCH", false),
