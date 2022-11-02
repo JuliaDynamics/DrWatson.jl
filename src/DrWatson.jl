@@ -37,7 +37,7 @@ _wsave(filename, data...; kwargs...) = FileIO.save(filename, data...; kwargs...)
 
 Save `data` at `filename` by first creating the appropriate paths.
 Default fallback is `FileIO.save`. Extend this for your types
-by extending `DrWatson._wsave(filename, data::YourType...; kwargs...)`.
+by extending `DrWatson._wsave(filename, data::YourType, args...; kwargs...)`.
 """
 function wsave(filename, data...; kwargs...)
     mkpath(dirname(filename))
@@ -57,7 +57,7 @@ using Requires
 using Scratch
 const env_var = "DRWATSON_UPDATE_MSG"
 const display_update = true
-const update_version = "2.11.0"
+const update_version = "2.12.0"
 const update_name = "update_v$update_version"
 
 # Get scratch space for this package
@@ -85,15 +85,12 @@ function __init__()
         """
         \nUpdate message: DrWatson v$update_version
 
-        - Now the default project with `initialize_project` will include a documentation
-          and a test folder, as well as scripts to trigger them.
-        - It will also set up CI for both automatically, if a GitHub repo is given.
-        - This new template is showcased in the Good Scientific Code Workshop,
-          see https://youtu.be/x3swaMSCcYk
-        - `@produce_or_load` was broken but because CI was disabled this was
-          silently ignored. `produce_or_load` now has call signature
-          `produce_or_load(f::Function, config, path::String = "")` and
-          same signature for the macro with `path` mandatory.
+        - `produce_or_load` now allows using arbitrary functions when extracting a file
+          name from the input configuration container. Effectively this means that you can
+          use `Base.hash` instead of `savename`, allowing using `produce_or_load` with
+          configuration containers that have too many parameters, or too complicated,
+          to be uniquely mapped to a string via `savename`. A section "`produce_or_load`
+          with hash codes" in Real World Examples highlights this possibility!
 
         To disable future update messages see:
         https://juliadynamics.github.io/DrWatson.jl/dev/#Installing-and-Updating-1
