@@ -262,6 +262,42 @@ end
     rm(spath)
 end
 
+@testset "produce_or_load with objectid" begin
+    using Random
+    path = mktempdir()
+    function sim_with_f(config)
+        @unpack x, f = config
+        r = f(x)
+        return @dict(r)
+    end
+
+    f1(x) = sum(cos.(x))
+    f2(x) = maximum(abs.(x))
+    rng = Random.MersenneTwister(1234)
+
+    configs = Dict(
+        "x" => [rand(rng, 1000), randn(rng, 2000)],
+        # :f => [x -> sum(cos.(x)), x -> maximum(abs.(x))],
+        "f" => [f1, f2],
+    )
+    configs = dict_list(configs)
+    pol_kwargs = (prefix = "sims_with_f", verbose = false, tag = false)
+
+    for config in configs
+        produce_or_load(sim_with_f, config, path; filename = objectid, pol_kwargs...)
+    end
+    o = readdir(path)
+    @test length(o) == 4
+    config = Dict("x" => rand(Random.MersenneTwister(4321)), "f" => f1)
+    produce_or_load(sim_with_f, config, path; filename = objectid, pol_kwargs...)
+    @test length(readdir(path)) == 5
+    config = Dict("x" => rand(Random.MersenneTwister(1234)), "f" => f1)
+    produce_or_load(sim_with_f, config, path; filename = objectid, pol_kwargs...)
+    @test length(readdir(path)) == 5
+end
+
+
+
 ################################################################################
 #                          Backup files before saving                          #
 ################################################################################
