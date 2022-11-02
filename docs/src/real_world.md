@@ -257,7 +257,10 @@ Now, every time I run this code block the function tests automatically whether t
 The extra step is that I have to extract the useful data I need from the container `file`. Thankfully the [`@unpack`](@ref) macro, or if your are using Julia v1.5 or later, the named decomposition syntax, `(; a, b) = config`, makes unpacking super easy.
 
 ## `produce_or_load` with hash codes
-As displayed above, [`produce_or_load`](@ref) has a limitation: the filename is what is checked for the existence of the file, i.e., the output of some code. However, in some situations you may have crucial differences between outputs that cannot be encoded simply using the filename. This is, for example, the case where part of the input to the code is some function. Let's say we have a code that has way too many input parameters, all of which are important, but also one of the parameters is a complicated function. In this scenario [`savename`](@ref) which is used by default to extract a name for [`produce_or_load`](@ref) is unfitting. We can instead use base Julia's `hash` though.
+As displayed above, the default setting of [`produce_or_load`](@ref) uses [`savename`](@ref) to extract the filename from the configuration input. This file name is used to check whether the program has run and its output has been saved or not. However, in some situations you may have crucial differences between inputs that cannot be encoded simply using [`savename`](@ref). This is, for example, the case where part of the input to the code is some function, or the input parameters are so many that [`savename`](@ref) would make a file name larger than what operating systems allow.
+
+Thankfully, instead of [`savename`](@ref) we can use base Julia's `hash` function as we will illustrate in the following example.
+
 ```@example customizing
 using DrWatson
 using Random
