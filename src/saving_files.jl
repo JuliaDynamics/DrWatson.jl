@@ -87,7 +87,7 @@ function produce_or_load(f::Function, config, path::String = "";
     else
         name = string(filename(config))
     end
-    name = append_prefix_suffix(name)
+    name = append_prefix_suffix(name, prefix, suffix)
     file = joinpath(path, name)
     # Run the remaining logic on whether to produce or load
     if !force && isfile(file)
