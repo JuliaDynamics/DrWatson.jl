@@ -9,9 +9,9 @@ convert_to_kw(ex) = error("invalid keyword argument syntax \"$ex\"")
 
 # Misc helpers
 """
-    readenv(var, default::T) where {T}
+    readenv(var, default::T)
 
-Try to read the environment variable `var` and parse it as a `::T`.
+Try to read the environment variable `var` and parse it as type `T`.
 If that fails, return `default`.
 """
 readenv(var, default::T) where {T} = something(tryparse(T, get(ENV, var, "")), Some(default))
