@@ -20,7 +20,8 @@
 # So, let's start a new scientific project. You want your project to be contained
 # in a folder. So let's create a new project, located at current working directory
 using DrWatson
-initialize_project("DrWatson Example"; authors="Datseris", force=true)
+## prefer project names without spaces!
+initialize_project("DrWatsonExample"; authors="Datseris", force=true)
 
 # Alright now we have a project set up. The project has a default reasonable structure,
 # as illustrated in the [Default Project Setup](@ref) page:
@@ -58,22 +59,22 @@ Pkg.add(["Statistics", "JLD2"])
 # exist in that file.
 
 # ```@setup workflow
-# cd(joinpath(@__DIR__, "DrWatson Example"))
+# cd(joinpath(@__DIR__, "DrWatsonExample"))
 # ```
 
 
 # Now, with DrWatson every script (typically) starts with the following two lines:
 # ```@setup workflow
-# quickactivate("DrWatson Example", "DrWatson Example")
+# quickactivate("DrWatsonExample", "DrWatsonExample")
 # ```
 
 # ```julia
 # using DrWatson
-# @quickactivate "DrWatson Example" # <- project name
+# @quickactivate "DrWatsonExample" # <- project name
 # ```
 # This command does something simple: it searches the folder of the script, and its
 # parent folders, until it finds a Project.toml. It activates that project, but
-# if the project name doesn't match the given name (here `"DrWatson Example"`)
+# if the project name doesn't match the given name (here `"DrWatsonExample"`)
 # it throws an error. Let's see the project we activated:
 projectname()
 
@@ -292,5 +293,5 @@ safesave(datadir("ana", "linear.jld2"), @strdict analysis)
 
 # Attempt to remove the folder at the end #src
 # ```@setup workflow
-# rm(joinpath(@__DIR__, "DrWatson Example"); force=true, recursive=true)
+# rm(joinpath(@__DIR__, "DrWatsonExample"); force=true, recursive=true)
 # ```
