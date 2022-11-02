@@ -11,7 +11,7 @@ Here is how it works:
 1. The output data are saved in a file named `name = filename(config)`.
    I.e., the output file's name is created from the configuration container `config`.
    By default, this is `name = `[`savename`](@ref)`(config)`,
-   but can be configured differently, using e.g. `objectid`, see keyword `filename` below.
+   but can be configured differently, using e.g. `hash`, see keyword `filename` below.
    See also [`produce_or_load` with Object IDs](@ref) for an example where part of the
    `config` are functions, which would otherwise be hard to put into `name` with `savename`.
 2. Now, let `file = joinpath(path, prefix*name*'.'*suffix)`.
@@ -38,13 +38,13 @@ end
 * `filename::Union{Function, String} = savename` :
   Configures the `name` of the file to produce or load given the configuration container.
   It may be a one-argument function of `config`, [`savename`](@ref) by default, so that
-  `name = filename(config)`. Useful alternative to `savename` is `objectid`,
+  `name = filename(config)`. Useful alternative to `savename` is `hash`,
   for cases when important options in `config` are difficult
   to transform into a string via [`savename`](@ref). The keyword `filename` could also be
   a `String` directly, possibly extracted from `config` before calling `produce_or_load`,
   in which case `name = filename`.
 * `suffix = "jld2", prefix = default_prefix(config)` : Added to `name`,
-  as `name = prefix*name*'.'*suffix` (i.e., same way it would work in [`savename`](@ref)).
+  as `name = prefix*'_'*name*'.'*suffix` (i.e., like in [`savename`](@ref)).
 
 ### Saving
 * `tag::Bool = DrWatson.readenv("DRWATSON_TAG", istaggable(suffix))` : Save the file
@@ -87,7 +87,7 @@ function produce_or_load(f::Function, config, path::String = "";
     else
         name = string(filename(config))
     end
-    name = prefix*name*'.'*suffix
+    name = prefix*'_'*name*'.'*suffix
     file = joinpath(path, name)
     # Run the remaining logic on whether to produce or load
     if !force && isfile(file)

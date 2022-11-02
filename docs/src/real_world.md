@@ -256,8 +256,8 @@ Now, every time I run this code block the function tests automatically whether t
 
 The extra step is that I have to extract the useful data I need from the container `file`. Thankfully the [`@unpack`](@ref) macro, or if your are using Julia v1.5 or later, the named decomposition syntax, `(; a, b) = config`, makes unpacking super easy.
 
-## `produce_or_load` with Object IDs
-As displayed above, [`produce_or_load`](@ref) has a limitation: the filename is what is checked for the existence of the file, i.e., the output of some code. However, in some situations you may have crucial differences between outputs that cannot be encoded simply using the filename. This is, for example, the case where part of the input to the code is some function. Let's say we have a code that has way too many input parameters, all of which are important, but also one of the parameters is a complicated function. In this scenario [`savename`](@ref) which is used by default to extract a name for [`produce_or_load`](@ref) is unfitting. We can instead use base Julia's `objectid` though.
+## `produce_or_load` with hash codes
+As displayed above, [`produce_or_load`](@ref) has a limitation: the filename is what is checked for the existence of the file, i.e., the output of some code. However, in some situations you may have crucial differences between outputs that cannot be encoded simply using the filename. This is, for example, the case where part of the input to the code is some function. Let's say we have a code that has way too many input parameters, all of which are important, but also one of the parameters is a complicated function. In this scenario [`savename`](@ref) which is used by default to extract a name for [`produce_or_load`](@ref) is unfitting. We can instead use base Julia's `hash` though.
 ```@example customizing
 using DrWatson
 using Random
@@ -273,7 +273,8 @@ f2(x) = maximum(abs.(x))
 rng = Random.MersenneTwister(1234)
 
 configs = Dict(
-    "x" => [rand(rng, 1000), randn(rng, 2000)],
+    "x" => [rand(Random.MersenneTwister(1234), 1000),
+            randn(Random.MersenneTwister(1234), 20)],
     # :f => [x -> sum(cos.(x)), x -> maximum(abs.(x))],
     "f" => [f1, f2],
 )
@@ -290,21 +291,21 @@ readdir(path)
 ```
 as you can see this is obviously useless :D `savename` didn't return
 anything from the given `config` containers so all data had the same name.
-Let's use `objectid` instead:
+Let's use `hash` instead:
 
 ```@example customizing
 rm(joinpath(path, "sims_with_f.jld2"))
 for config in configs
-    produce_or_load(sim_with_f, config, path; filename = objectid, pol_kwargs...)
+    produce_or_load(sim_with_f, config, path; filename = hash, pol_kwargs...)
 end
 readdir(path)
 ```
 Lovely. But, just to be on the safe side, if we use a different input `x`
-but of same type and size would we get a different file name (as desidred)?
+but of same type and size would we get a different file name (as desired)?
 
 ```@example customizing
 config = Dict("x" => rand(Random.MersenneTwister(4321)), "f" => f1)
-produce_or_load(sim_with_f, config, path; filename = objectid, pol_kwargs...)
+produce_or_load(sim_with_f, config, path; filename = hash, pol_kwargs...)
 readdir(path)
 ```
 yes.
@@ -313,15 +314,15 @@ same ID, and hence, not rerun the simulation (as desired)?
 
 ```@example customizing
 config = Dict("x" => rand(Random.MersenneTwister(1234)), "f" => f1)
-produce_or_load(sim_with_f, config, path; filename = objectid, pol_kwargs...)
+produce_or_load(sim_with_f, config, path; filename = hash, pol_kwargs...)
 readdir(path)
 ```
-Perfect! Be aware and careful of using `objectid` and functions. Anonymous functions
+Perfect! Be aware and careful of using `hash` and functions. Anonymous functions
 will definitely mess you up and should be avoided! For example,
 ```@example customizing
 an_f = x -> sum(sin.(x))
 config = Dict("x" => rand(Random.MersenneTwister(1234)), "f" => an_f)
-produce_or_load(sim_with_f, config, path; filename = objectid, pol_kwargs...)
+produce_or_load(sim_with_f, config, path; filename = hash, pol_kwargs...)
 readdir(path)
 ```
 So, even though `an_f` is in practice the "same" function as `f1`, they are not the same

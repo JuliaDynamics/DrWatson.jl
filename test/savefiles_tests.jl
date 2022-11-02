@@ -106,7 +106,7 @@ end
     @test "script" ∈ keys(sim)
     @test "gitcommit" ∈ keys(sim)
     @test sim["script"] |> typeof == String
-    @test endswith(sim["script"], "savefiles_tests.jl#102")
+    @test endswith(sim["script"], "savefiles_tests.jl#103")
     rm(savename(simulation, ending))
     @test !isfile(savename(simulation, ending))
 
@@ -117,7 +117,7 @@ end
 
     # Test if tag = false does not interfere with macro script tagging.
     sim, = @produce_or_load(f, simulation, ""; tag = false, suffix = ending)
-    @test endswith(sim["script"], "savefiles_tests.jl#114")
+    @test endswith(sim["script"], "savefiles_tests.jl#120")
     @test "gitcommit" ∉ keys(sim)
     rm(savename(simulation, ending))
 
@@ -273,27 +273,38 @@ end
 
     f1(x) = sum(cos.(x))
     f2(x) = maximum(abs.(x))
-    rng = Random.MersenneTwister(1234)
+    # rng = Random.MersenneTwister(1234)
 
     configs = Dict(
-        "x" => [rand(rng, 1000), randn(rng, 2000)],
+        "x" => [rand(Random.MersenneTwister(1234), 1000),
+                randn(Random.MersenneTwister(1234), 50)],
         # :f => [x -> sum(cos.(x)), x -> maximum(abs.(x))],
         "f" => [f1, f2],
     )
     configs = dict_list(configs)
     pol_kwargs = (prefix = "sims_with_f", verbose = false, tag = false)
 
+    # Test that we get 4 unique files
     for config in configs
-        produce_or_load(sim_with_f, config, path; filename = objectid, pol_kwargs...)
+        produce_or_load(sim_with_f, config, path; filename = hash, pol_kwargs...)
     end
     o = readdir(path)
     @test length(o) == 4
-    config = Dict("x" => rand(Random.MersenneTwister(4321)), "f" => f1)
-    produce_or_load(sim_with_f, config, path; filename = objectid, pol_kwargs...)
+    # Test tat we if we change the numbers in the vector we have one more file
+    config = Dict("x" => rand(Random.MersenneTwister(4321), 1000), "f" => f1)
+    produce_or_load(sim_with_f, config, path; filename = hash, pol_kwargs...)
     @test length(readdir(path)) == 5
-    config = Dict("x" => rand(Random.MersenneTwister(1234)), "f" => f1)
-    produce_or_load(sim_with_f, config, path; filename = objectid, pol_kwargs...)
+    # Test that if we do not change the numbers in the vector we do not get
+    # a new file
+    config = Dict("x" => rand(Random.MersenneTwister(1234), 1000), "f" => f1)
+    produce_or_load(sim_with_f, config, path; filename = hash, pol_kwargs...)
     @test length(readdir(path)) == 5
+    # also test that hash wouldn't work with anonymous functions that do the same
+    config = Dict("x" => rand(Random.MersenneTwister(1234), 1000), "f" => x -> sum(cos.(x)))
+    produce_or_load(sim_with_f, config, path; filename = hash, pol_kwargs...)
+    @test length(readdir(path)) == 6
+
+    rm(path; recursive = true, force = true)
 end
 
 
