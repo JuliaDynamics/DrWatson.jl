@@ -312,7 +312,7 @@ readdir(path)
 ```
 yes.
 But, if we used exactly the same numbers and function, would it yield exactly the
-same ID, and hence, not rerun the simulation (as desired)?
+same hash code, and hence, not rerun the simulation (as desired)?
 
 ```@example customizing
 config = Dict("x" => rand(Random.MersenneTwister(1234)), "f" => f1)
