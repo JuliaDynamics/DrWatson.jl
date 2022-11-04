@@ -185,7 +185,7 @@ function collect_results!(filename, folder;
     if update
         # Delete entries with nonexisting files.
         idx = findall((x)->(!isfile(x.path)), eachrow(df))
-        delete!(df, idx)
+        deleteat!(df, idx)
         verbose && @info "Added $n entries. Updated $u entries. Deleted $(length(idx)) entries."
     else
         verbose && @info "Added $n entries."

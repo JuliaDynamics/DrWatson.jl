@@ -26,8 +26,8 @@ DrWatson is part of [JuliaDynamics](https://juliadynamics.github.io/JuliaDynamic
 ## Installing and Updating
 To install or update DrWatson, simply type `] add DrWatson` or `] up DrWatson`, respectively, in your Julia session.
 
-!!! note "Update messages"
-    Upon update DrWatson will display a message highlighting any major changes. To disable these messages set the environment variable `DRWATSON_UPDATE_MSG` to `0` prior to `using DrWatson`. 
+!!! info "Update messages"
+    Upon update DrWatson will display a message highlighting any major changes or major new features. To disable these messages set the environment variable `DRWATSON_UPDATE_MSG` to `0` prior to `using DrWatson`.
 
 ## Rationale
 Have you thought things like:
@@ -125,7 +125,7 @@ or use the DOI directly:
 * <https://github.com/JuliaDocs/Documenter.jl>
 * <https://github.com/fredrikekre/Literate.jl>
 * <https://github.com/caseykneale/Sherlock.jl>
-* <https://github.com/miguelraz/DoctorDocstrings.jl> 
+* <https://github.com/miguelraz/DoctorDocstrings.jl>
 
 ### Paper-related
 * <https://github.com/Humans-of-Julia/Bibliography.jl>

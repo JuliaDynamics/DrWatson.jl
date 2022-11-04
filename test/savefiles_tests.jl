@@ -111,13 +111,13 @@ end
     @test !isfile(savename(simulation, ending))
 
     # Test without keywords as well.
-    sim, path = @produce_or_load(f, simulation, "")
+    sim, path = @produce_or_load(f, simulation, ""; suffix = ending)
     @test isfile(savename(simulation, ending))
     rm(savename(simulation, ending))
 
     # Test if tag = false does not interfere with macro script tagging.
     sim, = @produce_or_load(f, simulation, ""; tag = false, suffix = ending)
-    @test endswith(sim["script"], "savefiles_tests.jl#114")
+    @test endswith(sim["script"], "savefiles_tests.jl#119")
     @test "gitcommit" ∉ keys(sim)
     rm(savename(simulation, ending))
 
@@ -157,25 +157,25 @@ end
 @testset "Produce or Load with manual filename ($ending)" for ending ∈ ["bson", "jld2"]
 
     # test with empty `path`
-    filename = joinpath(mktempdir(), "out.$ending")
+    filename = joinpath(mktempdir(), "out")
     @test !isfile(filename)
-    sim, file = @produce_or_load(simulation, filename=filename) do config
+    sim, file = @produce_or_load(simulation; filename=filename, suffix=ending) do config
         f(config)
     end
-    @test file == filename
-    @test isfile(filename)
+    @test file == filename*'.'*ending
+    @test isfile(filename*'.'*ending)
     @test sim["simulation"].T == T
     @test "script" ∈ keys(sim)
-    rm(filename)
+    rm(file)
 
     # test with both `path` and filename
     path = mktempdir()
-    filename = joinpath("sub", "out.$ending")
+    filename = joinpath("sub", "out")
     @test !isfile(joinpath(path, filename))
-    sim, file = @produce_or_load(path, simulation, filename=filename) do config
+    sim, file = @produce_or_load(path, simulation, filename=filename, suffix=ending) do config
         f(config)
     end
-    @test file == joinpath(path, filename)
+    @test file == joinpath(path, filename*'.'*ending)
     @test isfile(file)
     @test sim["simulation"].T == T
     @test "script" ∈ keys(sim)
@@ -261,6 +261,53 @@ end
     @test haskey(d, "script")
     rm(spath)
 end
+
+@testset "produce_or_load with objectid" begin
+    using Random
+    path = mktempdir()
+    function sim_with_f(config)
+        @unpack x, f = config
+        r = f(x)
+        return @dict(r)
+    end
+
+    f1(x) = sum(cos.(x))
+    f2(x) = maximum(abs.(x))
+    # rng = Random.MersenneTwister(1234)
+
+    configs = Dict(
+        "x" => [rand(Random.MersenneTwister(1234), 1000),
+                randn(Random.MersenneTwister(1234), 50)],
+        # :f => [x -> sum(cos.(x)), x -> maximum(abs.(x))],
+        "f" => [f1, f2],
+    )
+    configs = dict_list(configs)
+    pol_kwargs = (prefix = "sims_with_f", verbose = false, tag = false)
+
+    # Test that we get 4 unique files
+    for config in configs
+        produce_or_load(sim_with_f, config, path; filename = hash, pol_kwargs...)
+    end
+    o = readdir(path)
+    @test length(o) == 4
+    # Test tat we if we change the numbers in the vector we have one more file
+    config = Dict("x" => rand(Random.MersenneTwister(4321), 1000), "f" => f1)
+    produce_or_load(sim_with_f, config, path; filename = hash, pol_kwargs...)
+    @test length(readdir(path)) == 5
+    # Test that if we do not change the numbers in the vector we do not get
+    # a new file
+    config = Dict("x" => rand(Random.MersenneTwister(1234), 1000), "f" => f1)
+    produce_or_load(sim_with_f, config, path; filename = hash, pol_kwargs...)
+    @test length(readdir(path)) == 5
+    # also test that hash wouldn't work with anonymous functions that do the same
+    config = Dict("x" => rand(Random.MersenneTwister(1234), 1000), "f" => x -> sum(cos.(x)))
+    produce_or_load(sim_with_f, config, path; filename = hash, pol_kwargs...)
+    @test length(readdir(path)) == 6
+
+    rm(path; recursive = true, force = true)
+end
+
+
 
 ################################################################################
 #                          Backup files before saving                          #

@@ -20,7 +20,8 @@
 # So, let's start a new scientific project. You want your project to be contained
 # in a folder. So let's create a new project, located at current working directory
 using DrWatson
-initialize_project("DrWatson Example"; authors="Datseris", force=true)
+## prefer project names without spaces!
+initialize_project("DrWatsonExample"; authors="Datseris", force=true)
 
 # Alright now we have a project set up. The project has a default reasonable structure,
 # as illustrated in the [Default Project Setup](@ref) page:
@@ -58,22 +59,22 @@ Pkg.add(["Statistics", "JLD2"])
 # exist in that file.
 
 # ```@setup workflow
-# cd(joinpath(@__DIR__, "DrWatson Example"))
+# cd(joinpath(@__DIR__, "DrWatsonExample"))
 # ```
 
 
 # Now, with DrWatson every script (typically) starts with the following two lines:
 # ```@setup workflow
-# quickactivate("DrWatson Example", "DrWatson Example")
+# quickactivate("DrWatsonExample", "DrWatsonExample")
 # ```
 
 # ```julia
 # using DrWatson
-# @quickactivate "DrWatson Example" # <- project name
+# @quickactivate "DrWatsonExample" # <- project name
 # ```
 # This command does something simple: it searches the folder of the script, and its
 # parent folders, until it finds a Project.toml. It activates that project, but
-# if the project name doesn't match the given name (here `"DrWatson Example"`)
+# if the project name doesn't match the given name (here `"DrWatsonExample"`)
 # it throws an error. Let's see the project we activated:
 projectname()
 
@@ -133,10 +134,10 @@ params = @strdict a b v method
 # of these parameter containers
 
 allparams = Dict(
-    "a" => [1, 2], # it is inside vector. It is expanded.
-    "b" => [3, 4],
-    "v" => [rand(5)],     # single element inside vector; no expansion
-    "method" => "linear", # not in vector = not expanded, even if naturally iterable
+    "a" => [1, 2],         # it is inside vector. It is expanded.
+    "b" => [3, 4],         # same
+    "v" => [rand(1:2, 2)], # single element inside vector; no expansion
+    "method" => "linear",  # not in vector = not expanded, even if naturally iterable
 )
 
 dicts = dict_list(allparams)
@@ -172,9 +173,10 @@ end
 # *(`wsave` is a function from DrWatson, that ensures that the directory you try to
 # save the data exists. It then calls `FileIO.save`)*
 
-# Here each simulation was named according to a number.
-# But this is not how we do it in science... We typically want the input parameters
-# to be part of the file name. E.g. here we would want the file name to be something like
+# Here each simulation was named according to a somewhat arbitrary integer.
+# Surely we can do better though! We typically want the input parameters
+# to be part of the file name, if the parameters are few and simple, like here.
+# E.g. here we would want the file name to be something like
 # `a=2_b=3_method=linear.jld2`. It would be also nice that such a naming scheme would
 # apply to arbitrary input parameters so that we don't have to manually write
 # `a=$(a)_b=$(b)_method=$(method)` and change this code every time we change
@@ -237,6 +239,10 @@ wload(datadir("simulations", firstsim))
 # that called the `@tagsave` command. This information is in the `:script` field of the
 # saved data!
 
+# Lastly, have a look at [`produce_or_load`](@ref) to establish a workflow
+# that helps you run data-producing simulations only once, saving you both
+# headaches but also precious electricity!
+
 # ## 5. Analyze results
 
 # Cool, now we can start analyzing some simulations. The actual analysis is your job,
@@ -289,5 +295,5 @@ safesave(datadir("ana", "linear.jld2"), @strdict analysis)
 
 # Attempt to remove the folder at the end #src
 # ```@setup workflow
-# rm(joinpath(@__DIR__, "DrWatson Example"); force=true, recursive=true)
+# rm(joinpath(@__DIR__, "DrWatsonExample"); force=true, recursive=true)
 # ```

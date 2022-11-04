@@ -4,15 +4,15 @@
 I setup all my science projects using DrWatson's suggested setup, using [`initialize_project`](@ref). Then, every file in every project has a start that looks like this:
 ```julia
 using DrWatson
-quickactivate(@__DIR__, "MagneticBilliardsLyapunovs")
-using DynamicalBilliards, PyPlot, LinearAlgebra
+@quickactivate "MagneticBilliardsLyapunovs"
+using DynamicalBilliards, GLMakie, LinearAlgebra
 
 include(srcdir("plot_perturbationgrowth.jl"))
 include(srcdir("unitcells.jl"))
 ```
 In all projects I save data/plots using `datadir/plotdir`:
 ```julia
-@tagsave(datadir("mushrooms", "Λ_N=$N.jld2"), (@strdict Λ Λσ ws hs description))
+@tagsave(datadir("mushrooms", "Λ_N=$N.jld2"), (@strdict(Λ, Λσ, ws, hs, description)))
 ```
 The advantage of this approach is that it will always work regardless of if I move the specific file to a different subfolder (which is very often necessary) or whether I move the entire project folder somewhere else!
 **Please be sure you have understood the caveat of using [`quickactivate`](@ref)!**
@@ -65,8 +65,6 @@ using DrWatson
 @quickactivate :AlbedoProperties
 ```
 which takes advantage of [`@quickactivate`](@ref)'s feature to essentially combine the commands `@quickactivate "AlbedoProperties"` and `using AlbedoProperties` into one.
-
-If you intend to share your project with a non-DrWatson user, you should consider the verbose syntax instead, as the above syntax is not really clear for someone that doesn't know what `@quickactivate` does.
 
 ## `savename` and tagging
 The combination of using [`savename`](@ref) and [`tagsave`](@ref) makes it easy and fast to save output in a way that is consistent, robust and reproducible. Here is an example from a project:
@@ -208,9 +206,9 @@ savename(stt)
 
 
 ## Stopping "Did I run this?"
-It can become very tedious to have a piece of code that you may or may not have run and may or may not have saved the produced data. You then constantly ask yourself "Did I run this?". Typically one uses `isfile` and an `if` clause to either load a file or run some code. Especially in the cases where the code takes only a couple of minutes to finish you are left in a dilemma "Is it even worth it to save?".
+It can become very tedious to have a piece of code that you may or may not have run and may or may not have saved the produced data. You then constantly ask yourself "Did I run this?". Depending on how costly running the code is, having a good framework to answer this question can become very important!
 
-This is the dilemma that [`produce_or_load`](@ref) resolves. You can wrap your code in a function and then [`produce_or_load`](@ref) will take care of the rest for you! I found it especially useful in scripts that generate figures for a publication.
+This is the role of [`produce_or_load`](@ref). You can wrap your code in a function and then [`produce_or_load`](@ref) will take care of the rest for you! I found it especially useful in scripts that generate figures for a publication.
 
 Here is an example; originally I had this piece of code:
 ```julia
@@ -229,11 +227,11 @@ end
 ```
 that was taking some minutes to run. To use the function [`produce_or_load`](@ref) I first have to wrap this code in a high level function like so:
 ```julia
-function g(d)
+function simulation(config)
     HTEST = 0.1:0.1:2.0
     WS = [0.5, 1.0, 1.5]
-    @unpack N, T = d
-    toypar_h = [[] for l in WS]
+    @unpack N, T = config
+    toypar_h = [[] for _ in WS]
 
     for (wi, w) in enumerate(WS)
         println("w = $w")
@@ -249,14 +247,85 @@ N = 2000; T = 2000.0
 data, file = produce_or_load(
     datadir("mushrooms", "toy"), # path
     @dict(N, T), # container
-    g, # function
+    simulation; # function
     prefix = "fig5_toyparams" # prefix for savename
 )
 @unpack toypar_h = data
 ```
 Now, every time I run this code block the function tests automatically whether the file exists. Only if it does not, then the code is run while the new result is saved to ensure I won't have to run it again.
 
-The extra step is that I have to extract the useful data I need from the container `file`. Thankfully the `@unpack` macro from [UnPack.jl](https://github.com/mauro3/UnPack.jl) makes this super easy.
+The extra step is that I have to extract the useful data I need from the container `file`. Thankfully the [`@unpack`](@ref) macro, or if your are using Julia v1.5 or later, the named decomposition syntax, `(; a, b) = config`, makes unpacking super easy.
+
+## `produce_or_load` with hash codes
+As displayed above, the default setting of [`produce_or_load`](@ref) uses [`savename`](@ref) to extract the filename from the configuration input. This file name is used to check whether the program has run and its output has been saved or not. However, in some situations you may too many parameters, or complicated nested structs, and encoding these simply using [`savename`](@ref) is not possible or simply inconvenient.
+
+Thankfully, instead of [`savename`](@ref) we can use base Julia's `hash` function as we will illustrate in the following example.
+
+```@example customizing
+using DrWatson
+using Random
+
+function sim_large_c(config)
+    @unpack x, f = config
+    r = sum(x)*f.a + f.t.b + f.t.c
+    return @strdict(r)
+end
+
+## Some nested structs
+f1 = (a = 1, t = (b = 2, c = 3))
+f2 = (a = 2, t = (b = 4, c = 5))
+## some containers with too many parameters
+rng = Random.MersenneTwister(1234)
+x1 = rand(Random.MersenneTwister(1234), 1000)
+x2 = randn(Random.MersenneTwister(1234), 20)
+
+preconfigs = Dict("x" => [x1, x2], "f" => [f1, f2])
+configs = dict_list(preconfigs)
+
+path = mktempdir()
+pol_kwargs = (prefix = "sim_large_c", verbose = false, tag = false)
+
+for config in configs
+    produce_or_load(sim_large_c, config, path; pol_kwargs...)
+end
+
+readdir(path)
+```
+as you can see this is obviously useless :D `savename` didn't return
+anything from the given `config` containers so all data had the same name.
+Let's use `hash` instead:
+
+```@example customizing
+rm(joinpath(path, "sim_large_c.jld2"))
+for config in configs
+    produce_or_load(sim_large_c, config, path; filename = hash, pol_kwargs...)
+end
+readdir(path)
+```
+Lovely. But, just to be on the safe side, if we use a different input `x`
+but of same type and size would we get a different file name (as desired)?
+
+```@example customizing
+config = Dict("x" => rand(Random.MersenneTwister(4321)), "f" => f1)
+produce_or_load(sim_large_c, config, path; filename = hash, pol_kwargs...)
+readdir(path)
+```
+yes.
+But, if we used exactly the same numbers and function, would it yield exactly the
+same hash code, and hence, not rerun the simulation (as desired)?
+
+```@example customizing
+config = Dict("x" => rand(Random.MersenneTwister(1234), 1000), "f" => f1)
+produce_or_load(sim_large_c, config, path; filename = hash, pol_kwargs...)
+readdir(path)
+```
+Perfect!
+
+!!! warning "Be careful of using `hash`."
+    The limitations of the `hash` function apply here. For example, custom types should implement `==` to ensure `hash` will work as intended.
+    In general using functions with `hash` should be avoided. Hashing of functions happens on the function name, and hence it doesn't capture information about the actual code of the function or its methods. So this should only be used if the functions are well-established names coming from e.g. Base Julia such as `sin, cos, ...`. You also cannot use anonymous functions _at all_, as they do not have the same `hash` even when defined in the the same way but in different Julia sessions.
+
+
 
 ## Preparing & running jobs
 ### Preparing the dictionaries
@@ -512,10 +581,10 @@ function logmessage(n, error)
     # current time
     time = Dates.format(now(UTC), dateformat"yyyy-mm-dd HH:MM:SS")
 
-    # memory the process is using 
+    # memory the process is using
     maxrss = "$(round(Sys.maxrss()/1048576, digits=2)) MiB"
 
-    logdata = (; 
+    logdata = (;
         n, # iteration n
         error, # some super important progress update
         maxrss) # lastly the amount of memory being used
@@ -537,7 +606,7 @@ end
 This yields output that is both easy to read *and* machine parseable.
 If you ever end up with too many logfiles to read, there is still `parse_savename` to
 help you.
- 
+
 ```julia
 julia> expensive_computation(5)
 2021-05-19 19:20:25 | n = 1 | error = 0.65 | maxrss = 326.27 MiB
@@ -551,14 +620,14 @@ julia> expensive_computation(5)
 The point of this section is to show how far one can take the interplay between [`savename`](@ref) and [`produce_or_load`](@ref) to **automate project input-to-output and eliminate as many duplicate lines of code as possible**. Read [Customizing `savename`](@ref) first, as knowledge of that section is used here.
 
 The key ingredient is that [`produce_or_load`](@ref) was made to work well with [`savename`](@ref). You can use this to automate the input-to-output pipeline of your project by following these steps:
-1. Define a custom struct that represents the input configuration for an experiment or a simulation. 
-2. Extend [`savename`](@ref) appropriately for it. 
+1. Define a custom struct that represents the input configuration for an experiment or a simulation.
+2. Extend [`savename`](@ref) appropriately for it.
 3. Define a "main" function that takes as input an instance of this configuration type, and returns the output of the experiment or simulation as dictionary (We're not changing here the "default" way to save files in Julia as `.jld2` files. To save files this way you need your data to be in a dictionary with `String` as keys).
 4. All your input-output scripts are simply put together by first defining the input configuration type, and then calling [`produce_or_load`](@ref) with your pre-defined "main" function (Alternatively, this function can internally call `produce_or_load` and return something else that is of special interest to your specific case).
 
-An example of where this approach is used in the "real world" is e.g. in our paper [Effortless estimation of basins of attraction](https://arxiv.org/abs/2110.04358). Its codebase is here: https://github.com/Datseris/EffortlessBasinsOfAttraction. Don't worry, you need to know nothing about the topic to follow the rest. The point is that we needed to run some kind of simulations for many different dynamical systems, which have different parameters, different dimensionality, etc. But they did have one thing in common: our output was always coming from the same function, `basins_of_attraction`, which allowed using the pipeline we discuss here using [`produce_or_load`](@ref). 
+An example of where this approach is used in the "real world" is e.g. in our paper [Effortless estimation of basins of attraction](https://arxiv.org/abs/2110.04358). Its codebase is here: https://github.com/Datseris/EffortlessBasinsOfAttraction. Don't worry, you need to know nothing about the topic to follow the rest. The point is that we needed to run some kind of simulations for many different dynamical systems, which have different parameters, different dimensionality, etc. But they did have one thing in common: our output was always coming from the same function, `basins_of_attraction`, which allowed using the pipeline we discuss here using [`produce_or_load`](@ref).
 
-So we defined a struct called `BasinConfig` that stored configuration options and system parameters. Then we extended `savename` for it. We defined some function `produce_basins` that takes this configuration file, initializes a dynamical system accordingly, and then makes the output **using `produce_or_load`**. This ensures that we're not running simulations twice if they exist. And keep in mind when you have so many parameters and different possible systems, it is quite easy to unintentionally run the same simulation twice because you "forgot about it". All of this can be found in this file: https://github.com/Datseris/EffortlessBasinsOfAttraction/blob/master/src/produce_basins.jl 
+So we defined a struct called `BasinConfig` that stored configuration options and system parameters. Then we extended `savename` for it. We defined some function `produce_basins` that takes this configuration file, initializes a dynamical system accordingly, and then makes the output **using `produce_or_load`**. This ensures that we're not running simulations twice if they exist. And keep in mind when you have so many parameters and different possible systems, it is quite easy to unintentionally run the same simulation twice because you "forgot about it". All of this can be found in this file: https://github.com/Datseris/EffortlessBasinsOfAttraction/blob/master/src/produce_basins.jl
 
 The benefit? All of our scripts that actually produce what we care about are this short:
 ```julia
