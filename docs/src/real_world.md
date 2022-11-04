@@ -321,7 +321,7 @@ readdir(path)
 ```
 Perfect!
 
-!!! warn "Be careful of using `hash`."
+!!! warning "Be careful of using `hash`."
     The limitations of the `hash` function apply here. For example, custom types should implement `==` to ensure `hash` will work as intended.
     In general using functions with `hash` should be avoided. Hashing of functions happens on the function name, and hence it doesn't capture information about the actual code of the function or its methods. So this should only be used if the functions are well-established names coming from e.g. Base Julia such as `sin, cos, ...`. You also cannot use anonymous functions _at all_, as they do not have the same `hash` even when defined in the the same way but in different Julia sessions.
 
