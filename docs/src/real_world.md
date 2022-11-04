@@ -257,7 +257,7 @@ Now, every time I run this code block the function tests automatically whether t
 The extra step is that I have to extract the useful data I need from the container `file`. Thankfully the [`@unpack`](@ref) macro, or if your are using Julia v1.5 or later, the named decomposition syntax, `(; a, b) = config`, makes unpacking super easy.
 
 ## `produce_or_load` with hash codes
-As displayed above, the default setting of [`produce_or_load`](@ref) uses [`savename`](@ref) to extract the filename from the configuration input. This file name is used to check whether the program has run and its output has been saved or not. However, in some situations you may have crucial differences between inputs that cannot be encoded simply using [`savename`](@ref). This is, for example, the case where part of the input to the code is some function, or the input parameters are so many that [`savename`](@ref) would make a file name larger than what operating systems allow.
+As displayed above, the default setting of [`produce_or_load`](@ref) uses [`savename`](@ref) to extract the filename from the configuration input. This file name is used to check whether the program has run and its output has been saved or not. However, in some situations you may too many parameters, or complicated nested structs, and encoding these simply using [`savename`](@ref) is not possible or simply inconvenient.
 
 Thankfully, instead of [`savename`](@ref) we can use base Julia's `hash` function as we will illustrate in the following example.
 
@@ -265,28 +265,28 @@ Thankfully, instead of [`savename`](@ref) we can use base Julia's `hash` functio
 using DrWatson
 using Random
 
-function sim_with_f(config)
+function sim_large_c(config)
     @unpack x, f = config
-    r = f(x)
+    r = sum(x)*f.a + f.t.b + f.t.c
     return @dict(r)
 end
 
-f1(x) = sum(cos.(x))
-f2(x) = maximum(abs.(x))
+## Some nested structs
+f1 = (a = 1, t = (b = 2, c = 3))
+f2 = (a = 2, t = (b = 4, c = 5))
+## some containers with too many parameters
 rng = Random.MersenneTwister(1234)
+x1 = rand(Random.MersenneTwister(1234), 1000)
+x2 = randn(Random.MersenneTwister(1234), 20)
 
-configs = Dict(
-    "x" => [rand(Random.MersenneTwister(1234), 1000),
-            randn(Random.MersenneTwister(1234), 20)],
-    "f" => [f1, f2],
-)
-configs = dict_list(configs)
+preconfigs = Dict("x" => [x1, x2], "f" => [f1, f2])
+configs = dict_list(preconfigs)
 
 path = mktempdir()
-pol_kwargs = (prefix = "sims_with_f", verbose = false, tag = false)
+pol_kwargs = (prefix = "sim_large_c", verbose = false, tag = false)
 
 for config in configs
-    produce_or_load(sim_with_f, config, path; pol_kwargs...)
+    produce_or_load(sim_large_c, config, path; pol_kwargs...)
 end
 
 readdir(path)
@@ -296,9 +296,9 @@ anything from the given `config` containers so all data had the same name.
 Let's use `hash` instead:
 
 ```@example customizing
-rm(joinpath(path, "sims_with_f.jld2"))
+rm(joinpath(path, "sim_large_c.jld2"))
 for config in configs
-    produce_or_load(sim_with_f, config, path; filename = hash, pol_kwargs...)
+    produce_or_load(sim_large_c, config, path; filename = hash, pol_kwargs...)
 end
 readdir(path)
 ```
@@ -307,7 +307,7 @@ but of same type and size would we get a different file name (as desired)?
 
 ```@example customizing
 config = Dict("x" => rand(Random.MersenneTwister(4321)), "f" => f1)
-produce_or_load(sim_with_f, config, path; filename = hash, pol_kwargs...)
+produce_or_load(sim_large_c, config, path; filename = hash, pol_kwargs...)
 readdir(path)
 ```
 yes.
@@ -315,20 +315,16 @@ But, if we used exactly the same numbers and function, would it yield exactly th
 same hash code, and hence, not rerun the simulation (as desired)?
 
 ```@example customizing
-config = Dict("x" => rand(Random.MersenneTwister(1234)), "f" => f1)
-produce_or_load(sim_with_f, config, path; filename = hash, pol_kwargs...)
+config = Dict("x" => rand(Random.MersenneTwister(1234), 1000), "f" => f1)
+produce_or_load(sim_large_c, config, path; filename = hash, pol_kwargs...)
 readdir(path)
 ```
-Perfect! Be aware and careful of using `hash` and functions. Anonymous functions
-will definitely mess you up and should be avoided! For example,
-```@example customizing
-an_f = x -> sum(sin.(x))
-config = Dict("x" => rand(Random.MersenneTwister(1234)), "f" => an_f)
-produce_or_load(sim_with_f, config, path; filename = hash, pol_kwargs...)
-readdir(path)
-```
-So, even though `an_f` is in practice the "same" function as `f1`, they are not the same
-object for the language.
+Perfect!
+
+!!! warn "Be careful of using `hash`."
+    The limitations of the `hash` function apply here. For example, custom types should implement `==` to ensure `hash` will work as intended.
+    In general using functions with `hash` should be avoided. Hashing of functions happens on the function name, and hence it doesn't capture information about the actual code of the function or its methods. So this should only be used if the functions are well-established names coming from e.g. Base Julia such as `sin, cos, ...`. You also cannot use anonymous functions _at all_, as they do not have the same `hash` even when defined in the the same way but in different Julia sessions.
+
 
 
 ## Preparing & running jobs
