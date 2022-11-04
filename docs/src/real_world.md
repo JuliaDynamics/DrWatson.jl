@@ -268,7 +268,7 @@ using Random
 function sim_large_c(config)
     @unpack x, f = config
     r = sum(x)*f.a + f.t.b + f.t.c
-    return @dict(r)
+    return @strdict(r)
 end
 
 ## Some nested structs
