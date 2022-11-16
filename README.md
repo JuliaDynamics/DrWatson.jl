@@ -1,6 +1,6 @@
 ![DrWatson](https://github.com/JuliaDynamics/JuliaDynamics/blob/master/videos/drwatson/DrWatson-banner.png?raw=true)
 
-[![](https://img.shields.io/badge/docs-latest-blue.svg)](https://JuliaDynamics.github.io/DrWatson.jl/dev)
+[![](https://img.shields.io/badge/docs-stable-blue.svg)](https://JuliaDynamics.github.io/DrWatson.jl/stable)
 [![CI](https://github.com/juliadynamics/DrWatson.jl/workflows/CI/badge.svg)](https://github.com/JuliaDynamics/DrWatson.jl/actions)
 [![Version](https://juliahub.com/docs/DrWatson/version.svg)](https://juliahub.com/ui/Packages/DrWatson/Vn5dT)
 [![codecov](https://codecov.io/gh/JuliaDynamics/DrWatson.jl/branch/master/graph/badge.svg)](https://codecov.io/gh/JuliaDynamics/DrWatson.jl)
