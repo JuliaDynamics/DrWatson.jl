@@ -10,7 +10,7 @@ using DynamicalBilliards, GLMakie, LinearAlgebra
 include(srcdir("plot_perturbationgrowth.jl"))
 include(srcdir("unitcells.jl"))
 ```
-In all projects I save data/plots using `datadir/plotdir`:
+In all projects I save data/plots using `datadir/plotsdir`:
 ```julia
 @tagsave(datadir("mushrooms", "Λ_N=$N.jld2"), (@strdict(Λ, Λσ, ws, hs, description)))
 ```
