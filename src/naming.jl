@@ -144,7 +144,7 @@ function valtostring(val::AbstractFloat, digits, sigdigits)
     val = roundval(val, digits, sigdigits)
     return replace(string(val),".0e"=>"e")
 end
-function roundval(val, digits, sigdigits) where {T}
+function roundval(val, digits, sigdigits)
     if isnan(val) || isinf(val)
         return val
     else
