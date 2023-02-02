@@ -93,7 +93,7 @@ function __init__()
           with hash codes" in Real World Examples highlights this possibility!
 
         To disable future update messages see:
-        https://juliadynamics.github.io/DrWatson.jl/dev/#Installing-and-Updating-1
+        https://juliadynamics.github.io/DrWatson.jl/stable/#Installing-and-Updating-1
         \n
         """; color = :light_magenta)
         touch(joinpath(versions_dir, update_name))
