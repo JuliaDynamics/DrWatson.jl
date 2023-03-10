@@ -75,7 +75,7 @@ finally
     if isfile("results/results_.jld2") == true
         rm("results/results_.jld2")                # In case this test failed, remove the file to not compromise other tests.
     elseif isfile("results_results.jld2")
-        rm("results_results.jld2")                 # If this test passes, remove correct file to not interfer with other tests.
+        rm("results_results.jld2")                 # If this test passes, remove correct file not to interfer with following tests.
     end
 end
 
