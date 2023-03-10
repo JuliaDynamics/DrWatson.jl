@@ -29,9 +29,9 @@ function projectdir()
     if is_standard_julia_project()
         @warn "Using the standard Julia project."
     end
-    dirname(rstrip(Base.active_project(), '/'))
+    dirname((Base.active_project()))
 end
-projectdir(args...) = joinpath(projectdir(), args...)
+projectdir(args...) = rstrip(joinpath(projectdir(), args...), '/')
 
 
 # Generate functions to access the path of default subdirectories.
