@@ -65,6 +65,21 @@ cres_relpath = collect_results!(relpathname, folder;
 @info all(startswith.(cres[!,"path"], "data"))
 
 ###############################################################################
+#                           Trailing slash in foldername                      #
+###############################################################################
+
+df = collect_results!(datadir("results/"))         # This would produce the incorrect file. (Issue#181)
+try
+    @test !isfile("results/results_.jld2")
+finally
+    if isfile("results/results_.jld2") == true
+        rm("results/results_.jld2")                # In case this test failed, remove the file to not compromise other tests.
+    elseif isfile("results_results.jld2")
+        rm("results_results.jld2")                 # If this test passes, remove correct file to not interfer with other tests.
+    end
+end
+
+###############################################################################
 #                           Include or exclude files                          #
 ###############################################################################
 
