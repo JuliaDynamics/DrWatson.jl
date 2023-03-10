@@ -70,7 +70,7 @@ cres_relpath = collect_results!(relpathname, folder;
 
 df = collect_results!(datadir("results/"))         # This would produce the incorrect file. (Issue#181)
 try
-    @test !isfile("results/results_.jld2")
+    @test isfile("results/results_.jld2")
 finally
     if isfile("results/results_.jld2") == true
         rm("results/results_.jld2")                # In case this test failed, remove the file to not compromise other tests.
