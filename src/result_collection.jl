@@ -73,7 +73,7 @@ In case this operation fails the values will be treated as `missing`.
 """
 collect_results!(folder; kwargs...) =
 collect_results!(
-joinpath(dirname(folder), "results_$(rstrip(basename(folder)), '/').jld2"),
+joinpath(dirname(rstrip(folder, '/')), "results_$(rstrip(basename(folder)), '/').jld2"),
 folder; kwargs...)
 
 struct InvalidResultsCollection <: Exception
