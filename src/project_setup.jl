@@ -305,7 +305,7 @@ function initialize_project(path, name = default_name_from_path(path);
             branch = "main"
             if branch != default
                 LibGit2.branch!(repo, branch)
-                LibGit2.delete_branch(GitReference(repo, "refs/heads/$default"))
+                LibGit2.delete_branch(LibGit2.GitReference(repo, "refs/heads/$default"))
             end
         catch err
             @warn "We couldn't rename default branch to `main`, please do it manually. "*
