@@ -29,7 +29,7 @@ function projectdir()
     if is_standard_julia_project()
         @warn "Using the standard Julia project."
     end
-    dirname((Base.active_project()))
+    dirname(Base.active_project())
 end
 projectdir(args...) = rstrip(joinpath(projectdir(), args...), '/')
 
