@@ -68,16 +68,13 @@ cres_relpath = collect_results!(relpathname, folder;
 #                           Trailing slash in foldername                      #
 ###############################################################################
 
-df = collect_results!(datadir("results/"))         # This would produce the incorrect file. (Issue#181)
-try
-    @test !isfile("results/*_."*ending)
-finally
-    if isfile("results/*_."*ending) == true
-        rm("results/results_."*ending)                # In case this test failed, remove the file to not compromise other tests.
-    elseif isfile("*_results."*ending)
-        rm("*_results."*ending)                 # If this test passes, remove correct file not to interfer with following tests.
-        rm("result/*_results."*ending)
-    end
+df = collect_results!(datadir("results/"))      # This would produce the incorrect file. (Issue#181)
+
+pathtofile=datadir("results/results_.jld2")     # 
+@test !isfile(pathtofile)
+
+if isfile(pathtofile)
+    rm(pathtofile)                              # In case this test failed, remove the file to not compromise other tests.
 end
 
 ###############################################################################
