@@ -30,6 +30,7 @@ end
 @test ispath(joinpath(path, "data", "exp_raw"))
 
 @test ispath(projectdir("data"))
+@test typeof(projectdir("a")) == String
 @test isfile(joinpath(path, ".gitignore"))
 @test uperm(joinpath(path, ".gitignore")) == 0x06
 @test isfile(joinpath(path, "README.md"))
@@ -44,6 +45,7 @@ for dir_type in ("data", "src", "plots", "papers", "scripts")
         @test endswith($fn(joinpath("a", "b")), joinpath($dir_type, joinpath("a", "b")))
         @test endswith($fn("a", "b"), joinpath($dir_type, joinpath("a", "b")))
         @test endswith($fn("a", "b", joinpath("c", "d")), joinpath($dir_type, joinpath("a", "b", "c", "d")))
+        @test typeof($fn("a", "b")) == String
     end
 end
 
