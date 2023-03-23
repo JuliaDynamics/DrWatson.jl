@@ -31,7 +31,7 @@ function projectdir()
     end
     dirname(Base.active_project())
 end
-projectdir(args...) = String(rstrip(joinpath(projectdir(), args...), '/'))
+projectdir(args...) = joinpath(projectdir(), args...)
 
 
 # Generate functions to access the path of default subdirectories.
