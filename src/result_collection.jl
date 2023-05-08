@@ -112,7 +112,7 @@ function collect_results!(filename, folder;
             mtimes = nothing
         end
     end
-    @info "Scanning folder $folder for result files."
+    verbose && @info "Scanning folder $folder for result files."
 
     if subfolders
         allfiles = String[]
