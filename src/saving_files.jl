@@ -80,15 +80,14 @@ function produce_or_load(f::Function, config, path::String = "";
         """
     end
     if filename === nothing
-        filename = config -> savename(config; kwargs...)
+        filename = config -> savename(prefix, config, suffix; kwargs...)
     end
     # Prepare absolute file name
     if filename isa AbstractString
-        name = filename
+        name = append_prefix_suffix(filename, prefix, suffix)
     else
         name = string(filename(config))
     end
-    name = append_prefix_suffix(name, prefix, suffix)
     file = joinpath(path, name)
     # Run the remaining logic on whether to produce or load
     if !force && isfile(file)

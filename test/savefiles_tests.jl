@@ -307,6 +307,18 @@ end
     rm(path; recursive = true, force = true)
 end
 
+# Testing proper filenames when default_prefix was modified. See https://github.com/JuliaDynamics/DrWatson.jl/issues/392
+@testset "@produce_or_load with default_prefix modified" begin
+    path = mktempdir()
+
+    DrWatson.default_prefix(ntuple::NamedTuple) = "Prefix_"
+
+    sim, path = produce_or_load(f, simulation, "")
+    @test path == savename(simulation)
+    
+    rm(path)
+    DrWatson.default_prefix(ntuple::NamedTuple) = ""
+end
 
 
 ################################################################################
