@@ -311,10 +311,15 @@ end
 @testset "@produce_or_load with default_prefix modified" begin
     path = mktempdir()
 
-    DrWatson.default_prefix(ntuple::NamedTuple) = "Prefix_"
+    struct Dummy
+        x
+        y
+    end
+    simulation = Dummy(1,2)
+    DrWatson.default_prefix(d::Dummy) = "Prefix_"
 
     sim, path = produce_or_load(f, simulation, "")
-    @test path == savename(simulation)
+    @test path == savename(simulation, "jld2")
     
     rm(path)
     DrWatson.default_prefix(ntuple::NamedTuple) = ""
