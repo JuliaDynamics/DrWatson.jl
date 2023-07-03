@@ -1,3 +1,6 @@
+# 2.12.6
+- Crucial bugfix to `produce_or_load`. When used with a prefix, it attached double prefix to the file (one coming as a duplicate from `savename`). This is now fixed, but it means that some files produced with prefix and `produce_or_load` in v2.12 may be re-produced after this update.
+
 # 2.12.0
 - Arbitrary functions extracting strings from data can be used in `produce_or_load` instead of `savename`. `hash` is the most useful function here. An example in Real World Examples highlights this.
 - Additional keywords in `produce_or_load` propagated to `savename` are deprecated.
