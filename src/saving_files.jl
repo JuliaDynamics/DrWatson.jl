@@ -79,14 +79,15 @@ function produce_or_load(f::Function, config, path::String = "";
         for the keyword `filename` as `filename = config -> savename(config; kwargs...)`
         """
     end
+    # Prepare absolute file name
     if filename === nothing
         filename = config -> savename(prefix, config, suffix; kwargs...)
-    end
-    # Prepare absolute file name
-    if filename isa AbstractString
+        name = filename(config)
+    elseif filename isa AbstractString
         name = append_prefix_suffix(filename, prefix, suffix)
-    else
+    else #if filename isa Function
         name = string(filename(config))
+        name = append_prefix_suffix(name, prefix, suffix)
     end
     file = joinpath(path, name)
     # Run the remaining logic on whether to produce or load
