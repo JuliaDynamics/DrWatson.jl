@@ -177,14 +177,15 @@ If you wish to contribute, thats great! Please consult the [online guidelines](h
 
 Initial inspirations for DrWatson follow below. All inspirations are specific in scope and functionality, and since its original conception DrWatson has moved on to become a whole scientific project assistant.
 
-https://drivendata.github.io/cookiecutter-data-science/#cookiecutter-data-science
+[https://drivendata.github.io/cookiecutter-data-science/#cookiecutter-data-science](https://drivendata.github.io/cookiecutter-data-science/#cookiecutter-data-science)
 
-https://discourse.julialang.org/t/computational-experiments-organising-different-algorithms-their-parameters-and-results/10774/7
+[https://discourse.julialang.org/t/computational-experiments-organising-different-algorithms-their-parameters-and-results/10774/7](https://discourse.julialang.org/t/computational-experiments-organising-different-algorithms-their-parameters-and-results/10774/7)
 
-http://neuralensemble.org/sumatra/
+[http://neuralensemble.org/sumatra/](http://neuralensemble.org/sumatra/)
 
-https://github.com/mohamed82008/ComputExp.jl
+[https://github.com/mohamed82008/ComputExp.jl](https://github.com/mohamed82008/ComputExp.jl
+)
 
-https://sacred.readthedocs.io/en/latest/index.html
+[https://sacred.readthedocs.io/en/latest/index.html](https://sacred.readthedocs.io/en/latest/index.html)
 
-https://experimentator.readthedocs.io/en/latest/
+[https://experimentator.readthedocs.io/en/latest/](https://experimentator.readthedocs.io/en/latest/)
