@@ -154,6 +154,7 @@ or use the DOI directly:
 * <https://github.com/JuliaDynamics/CaosDB.jl>
 * <https://juliadb.org/>
 * <https://github.com/SebastianM-C/StorageGraphs.jl>
+* <https://tecosaur.github.io/DataToolkitDocs/>
 
 ### Tabular data
 * <https://juliadata.github.io/DataFrames.jl/stable/>
