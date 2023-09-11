@@ -113,8 +113,6 @@ function read_stdout_stderr(cmd::Cmd)
 end
 
 """
-    gitpatch(gitpath = projectdir())
-
 Generates a patch describing the changes of a dirty repository
 compared to its last commit; i.e. what `git diff HEAD` produces.
 The `gitpath` needs to point to a directory within a git repository,
@@ -128,10 +126,10 @@ function gitpatch(path = projectdir(); try_submodule_diff=true)
         repo = LibGit2.GitRepoExt(path)
         gitpath = LibGit2.path(repo)
         gitdir = joinpath(gitpath,".git")
-        gitmessage = LibGit2.message() #Add the gitmessage
+        ###gitmessage = LibGit2.message() #Add the gitmessage
         optional_args = String[]
         try_submodule_diff && push!(optional_args,"--submodule=diff")
-        result = read_stdout_stderr(`git --git-dir=$gitdir --work-tree=$gitpath --message=$gitmessage diff $(optional_args) HEAD`)
+        result = read_stdout_stderr(`git --git-dir=$gitdir --work-tree=$gitpath diff $(optional_args) HEAD`)
         if result.exception === nothing
             return result.out
         elseif Sys.which("git") === nothing
@@ -155,6 +153,7 @@ function gitpatch(path = projectdir(); try_submodule_diff=true)
     end
     return nothing
 end
+
 
 ########################################################################################
 # Tagging
@@ -201,7 +200,7 @@ Dict{Symbol,Any} with 3 entries:
 function tag!(d::AbstractDict{K,T};
         gitpath = projectdir(), force = false, source = nothing,
         storepatch::Bool = readenv("DRWATSON_STOREPATCH", false),
-        message::Bool = false
+        mssg::Bool = false
     ) where {K,T}
     @assert (K <: Union{Symbol,String}) "We only know how to tag dictionaries that have keys that are strings or symbols"
     c = gitdescribe(gitpath)
@@ -210,7 +209,7 @@ function tag!(d::AbstractDict{K,T};
     # Get the appropriate keys
     commitname = keyname(d, :gitcommit)
     patchname = keyname(d, :gitpatch)
-    gitmessage = keyname(d, :gitmessage) ### added
+    mssgname = keyname(d, :gitmessage) ### added
 
     if haskey(d, commitname) && !force
         @warn "The dictionary already has a key named `gitcommit`. We won't "*
@@ -225,10 +224,11 @@ function tag!(d::AbstractDict{K,T};
                 d[patchname] = patch
             end
         end
-        if message
-            mess = LibGit2.message(c)
-            if (mess !== nothing) && (mess != "")
-                 d[gitmessage] = mess
+        if mssg
+            mssgcommit =  LibGit2.GitCommit(gitpath, commitname)
+            msg = LibGit2.message(mssgcommit)
+            if (msg !== nothing) && (msg != "")
+                 d[mssgname] = msg
              end ### added 
         end
     end
@@ -240,6 +240,8 @@ function tag!(d::AbstractDict{K,T};
 
     return d
 end
+
+
 
 """
     keyname(d::AbstractDict{K,T}, key) where {K<:Union{Symbol,String},T}
