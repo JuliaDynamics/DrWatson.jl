@@ -112,8 +112,7 @@ function read_stdout_stderr(cmd::Cmd)
     return (exception = exception, out=read(out,String), err=read(err,String))
 end
 
-"""
-Generates a patch describing the changes of a dirty repository
+""" Generates a patch describing the changes of a dirty repository
 compared to its last commit; i.e. what `git diff HEAD` produces.
 The `gitpath` needs to point to a directory within a git repository,
 otherwise `nothing` is returned.
@@ -225,11 +224,13 @@ function tag!(d::AbstractDict{K,T};
             end
         end
         if mssg
-            mssgcommit =  LibGit2.GitCommit(gitpath, commitname)
+            repo = LibGit2.GitRepoExt(gitpath)
+            @show commitname, repo, mssgname
+            mssgcommit =  LibGit2.GitCommit(repo, "HEAD")
             msg = LibGit2.message(mssgcommit)
             if (msg !== nothing) && (msg != "")
                  d[mssgname] = msg
-             end ### added 
+            end ### added 
         end
     end
 
