@@ -112,7 +112,8 @@ function read_stdout_stderr(cmd::Cmd)
     return (exception = exception, out=read(out,String), err=read(err,String))
 end
 
-""" Generates a patch describing the changes of a dirty repository
+""" 
+Generates a patch describing the changes of a dirty repository
 compared to its last commit; i.e. what `git diff HEAD` produces.
 The `gitpath` needs to point to a directory within a git repository,
 otherwise `nothing` is returned.
@@ -199,7 +200,7 @@ Dict{Symbol,Any} with 3 entries:
 function tag!(d::AbstractDict{K,T};
         gitpath = projectdir(), force = false, source = nothing,
         storepatch::Bool = readenv("DRWATSON_STOREPATCH", false),
-        mssg::Bool = false
+        commit_message::Bool = false
     ) where {K,T}
     @assert (K <: Union{Symbol,String}) "We only know how to tag dictionaries that have keys that are strings or symbols"
     c = gitdescribe(gitpath)
@@ -208,7 +209,7 @@ function tag!(d::AbstractDict{K,T};
     # Get the appropriate keys
     commitname = keyname(d, :gitcommit)
     patchname = keyname(d, :gitpatch)
-    mssgname = keyname(d, :gitmessage) ### added
+    message_name = keyname(d, :gitmessage) ### added
 
     if haskey(d, commitname) && !force
         @warn "The dictionary already has a key named `gitcommit`. We won't "*
@@ -223,13 +224,12 @@ function tag!(d::AbstractDict{K,T};
                 d[patchname] = patch
             end
         end
-        if mssg
+        if commit_message
             repo = LibGit2.GitRepoExt(gitpath)
-            @show commitname, repo, mssgname
             mssgcommit =  LibGit2.GitCommit(repo, "HEAD")
             msg = LibGit2.message(mssgcommit)
             if (msg !== nothing) && (msg != "")
-                 d[mssgname] = msg
+                 d[message_name] = msg
             end ### added 
         end
     end
