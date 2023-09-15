@@ -113,6 +113,8 @@ function read_stdout_stderr(cmd::Cmd)
 end
 
 """ 
+gitpatch(gitpath = projectdir())
+
 Generates a patch describing the changes of a dirty repository
 compared to its last commit; i.e. what `git diff HEAD` produces.
 The `gitpath` needs to point to a directory within a git repository,
@@ -126,7 +128,6 @@ function gitpatch(path = projectdir(); try_submodule_diff=true)
         repo = LibGit2.GitRepoExt(path)
         gitpath = LibGit2.path(repo)
         gitdir = joinpath(gitpath,".git")
-        ###gitmessage = LibGit2.message() #Add the gitmessage
         optional_args = String[]
         try_submodule_diff && push!(optional_args,"--submodule=diff")
         result = read_stdout_stderr(`git --git-dir=$gitdir --work-tree=$gitpath diff $(optional_args) HEAD`)
@@ -167,7 +168,8 @@ the project's gitpath). Do nothing if a key `gitcommit` already exists
 repository is not found. If the git repository is dirty, i.e. there
 are un-commited changes, and `storepatch` is true, then the output of `git diff HEAD` is stored
 in the field `gitpatch`.  Note that patches for binary files are not
-stored. You can use [`isdirty`](@ref) to check if a repo is dirty.
+stored. You can use [`isdirty`](@ref) to check if a repo is dirty. If the commit message is set to true, 
+then the output will display the commit message. 
 
 Notice that the key-type of the dictionary must be `String` or `Symbol`.
 If `String` is a subtype of the _value_ type of the dictionary, this operation is
@@ -190,9 +192,10 @@ Dict{Symbol,Int64} with 2 entries:
   :y => 4
   :x => 3
 
-julia> tag!(d)
+julia> tag!(d, commit_message=true)
 Dict{Symbol,Any} with 3 entries:
   :y => 4
+  :gitmessage => "File set up by DrWatson"
   :gitcommit => "96df587e45b29e7a46348a3d780db1f85f41de04"
   :x => 3
 ```
@@ -209,7 +212,7 @@ function tag!(d::AbstractDict{K,T};
     # Get the appropriate keys
     commitname = keyname(d, :gitcommit)
     patchname = keyname(d, :gitpatch)
-    message_name = keyname(d, :gitmessage) ### added
+    message_name = keyname(d, :gitmessage)
 
     if haskey(d, commitname) && !force
         @warn "The dictionary already has a key named `gitcommit`. We won't "*
@@ -230,7 +233,7 @@ function tag!(d::AbstractDict{K,T};
             msg = LibGit2.message(mssgcommit)
             if (msg !== nothing) && (msg != "")
                  d[message_name] = msg
-            end ### added 
+            end
         end
     end
 
