@@ -52,6 +52,7 @@ function _test_tag!(d, path, haspatch, has_message, DRWATSON_STOREPATCH)
             message_name = keytype(d)(:gitmessage)
             @test haskey(d, message_name)
             @test d[message_name] isa String
+            @test d[message_name] != ""
         end
     end
 end
