@@ -35,10 +35,10 @@ cpath = _setup_repo(false) # clean
 @test !endswith(gitdescribe(cpath), "-dirty")
 
 # tag!
-function _test_tag!(d, path, haspatch, DRWATSON_STOREPATCH)
+function _test_tag!(d, path, haspatch, hasmessage, DRWATSON_STOREPATCH)
     d = copy(d)
     withenv("DRWATSON_STOREPATCH" => DRWATSON_STOREPATCH) do
-        d = tag!(d, gitpath=path)
+        d = tag!(d, gitpath=path; commit_message = true)
         commitname = keytype(d)(:gitcommit)
         @test haskey(d, commitname)
         @test d[commitname] isa String
@@ -48,6 +48,13 @@ function _test_tag!(d, path, haspatch, DRWATSON_STOREPATCH)
             @test d[patchname] isa String
             @test d[patchname] != ""
         end
+        if hasmessage
+            message_name = keytype(d)(:gitmessage)
+            @test haskey(d, message_name)
+            @test d[message_name] isa String
+            @test d[message_name] != ""
+            @test d[message_name] == "tmp repo commit"
+        end
     end
 end
 
@@ -56,31 +63,21 @@ d2 = Dict("x" => 3, "y" => 4)
 @testset "tag! ($(keytype(d)))" for d in (d1, d2)
     @testset "no patch ($(dirty ? "dirty" : "clean"))" for dirty in (true, false)
         path = dirty ? dpath : cpath
-        _test_tag!(d, path, false,  nothing) # variable unset
-        _test_tag!(d, path, false,  "") # variable set but empty
-        _test_tag!(d, path, false, "false") # variable parses as false
-        _test_tag!(d, path, false,  "0") # variable parses as false
-        _test_tag!(d, path, false,  "rubbish") # variable not a Bool
+        _test_tag!(d, path, false, false, nothing) # variable unset
+        _test_tag!(d, path, false, false,   "") # variable set but empty
+        _test_tag!(d, path, false, false, "false") # variable parses as false
+        _test_tag!(d, path, false, false, "0") # variable parses as false
+        _test_tag!(d, path, false, false,  "rubbish") # variable not a Bool
     end
     @testset "patch" begin
-        _test_tag!(d, dpath, true, "true") # variable parses as true
-        _test_tag!(d, dpath, true,  "1") # variable parses as true
+        _test_tag!(d, dpath, true, false, "true") # variable parses as true
+        _test_tag!(d, dpath, true, false, "1") # variable parses as true
     end
-    @testset "message_name" begin
-        path = mktempdir(cleanup=true) # delete path on process exit
-        repo = LibGit2.init(path)
-        LibGit2.commit(repo, "tmp repo commit")
-        message_commit_test = LibGit2.GitCommit(repo, "HEAD")
-        message_name = LibGit2.message(message_commit_test)
-        if (message_name !== nothing) && (message_name != "")
-            print(message_name)
-       end
+    @testset "message" begin
+        _test_tag!(d, dpath, true, false, "true")
+        _test_tag!(d, dpath, true, true, "true")
     end
 end
-
-# Ensure that the correct git message show up
-d_new = tag!(d, gitpath=dpath, commit_message = true)
-
 
 # Ensure that above tests operated out-of-place.
 @test d1 == Dict(:x => 3, :y => 4)

@@ -113,7 +113,7 @@ function read_stdout_stderr(cmd::Cmd)
 end
 
 """ 
-gitpatch(gitpath = projectdir())
+    gitpatch(gitpath = projectdir())
 
 Generates a patch describing the changes of a dirty repository
 compared to its last commit; i.e. what `git diff HEAD` produces.
@@ -168,7 +168,7 @@ the project's gitpath). Do nothing if a key `gitcommit` already exists
 repository is not found. If the git repository is dirty, i.e. there
 are un-commited changes, and `storepatch` is true, then the output of `git diff HEAD` is stored
 in the field `gitpatch`.  Note that patches for binary files are not
-stored. You can use [`isdirty`](@ref) to check if a repo is dirty. If the commit message is set to true, 
+stored. You can use [`isdirty`](@ref) to check if a repo is dirty. If the `commit message` is set to `true`, 
 then the output will display the commit message. 
 
 Notice that the key-type of the dictionary must be `String` or `Symbol`.
@@ -192,7 +192,7 @@ Dict{Symbol,Int64} with 2 entries:
   :y => 4
   :x => 3
 
-julia> tag!(d, commit_message=true)
+julia> tag!(d; commit_message=true)
 Dict{Symbol,Any} with 3 entries:
   :y => 4
   :gitmessage => "File set up by DrWatson"
