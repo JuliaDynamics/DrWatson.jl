@@ -168,8 +168,9 @@ the project's gitpath). Do nothing if a key `gitcommit` already exists
 repository is not found. If the git repository is dirty, i.e. there
 are un-commited changes, and `storepatch` is true, then the output of `git diff HEAD` is stored
 in the field `gitpatch`.  Note that patches for binary files are not
-stored. You can use [`isdirty`](@ref) to check if a repo is dirty. If the `commit message` is set to `true`, 
-then the output will display the commit message. 
+stored. You can use [`isdirty`](@ref) to check if a repo is dirty. 
+If the `commit message` is set to `true`, 
+then the dictionary `d` will include an additional field `"gitmessage"` and will contain the git message associated  with the commit.
 
 Notice that the key-type of the dictionary must be `String` or `Symbol`.
 If `String` is a subtype of the _value_ type of the dictionary, this operation is
