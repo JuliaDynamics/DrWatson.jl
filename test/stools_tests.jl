@@ -38,7 +38,7 @@ cpath = _setup_repo(false) # clean
 function _test_tag!(d, path, haspatch, DRWATSON_STOREPATCH)
     d = copy(d)
     withenv("DRWATSON_STOREPATCH" => DRWATSON_STOREPATCH) do
-        d = tag!(d, gitpath=path; commit_message = true)
+        d = tag!(d, gitpath=path)
         commitname = keytype(d)(:gitcommit)
         @test haskey(d, commitname)
         @test d[commitname] isa String
