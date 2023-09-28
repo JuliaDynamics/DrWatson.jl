@@ -1,4 +1,4 @@
-# 2.13.7
+# 2.13.0
 - Add `commmit_message` option in `tag!`, which add an additional `"gitmessage"` field in dictionary `d` and include the git message associated with the commit.
 
 # 2.12.6
