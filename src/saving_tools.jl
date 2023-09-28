@@ -112,7 +112,7 @@ function read_stdout_stderr(cmd::Cmd)
     return (exception = exception, out=read(out,String), err=read(err,String))
 end
 
-"""
+""" 
     gitpatch(gitpath = projectdir())
 
 Generates a patch describing the changes of a dirty repository
@@ -155,6 +155,7 @@ function gitpatch(path = projectdir(); try_submodule_diff=true)
     return nothing
 end
 
+
 ########################################################################################
 # Tagging
 ########################################################################################
@@ -167,7 +168,9 @@ the project's gitpath). Do nothing if a key `gitcommit` already exists
 repository is not found. If the git repository is dirty, i.e. there
 are un-commited changes, and `storepatch` is true, then the output of `git diff HEAD` is stored
 in the field `gitpatch`.  Note that patches for binary files are not
-stored. You can use [`isdirty`](@ref) to check if a repo is dirty.
+stored. You can use [`isdirty`](@ref) to check if a repo is dirty. 
+If the `commit message` is set to `true`, 
+then the dictionary `d` will include an additional field `"gitmessage"` and will contain the git message associated  with the commit.
 
 Notice that the key-type of the dictionary must be `String` or `Symbol`.
 If `String` is a subtype of the _value_ type of the dictionary, this operation is
@@ -190,9 +193,10 @@ Dict{Symbol,Int64} with 2 entries:
   :y => 4
   :x => 3
 
-julia> tag!(d)
+julia> tag!(d; commit_message=true)
 Dict{Symbol,Any} with 3 entries:
   :y => 4
+  :gitmessage => "File set up by DrWatson"
   :gitcommit => "96df587e45b29e7a46348a3d780db1f85f41de04"
   :x => 3
 ```
@@ -200,6 +204,7 @@ Dict{Symbol,Any} with 3 entries:
 function tag!(d::AbstractDict{K,T};
         gitpath = projectdir(), force = false, source = nothing,
         storepatch::Bool = readenv("DRWATSON_STOREPATCH", false),
+        commit_message::Bool = false
     ) where {K,T}
     @assert (K <: Union{Symbol,String}) "We only know how to tag dictionaries that have keys that are strings or symbols"
     c = gitdescribe(gitpath)
@@ -208,6 +213,7 @@ function tag!(d::AbstractDict{K,T};
     # Get the appropriate keys
     commitname = keyname(d, :gitcommit)
     patchname = keyname(d, :gitpatch)
+    message_name = keyname(d, :gitmessage)
 
     if haskey(d, commitname) && !force
         @warn "The dictionary already has a key named `gitcommit`. We won't "*
@@ -222,6 +228,14 @@ function tag!(d::AbstractDict{K,T};
                 d[patchname] = patch
             end
         end
+        if commit_message
+            repo = LibGit2.GitRepoExt(gitpath)
+            mssgcommit =  LibGit2.GitCommit(repo, "HEAD")
+            msg = LibGit2.message(mssgcommit)
+            if (msg !== nothing) && (msg != "")
+                 d[message_name] = msg
+            end
+        end
     end
 
     # Include source file and line number info if given.
@@ -231,6 +245,8 @@ function tag!(d::AbstractDict{K,T};
 
     return d
 end
+
+
 
 """
     keyname(d::AbstractDict{K,T}, key) where {K<:Union{Symbol,String},T}

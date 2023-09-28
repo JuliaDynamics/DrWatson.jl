@@ -66,6 +66,14 @@ d2 = Dict("x" => 3, "y" => 4)
         _test_tag!(d, dpath, true, "true") # variable parses as true
         _test_tag!(d, dpath, true, "1") # variable parses as true
     end
+    @testset "message" begin
+        d = copy(d1)
+        path = cpath
+        d = tag!(d; gitpath=path, commit_message = true)
+                    message_name = keytype(d)(:gitmessage)
+                    @test haskey(d, message_name)
+                    @test d[message_name] == "tmp repo commit"
+    end
 end
 
 # Ensure that above tests operated out-of-place.

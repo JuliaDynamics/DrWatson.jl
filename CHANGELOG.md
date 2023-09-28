@@ -1,3 +1,6 @@
+# 2.13.0
+- Add `commmit_message` option in `tag!`, which add an additional `"gitmessage"` field in dictionary `d` and include the git message associated with the commit.
+
 # 2.12.6
 - Crucial bugfix to `produce_or_load`. When used with a prefix, it attached double prefix to the file (one coming as a duplicate from `savename`). This is now fixed, but it means that some files produced with prefix and `produce_or_load` in v2.12 may be re-produced after this update.
 
