@@ -315,14 +315,18 @@ end
         x
         y
     end
-    simulation = Dummy(1,2)
-    DrWatson.default_prefix(d::Dummy) = "Prefix_"
 
-    sim, path = produce_or_load(f, simulation, "")
-    @test path == savename(simulation, "jld2")
-    
-    rm(path)
-    DrWatson.default_prefix(ntuple::NamedTuple) = ""
+    simulation = Dummy(1,2)
+    DrWatson.default_prefix(d::Dummy) = "Prefix"
+
+    _, file = produce_or_load(f, simulation, path)
+    @test basename(file) == "Prefix_x=1_y=2.jld2"
+
+    filename = x -> savename(x; connector = " ")
+    _, file = produce_or_load(f, simulation, path; filename)
+    @test basename(file) == "Prefix x=1 y=2.jld2"
+
+    rm(path; recursive = true, force = true)
 end
 
 
