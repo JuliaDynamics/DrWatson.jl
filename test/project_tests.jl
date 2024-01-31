@@ -86,12 +86,23 @@ cd()
 
 # Test templates
 t1 = ["data", "documents" => ["a", "b"]]
-initialize_project(path, name; force = true, git = false, template = t1)
+initialize_project(path, name; force=true, git=false, template=t1)
 
 @test ispath(joinpath(path, "data"))
 @test ispath(joinpath(path, "documents"))
 @test ispath(joinpath(path, "documents", "a"))
 @test !ispath(joinpath(path, "src"))
 
-rm(joinpath(@__DIR__, path); recursive = true, force = true)
+# Test .gitignore templates
+
+initialize_project(path, name; force=true, git=true,
+    folders_to_gitignore=["videos"])
+gitignore_path = joinpath(path, ".gitignore")
+@test ispath(gitignore_path)
+gitignore_lines = readlines(gitignore_path)
+@test "/videos" ∈ gitignore_lines
+@test "/notebooks" ∉ gitignore_lines
+
+
+rm(joinpath(@__DIR__, path); recursive=true, force=true)
 @test !isdir(joinpath(@__DIR__, path))

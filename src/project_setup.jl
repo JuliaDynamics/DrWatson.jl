@@ -269,18 +269,24 @@ The new project remains activated for you to immediately add packages.
 * `placeholder = false` : Add "hidden" placeholder files in each default folder to ensure
   that project folder structure is maintained when the directory is cloned (because
   empty folders are not pushed to a remote). Only used when `git = true`.
-"""
-function initialize_project(path, name = default_name_from_path(path);
-        force = false, readme = true, authors = nothing,
-        git = true, placeholder = false, template = DEFAULT_TEMPLATE,
-        add_test = true, add_docs = false,
-        github_name = "PutYourGitHubNameHere"
-    )
-    if git == false; placeholder = false; end
-    if add_docs == true; add_test = true; end
+* `folders_to_gitignore = ["data", "videos","plots","notebooks","_research"]` : Folders to include in the created .gitignore
+  """
+function initialize_project(path, name=default_name_from_path(path);
+    force=false, readme=true, authors=nothing,
+    git=true, placeholder=false, template=DEFAULT_TEMPLATE,
+    add_test=true, add_docs=false,
+    github_name="PutYourGitHubNameHere",
+    folders_to_gitignore=["data", "videos", "plots", "notebooks", "_research"]
+)
+    if git == false
+        placeholder = false
+    end
+    if add_docs == true
+        add_test = true
+    end
     if add_docs == true && github_name == "PutYourGitHubNameHere"
-        @warn "Docs will be generated but `github_name` is not set. "*
-        "You'd need to manually change paths to GitHub in `make.jl`."
+        @warn "Docs will be generated but `github_name` is not set. " *
+              "You'd need to manually change paths to GitHub in `make.jl`."
     end
     # Set up and potentially clean path
     mkpath(path)
@@ -346,8 +352,52 @@ function initialize_project(path, name = default_name_from_path(path);
     # chmod is needed, as the file permissions are not
     # set correctly when adding the package with `add`.
     # First, add all default files
-    cp(defaultdir("gitignore.txt"), pathdir(".gitignore"))
-    chmod(pathdir(".gitignore"), 0o644)
+
+    function create_gitignore(gitignore_path, folders_to_ignore, template_path)
+
+        output_lines = []
+        line_index = 1
+        in_section = false
+
+        input_lines = readlines(template_path)
+
+        start_line = 1
+        end_line = n_lines = length(input_lines)
+        for line in input_lines
+
+            if startswith(line, "# Folders to ignore")
+                in_section = true
+
+                start_line = line_index
+            end
+
+            if (in_section && length(line) == 0)
+                end_line = line_index
+                break
+            end
+
+            line_index += 1
+        end
+
+        append!(output_lines, input_lines[1:start_line])
+
+        for p in folders_to_ignore
+            push!(output_lines, "/" * p)
+        end
+
+        append!(output_lines, input_lines[end_line:n_lines])
+
+        open(gitignore_path, "w") do f
+            for l in output_lines
+                write(f, l * "\n")
+            end
+        end
+        chmod(gitignore_path, 0o644)
+    end
+
+    create_gitignore(pathdir(".gitignore"),
+        folders_to_gitignore, defaultdir("gitignore.txt"))
+
     cp(defaultdir("gitattributes.txt"), pathdir(".gitattributes"))
     chmod(pathdir(".gitattributes"), 0o644)
 
