@@ -2,6 +2,11 @@ cd(@__DIR__)
 using DrWatson
 using DrWatson: UnPack
 
+# Convert workflow
+import Literate
+
+Literate.markdown(joinpath(@__DIR__, "src", "workflow.jl"), joinpath(@__DIR__, "src"); credit = false)
+
 pages = [
     "Introduction" => "index.md",
     "DrWatson Workflow Tutorial" => "workflow.md",
@@ -20,5 +25,5 @@ Downloads.download(
 include("build_docs_with_style.jl")
 
 build_docs_with_style(pages, DrWatson, UnPack;
-    expandfirst = ["index.md"], bib, warnonly = [:doctest, :missing_docs],
+    expandfirst = ["index.md"], warnonly = [:doctest, :missing_docs],
 )
