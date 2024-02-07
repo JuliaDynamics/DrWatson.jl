@@ -56,8 +56,8 @@ using Requires
 # Update messages
 using Scratch
 const env_var = "DRWATSON_UPDATE_MSG"
-const display_update = true
-const update_version = "2.12.0"
+const display_update = false
+const update_version = "-"
 const update_name = "update_v$update_version"
 
 # Get scratch space for this package
@@ -84,13 +84,6 @@ function __init__()
         printstyled(stdout,
         """
         \nUpdate message: DrWatson v$update_version
-
-        - `produce_or_load` now allows using arbitrary functions when extracting a file
-          name from the input configuration container. Effectively this means that you can
-          use `Base.hash` instead of `savename`, allowing using `produce_or_load` with
-          configuration containers that have too many parameters, or too complicated,
-          to be uniquely mapped to a string via `savename`. A section "`produce_or_load`
-          with hash codes" in Real World Examples highlights this possibility!
 
         To disable future update messages see:
         https://juliadynamics.github.io/DrWatson.jl/stable/#Installing-and-Updating-1
