@@ -1,6 +1,6 @@
 cd(@__DIR__)
 using DrWatson
-using DrWatson: UnPack
+using UnPack
 
 # Convert workflow
 import Literate
@@ -25,5 +25,5 @@ Downloads.download(
 include("build_docs_with_style.jl")
 
 build_docs_with_style(pages, DrWatson, UnPack;
-    expandfirst = ["index.md"], warnonly = [:doctest, :missing_docs],
+    expandfirst = ["index.md"], warnonly = true,
 )

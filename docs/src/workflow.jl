@@ -50,6 +50,7 @@ initialize_project("DrWatsonExample"; authors="Datseris", force=true)
 # This project is now active by default so we can start adding packages
 # that we will be using in the project. We'll add the following for demonstrating
 using Pkg
+Pkg.develop("DrWatson") # hide
 Pkg.add(["Statistics", "JLD2"])
 
 # ## 2. Write some scripts
