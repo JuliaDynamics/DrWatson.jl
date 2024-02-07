@@ -4,6 +4,7 @@
 It is very often the case that you want to run "batch simulations", i.e. just submit a bunch of different simulations, all using same algorithms and code but just different parameters. This scenario always requires the user to prepare a set of simulation parameter containers which are then passed into some kind of "main" function that starts the simulation.
 
 To make the preparation part simpler we provide the following functionality:
+
 ```@docs
 dict_list
 dict_list_count

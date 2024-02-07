@@ -355,7 +355,7 @@ using DrWatson
 general_args2 = Dict(
     "model" => "barkley",
     "noise" => [0.075, 0.050, 0.025],
-    "noise2" => [1.0, ComputedParameter(["noise", "N"], (x,y) -> 2x + y)],
+    "noise2" => [1.0, Derived(["noise", "N"], (x,y) -> 2x + y)],
     "noisy_training" => true,
     "N" => 100,
 )
