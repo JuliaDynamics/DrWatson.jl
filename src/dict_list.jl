@@ -15,7 +15,7 @@ To restrict some values in the dictionary so that they only appear in the
 resulting dictionaries, if a certain condition is met, the macro
 [`@onlyif`](@ref) can be used on those values.
 
-To compute some parameters on creation of `dict_list` as a function 
+To compute some parameters on creation of `dict_list` as a function
 of other specified parameters, use the type [`Derived`](@ref).
 
 Use the function [`dict_list_count`](@ref) to get the number of
@@ -301,9 +301,11 @@ julia> dict_list(d) # only in case `:a` is `1` the dictionary will get key `:c`
 
 """
    Derived(parameters::Vector{Union{String,Symbol}}, function::Function)
-Wrap the name(s) of a parameter(s) and a function. After the 
-possible parameter combinations are created, [`dict_list`](@ref) will replace instances of 
-Derived by the result of the function func, evaluated with the value of 
+   Derived(parameter::Union{String,Symbol}, function::Function)
+
+Wrap the name(s) of a parameter(s) and a function. After the
+possible parameter combinations are created, [`dict_list`](@ref) will replace instances of
+Derived by the result of the function func, evaluated with the value of
 the parameter(s).
 
 ## Examples
@@ -324,7 +326,7 @@ julia> dict_list(p)
  Dict(:α => 1, :solver => "SolverB", :β => 1)
  Dict(:α => 2, :solver => "SolverB", :β => 4)
 ```
-A vector of parameter names can also be passed when the accompanying function 
+A vector of parameter names can also be passed when the accompanying function
 uses multiple arguments:
 ```julia
  julia> p2 = Dict(:α => [1, 2],
@@ -355,26 +357,24 @@ struct Derived{T}
     func::Function
 end
 
-"""
-    Derived(independentP :: Union{String,Symbol}, func::Function)
-Constructs a Derived from a single independent parameter.
-"""
-function Derived(independentP::Union{String,Symbol}, func::Function) 
+# convenience dispatch
+function Derived(independentP::Union{String,Symbol}, func::Function)
     return Derived([independentP], func)
 end
 
 
 """
    produce_computed_parameter(dicts)
+
 Receive an array of parameter dictionaries, and for each one, evaluate
-the computed parameters after the possible combination of 
+the computed parameters after the possible combination of
 parameters has been created.
 """
 function produce_derived_parameters(dicts)
     for dict in dicts
         replace!(dict) do (k,v)
-           if isa(v,Derived) 
-            k => v.func((dict[param] for param in v.independentParam)...) 
+           if isa(v,Derived)
+            k => v.func((dict[param] for param in v.independentParam)...)
            else
             return k => v
            end

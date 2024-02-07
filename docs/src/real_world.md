@@ -96,7 +96,7 @@ path/to/project/data/sim/bk_N=50_T=10050_seed=1111_ΔT=1.jld2
 ```
 and each file is a dictionary that has my data fields: `:U, :V, :simulation`, but also `:gitcommit, :script`. When I read this file I know exactly what was the source code that produced it (provided that I am not sloppy and commit code changes regularly :P).
 
-## Customizing `savename`
+## [Customizing `savename`](@id customizing_savename)
 Here is a simple example for customizing [`savename`](@ref). We are using a common struct `Experiment` across different experiments with cats and mice.
 
 We first define the relevant types.
@@ -355,7 +355,7 @@ using DrWatson
 general_args2 = Dict(
     "model" => "barkley",
     "noise" => [0.075, 0.050, 0.025],
-    "noise2" => [1.0, ComputedParameter(["noise", "N"], (x,y) -> 2x + y)],
+    "noise2" => [1.0, Derived(["noise", "N"], (x,y) -> 2x + y)],
     "noisy_training" => true,
     "N" => 100,
 )
@@ -617,7 +617,7 @@ julia> expensive_computation(5)
 ```
 
 ## Taking project input-output automation to 11
-The point of this section is to show how far one can take the interplay between [`savename`](@ref) and [`produce_or_load`](@ref) to **automate project input-to-output and eliminate as many duplicate lines of code as possible**. Read [Customizing `savename`](@ref) first, as knowledge of that section is used here.
+The point of this section is to show how far one can take the interplay between [`savename`](@ref) and [`produce_or_load`](@ref) to **automate project input-to-output and eliminate as many duplicate lines of code as possible**. Read [Customizing `savename`](@ref customizing_savename) first, as knowledge of that section is used here.
 
 The key ingredient is that [`produce_or_load`](@ref) was made to work well with [`savename`](@ref). You can use this to automate the input-to-output pipeline of your project by following these steps:
 1. Define a custom struct that represents the input configuration for an experiment or a simulation.

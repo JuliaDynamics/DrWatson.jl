@@ -1,4 +1,5 @@
 [deps]
+CairoMakie = "13f3f980-e62b-5c42-98c6-ff1f3baf88f0" # not actually needed; but for doctheme
 DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
 Dates = "ade2ca70-3891-5945-98fb-dc099432e06a"
 Documenter = "e30172f5-a6a5-5a46-863b-614d45cd2de4"
@@ -12,4 +13,4 @@ Statistics = "10745b16-79ce-11e8-11f9-7d13ad32a3b2"
 UnPack = "3a884ed6-31ef-47d7-9d2a-63182c4928ed"
 
 [compat]
-Documenter = "0.24.6"
+Documenter = "1"
