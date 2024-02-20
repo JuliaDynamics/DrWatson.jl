@@ -137,10 +137,10 @@ function append_prefix_suffix(name, prefix, suffix)
             return prefix*'.'*suffix
         end
     end
-    if prefix != ""
+    if prefix != "" && !startswith(name, prefix)
         name = prefix*'_'*name
     end
-    if suffix != ""
+    if suffix != "" && !endswith(name, suffix)
         name *= '.'*suffix
     end
     return name
