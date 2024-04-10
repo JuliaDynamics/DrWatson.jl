@@ -58,18 +58,19 @@ end
   `nothing, file`, regardless of whether the file exists or not. If it doesn't
   exist it is still produced and saved.
 * `verbose = true` : print info about the process, if the file doesn't exist.
-* `wsave_kwargs = Dict()` : Keywords to pass to `wsave` (e.g. to enable
-  compression).
+* `wsave_kwargs = (;)` : Keywords to pass to `wsave` (e.g. to enable
+  compression). Defaults to an empty named tuple.
+* `wload_kwargs = (;)` : Keywords to pass to `wload` (e.g. to pass a typemap). Defaults to an empty named tuple.
 """
-function produce_or_load(f::Function, config, path::String = "";
-        suffix = "jld2", prefix = default_prefix(config),
-        tag::Bool = readenv("DRWATSON_TAG", istaggable(suffix)),
-        gitpath = projectdir(), loadfile = true,
-        storepatch::Bool = readenv("DRWATSON_STOREPATCH", false),
-        force = false, verbose = true, wsave_kwargs = Dict(),
-        filename::Union{Nothing, Function, AbstractString} = nothing,
-        kwargs...
-    )
+function produce_or_load(f::Function, config, path::String="";
+    suffix="jld2", prefix=default_prefix(config),
+    tag::Bool=readenv("DRWATSON_TAG", istaggable(suffix)),
+    gitpath=projectdir(), loadfile=true,
+    storepatch::Bool=readenv("DRWATSON_STOREPATCH", false),
+    force=false, verbose=true, wsave_kwargs=(;), wload_kwargs=(;),
+    filename::Union{Nothing,Function,AbstractString}=nothing,
+    kwargs...
+)
     # Deprecations
     # TODO: Remove this in future versions and make `filename = savename` as keyword.
     if !isempty(kwargs)
@@ -93,7 +94,7 @@ function produce_or_load(f::Function, config, path::String = "";
     # Run the remaining logic on whether to produce or load
     if !force && isfile(file)
         if loadfile
-            data = wload(file)
+            data = wload(file; wload_kwargs...)
             return data, file
         else
             return nothing, file
@@ -107,7 +108,7 @@ function produce_or_load(f::Function, config, path::String = "";
         data = f(config)
         try
             if tag
-                tagsave(file, data; safe = false, gitpath = gitpath, storepatch = storepatch, wsave_kwargs...)
+                tagsave(file, data; safe=false, gitpath=gitpath, storepatch=storepatch, wsave_kwargs...)
             else
                 wsave(file, copy(data); wsave_kwargs...)
             end
@@ -134,14 +135,14 @@ function append_prefix_suffix(name, prefix, suffix)
         if isempty(suffix)
             return prefix
         else
-            return prefix*'.'*suffix
+            return prefix * '.' * suffix
         end
     end
     if prefix != ""
-        name = prefix*'_'*name
+        name = prefix * '_' * name
     end
     if suffix != ""
-        name *= '.'*suffix
+        name *= '.' * suffix
     end
     return name
 end
@@ -160,7 +161,7 @@ macro produce_or_load(f, config, path, args...)
     # that is passed to the macro. So instead of getting the function in f
     # an Expr is passed.
     if f isa Expr && f.head == :parameters
-        length(args) > 0 || return :(throw(MethodError(@produce_or_load,$(esc(f)),$(esc(path)),$(esc(config)),$(esc.(args)...))))
+        length(args) > 0 || return :(throw(MethodError(@produce_or_load, $(esc(f)), $(esc(path)), $(esc(config)), $(esc.(args)...))))
         extra_kw_def = f.args
         f = config
         config = path
@@ -175,10 +176,10 @@ macro produce_or_load(f, config, path, args...)
         produce_or_load($(esc(config)), $(esc(path)), $(esc.(convert_to_kw.(args))...)) do k
             data = $(esc(f))(k)
             # Extract the `gitpath` kw arg if it's there
-            kws = ((;kwargs...) -> Dict(kwargs...))($(esc.(convert_to_kw.(args))...))
+            kws = ((; kwargs...) -> Dict(kwargs...))($(esc.(convert_to_kw.(args))...))
             gitpath = get(kws, :gitpath, projectdir())
             # Include the script tag with checking for the type of dict keys, etc.
-            data = scripttag!(data, $s; gitpath = gitpath)
+            data = scripttag!(data, $s; gitpath=gitpath)
             data
         end
     end
@@ -207,11 +208,11 @@ The keyword `safe = DrWatson.readenv("DRWATSON_SAFESAVE", false)` decides whethe
 to save the file using [`safesave`](@ref).
 """
 function tagsave(file, d;
-        gitpath = projectdir(),
-        safe::Bool = readenv("DRWATSON_SAFESAVE", false),
-        storepatch::Bool = readenv("DRWATSON_STOREPATCH", false),
-        force = false, source = nothing, kwargs...
-    )
+    gitpath=projectdir(),
+    safe::Bool=readenv("DRWATSON_SAFESAVE", false),
+    storepatch::Bool=readenv("DRWATSON_STOREPATCH", false),
+    force=false, source=nothing, kwargs...
+)
     d2 = tag!(d, gitpath=gitpath, storepatch=storepatch, force=force, source=source)
     if safe
         safesave(file, copy(d2); kwargs...)
@@ -227,20 +228,20 @@ end
 Same as [`tagsave`](@ref) but one more field `:script` is added that records
 the local path of the script and line number that called `@tagsave`, see [`@tag!`](@ref).
 """
-macro tagsave(file,d,args...)
+macro tagsave(file, d, args...)
     args = Any[args...]
     # Keywords added after a ; are moved to the front of the expression
     # that is passed to the macro. So instead of getting the filename in file
     # an Expr is passed.
     if file isa Expr && file.head == :parameters
-        length(args) > 0 || return :(throw(MethodError(@tagsave,$(esc(file)),$(esc(d)),$(esc.(args)...))))
+        length(args) > 0 || return :(throw(MethodError(@tagsave, $(esc(file)), $(esc(d)), $(esc.(args)...))))
         extra_kw_def = file.args
         file = d
         d = popfirst!(args)
-        append!(args,extra_kw_def)
+        append!(args, extra_kw_def)
     end
     s = QuoteNode(__source__)
-    return :(tagsave($(esc(file)), $(esc(d)), $(esc.(convert_to_kw.(args))...),source=$s))
+    return :(tagsave($(esc(file)), $(esc(d)), $(esc.(convert_to_kw.(args))...), source=$s))
 end
 
 ################################################################################
@@ -282,14 +283,14 @@ function increment_backup_num(filepath)
     if m === nothing
         return joinpath(path, "$(fname)_#1$(suffix)")
     end
-    newnum = string(parse(Int, m.captures[2]) +1)
+    newnum = string(parse(Int, m.captures[2]) + 1)
     return joinpath(path, "$(m.captures[1])_#$newnum$(suffix)")
 end
 
 #recursively move files to increased backup number
 function recursively_clear_path(cur_path)
     ispath(cur_path) || return
-    new_path=increment_backup_num(cur_path)
+    new_path = increment_backup_num(cur_path)
     if ispath(new_path)
         recursively_clear_path(new_path)
     end
@@ -319,8 +320,8 @@ See also [`dict_list`](@ref).
 * `suffix = "jld2"` : ending of the temporary names (no need for the dot).
 * `kwargs...` : Any additional keywords are passed through to wsave (e.g. compression).
 """
-function tmpsave(dicts, tmp = projectdir("_research", "tmp");
-    l = 8, suffix = "jld2", prefix = "", kwargs...)
+function tmpsave(dicts, tmp=projectdir("_research", "tmp");
+    l=8, suffix="jld2", prefix="", kwargs...)
 
     mkpath(tmp)
     n = length(dicts)
@@ -328,9 +329,9 @@ function tmpsave(dicts, tmp = projectdir("_research", "tmp");
     r = String[]
     i = 0
     while i < n
-        x = prefix*randstring(l)*"."*suffix
+        x = prefix * randstring(l) * "." * suffix
         while x ∈ r || x ∈ existing
-            x = prefix*randstring(l)*"."*suffix
+            x = prefix * randstring(l) * "." * suffix
         end
         i += 1
         push!(r, x)
