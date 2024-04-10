@@ -1,3 +1,7 @@
+# 2.15.0
+
+ - Add `wload_kwargs` to `produce_or_load` to allow passing kwargs to `wload`
+
 # 2.14.0
 
 - Add keyword argument `folders_to_gitignore` to the `initialize_project` to customize the `.gitignore` file creation during project setup
