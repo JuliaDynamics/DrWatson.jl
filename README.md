@@ -5,7 +5,7 @@
 [![Version](https://juliahub.com/docs/DrWatson/version.svg)](https://juliahub.com/ui/Packages/DrWatson/Vn5dT)
 [![codecov](https://codecov.io/gh/JuliaDynamics/DrWatson.jl/branch/master/graph/badge.svg)](https://codecov.io/gh/JuliaDynamics/DrWatson.jl)
 [![DOI](https://joss.theoj.org/papers/10.21105/joss.02673/status.svg)](https://doi.org/10.21105/joss.02673)
-[![Package Downloads](https://shields.io/endpoint?url=https://pkgs.genieframework.com/api/v1/badge/DrWatson)](https://pkgs.genieframework.com?packages=DrWatson)
+[![Package Downloads](https://img.shields.io/badge/dynamic/json?url=http%3A%2F%2Fjuliapkgstats.com%2Fapi%2Fv1%2Fmonthly_downloads%2FDrWatson&query=total_requests&suffix=%2Fmonth&label=Downloads)](http://juliapkgstats.com/pkg/DrWatson)
 
 DrWatson is a **scientific project assistant** software.
 It helps people manage their scientific projects (or any project for that matter).
