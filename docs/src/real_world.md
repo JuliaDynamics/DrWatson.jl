@@ -33,7 +33,7 @@ save(datadir("sim", "barkley", "astonishing_results.jld2"), data)
 ```
 
 ## Making your project a usable module
-For some projects, it is often the case that some packages and files from the source folder are loaded at the beginning of _every file of the project_.
+For some projects, it is often the case that some packages and files from the source folder are loaded at the beginning of _every file of the project_. 
 For example, I have a project that I know that for _any_ script I will write, the first five lines will be:
 ```julia
 using DrWatson
@@ -65,6 +65,15 @@ using DrWatson
 @quickactivate :AlbedoProperties
 ```
 which takes advantage of [`@quickactivate`](@ref)'s feature to essentially combine the commands `@quickactivate "AlbedoProperties"` and `using AlbedoProperties` into one.
+
+Please note: In this section, it's assumed that you created the project using [`initialize_project`](@ref) which will put the project's name into the `Project.toml` file. If you created your project in any other way, you need to ensure that the name is set at the top of `Project.toml`, i.e. for the example above there is a line
+```toml
+name = "AlbedoProperties"
+```
+If that line is absent, you will get an error like:
+```
+ERROR: ArgumentError: Package AlbedoProperties not found in current path.
+```
 
 ## `savename` and tagging
 The combination of using [`savename`](@ref) and [`tagsave`](@ref) makes it easy and fast to save output in a way that is consistent, robust and reproducible. Here is an example from a project:
