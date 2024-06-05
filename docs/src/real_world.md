@@ -33,8 +33,8 @@ save(datadir("sim", "barkley", "astonishing_results.jld2"), data)
 ```
 
 ## Making your project a usable module
-By default DrWatson.jl's projects are **not** Julia packages since that leads to recompilation of the project every time a source file is changed which can take a substantial amount of time. However, in some cases it can be beneficial nonetheless to turn the project into a usable module, e.g. if you want to use [`Revise.jl`](https://github.com/timholy/Revise.jl) for development. There are also some projects, where it is the case that some packages and files from the source folder are loaded at the beginning of _every file of the project_.
-Let's consider the example, where I have a project that I know that for _any_ script I will write, the first five lines will be:
+For some projects, it is often the case that some packages and files from the source folder are loaded at the beginning of _every file of the project_. 
+For example, I have a project that I know that for _any_ script I will write, the first five lines will be:
 ```julia
 using DrWatson
 @quickactivate "AlbedoProperties"
@@ -66,7 +66,7 @@ using DrWatson
 ```
 which takes advantage of [`@quickactivate`](@ref)'s feature to essentially combine the commands `@quickactivate "AlbedoProperties"` and `using AlbedoProperties` into one.
 
-Please note: In this section, I assumed that you created the project using [`initialize_project`](@ref) which will put the project's name into the `Project.toml` file. If you created your project in any other way, you need to ensure that the name is set at the top of `Project.toml`, i.e. for the example above there is a line
+Please note: In this section, it's assumed that you created the project using [`initialize_project`](@ref) which will put the project's name into the `Project.toml` file. If you created your project in any other way, you need to ensure that the name is set at the top of `Project.toml`, i.e. for the example above there is a line
 ```toml
 name = "AlbedoProperties"
 ```
