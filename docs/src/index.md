@@ -151,8 +151,6 @@ or use the DOI directly:
 
 ### Data management & data bases
 * <https://github.com/helgee/RemoteFiles.jl>
-* <https://github.com/JuliaDynamics/CaosDB.jl>
-* <https://juliadb.org/>
 * <https://github.com/SebastianM-C/StorageGraphs.jl>
 * <https://tecosaur.github.io/DataToolkitDocs/>
 
