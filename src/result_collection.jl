@@ -50,6 +50,7 @@ See also [`collect_results`](@ref).
 * `black_list = [:gitcommit, :gitpatch, :script]`: List of keys not to include from result-file.
 * `special_list = []`: List of additional (derived) key-value pairs
   to put in `df` as explained below.
+* `load_function_wrapper = nothing`: Wrapper around calls to loading the data. This is useful in case you need to do some conversion to your data before `collect_results` processes it. For example, if you are loading a struct, it will be stored as a one-element dictionary on disc. When processing it with `collect_results` you might want to convert the struct to a dict so that the fields of the struct become the elements of the dictionary. One way to do this would be to pass `load_function_wrapper = (d) -> struct2dict(d["key_name"])`. Note, this assumes the session you are loading the struct into is aware of the struct type and that the struct definition has not changed. 
 
 `special_list` is a `Vector` where each entry
 is a derived quantity to be included in `df`. There are two types of entries.
@@ -72,24 +73,26 @@ and then define
 In case this operation fails the values will be treated as `missing`.
 """
 collect_results!(folder; kwargs...) =
-collect_results!(
-joinpath(dirname(rstrip(folder, '/')), "results_$(rstrip(basename(folder), '/')).jld2"),
-folder; kwargs...)
+    collect_results!(
+        joinpath(dirname(rstrip(folder, '/')), "results_$(rstrip(basename(folder), '/')).jld2"),
+        folder; kwargs...)
 
 struct InvalidResultsCollection <: Exception
     msg::AbstractString
 end
- Base.showerror(io::IO, e::InvalidResultsCollection) = print(io, e.msg)
+Base.showerror(io::IO, e::InvalidResultsCollection) = print(io, e.msg)
+
 
 function collect_results!(filename, folder;
-    valid_filetypes = [".bson", "jld", ".jld2"],
-    subfolders = false,
-    rpath = nothing,
-    verbose = true,
-    update = false,
-    newfile = false, # keyword only for defining collect_results without !
-    rinclude = [r""],
-    rexclude = [r"^\b$"],
+    valid_filetypes=[".bson", "jld", ".jld2"],
+    subfolders=false,
+    rpath=nothing,
+    verbose=true,
+    update=false,
+    newfile=false, # keyword only for defining collect_results without !
+    rinclude=[r""],
+    rexclude=[r"^\b$"],
+    load_function_wrapper=nothing,
     kwargs...)
 
     @assert all(eltype(r) <: Regex for r in (rinclude, rexclude)) "Elements of `rinclude` and `rexclude` must be Regex expressions."
@@ -100,7 +103,11 @@ function collect_results!(filename, folder;
         mtimes = Dict{String,Float64}()
     else
         verbose && @info "Loading existing result collection..."
-        data = wload(filename)
+        if isnothing(load_function_wrapper)
+            data = wload(filename)
+        else
+            data = load_function_wrapper(filename)
+        end
         df = data["df"]
         # Check if we have pre-recorded mtimes (if not this could be because of an old results database).
         if "mtime" ∈ keys(data)
@@ -118,7 +125,7 @@ function collect_results!(filename, folder;
         allfiles = String[]
         for (root, dirs, files) in walkdir(folder)
             for file in files
-                push!(allfiles, joinpath(root,file))
+                push!(allfiles, joinpath(root, file))
             end
         end
     else
@@ -140,7 +147,7 @@ function collect_results!(filename, folder;
 
     n = 0 # new entries added
     u = 0 # entries updated
-    existing_files = "path" in string.(names(df)) ? df[:,:path] : ()
+    existing_files = "path" in string.(names(df)) ? df[:, :path] : ()
     for file ∈ allfiles
         is_valid_file(file, valid_filetypes) || continue
         # maybe use relative path
@@ -170,12 +177,12 @@ function collect_results!(filename, folder;
         mtimes[file] = mtime_file
 
         fpath = rpath === nothing ? file : joinpath(rpath, file)
-        df_new = to_data_row(FileIO.query(fpath); kwargs...)
+        df_new = to_data_row(FileIO.query(fpath); load_function_wrapper=load_function_wrapper, kwargs...)
         #add filename
         df_new[!, :path] .= file
         if replace_entry
             # Delete the row with the old data
-            delete!(df, findfirst((x)->(x.path == file), eachrow(df)))
+            delete!(df, findfirst((x) -> (x.path == file), eachrow(df)))
             u += 1
         else
             n += 1
@@ -184,7 +191,7 @@ function collect_results!(filename, folder;
     end
     if update
         # Delete entries with nonexisting files.
-        idx = findall((x)->(!isfile(x.path)), eachrow(df))
+        idx = findall((x) -> (!isfile(x.path)), eachrow(df))
         deleteat!(df, idx)
         verbose && @info "Added $n entries. Updated $u entries. Deleted $(length(idx)) entries."
     else
@@ -221,9 +228,9 @@ function merge_dataframes!(df1, df2)
             df2[!, m] .= [missing]
         end
         for m ∈ setdiff(names(df2), names(df1))
-            DataFrames.insertcols!(df1, length(names(df1))+1, m => fill(missing, size(df1,1)))
+            DataFrames.insertcols!(df1, length(names(df1)) + 1, m => fill(missing, size(df1, 1)))
         end
-        return vcat(df1,df2)
+        return vcat(df1, df2)
     end
 end
 
@@ -231,26 +238,43 @@ is_valid_file(file, valid_filetypes) =
     any(endswith(file, v) for v in valid_filetypes)
 
 # Use wload per default when nothing else is available
-function to_data_row(file::File; kwargs...)
+function to_data_row(
+    file::File;
+    load_function_wrapper=nothing,
+    kwargs...
+)
     fpath = filename(file)
-    @debug "Opening $(filename(file)) with fallback wload."
-    return to_data_row(wload(fpath), fpath; kwargs...)
+    @debug "Opening $fpath with fallback wload."
+    if isnothing(load_function_wrapper)
+        return to_data_row(wload(fpath), fpath; kwargs...)
+    else
+        return to_data_row(load_function_wrapper(fpath), fpath; kwargs...)
+    end
 end
 # Specialize for JLD2 files, can do much faster mmapped access
-function to_data_row(file::File{format"JLD2"}; kwargs...)
+function to_data_row(
+    file::File{format"JLD2"};
+    load_function_wrapper=nothing,
+    kwargs...
+)
     fpath = filename(file)
-    @debug "Opening $(filename(file)) with jldopen."
-    JLD2.jldopen(filename(file), "r") do data
-        return to_data_row(data, fpath; kwargs...)
+    @debug "Opening $fpath with jldopen."
+    JLD2.jldopen(fpath, "r") do data
+        if isnothing(load_function_wrapper)
+            return to_data_row(data, fpath; kwargs...)
+        else
+            return to_data_row(load_function_wrapper(data), fpath; kwargs...)
+        end
     end
 end
 function to_data_row(data, file;
-        white_list = collect(keys(data)),
-        black_list = keytype(data).((:gitcommit, :gitpatch, :script)),
-        special_list = [])
+    white_list=collect(keys(data)),
+    black_list=keytype(data).((:gitcommit, :gitpatch, :script)),
+    special_list=[],
+    kwargs...)
     cnames = setdiff!(white_list, black_list)
     entries = Pair{Symbol,Any}[]
-    append!(entries,Symbol.(cnames) .=> (x->[x]).(getindex.(Ref(data),cnames)))
+    append!(entries, Symbol.(cnames) .=> (x -> [x]).(getindex.(Ref(data), cnames)))
     #Add special things here
     for elem in special_list
         try
@@ -267,8 +291,8 @@ function to_data_row(data, file;
                 end
             end
         catch e
-            @warn "While applying $(string(elem)) to file "*
-            "$(file), got error $e."
+            @warn "While applying $(string(elem)) to file " *
+                  "$(file), got error $e."
         end
     end
     return DataFrames.DataFrame(entries...)
@@ -282,4 +306,4 @@ load (or later save) an existing dataframe. Thus all found results files
 are processed.
 """
 collect_results(folder; kwargs...) =
-collect_results!("", folder; newfile = true, kwargs...)
+    collect_results!("", folder; newfile=true, kwargs...)
