@@ -50,7 +50,7 @@ See also [`collect_results`](@ref).
 * `black_list = [:gitcommit, :gitpatch, :script]`: List of keys not to include from result-file.
 * `special_list = []`: List of additional (derived) key-value pairs
   to put in `df` as explained below.
-* `load_function_wrapper = nothing`: Wrapper around calls to loading the data. This is useful in case you need to do some conversion to your data before `collect_results` processes it. For example, if you are loading a struct, it will be stored as a one-element dictionary on disc. When processing it with `collect_results` you might want to convert the struct to a dict so that the fields of the struct become the elements of the dictionary. One way to do this would be to pass `load_function_wrapper = (d) -> struct2dict(d["key_name"])`. Note, this assumes the session you are loading the struct into is aware of the struct type and that the struct definition has not changed. 
+* `load_function = (filename) -> wload(filename)`: function for loading data from file. This is useful in the event you have data saved as a struct. When loaded from file it will be as a one-element `Dict` which is not what you want passed to the dataframe. Instead, you'd rather have the fields of the struct to be available as columns of the dataframe. In that case you can use this function to ensure the struct is converted to a dict before being processed by `collect_results!`. For example, `load_function = (filename) -> struct2dict(wload(filename)["my_key"])`.
 
 `special_list` is a `Vector` where each entry
 is a derived quantity to be included in `df`. There are two types of entries.
@@ -92,7 +92,7 @@ function collect_results!(filename, folder;
     newfile=false, # keyword only for defining collect_results without !
     rinclude=[r""],
     rexclude=[r"^\b$"],
-    load_function_wrapper=nothing,
+    load_function=(filename) -> wload(filename),
     kwargs...)
 
     @assert all(eltype(r) <: Regex for r in (rinclude, rexclude)) "Elements of `rinclude` and `rexclude` must be Regex expressions."
@@ -103,11 +103,7 @@ function collect_results!(filename, folder;
         mtimes = Dict{String,Float64}()
     else
         verbose && @info "Loading existing result collection..."
-        if isnothing(load_function_wrapper)
-            data = wload(filename)
-        else
-            data = load_function_wrapper(filename)
-        end
+        data = load_function(filename)
         df = data["df"]
         # Check if we have pre-recorded mtimes (if not this could be because of an old results database).
         if "mtime" ∈ keys(data)
@@ -177,7 +173,7 @@ function collect_results!(filename, folder;
         mtimes[file] = mtime_file
 
         fpath = rpath === nothing ? file : joinpath(rpath, file)
-        df_new = to_data_row(FileIO.query(fpath); load_function_wrapper=load_function_wrapper, kwargs...)
+        df_new = to_data_row(FileIO.query(fpath); load_function=load_function, kwargs...)
         #add filename
         df_new[!, :path] .= file
         if replace_entry
@@ -240,32 +236,24 @@ is_valid_file(file, valid_filetypes) =
 # Use wload per default when nothing else is available
 function to_data_row(
     file::File;
-    load_function_wrapper=nothing,
+    load_function=(filename) -> wload(filename),
     kwargs...
 )
     fpath = filename(file)
     @debug "Opening $fpath with fallback wload."
-    if isnothing(load_function_wrapper)
-        return to_data_row(wload(fpath), fpath; kwargs...)
-    else
-        return to_data_row(load_function_wrapper(fpath), fpath; kwargs...)
-    end
+    return to_data_row(load_function(fpath), fpath; kwargs...)
 end
 # Specialize for JLD2 files, can do much faster mmapped access
 function to_data_row(
     file::File{format"JLD2"};
-    load_function_wrapper=nothing,
+    load_function=(filename) -> JLD2.jldopen(filename, "r"),
     kwargs...
 )
     fpath = filename(file)
     @debug "Opening $fpath with jldopen."
-    JLD2.jldopen(fpath, "r") do data
-        if isnothing(load_function_wrapper)
-            return to_data_row(data, fpath; kwargs...)
-        else
-            return to_data_row(load_function_wrapper(data), fpath; kwargs...)
-        end
-    end
+
+    data = load_function(fpath)
+    return to_data_row(data, fpath; kwargs...)
 end
 function to_data_row(data, file;
     white_list=collect(keys(data)),
