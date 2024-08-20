@@ -254,9 +254,9 @@ end
 
 N = 2000; T = 2000.0
 data, file = produce_or_load(
-    datadir("mushrooms", "toy"), # path
+    simulation, # function
     @dict(N, T), # container
-    simulation; # function
+    datadir("mushrooms", "toy"), # path
     prefix = "fig5_toyparams" # prefix for savename
 )
 @unpack toypar_h = data
