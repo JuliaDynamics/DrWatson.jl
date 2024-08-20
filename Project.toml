@@ -15,6 +15,14 @@ Requires = "ae029012-a4dd-5104-9daa-d747884805df"
 Scratch = "6c6a2e73-6563-6170-7368-637461726353"
 UnPack = "3a884ed6-31ef-47d7-9d2a-63182c4928ed"
 
+[weakdeps]
+Requires = "ae029012-a4dd-5104-9daa-d747884805df"
+DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
+
+[extensions]
+Requires = "Requires"
+DataFrames = "DataFrames"
+
 [compat]
 FileIO = "1.0.6"
 JLD2 = "0.4.15"
