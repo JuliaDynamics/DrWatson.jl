@@ -4,71 +4,87 @@ using BSON, DataFrames, FileIO, JLD2
 
 @testset "Collect Results ($ending)" for ending ∈ ["bson", "jld2"]
 
-    ###############################################################################
-    #                        Setup Folder structure                               #
-    ###############################################################################
-    # %%
-    cd(@__DIR__)
-    isdir("testdir") && rm("testdir", recursive=true)
-    mkdir("testdir")
-    initialize_project("testdir"; git=false)
-    quickactivate("testdir")
+###############################################################################
+#                        Setup Folder structure                               #
+###############################################################################
+# %%
+cd(@__DIR__)
+isdir("testdir") && rm("testdir", recursive=true)
+mkdir("testdir")
+initialize_project("testdir"; git = false)
+quickactivate("testdir")
 
-    ###############################################################################
-    #                           Create Dummy Data                                 #
-    ###############################################################################
-    mkdir(datadir("results"))
-    cd(datadir("results"))
+###############################################################################
+#                           Create Dummy Data                                 #
+###############################################################################
+mkdir(datadir("results"))
+cd(datadir("results"))
 
-    d = Dict("a" => 1, "b" => "2", "c" => rand(10))
-    DrWatson.wsave(savename(d) * "." * ending, d)
+d = Dict("a" => 1, "b" => "2", "c" => rand(10))
+DrWatson.wsave(savename(d)*"."*ending, d)
 
-    d = Dict("a" => 3, "b" => "4", "c" => rand(10), "d" => Float64)
-    DrWatson.wsave(savename(d) * "." * ending, d)
+d = Dict("a" => 3, "b" => "4", "c" => rand(10), "d" => Float64)
+DrWatson.wsave(savename(d)*"."*ending, d)
 
-    d = Dict("a" => 3, "c" => rand(10), "d" => Float64)
-    DrWatson.wsave(savename(d) * "." * ending, d)
+d = Dict("a" => 3, "c" => rand(10), "d" => Float64)
+DrWatson.wsave(savename(d)*"."*ending, d)
 
-    mkdir("subfolder")
-    cd("subfolder")
+mkdir("subfolder")
+cd("subfolder")
 
-    d = Dict("a" => 4.0, "b" => "twenty", "d" => Int)
-    DrWatson.wsave(savename(d) * "." * ending, d)
+d = Dict("a" => 4., "b" => "twenty" , "d" => Int)
+DrWatson.wsave(savename(d)*"."*ending, d)
 
-    ###############################################################################
-    #                           Collect Data Into DataFrame                       #
-    ###############################################################################
-    using Statistics
-    special_list = [:lv_mean => data -> mean(data["c"]),
-        :lv_var => data -> var(data["c"])]
+###############################################################################
+#                           Collect Data Into DataFrame                       #
+###############################################################################
+using Statistics
+special_list = [ :lv_mean => data -> mean(data["c"]),
+                :lv_var  => data -> var(data["c"])]
 
-    black_list = ["c"]
+black_list = ["c"]
 
-    folder = datadir("results")
+folder = datadir("results")
 
-    defaultname = joinpath(dirname(folder), "results_$(basename(folder))." * ending)
-    isfile(defaultname) && rm(defaultname)
-    cres = collect_results!(defaultname, folder;
-        subfolders=true, special_list=special_list, black_list=black_list)
+defaultname = joinpath(dirname(folder), "results_$(basename(folder))."*ending)
+isfile(defaultname) && rm(defaultname)
+cres = collect_results!(defaultname, folder;
+    subfolders = true, special_list=special_list, black_list = black_list)
 
-    @test size(cres) == (4, 6)
-    for n in ("a", "b", "lv_mean")
-        @test n ∈ String.(names(cres))
-    end
-    @test "c" ∉ names(cres)
-    @test all(startswith.(cres[!, "path"], projectdir()))
+@test size(cres) == (4, 6)
+for n in ("a", "b", "lv_mean")
+    @test n ∈ String.(names(cres))
+end
+@test "c" ∉ names(cres)
+@test all(startswith.(cres[!,"path"], projectdir()))
 
-    relpathname = joinpath(dirname(folder), "results_relpath_$(basename(folder))." * ending)
-    cres_relpath = collect_results!(relpathname, folder;
-        subfolders=true, special_list=special_list, black_list=black_list,
-        rpath=projectdir())
-    @info all(startswith.(cres[!, "path"], "data"))
+relpathname = joinpath(dirname(folder), "results_relpath_$(basename(folder))."*ending)
+cres_relpath = collect_results!(relpathname, folder;
+    subfolders = true, special_list=special_list, black_list = black_list,
+    rpath = projectdir())
+@info all(startswith.(cres[!,"path"], "data"))
 
-    struct testDummy
-        a::Float64
-        b::Int64
-        c::Matrix{Float64}
-    end
+struct dummy
+    a::Float64
+    b::Int64
+    c::Matrix{Float64}
+end
+_dummy_matrix = rand(3,3)
+_dummy = dummy(1.0, 1, _dummy_matrix)
+wsave(datadir("dummy.jld2"), "dummy", _dummy)
+
+actual_dataframe = collect_results(datadir(), rinclude=[r"dummy.jld2"], load_function=(filename) -> struct2dict(wload(filename)["dummy"]))
+_dataframe_vector = Vector{Union{Missing, Matrix{Float64}}}(undef, 1)
+_dataframe_vector[1] = _dummy_matrix
+expected_dataframe = DataFrame(a = 1.0, b = 1, c = _dataframe_vector, path = datadir("dummy.jld2"))
+
+@test actual_dataframe == expected_dataframe
+
+###############################################################################
+#                           Trailing slash in foldername                      #
+###############################################################################
+
+df = collect_results!(datadir("results/"))      # This would produce the incorrect file. (Issue#181)
 
     fname = "dummy.jld2"
     dummymat = Float64[1 2 3; 0 0 0; 4 5 6]

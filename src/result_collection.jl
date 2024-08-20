@@ -50,7 +50,7 @@ See also [`collect_results`](@ref).
 * `black_list = [:gitcommit, :gitpatch, :script]`: List of keys not to include from result-file.
 * `special_list = []`: List of additional (derived) key-value pairs
   to put in `df` as explained below.
-* `load_function = (filename) -> wload(filename)`: function for loading data from file. This is useful in the event you have data saved as a struct. When loaded from file it will be as a one-element `Dict` which is not what you want passed to the dataframe. Instead, you'd rather have the fields of the struct to be available as columns of the dataframe. In that case you can use this function to ensure the struct is converted to a dict before being processed by `collect_results!`. For example, `load_function = (filename) -> struct2dict(wload(filename)["my_key"])`.
+*  `load_function = wload`: Load function. Defaults to `wload`. You may want to specify a custom load function for example if you store results as a struct and you want the fields of the struct to form the columns of the dataframe. The struct is saved to file as a one-element dictionary so the dataframe will only have a single column. To work around this you could convert it to a dictionary by specifying `load_function = (filename) -> struct2dict(wload(filename)["mykey"])`. This way `collect_results` will receive a `Dict` whose keys are the fields of the struct.
 
 `special_list` is a `Vector` where each entry
 is a derived quantity to be included in `df`. There are two types of entries.
@@ -84,15 +84,15 @@ Base.showerror(io::IO, e::InvalidResultsCollection) = print(io, e.msg)
 
 
 function collect_results!(filename, folder;
-    valid_filetypes=[".bson", "jld", ".jld2"],
-    subfolders=false,
-    rpath=nothing,
-    verbose=true,
-    update=false,
-    newfile=false, # keyword only for defining collect_results without !
-    rinclude=[r""],
-    rexclude=[r"^\b$"],
-    load_function=(filename) -> wload(filename),
+    valid_filetypes = [".bson", "jld", ".jld2"],
+    subfolders = false,
+    rpath = nothing,
+    verbose = true,
+    update = false,
+    newfile = false, # keyword only for defining collect_results without !
+    rinclude = [r""],
+    rexclude = [r"^\b$"],
+    load_function = wload,
     kwargs...)
 
     @assert all(eltype(r) <: Regex for r in (rinclude, rexclude)) "Elements of `rinclude` and `rexclude` must be Regex expressions."
@@ -234,24 +234,15 @@ is_valid_file(file, valid_filetypes) =
     any(endswith(file, v) for v in valid_filetypes)
 
 # Use wload per default when nothing else is available
-function to_data_row(
-    file::File;
-    load_function=(filename) -> wload(filename),
-    kwargs...
-)
+function to_data_row(file::File; load_function=wload, kwargs...)
     fpath = filename(file)
-    @debug "Opening $fpath with fallback wload."
+    @debug "Opening $(filename(file)) with fallback wload."
     return to_data_row(load_function(fpath), fpath; kwargs...)
 end
 # Specialize for JLD2 files, can do much faster mmapped access
-function to_data_row(
-    file::File{format"JLD2"};
-    load_function=(filename) -> JLD2.jldopen(filename, "r"),
-    kwargs...
-)
+function to_data_row(file::File{format"JLD2"}; load_function=(filename) -> JLD2.jldopen(filename, "r"), kwargs...)
     fpath = filename(file)
-    @debug "Opening $fpath with jldopen."
-
+    @debug "Opening $(filename(file)) with jldopen."
     data = load_function(fpath)
     return to_data_row(data, fpath; kwargs...)
 end
