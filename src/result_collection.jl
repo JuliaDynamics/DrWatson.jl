@@ -50,6 +50,7 @@ See also [`collect_results`](@ref).
 * `black_list = [:gitcommit, :gitpatch, :script]`: List of keys not to include from result-file.
 * `special_list = []`: List of additional (derived) key-value pairs
   to put in `df` as explained below.
+*  `load_function = wload`: Load function. Defaults to `wload`. You may want to specify a custom load function for example if you store results as a struct and you want the fields of the struct to form the columns of the dataframe. The struct is saved to file as a one-element dictionary so the dataframe will only have a single column. To work around this you could convert it to a dictionary by specifying `load_function = (filename) -> struct2dict(wload(filename)["mykey"])`. This way `collect_results` will receive a `Dict` whose keys are the fields of the struct.
 
 `special_list` is a `Vector` where each entry
 is a derived quantity to be included in `df`. There are two types of entries.
@@ -90,6 +91,7 @@ function collect_results!(filename, folder;
     newfile = false, # keyword only for defining collect_results without !
     rinclude = [r""],
     rexclude = [r"^\b$"],
+    load_function = wload,
     kwargs...)
 
     @assert all(eltype(r) <: Regex for r in (rinclude, rexclude)) "Elements of `rinclude` and `rexclude` must be Regex expressions."
@@ -100,7 +102,7 @@ function collect_results!(filename, folder;
         mtimes = Dict{String,Float64}()
     else
         verbose && @info "Loading existing result collection..."
-        data = wload(filename)
+        data = load_function(filename)
         df = data["df"]
         # Check if we have pre-recorded mtimes (if not this could be because of an old results database).
         if "mtime" ∈ keys(data)
@@ -170,7 +172,7 @@ function collect_results!(filename, folder;
         mtimes[file] = mtime_file
 
         fpath = rpath === nothing ? file : joinpath(rpath, file)
-        df_new = to_data_row(FileIO.query(fpath); kwargs...)
+        df_new = to_data_row(FileIO.query(fpath); load_function=load_function, kwargs...)
         #add filename
         df_new[!, :path] .= file
         if replace_entry
@@ -231,18 +233,17 @@ is_valid_file(file, valid_filetypes) =
     any(endswith(file, v) for v in valid_filetypes)
 
 # Use wload per default when nothing else is available
-function to_data_row(file::File; kwargs...)
+function to_data_row(file::File; load_function=wload, kwargs...)
     fpath = filename(file)
     @debug "Opening $(filename(file)) with fallback wload."
-    return to_data_row(wload(fpath), fpath; kwargs...)
+    return to_data_row(load_function(fpath), fpath; kwargs...)
 end
 # Specialize for JLD2 files, can do much faster mmapped access
-function to_data_row(file::File{format"JLD2"}; kwargs...)
+function to_data_row(file::File{format"JLD2"}; load_function=(filename) -> JLD2.jldopen(filename, "r"), kwargs...)
     fpath = filename(file)
     @debug "Opening $(filename(file)) with jldopen."
-    JLD2.jldopen(filename(file), "r") do data
-        return to_data_row(data, fpath; kwargs...)
-    end
+    data = load_function(fpath)
+    return to_data_row(data, fpath; kwargs...)
 end
 function to_data_row(data, file;
         white_list = collect(keys(data)),

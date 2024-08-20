@@ -1,3 +1,7 @@
+# 2.16.0
+
+ - Add `load_function` keyword argument to `collect_results` to customize how data is loaded from file before being converted to a dataframe by `collect_results`
+
 # 2.15.0
 
  - Add `wload_kwargs` to `produce_or_load` to allow passing kwargs to `wload`
