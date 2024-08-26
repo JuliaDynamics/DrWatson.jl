@@ -52,17 +52,14 @@ include("dict_list.jl")
 
 # Functionality that requires Dataframes and other heavy dependencies:
 
-if !isdefined(Base, :get_extension)
-    using Requires
-    end
+function __init__()
+    # Other init functionality here
+ 
+!isdefined(Base, :get_extension)
+           
+@require DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
+        
     
-    function __init__()
-        # Other init functionality here
-    
-        @static if !isdefined(Base, :get_extension)
-            @require DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
-        end
-    end
 
 # Update messages
 using Scratch
