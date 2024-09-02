@@ -64,6 +64,22 @@ cres_relpath = collect_results!(relpathname, folder;
     rpath = projectdir())
 @info all(startswith.(cres[!,"path"], "data"))
 
+struct dummy
+    a::Float64
+    b::Int64
+    c::Matrix{Float64}
+end
+_dummy_matrix = rand(3,3)
+_dummy = dummy(1.0, 1, _dummy_matrix)
+wsave(datadir("dummy.jld2"), "dummy", _dummy)
+
+actual_dataframe = collect_results(datadir(), rinclude=[r"dummy.jld2"], load_function=(filename) -> struct2dict(wload(filename)["dummy"]))
+_dataframe_vector = Vector{Union{Missing, Matrix{Float64}}}(undef, 1)
+_dataframe_vector[1] = _dummy_matrix
+expected_dataframe = DataFrame(a = 1.0, b = 1, c = _dataframe_vector, path = datadir("dummy.jld2"))
+
+@test actual_dataframe == expected_dataframe
+
 ###############################################################################
 #                           Trailing slash in foldername                      #
 ###############################################################################
