@@ -1,7 +1,5 @@
 export collect_results, collect_results!
 
-isdefined(Base, :get_extension) ? (using DataFrames) : (using ..DataFrames)
-
 """
     collect_results!([filename,] folder; kwargs...) -> df
 
