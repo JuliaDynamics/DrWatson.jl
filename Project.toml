@@ -1,7 +1,7 @@
 name = "DrWatson"
 uuid = "634d3b9d-ee7a-5ddf-bec9-22491ea816e1"
 repo = "https://github.com/JuliaDynamics/DrWatson.jl.git"
-version = "2.16.0"
+version = "2.17.0"
 
 [deps]
 Dates = "ade2ca70-3891-5945-98fb-dc099432e06a"
@@ -17,7 +17,7 @@ UnPack = "3a884ed6-31ef-47d7-9d2a-63182c4928ed"
 
 [compat]
 FileIO = "1.0.6"
-JLD2 = "0.4.15"
+JLD2 = "0.4.15, 0.5"
 MacroTools = "0.5"
 Requires = "0.5.2, 0.6, 1"
 Scratch = "1"
@@ -38,16 +38,4 @@ Statistics = "10745b16-79ce-11e8-11f9-7d13ad32a3b2"
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 
 [targets]
-test = [
-  "Test",
-  "BSON",
-  "FileIO",
-  "Parameters",
-  "DataFrames",
-  "JLD2",
-  "Statistics",
-  "Dates",
-  "CSVFiles",
-  "CodecZlib",
-  "DataStructures",
-]
+test = ["Test", "BSON", "FileIO", "Parameters", "DataFrames", "JLD2", "Statistics", "Dates", "CSVFiles", "CodecZlib", "DataStructures"]

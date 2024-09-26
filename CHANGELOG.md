@@ -1,3 +1,7 @@
+# 2.17.0
+ 
+ - Update compat bounds for JLD2 to include v0.5
+
 # 2.16.0
 
  - Add `load_function` keyword argument to `collect_results` to customize how data is loaded from file before being converted to a dataframe by `collect_results`
