@@ -332,7 +332,7 @@ within the script that `@tag!` was called at.
 julia> d = Dict(:x => 3)Dict{Symbol,Int64} with 1 entry:
   :x => 3
 
-julia> @tag!(d) # running from a script or inline evaluation of Juno
+julia> @tag!(d) # running from a script or inline evaluation
 Dict{Symbol,Any} with 3 entries:
   :gitcommit => "618b72bc0936404ab6a4dd8d15385868b8299d68"
   :script => "test\\stools_tests.jl#10"
