@@ -1,5 +1,11 @@
+# 2.18.0
+
+- `tag!` and parent functions allow keyword `warn`.
+- Keyword `warn` is propagated to `gitdescribe` and now can be set to `false`
+  to silence the warning that the git repo is dirty. It can also be set at an ENV variable level.
+
 # 2.17.0
- 
+
  - Update compat bounds for JLD2 to include v0.5
 
 # 2.16.0
