@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Real World Examples · DrWatson</title><link href="https://fonts.googleapis.com/css?family=Lato|Roboto+Mono" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.11.1/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL=".."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../assets/documenter.js"></script><script src="../siteinfo.js"></script><script src="../../versions.js"></script><link href="../assets/logo.ico" rel="icon" type="image/x-icon"/><link href="https://fonts.googleapis.com/css?family=Quicksand|Montserrat|Source+Code+Pro|Lora&amp;display=swap" rel="stylesheet" type="text/css"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-dark.css" data-theme-name="documenter-dark"/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../assets/themeswap.js"></script></head><body><div id="documenter"><nav class="docs-sidebar"><a class="docs-logo" href="../"><img src="../assets/logo.png" alt="DrWatson logo"/></a><div class="docs-package-name"><span class="docs-autofit">DrWatson</span></div><form class="docs-search" action="../search/"><input class="docs-search-query" id="documenter-search-query" name="q" type="text" placeholder="Search docs"/></form><ul class="docs-menu"><li><a class="tocitem" href="../">Introduction</a></li><li><a class="tocitem" href="../project/">Project Setup</a></li><li><a class="tocitem" href="../name/">Naming Simulations</a></li><li><a class="tocitem" href="../save/">Saving Tools</a></li><li><a class="tocitem" href="../run&amp;list/">Running &amp; Listing Simulations</a></li><li class="is-active"><a class="tocitem" href>Real World Examples</a><ul class="internal"><li><a class="tocitem" href="#Easy-local-directories-1"><span>Easy local directories</span></a></li><li><a class="tocitem" href="#Making-your-project-a-usable-module-1"><span>Making your project a usable module</span></a></li><li><a class="tocitem" href="#savename-and-tagging-1"><span><code>savename</code> and tagging</span></a></li><li><a class="tocitem" href="#Customizing-savename-1"><span>Customizing <code>savename</code></span></a></li><li><a class="tocitem" href="#savename-and-nested-containers-1"><span><code>savename</code> and nested containers</span></a></li><li><a class="tocitem" href="#Stopping-&quot;Did-I-run-this?&quot;-1"><span>Stopping &quot;Did I run this?&quot;</span></a></li><li><a class="tocitem" href="#Preparing-and-running-jobs-1"><span>Preparing &amp; running jobs</span></a></li><li><a class="tocitem" href="#Listing-completed-runs-1"><span>Listing completed runs</span></a></li><li><a class="tocitem" href="#Adapting-to-new-data/parameters-1"><span>Adapting to new data/parameters</span></a></li></ul></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><nav class="breadcrumb"><ul class="is-hidden-mobile"><li class="is-active"><a href>Real World Examples</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>Real World Examples</a></li></ul></nav><div class="docs-right"><a class="docs-edit-link" href="https://github.com/JuliaDynamics/DrWatson.jl/blob/master/docs/src/real_world.md" title="Edit on GitHub"><span class="docs-icon fab"></span><span class="docs-label is-hidden-touch">Edit on GitHub</span></a><a class="docs-settings-button fas fa-cog" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-sidebar-button fa fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a></div></header><article class="content" id="documenter-page"><h1 id="Real-World-Examples-1"><a class="docs-heading-anchor" href="#Real-World-Examples-1">Real World Examples</a><a class="docs-heading-anchor-permalink" href="#Real-World-Examples-1" title="Permalink"></a></h1><h2 id="Easy-local-directories-1"><a class="docs-heading-anchor" href="#Easy-local-directories-1">Easy local directories</a><a class="docs-heading-anchor-permalink" href="#Easy-local-directories-1" title="Permalink"></a></h2><p>I setup all my science projects using DrWatson&#39;s suggested setup, using <a href="../project/#DrWatson.initialize_project"><code>initialize_project</code></a>. Then, every file in every project has a start that looks like this:</p><pre><code class="language-julia">using DrWatson
+quickactivate(@__DIR__, &quot;MagneticBilliardsLyapunovs&quot;)
+using DynamicalBilliards, PyPlot, LinearAlgebra
+
+include(srcdir(&quot;plot_perturbationgrowth.jl&quot;))
+include(srcdir(&quot;unitcells.jl&quot;))</code></pre><p>In all projects I save data/plots using <code>datadir/plotdir</code>:</p><pre><code class="language-julia">@tagsave(datadir(&quot;mushrooms&quot;, &quot;Λ_N=$N.bson&quot;), (@dict Λ Λσ ws hs description))</code></pre><p>The advantage of this approach is that it will always work regardless of if I move the specific file to a different subfolder (which is very often necessary) or whether I move the entire project folder somewhere else! <strong>Please be sure you have understood the caveat of using <a href="../project/#DrWatson.quickactivate"><code>quickactivate</code></a>!</strong></p><p>Here is an example from another project. You will notice that another advantage is that I can use identical syntax to access the data or source folders even though I have different projects!</p><pre><code class="language-julia">using DrWatson
+quickactivate(@__DIR__, &quot;EmbeddingResearch&quot;)
+using Parameters
+using TimeseriesPrediction, LinearAlgebra, Statistics
+
+include(srcdir(&quot;systems&quot;, &quot;barkley.jl&quot;))
+include(srcdir(&quot;nrmse.jl&quot;))
+
+# stuff...
+
+save(datadir(&quot;sim&quot;, &quot;barkley&quot;, &quot;astonishing_results.bson&quot;), data)</code></pre><h2 id="Making-your-project-a-usable-module-1"><a class="docs-heading-anchor" href="#Making-your-project-a-usable-module-1">Making your project a usable module</a><a class="docs-heading-anchor-permalink" href="#Making-your-project-a-usable-module-1" title="Permalink"></a></h2><p>For some projects, it is often the case that some packages and files from the source folder are loaded at the beginning of <em>every file of the project</em>. For example, I have a project that I know that for <em>any</em> script I will write, the first five lines will be:</p><pre><code class="language-julia">using DrWatson
+@quickactivate &quot;AlbedoProperties&quot;
+using Dates, Statistics, NCDatasets
+include(srcdir(&quot;core.jl&quot;))
+include(srcdir(&quot;style.jl&quot;))</code></pre><p>It would be quite convenient to group all of these commands into one file and instead load that file, for example do <code>include(srcdir(&quot;everything.jl&quot;))</code> and all commands are in there.</p><p>We can do even better though! Because of the way Julia handles project and module paths, it is in fact possible to transform the currently active project into a usable module. If one defines inside the <code>src</code> folder a file <code>AlbedoProperties.jl</code> and in that file define a module <code>AlbedoProperties</code> (notice that these names must match <em>exactly</em> the project name), then upon doing <code>using AlbedoProperties</code> Julia will in fact just bring this module into scope.</p><p>So what I end up doing (for some projects where this makes sense) is creating the aforementioned file and putting inside things like</p><pre><code class="language-julia">module AlbedoProperties
+
+using Reexport
+@reexport using Dates, Statistics
+using NCDatasets: NCDataset, dimnames, NCDatasets
+export NCDataset, dimnames
+include(&quot;core.jl&quot;) # this file now also has export statements
+include(&quot;style.jl&quot;)
+
+end</code></pre><p>and then the header of all my files is transformed to</p><pre><code class="language-julia">using DrWatson
+@quickactivate :AlbedoProperties</code></pre><p>which takes advantage of <a href="../project/#DrWatson.@quickactivate"><code>@quickactivate</code></a>&#39;s feature to essentially combine the commands <code>@quickactivate &quot;AlbedoProperties&quot;</code> and <code>using AlbedoProperties</code> into one.</p><p>If you intend to share your project with a non-DrWatson user, you should consider the verbose syntax instead, as the above syntax is not really clear for someone that doesn&#39;t know what <code>@quickactivate</code> does.</p><h2 id="savename-and-tagging-1"><a class="docs-heading-anchor" href="#savename-and-tagging-1"><code>savename</code> and tagging</a><a class="docs-heading-anchor-permalink" href="#savename-and-tagging-1" title="Permalink"></a></h2><p>The combination of using <a href="../name/#DrWatson.savename"><code>savename</code></a> and <a href="../save/#DrWatson.tagsave"><code>tagsave</code></a> makes it easy and fast to save output in a way that is consistent, robust and reproducible. Here is an example from a project:</p><pre><code class="language-julia">using DrWatson
+quickactivate(@__DIR__, &quot;EmbeddingResearch&quot;)
+using TimeseriesPrediction, LinearAlgebra, Statistics
+include(srcdir(&quot;systems&quot;, &quot;barkley.jl&quot;))
+
+ΔTs = [1.0, 0.5, 0.1] # resolution of the saved data
+Ns = [50, 150] # spatial extent
+for N ∈ Ns, ΔT ∈ ΔTs
+    T = 10050 # we can offset up to 1000 units
+    every = round(Int, ΔT/barkley_Δt)
+    seed = 1111
+
+    simulation = @ntuple T N ΔT seed
+    U, V = barkley(T, N, every; seed = seed)
+
+    @tagsave(
+        datadir(&quot;sim&quot;, &quot;bk&quot;, savename(simulation, &quot;bson&quot;)),
+        @dict U V simulation
+    )
+end</code></pre><p>This saves files that look like:</p><pre><code class="language-none">path/to/project/data/sim/bk_N=50_T=10050_seed=1111_ΔT=1.bson</code></pre><p>and each file is a dictionary that has my data fields: <code>:U, :V, :simulation</code>, but also <code>:gitcommit, :script</code>. When I read this file I know exactly what was the source code that produced it (provided that I am not sloppy and commit code changes regularly :P).</p><h2 id="Customizing-savename-1"><a class="docs-heading-anchor" href="#Customizing-savename-1">Customizing <code>savename</code></a><a class="docs-heading-anchor-permalink" href="#Customizing-savename-1" title="Permalink"></a></h2><p>Here is a simple example for customizing <a href="../name/#DrWatson.savename"><code>savename</code></a>. We are using a common struct <code>Experiment</code> across different experiments with cats and mice. In this example we are also using Parameters.jl for a convenient default constructor.</p><p>We first define the relevant types.</p><pre><code class="language-julia">using DrWatson, Parameters, Dates
+
+# Define a type hierarchy we use at experiments
+abstract type Species end
+struct Mouse &lt;: Species end
+struct Cat &lt;: Species end
+
+# @with_kw comes from Parameters.jl
+@with_kw struct Experiment{S&lt;:Species}
+    n::Int = 50
+    c::Float64 = 10.0
+    x::Float64 = 0.2
+    date::Date = Date(Dates.now())
+    species::S = Mouse()
+    scientist::String = &quot;George&quot;
+end
+
+e1 = Experiment()
+e2 = Experiment(species = Cat())</code></pre><pre><code class="language-none">Main.ex-customizing.Experiment{Main.ex-customizing.Cat}
+  n: Int64 50
+  c: Float64 10.0
+  x: Float64 0.2
+  date: Date
+  species: Main.ex-customizing.Cat Main.ex-customizing.Cat()
+  scientist: String &quot;George&quot;
+</code></pre><p>For analyzing our experiments we need information about the species used, and to use multiple dispatch latter on we decided to make this information associated with a Type. This is why we defined <code>Species</code>.</p><p>Now, we want to customize <a href="../name/#DrWatson.savename"><code>savename</code></a>. We start by extending <a href="../name/#DrWatson.default_prefix"><code>DrWatson.default_prefix</code></a>:</p><pre><code class="language-julia">DrWatson.default_prefix(e::Experiment) = &quot;Experiment_&quot;*string(e.date)
+
+savename(e1)</code></pre><pre><code class="language-none">&quot;Experiment_2020-03-18_c=10_n=50_scientist=George_x=0.2&quot;</code></pre><p>However this is not good enough for us, as the information about the species is not contained in <a href="../name/#DrWatson.savename"><code>savename</code></a>. We have to extend <a href="../name/#DrWatson.default_allowed"><code>DrWatson.default_allowed</code></a> like so:</p><pre><code class="language-julia">DrWatson.default_allowed(::Experiment) = (Real, String, Species)
+
+savename(e1)</code></pre><pre><code class="language-none">&quot;Experiment_2020-03-18_c=10_n=50_scientist=George_species=Main.ex-customizing.Mouse()_x=0.2&quot;</code></pre><p>To make printing better we can extend <code>Base.string</code>, which is what DrWatson uses internally in <a href="../name/#DrWatson.savename"><code>savename</code></a> to display values.</p><pre><code class="language-julia">Base.string(::Mouse) = &quot;mouse&quot;
+Base.string(::Cat) = &quot;cat&quot;
+savename(e1)</code></pre><pre><code class="language-none">&quot;Experiment_2020-03-18_c=10_n=50_scientist=George_species=mouse_x=0.2&quot;</code></pre><p>Lastly, let&#39;s say that the information of which scientist performed the experiment is not really relevant for <code>savename</code>. We can extend the last method, <a href="../name/#DrWatson.allaccess"><code>DrWatson.allaccess</code></a>:</p><pre><code class="language-julia">DrWatson.allaccess(::Experiment) = (:n, :c, :x, :species)</code></pre><p>so that only those four fields will be used (notice that the <code>date</code> field is already used in <code>default_prefix</code>). We finally have:</p><pre><code class="language-julia">println( savename(e1) )
+println( savename(e2) )</code></pre><pre><code class="language-none">Experiment_2020-03-18_c=10_n=50_species=mouse_x=0.2
+Experiment_2020-03-18_c=10_n=50_species=cat_x=0.2</code></pre><h2 id="savename-and-nested-containers-1"><a class="docs-heading-anchor" href="#savename-and-nested-containers-1"><code>savename</code> and nested containers</a><a class="docs-heading-anchor-permalink" href="#savename-and-nested-containers-1" title="Permalink"></a></h2><p>In the case of user-defined structs and projects of significant complexity, it is often necessary that your &quot;main&quot; container has other containers as subfields. <code>savename</code> can adapt to these situations as well. Consider the following example, where I need a core struct that represents a spatio temporal system, and its simulation:</p><pre><code class="language-julia">struct SpatioTemporalSystem
+    model::String # system codeword
+    N        # Integer or Tuple of integers: spatial extent
+    Δt::Real # sampling time in real time units
+    p        # parameters. nothing or Dict{Symbol}
+end
+const STS = SpatioTemporalSystem
+
+struct SpatioTemporalTimeseries
+    sts::STS
+    T::Int       # total frame amount
+    ic           # initial condition (matrix, string, seed)
+    fields::Dict # resulting timeseries, dictionary of string to vector
+end
+const STT = SpatioTemporalTimeseries</code></pre><pre><code class="language-none">Main.ex-customizing.SpatioTemporalTimeseries</code></pre><p>For my use case, <code>p</code> can be <code>nothing</code> or it can be a dictionary itself, containing the possible parameters the spatiotemporal systems can have. To adapt <code>savename</code> to situations like this, we use the functionality surrounding <a href="../name/#DrWatson.default_expand"><code>DrWatson.default_expand</code></a>.</p><p>Expanding the necessary methods allows me to do:</p><pre><code class="language-julia">DrWatson.allaccess(c::STS) = (:N, :Δt, :p)
+DrWatson.default_prefix(c::STS) = c.model
+DrWatson.default_allowed(c::STS) = (Real, Tuple, Dict, String)
+DrWatson.default_expand(c::STS) = [&quot;p&quot;]
+
+bk = STS(&quot;barkley&quot;, 60, 0.1, nothing)
+savename(bk)</code></pre><pre><code class="language-none">&quot;barkley_N=60_Δt=0.1&quot;</code></pre><p>and when I do want to use different parameters than the default:</p><pre><code class="language-julia">a = 0.3; b = 0.5
+bk = STS(&quot;barkley&quot;, 60, 0.1, @dict a b)
+savename(bk)</code></pre><pre><code class="language-none">&quot;barkley_N=60_p=(a=0.3,b=0.5)_Δt=0.1&quot;</code></pre><p>Expanding to the second struct is also fine:</p><pre><code class="language-julia">DrWatson.default_prefix(c::STT) = savename(c.sts)
+stt = STT(bk, 1000, nothing, Dict(&quot;U&quot;=&gt;rand(100), &quot;V&quot;=&gt;rand(100)))
+savename(stt)</code></pre><pre><code class="language-none">&quot;barkley_N=60_p=(a=0.3,b=0.5)_Δt=0.1_T=1000&quot;</code></pre><h2 id="Stopping-&quot;Did-I-run-this?&quot;-1"><a class="docs-heading-anchor" href="#Stopping-&quot;Did-I-run-this?&quot;-1">Stopping &quot;Did I run this?&quot;</a><a class="docs-heading-anchor-permalink" href="#Stopping-&quot;Did-I-run-this?&quot;-1" title="Permalink"></a></h2><p>It can become very tedious to have a piece of code that you may or may not have run and may or may not have saved the produced data. You then constantly ask yourself &quot;Did I run this?&quot;. Typically one uses <code>isfile</code> and an <code>if</code> clause to either load a file or run some code. Especially in the cases where the code takes only a couple of minutes to finish you are left in a dilemma &quot;Is it even worth it to save?&quot;.</p><p>This is the dilemma that <a href="../save/#DrWatson.produce_or_load"><code>produce_or_load</code></a> resolves. You can wrap your code in a function and then <a href="../save/#DrWatson.produce_or_load"><code>produce_or_load</code></a> will take care of the rest for you! I found it especially useful in scripts that generate figures for a publication.</p><p>Here is an example; originally I had this piece of code:</p><pre><code class="language-julia">HTEST = 0.1:0.1:2.0
+WS = [0.5, 1.0, 1.5]
+N = 10000; T = 10000.0
+
+toypar_h = [[] for l in HS]
+for (wi, w) in enumerate(WS)
+    println(&quot;w = $w&quot;)
+    for h in HTEST
+        toyp = toyparameters(h, w, N, T)
+        push!(toypar_h[wi], toyp)
+    end
+end</code></pre><p>that was taking some minutes to run. To use the function <a href="../save/#DrWatson.produce_or_load"><code>produce_or_load</code></a> I first have to wrap this code in a high level function like so:</p><pre><code class="language-julia">function g(d)
+    HTEST = 0.1:0.1:2.0
+    WS = [0.5, 1.0, 1.5]
+    @unpack N, T = d
+    toypar_h = [[] for l in HS]
+
+    for (wi, w) in enumerate(WS)
+        println(&quot;w = $w&quot;)
+        for h in HTEST
+            toyp = toyparameters(h, w, N, T)
+            push!(toypar_h[wi], toyp)
+        end
+    end
+    return @dict toypar_h
+end
+
+N = 2000; T = 2000.0
+file = produce_or_load(
+    datadir(&quot;mushrooms&quot;, &quot;toy&quot;), # path
+    @dict(N, T), # container
+    g, # function
+    prefix = &quot;fig5_toyparams&quot; # prefix for savename
+)
+@unpack toypar_h = file</code></pre><p>Now, every time I run this code block the function tests automatically whether the file exists. Only if it does not, then the code is run while the new result is saved to ensure I won&#39;t have to run it again.</p><p>The extra step is that I have to extract the useful data I need from the container <code>file</code>. Thankfully the <code>@unpack</code> macro from <a href="https://mauro3.github.io/Parameters.jl/stable/manual.html">Parameters.jl</a> makes this super easy.</p><h2 id="Preparing-and-running-jobs-1"><a class="docs-heading-anchor" href="#Preparing-and-running-jobs-1">Preparing &amp; running jobs</a><a class="docs-heading-anchor-permalink" href="#Preparing-and-running-jobs-1" title="Permalink"></a></h2><h3 id="Preparing-the-dictionaries-1"><a class="docs-heading-anchor" href="#Preparing-the-dictionaries-1">Preparing the dictionaries</a><a class="docs-heading-anchor-permalink" href="#Preparing-the-dictionaries-1" title="Permalink"></a></h3><p>Here is a shortened script from a project that uses <a href="../run&amp;list/#DrWatson.dict_list"><code>dict_list</code></a>:</p><pre><code class="language-julia">using DrWatson
+
+general_args = Dict(
+    &quot;model&quot; =&gt; [&quot;barkley&quot;, &quot;kuramoto&quot;],
+    &quot;noise&quot; =&gt; 0.075,
+    &quot;noisy_training&quot; =&gt; [true, false],
+    &quot;N&quot; =&gt; [100],
+    &quot;embedding&quot; =&gt; [ #(γ, τ, r, c)
+    (4, 5, 1, 0.34), (4, 6, 1, 0.28)]
+)</code></pre><pre><code class="language-none">Dict{String,Any} with 5 entries:
+  &quot;embedding&quot;      =&gt; Tuple{Int64,Int64,Int64,Float64}[(4, 5, 1, 0.34), (4, 6, …
+  &quot;model&quot;          =&gt; [&quot;barkley&quot;, &quot;kuramoto&quot;]
+  &quot;N&quot;              =&gt; [100]
+  &quot;noise&quot;          =&gt; 0.075
+  &quot;noisy_training&quot; =&gt; Bool[1, 0]</code></pre><pre><code class="language-julia">dicts = dict_list(general_args)
+println(&quot;Total dictionaries made: &quot;, length(dicts))
+dicts[1]</code></pre><pre><code class="language-none">Dict{String,Any} with 5 entries:
+  &quot;embedding&quot;      =&gt; (4, 5, 1, 0.34)
+  &quot;model&quot;          =&gt; &quot;barkley&quot;
+  &quot;N&quot;              =&gt; 100
+  &quot;noise&quot;          =&gt; 0.075
+  &quot;noisy_training&quot; =&gt; true</code></pre><p>Now, how you use these dictionaries is up to you. Typically each dictionary is given to a <code>main</code>-like Julia function which extracts the necessary data and calls the necessary functions.</p><p>Let&#39;s say I have written a function that takes in one of these dictionaries and saves the file somewhere locally:</p><pre><code class="language-julia">function cross_estimation(data)
+    γ, τ, r, c = data[&quot;embedding&quot;]
+    N = data[&quot;N&quot;]
+    # add fake results:
+    data[&quot;x&quot;] = rand()
+    data[&quot;error&quot;] = rand(10)
+    # Save data:
+    prefix = datadir(&quot;results&quot;, data[&quot;model&quot;])
+    get(data, &quot;noisy_training&quot;, false) &amp;&amp; (prefix *= &quot;_noisy&quot;)
+    get(data, &quot;symmetric_training&quot;, false) &amp;&amp; (prefix *= &quot;_symmetric&quot;)
+    sname = savename((@dict γ τ r c N), &quot;bson&quot;)
+    mkpath(datadir(&quot;results&quot;, data[&quot;model&quot;]))
+    save(datadir(&quot;results&quot;, data[&quot;model&quot;], sname), data)
+    return true
+end</code></pre><pre><code class="language-none">cross_estimation (generic function with 1 method)</code></pre><h3 id="Using-map-and-pmap-1"><a class="docs-heading-anchor" href="#Using-map-and-pmap-1">Using map and pmap</a><a class="docs-heading-anchor-permalink" href="#Using-map-and-pmap-1" title="Permalink"></a></h3><p>One way to run many simulations is with <code>map</code> (identical process for using <code>pmap</code>). To run all my simulations I just do:</p><pre><code class="language-julia">dicts = dict_list(general_args)
+map(cross_estimation, dicts) # or pmap
+
+# load one of the files to be sure everything is ok:
+filename = readdir(datadir(&quot;results&quot;, &quot;barkley&quot;))[1]
+file = load(datadir(&quot;results&quot;, &quot;barkley&quot;, filename))</code></pre><pre><code class="language-none">Dict{String,Any} with 7 entries:
+  &quot;embedding&quot;      =&gt; (4, 6, 1, 0.28)
+  &quot;model&quot;          =&gt; &quot;barkley&quot;
+  &quot;N&quot;              =&gt; 100
+  &quot;x&quot;              =&gt; 0.428006
+  &quot;error&quot;          =&gt; [0.480257, 0.890599, 0.270266, 0.428126, 0.636069, 0.8160…
+  &quot;noise&quot;          =&gt; 0.075
+  &quot;noisy_training&quot; =&gt; false</code></pre><h3 id="Using-a-Serial-Cluster-1"><a class="docs-heading-anchor" href="#Using-a-Serial-Cluster-1">Using a Serial Cluster</a><a class="docs-heading-anchor-permalink" href="#Using-a-Serial-Cluster-1" title="Permalink"></a></h3><p>In case that I can&#39;t store the results of <code>dict_list</code> in memory, I have to change my approach and load them from disk. This is easy with the function <a href="../run&amp;list/#DrWatson.tmpsave"><code>tmpsave</code></a>.</p><p>Instead of using Julia to run all jobs from one process with <code>map/pmap</code> one can use Julia to submit many jobs to a cluster que. For our example above, the Julia program that does this would look like this:</p><pre><code class="language-julia">dicts = dict_list(general_args)
+res = tmpsave(dicts)
+for r in res
+    submit = `qsub -q queuename julia runjob.jl $r`
+    run(submit)
+end</code></pre><p>Now the file <code>runjob.jl</code> would have contents that look like:</p><pre><code class="language-julia">f = ARGS[1]
+dict = load(projectdir(&quot;_research&quot;, &quot;tmp&quot;, f))
+cross_estimation(dict)</code></pre><p>i.e. it just loads the <code>dict</code> and straightforwardly uses the &quot;main&quot; function <code>cross_estimation</code>. Remember to routinely clear the <code>tmp</code> directory! You could do that by e.g. adding a line <code>rm(projectdir(&quot;_research&quot;, &quot;tmp&quot;, f)</code> at the end of the <code>runjob.jl</code> script.</p><h2 id="Listing-completed-runs-1"><a class="docs-heading-anchor" href="#Listing-completed-runs-1">Listing completed runs</a><a class="docs-heading-anchor-permalink" href="#Listing-completed-runs-1" title="Permalink"></a></h2><p>Continuing from the <a href="#Preparing-and-running-jobs-1">Preparing &amp; running jobs</a> section, we now want to collect the results of all these simulations into a single <code>DataFrame</code>. We will do that with the function <a href="../run&amp;list/#DrWatson.collect_results!"><code>collect_results!</code></a>.</p><p>It is quite simple actually! But because we don&#39;t want to include the error, we have to black-list it:</p><pre><code class="language-julia">using DataFrames # this is necessary to access collect_results!
+bl = [&quot;error&quot;]
+res = collect_results!(datadir(&quot;results&quot;); black_list = bl, subfolders = true)</code></pre><table class="data-frame"><thead><tr><th></th><th>embedding</th><th>model</th><th>N</th><th>x</th><th>noise</th><th>noisy_training</th><th>path</th></tr><tr><th></th><th>Tuple…⍰</th><th>String⍰</th><th>Int64⍰</th><th>Float64⍰</th><th>Float64⍰</th><th>Bool⍰</th><th>String⍰</th></tr></thead><tbody><p>4 rows × 7 columns</p><tr><th>1</th><td>(4, 6, 1, 0.28)</td><td>barkley</td><td>100</td><td>0.428006</td><td>0.075</td><td>0</td><td>/home/travis/build/JuliaDynamics/DrWatson.jl/docs/data/results/barkley/N=100_c=0.28_r=1_γ=4_τ=6.bson</td></tr><tr><th>2</th><td>(4, 5, 1, 0.34)</td><td>barkley</td><td>100</td><td>0.578257</td><td>0.075</td><td>0</td><td>/home/travis/build/JuliaDynamics/DrWatson.jl/docs/data/results/barkley/N=100_c=0.34_r=1_γ=4_τ=5.bson</td></tr><tr><th>3</th><td>(4, 6, 1, 0.28)</td><td>kuramoto</td><td>100</td><td>0.478714</td><td>0.075</td><td>0</td><td>/home/travis/build/JuliaDynamics/DrWatson.jl/docs/data/results/kuramoto/N=100_c=0.28_r=1_γ=4_τ=6.bson</td></tr><tr><th>4</th><td>(4, 5, 1, 0.34)</td><td>kuramoto</td><td>100</td><td>0.855214</td><td>0.075</td><td>0</td><td>/home/travis/build/JuliaDynamics/DrWatson.jl/docs/data/results/kuramoto/N=100_c=0.34_r=1_γ=4_τ=5.bson</td></tr></tbody></table><p>We can take also advantage of the basic processing functionality of <a href="../run&amp;list/#DrWatson.collect_results!"><code>collect_results!</code></a> to use the excluded <code>&quot;error&quot;</code> column, replacing it with its average value:</p><pre><code class="language-julia">using Statistics: mean
+special_list = [:avrg_error =&gt; data -&gt; mean(data[&quot;error&quot;])]
+res = collect_results(
+      datadir(&quot;results&quot;),
+      black_list = bl,
+      special_list = special_list,
+      subfolders = true
+)
+
+select!(res, Not(:path)) # don&#39;t show path this time</code></pre><table class="data-frame"><thead><tr><th></th><th>embedding</th><th>model</th><th>N</th><th>x</th><th>noise</th><th>noisy_training</th><th>avrg_error</th></tr><tr><th></th><th>Tuple…⍰</th><th>String⍰</th><th>Int64⍰</th><th>Float64⍰</th><th>Float64⍰</th><th>Bool⍰</th><th>Float64⍰</th></tr></thead><tbody><p>4 rows × 7 columns</p><tr><th>1</th><td>(4, 6, 1, 0.28)</td><td>barkley</td><td>100</td><td>0.428006</td><td>0.075</td><td>0</td><td>0.492631</td></tr><tr><th>2</th><td>(4, 5, 1, 0.34)</td><td>barkley</td><td>100</td><td>0.578257</td><td>0.075</td><td>0</td><td>0.404514</td></tr><tr><th>3</th><td>(4, 6, 1, 0.28)</td><td>kuramoto</td><td>100</td><td>0.478714</td><td>0.075</td><td>0</td><td>0.5724</td></tr><tr><th>4</th><td>(4, 5, 1, 0.34)</td><td>kuramoto</td><td>100</td><td>0.855214</td><td>0.075</td><td>0</td><td>0.603126</td></tr></tbody></table><p>As you see here we used <a href="../run&amp;list/#DrWatson.collect_results"><code>collect_results</code></a> instead of the in-place version, since there already exists a <code>DataFrame</code> with all results processed (and thus everything would be skipped).</p><h2 id="Adapting-to-new-data/parameters-1"><a class="docs-heading-anchor" href="#Adapting-to-new-data/parameters-1">Adapting to new data/parameters</a><a class="docs-heading-anchor-permalink" href="#Adapting-to-new-data/parameters-1" title="Permalink"></a></h2><p>We once again continue from the above example. But we no we need to run some new simulations with some new parameters that <em>do not exist</em> in the old simulations... Well, DrWatson says &quot;no problem!&quot; :)</p><p>Let&#39;s save these new parameters in a different subfolder, to have a neatly organized project:</p><pre><code class="language-julia">general_args_new = Dict(
+    &quot;model&quot; =&gt; [&quot;bocf&quot;],
+    &quot;symmetry&quot; =&gt; &quot;radial&quot;,
+    &quot;symmetric_training&quot; =&gt; [true, false],
+    &quot;N&quot; =&gt; [100],
+    &quot;embedding&quot; =&gt; [ #(γ, τ, r, c)
+    (4, 5, 1, 0.34), (4, 6, 1, 0.28)]
+)</code></pre><pre><code class="language-none">Dict{String,Any} with 5 entries:
+  &quot;symmetry&quot;           =&gt; &quot;radial&quot;
+  &quot;model&quot;              =&gt; [&quot;bocf&quot;]
+  &quot;symmetric_training&quot; =&gt; Bool[1, 0]
+  &quot;N&quot;                  =&gt; [100]
+  &quot;embedding&quot;          =&gt; Tuple{Int64,Int64,Int64,Float64}[(4, 5, 1, 0.34), (4,…</code></pre><p>As you can see, there here there are two parameters not existing in previous simulations, namely <code>&quot;symmetry&quot;, &quot;symmetric_training&quot;</code>. In addition, the parameters <code>&quot;noise&quot;, &quot;noisy_training&quot;</code> that existed in the <em>previous</em> simulations do not exist in the current one.</p><p>No problem though, let&#39;s run the new simulations:</p><pre><code class="language-julia">dicts = dict_list(general_args_new)
+map(cross_estimation, dicts)
+
+# load one of the files to be sure everything is ok:
+filename = readdir(datadir(&quot;results&quot;, &quot;bocf&quot;))[1]
+file = load(datadir(&quot;results&quot;, &quot;bocf&quot;, filename))</code></pre><pre><code class="language-none">Dict{String,Any} with 7 entries:
+  &quot;symmetry&quot;           =&gt; &quot;radial&quot;
+  &quot;symmetric_training&quot; =&gt; false
+  &quot;model&quot;              =&gt; &quot;bocf&quot;
+  &quot;N&quot;                  =&gt; 100
+  &quot;embedding&quot;          =&gt; (4, 6, 1, 0.28)
+  &quot;x&quot;                  =&gt; 0.970679
+  &quot;error&quot;              =&gt; [0.775055, 0.595245, 0.412604, 0.564857, 0.130737, 0.…</code></pre><p>Alright, now we want to <em>add</em> these new runs to our existing dataframe that has collected all previous results. This is straight-forward:</p><pre><code class="language-julia">res = collect_results!(datadir(&quot;results&quot;); black_list = bl, subfolders = true)
+
+select!(res, Not(:path)) # don&#39;t show path this time</code></pre><table class="data-frame"><thead><tr><th></th><th>embedding</th><th>model</th><th>N</th><th>x</th><th>noise</th><th>noisy_training</th><th>symmetry</th><th>symmetric_training</th></tr><tr><th></th><th>Any</th><th>Any</th><th>Any</th><th>Any</th><th>Any</th><th>Any</th><th>String⍰</th><th>Bool⍰</th></tr></thead><tbody><p>6 rows × 8 columns</p><tr><th>1</th><td>(4, 6, 1, 0.28)</td><td>barkley</td><td>100</td><td>0.428006</td><td>0.075</td><td>0</td><td>missing</td><td>missing</td></tr><tr><th>2</th><td>(4, 5, 1, 0.34)</td><td>barkley</td><td>100</td><td>0.578257</td><td>0.075</td><td>0</td><td>missing</td><td>missing</td></tr><tr><th>3</th><td>(4, 6, 1, 0.28)</td><td>kuramoto</td><td>100</td><td>0.478714</td><td>0.075</td><td>0</td><td>missing</td><td>missing</td></tr><tr><th>4</th><td>(4, 5, 1, 0.34)</td><td>kuramoto</td><td>100</td><td>0.855214</td><td>0.075</td><td>0</td><td>missing</td><td>missing</td></tr><tr><th>5</th><td>(4, 6, 1, 0.28)</td><td>bocf</td><td>100</td><td>0.970679</td><td>missing</td><td>missing</td><td>radial</td><td>0</td></tr><tr><th>6</th><td>(4, 5, 1, 0.34)</td><td>bocf</td><td>100</td><td>0.267728</td><td>missing</td><td>missing</td><td>radial</td><td>0</td></tr></tbody></table><p>All <code>missing</code> entries were adjusted automatically :)</p></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../run&amp;list/">« Running &amp; Listing Simulations</a></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> on <span class="colophon-date" title="Wednesday 18 March 2020 21:10">Wednesday 18 March 2020</span>. Using Julia version 1.3.1.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
