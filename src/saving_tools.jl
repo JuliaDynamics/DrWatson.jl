@@ -6,13 +6,16 @@ export istaggable
 # Obtaining Git information
 ########################################################################################
 """
-    gitdescribe(gitpath = projectdir(); dirty_suffix = "-dirty") -> gitstr
+    gitdescribe(gitpath = projectdir(); dirty_suffix = "-dirty", warn = true) -> gitstr
 
 Return a string `gitstr` with the output of `git describe` if an annotated git tag exists,
 otherwise the current active commit id of the Git repository present
-in `gitpath`, which by default is the currently active project. If the repository
-is dirty when this function is called the string will end
-with `dirty_suffix`.
+in `gitpath`, which by default is the currently active project.
+
+If the repository is dirty when this function is called the string will end
+with the value of the keyword `dirty_suffix`. When this happens,
+the keyword `warn = DrWatson.readenv("DRWATSON_WARN_DIRTY", true)`
+will trigger a warning to be printed if it is `true` (the default).
 
 Return `nothing` if `gitpath` is not a Git repository, i.e. a directory within a git
 repository.
@@ -43,7 +46,10 @@ julia> gitdescribe(path_to_a_dirty_repo)
 "3bf684c6a115e3dce484b7f200b66d3ced8b0832-dirty"
 ```
 """
-function gitdescribe(gitpath = projectdir(); dirty_suffix::String = "-dirty")
+function gitdescribe(gitpath = projectdir();
+        dirty_suffix::String = "-dirty",
+        warn = readenv("DRWATSON_WARN_DIRTY", true),
+    )
     # Here we test if the gitpath is a git repository.
     try
         repo = LibGit2.GitRepoExt(gitpath)
@@ -61,8 +67,10 @@ function gitdescribe(gitpath = projectdir(); dirty_suffix::String = "-dirty")
     suffix = ""
     if LibGit2.isdirty(repo)
         suffix = dirty_suffix
-        @warn "The Git repository ('$gitpath') is dirty! "*
-        "Appending $(suffix) to the commit ID."
+        if warn
+            @warn "The Git repository ('$gitpath') is dirty! "*
+            "Appending $(suffix) to the commit ID."
+        end
     end
     # then we return the output of `git describe` or the latest commit hash
     # if no annotated tags are available
@@ -112,7 +120,7 @@ function read_stdout_stderr(cmd::Cmd)
     return (exception = exception, out=read(out,String), err=read(err,String))
 end
 
-""" 
+"""
     gitpatch(gitpath = projectdir())
 
 Generates a patch describing the changes of a dirty repository
@@ -168,23 +176,25 @@ the project's gitpath). Do nothing if a key `gitcommit` already exists
 repository is not found. If the git repository is dirty, i.e. there
 are un-commited changes, and `storepatch` is true, then the output of `git diff HEAD` is stored
 in the field `gitpatch`.  Note that patches for binary files are not
-stored. You can use [`isdirty`](@ref) to check if a repo is dirty. 
-If the `commit message` is set to `true`, 
+stored. You can use [`isdirty`](@ref) to check if a repo is dirty.
+If the `commit message` is set to `true`,
 then the dictionary `d` will include an additional field `"gitmessage"` and will contain the git message associated  with the commit.
 
 Notice that the key-type of the dictionary must be `String` or `Symbol`.
 If `String` is a subtype of the _value_ type of the dictionary, this operation is
 in-place. Otherwise a new dictionary is created and returned.
 
-To restore a repository to the state of a particular model-run do:
-1. checkout the relevant commit with `git checkout xyz` where xyz is the value stored
-2. apply the patch `git apply patch`, where the string stored in the `gitpatch` field needs to be written to the file `patch`.
+To restore a repository to the state of a particular git commit do:
+1. checkout the relevant commit with `git checkout xyz` where `xyz` is the value stored
+2. (optional) apply the patch `git apply patch`, where the string stored in the `gitpatch` field
+   needs to be written to the file `patch`.
 
 ## Keywords
 * `gitpath = projectdir()`
 * `force = false`
 * `storepatch = DrWatson.readenv("DRWATSON_STOREPATCH", false)`: Whether to collect and store the
-  output of [`gitpatch`](@ref) as well.
+  output of [`gitpatch`](@ref) as well. By default it is `false`.
+* `kw...`: extra keywords are propagated to [`gitdescribe`](@ref).
 
 ## Examples
 ```julia
@@ -204,10 +214,11 @@ Dict{Symbol,Any} with 3 entries:
 function tag!(d::AbstractDict{K,T};
         gitpath = projectdir(), force = false, source = nothing,
         storepatch::Bool = readenv("DRWATSON_STOREPATCH", false),
-        commit_message::Bool = false
+        commit_message::Bool = false,
+        kw...
     ) where {K,T}
     @assert (K <: Union{Symbol,String}) "We only know how to tag dictionaries that have keys that are strings or symbols"
-    c = gitdescribe(gitpath)
+    c = gitdescribe(gitpath; kw...)
     c === nothing && return d # gitpath is not a git repo
 
     # Get the appropriate keys
@@ -321,7 +332,7 @@ within the script that `@tag!` was called at.
 julia> d = Dict(:x => 3)Dict{Symbol,Int64} with 1 entry:
   :x => 3
 
-julia> @tag!(d) # running from a script or inline evaluation of Juno
+julia> @tag!(d) # running from a script or inline evaluation
 Dict{Symbol,Any} with 3 entries:
   :gitcommit => "618b72bc0936404ab6a4dd8d15385868b8299d68"
   :script => "test\\stools_tests.jl#10"

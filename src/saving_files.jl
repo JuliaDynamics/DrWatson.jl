@@ -211,9 +211,11 @@ function tagsave(file, d;
     gitpath=projectdir(),
     safe::Bool=readenv("DRWATSON_SAFESAVE", false),
     storepatch::Bool=readenv("DRWATSON_STOREPATCH", false),
-    force=false, source=nothing, kwargs...
+    force=false, source=nothing,
+    warn = readenv("DRWATSON_WARN_DIRTY", true),
+    kwargs...
 )
-    d2 = tag!(d, gitpath=gitpath, storepatch=storepatch, force=force, source=source)
+    d2 = tag!(d; warn=warn, gitpath=gitpath, storepatch=storepatch, force=force, source=source)
     if safe
         safesave(file, copy(d2); kwargs...)
     else
