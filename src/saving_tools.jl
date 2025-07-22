@@ -109,6 +109,8 @@ Return a `NamedTuple` with the fields `exception`, `out` and `err`.
 function read_stdout_stderr(cmd::Cmd)
     out = Pipe()
     err = Pipe()
+    out_string = @async read(out, String)
+    err_string = @async read(err, String)
     exception = nothing
     try
         run(pipeline(cmd,stderr=err, stdout=out), wait=true)
@@ -117,7 +119,7 @@ function read_stdout_stderr(cmd::Cmd)
     end
     close(out.in)
     close(err.in)
-    return (exception = exception, out=read(out,String), err=read(err,String))
+    return (exception = exception, out = fetch(out_string), err = fetch(err_string))
 end
 
 """
