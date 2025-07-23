@@ -1,3 +1,9 @@
+# 2.19.0
+
+- Add `SubString` to `default_allowed` so that `savename(prefix, (; a=a),
+  suffix)` works as expected if `a` was produced by `String` operations such as
+  `split`.
+
 # 2.18.0
 
 - `tag!` and parent functions allow keyword `warn`.
