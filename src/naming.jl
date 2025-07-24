@@ -41,7 +41,7 @@ See also [`parse_savename`](@ref) and [`@savename`](@ref).
 ## Customization keywords
 * `allowedtypes = default_allowed(c)` : Only values of type subtyping
   anything in `allowedtypes` are used in the name. By default
-  this is `(Real, String, Symbol, TimeType)`.
+  this is `(Real, String, SubString, Symbol, TimeType)`.
 * `accesses = allaccess(c)` : specify which specific keys you want
   to use with the keyword `accesses`. By default this is all possible
   keys `c` can be accessed with, see [`allaccess`](@ref).
@@ -195,10 +195,10 @@ Return all the keys `c` that will be ignored in [`savename`](@ref).
 allignore(c::Any) = ()
 
 """
-    default_allowed(c) = (Real, String, Symbol, TimeType)
+    default_allowed(c) = (Real, String, SubString, Symbol, TimeType)
 Return the (super-)Types that will be used as `allowedtypes` in [`savename`](@ref).
 """
-default_allowed(c) = (Real, String, Symbol, TimeType)
+default_allowed(c) = (Real, String, SubString, Symbol, TimeType)
 
 """
     default_prefix(c) = ""
