@@ -17,7 +17,7 @@ UnPack = "3a884ed6-31ef-47d7-9d2a-63182c4928ed"
 
 [compat]
 FileIO = "1.0.6"
-JLD2 = "0.4.15, 0.5"
+JLD2 = "0.4.15, 0.5, 0.6"
 MacroTools = "0.5"
 Requires = "0.5.2, 0.6, 1"
 Scratch = "1"
