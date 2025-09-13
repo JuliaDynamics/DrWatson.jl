@@ -90,10 +90,41 @@ function update_with_merge(base_config::NamedTuple, path::Vector{Symbol}, value,
     end
 end
 
-macro update!(base, update_expr)
-    new_config =  :(@update($base, $update_expr))
-    return Expr(:(=), esc(base), new_config)
+o update!(base, update_expr)
+    if update_expr.head == :block
+        updates = update_expr.args
+        current_config = :($(esc(base)))
+
+        # Process each update expression in the block
+        for update_expr in updates
+            isa(update_expr, LineNumberNode) && continue  # Ensure it's an expression
+            lhs, rhs = update_expr.args
+            value = :($(esc(rhs)))
+            fields = []
+            while !isa(lhs, Symbol)
+                pushfirst!(fields, lhs.args[2].value)  # Collect the field names
+                lhs = lhs.args[1]  # Move to the next part of the path
+            end
+            pushfirst!(fields, lhs)  # Add the first part
+            field_syms = [Symbol(f) for f in fields]
+            current_config = :(update_with_merge($current_config, $field_syms, $value))
+        end
+        # return current_config
+    else
+        lhs, rhs = update_expr.args  # Extract the left-hand side and right-hand side
+        fields = []
+        while !isa(lhs, Symbol)
+            pushfirst!(fields, lhs.args[2].value)  # Collect the field names
+            lhs = lhs.args[1]  # Move to the next part of the path
+        end
+        pushfirst!(fields, lhs)  # Add the first part
+        field_syms = [Symbol(f) for f in fields]
+        current_config =  :(update_with_merge($base, $field_syms, $rhs))
+    end
+    return Expr(:(=), esc(base), :($current_config))
 end
+
+
 
 function pretty_nt_print(value, indent=0)
     if isa(value, NamedTuple)
