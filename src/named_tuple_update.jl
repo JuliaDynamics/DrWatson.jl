@@ -141,30 +141,4 @@ function pretty_nt_print(value, indent=0)
 end
 
 
-# ## Example usage:
-# base = (a=5, b=(d=6, f=7), c=(to="be", or="not to be"))
 
-# new_config = @update base begin
-#     b.e = (new="field", m=66) # Adding a new nested field
-#     b.g.nested = (;new ="field") # Adding a deeper nested field
-#     b.a = "This is changed" # Changing 
-#     c = "to be changed" # Changing an existing field
-# end
-
-# println("Base configuration:")
-# pretty_nt_print(base)
-
-# println("\nUpdated configuration:")
-# pretty_nt_print(new_config)
-
-# @update! base begin
-#     b.e = (l=65, m=66) # Adding a new nested field
-#     b.g.first = "Nested" # Adding a deeper nested field
-#     b.a = "This is changed" # Changing 
-#     c = "to be changed" # Changing an existing field
-# end
-
-# # @assert base == new_config
-
-# base = @update base a = "inline" 
-# @update! base b = "inline with !" 
