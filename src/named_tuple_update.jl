@@ -90,7 +90,7 @@ function update_with_merge(base_config::NamedTuple, path::Vector{Symbol}, value,
     end
 end
 
-o update!(base, update_expr)
+macro update!(base, update_expr)
     if update_expr.head == :block
         updates = update_expr.args
         current_config = :($(esc(base)))
