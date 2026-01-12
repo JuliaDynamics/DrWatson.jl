@@ -8,4 +8,6 @@ using DrWatson, Test
     @testset "Produce or Save" begin include("savefiles_tests.jl"); end
     @testset "Collect Results" begin include("update_results_tests.jl"); end
     @testset "Parameter Customization" begin include("customize_savename.jl"); end
+    @testset "Named Tuple @update " begin include("named_tuple_update.jl"); end
+    
 end
