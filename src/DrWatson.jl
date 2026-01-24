@@ -51,7 +51,11 @@ include("saving_files.jl")
 include("dict_list.jl")
 
 # Functionality that requires Dataframes and other heavy dependencies:
-using Requires
+
+function __init__()
+    # Other init functionality here    
+
+using DataFrames
 
 # Update messages
 using Scratch
@@ -61,10 +65,6 @@ const update_version = "-"
 const update_name = "update_v$update_version"
 
 # Get scratch space for this package
-function __init__()
-    @require DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0" begin
-        include("result_collection.jl")
-    end
 
     _display_update = if env_var in keys(ENV)
         try
