@@ -75,7 +75,7 @@ end
     projectname()
 Return the name of the currently active project.
 """
-unction projectname()
+function projectname()
     pkg = try
         root_proj = joinpath(manifesttomldir(), "Project.toml")
         Pkg.Types.read_project(root_proj)
