@@ -14,6 +14,30 @@ function is_standard_julia_project()
     Base.active_project() == Base.load_path_expand("@v#.#")
 end
 
+"""
+    projecttomldir()
+
+Return the directory of the Project.toml file of the currently active project.
+"""
+projecttomldir() = dirname(Base.active_project())
+
+"""
+    manifesttomldir()
+
+Return the directory of the Manifest.toml file of the currently active project.
+"""
+function manifesttomldir()
+    proj = Base.active_project()
+    manif = Pkg.Types.EnvCache(proj).manifest_file
+    return dirname(manif)
+end
+
+"""
+    is_sub_project()
+
+Return `true` if the currently active project is a sub-project.
+"""
+is_sub_project() = projecttomldir() != manifesttomldir()
 
 """
     projectdir()
@@ -29,7 +53,12 @@ function projectdir()
     if is_standard_julia_project()
         @warn "Using the standard Julia project."
     end
-    dirname(Base.active_project())
+    
+    if is_sub_project()
+        @warn "Using a sub-project."
+    end
+
+    return manifesttomldir()
 end
 projectdir(args...) = joinpath(projectdir(), args...)
 
@@ -46,11 +75,20 @@ end
     projectname()
 Return the name of the currently active project.
 """
-projectname() = _projectname(try
-                                Pkg.Types.read_project(Base.active_project())
-                             catch
-                                nothing
-                             end)
+unction projectname()
+    pkg = try
+        root_proj = joinpath(manifesttomldir(), "Project.toml")
+        Pkg.Types.read_project(root_proj)
+    catch
+        return nothing
+    end
+
+    if is_sub_project()
+        @warn "The active project is a sub-project of $(_projectname(pkg))."
+    end
+
+    return _projectname(pkg)
+end
 _projectname(pkg) = pkg.name
 # Pkg in julia 1.0 returns a dict
 _projectname(pkg::Dict) = pkg["name"]
@@ -139,6 +177,11 @@ function quickactivate(path, name = nothing)
         "The activated project did not match asserted name. Current project "*
         "name is $(projectname()) while the asserted name is $name."
         )
+    end
+    if is_sub_project()
+        root_proj = joinpath(manifesttomldir(), "Project.toml")
+        pkg = Pkg.Types.read_project(root_proj)
+        @warn "Activated a sub-project of $(_projectname(pkg))." # use _projectname to avoid double warnings
     end
     return nothing
 end
