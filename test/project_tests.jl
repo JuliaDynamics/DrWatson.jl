@@ -84,6 +84,26 @@ cd(path)
 @test findproject(pwd()) == pwd()
 cd()
 
+# Test project with a module and workspaces
+path = "test_project"
+name = "ProjectPackage"
+initialize_project(path, name; force=true)
+
+open(joinpath(path, "Project.toml"), "a") do io # add workspace
+    println(io, "[workspace]")
+    println(io, "projects = [\"test\"]")
+end
+open(joinpath(path, "src", name * ".jl"), "w") do io # add module
+    println(io, "module $name")
+    println(io, "")
+    println(io, "end")
+end
+Pkg.activate(joinpath(path, "test")) # activate and add an example dependency
+Pkg.add("Test")
+
+@test projectname() == name
+@test endswith(projectdir(), path)
+
 # Test templates
 t1 = ["data", "documents" => ["a", "b"]]
 initialize_project(path, name; force=true, git=false, template=t1)
