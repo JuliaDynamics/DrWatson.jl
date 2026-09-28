@@ -130,7 +130,7 @@ Dict{Symbol,Any} with 6 entries:
 
 The fields `:gitcommit, :script, :gitpatch` were added automatically and provide the necessary information for reproducibility. In case of uncommitted modifications (also called a "dirty git repository"), a patch is saved under the `:gitpatch` key which can be applied to the `:gitcommit` to restore the exact state of the repository.
 Calling `@tagsave` without extra arguments assumes that you use DrWatson's suggested folder structure using `initialize_project`, and thus that it can find all git-related information automatically.
-However this is not necessary: you can instead provide a keyword argument `gitpath` to `@tagsave` and explictly specify a git path.
+However this is not necessary: you can instead provide a keyword argument `gitpath` to `@tagsave` and explicitly specify a git path.
 Finally, the `parse_savename(filename; kwargs...)` function can be used to obtain the parameters dictionary from the filename.
 
 A last step is data aggregation.
