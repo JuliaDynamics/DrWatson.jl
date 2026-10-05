@@ -1,3 +1,8 @@
+# 2.20.0
+
+- Refactor `projectdir` and `projectname` functions to handle projects with a main `Project.toml` file and sub-`Project.toml` files.
+- Add warnings to `projectdir`, `projectname` and `quickactivate` when a sub-project is active or activated.
+
 # 2.19.0
 
 - Add `SubString` to `default_allowed` so that `savename(prefix, (; a=a),
