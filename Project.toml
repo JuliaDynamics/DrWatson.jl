@@ -15,6 +15,12 @@ Requires = "ae029012-a4dd-5104-9daa-d747884805df"
 Scratch = "6c6a2e73-6563-6170-7368-637461726353"
 UnPack = "3a884ed6-31ef-47d7-9d2a-63182c4928ed"
 
+[weakdeps]
+Plots = "91a5bcdd-55d7-5caf-9e0b-520d859cae80"
+
+[extensions]
+PlotsExt = "Plots"
+
 [compat]
 FileIO = "1.0.6"
 JLD2 = "0.4.15, 0.5, 0.6"
