@@ -1,3 +1,10 @@
+# 2.20.0
+
+- `collect_results` and `collect_results!` are now defined in a package extension
+  (`DrWatsonDataFramesExt`) that loads with DataFrames, instead of through Requires.jl.
+  The extension is precompiled. Requires.jl is no longer a dependency.
+- Minimum supported Julia version is now 1.10.
+
 # 2.19.0
 
 - Add `SubString` to `default_allowed` so that `savename(prefix, (; a=a),
