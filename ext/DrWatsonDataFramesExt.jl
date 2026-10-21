@@ -4,6 +4,7 @@ using DrWatson, DataFrames
 using DrWatson: FileIO, JLD2, InvalidResultsCollection
 using DrWatson.FileIO: File, filename, @format_str
 import DrWatson: collect_results, collect_results!
+using PrecompileTools: @setup_workload, @compile_workload
 
 collect_results!(folder; kwargs...) =
 collect_results!(
@@ -70,7 +71,9 @@ function collect_results!(filename, folder;
 
     n = 0 # new entries added
     u = 0 # entries updated
-    existing_files = "path" in string.(names(df)) ? df[:,:path] : ()
+    existing_files = "path" in names(df) ? Set(df[:,:path]) : Set{String}()
+    new_rows = DataFrames.DataFrame[]
+    replaced_files = Set{String}()
     for file ∈ allfiles
         is_valid_file(file, valid_filetypes) || continue
         # maybe use relative path
@@ -104,14 +107,19 @@ function collect_results!(filename, folder;
         #add filename
         df_new[!, :path] .= file
         if replace_entry
-            # Delete the row with the old data
-            delete!(df, findfirst((x)->(x.path == file), eachrow(df)))
+            push!(replaced_files, file)
             u += 1
         else
             n += 1
         end
-        df = merge_dataframes!(df, df_new)
+        push!(new_rows, df_new)
     end
+    if !isempty(replaced_files)
+        # Delete the rows with the old data
+        df = df[(!in(replaced_files)).(df.path), :]
+    end
+    # Concatenate once: appending row by row is quadratic in the number of files
+    df = merge_dataframes!(df, new_rows)
     if update
         # Delete entries with nonexisting files.
         idx = findall((x)->(!isfile(x.path)), eachrow(df))
@@ -133,28 +141,15 @@ function collect_results!(filename, folder;
 end
 
 """
-    merge_dataframes!(df, df_new) -> merged_df
-Merge two dataframes `df` and `df_new`. If the `names` of the dataframes
-are the same this is just `vcat`.
+    merge_dataframes!(df, dfs) -> merged_df
+Concatenate `df` and all dataframes in the vector `dfs`.
 
-If `df_new` is missing keys that are already columns in `df`,
-they will set as `missing` in `df`.
-If on the other hand new keys are encountered, existing in `df_new`
-but not `df`, a new column will be added and filled with `missing`
-in `df`. Then `df` and `df_new` are concatenated.
+If a dataframe is missing columns that exist in another one, these entries
+are set as `missing`. Columns are ordered by first appearance.
 """
-function merge_dataframes!(df1, df2)
-    if sort!(names(df1)) == sort!(names(df2))
-        return vcat(df1, df2)
-    else
-        for m ∈ setdiff(names(df1), names(df2))
-            df2[!, m] .= [missing]
-        end
-        for m ∈ setdiff(names(df2), names(df1))
-            DataFrames.insertcols!(df1, length(names(df1))+1, m => fill(missing, size(df1,1)))
-        end
-        return vcat(df1,df2)
-    end
+function merge_dataframes!(df, dfs)
+    isempty(dfs) && return df
+    return reduce(vcat, [df; dfs]; cols = :union)
 end
 
 is_valid_file(file, valid_filetypes) =
@@ -206,5 +201,21 @@ end
 
 collect_results(folder; kwargs...) =
 collect_results!("", folder; newfile = true, kwargs...)
+
+@setup_workload begin
+    @compile_workload begin
+        mktempdir() do dir
+            folder = joinpath(dir, "results")
+            for (a, c) in ((1, "x"), (2, "y"))
+                data = Dict{String,Any}("a" => a, "b" => 0.5a, "c" => c,
+                    "v" => rand(3), "s" => :sym)
+                wsave(joinpath(folder, savename(data, "jld2"; accesses = ["a", "c"])), data)
+            end
+            collect_results(folder; verbose = false)
+            collect_results!(folder; verbose = false)
+            collect_results!(folder; verbose = false, update = true)
+        end
+    end
+end
 
 end

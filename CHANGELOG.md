@@ -4,6 +4,10 @@
   (`DrWatsonDataFramesExt`) that loads with DataFrames, instead of through Requires.jl.
   The extension is precompiled. Requires.jl is no longer a dependency.
 - Minimum supported Julia version is now 1.10.
+- `collect_results` runs a precompile workload, so the first call in a session no longer
+  compiles most of its code (6 s → 0.15 s for 400 files).
+- `collect_results` concatenates all new rows once instead of once per file. The runtime
+  is now linear in the number of files (4000 files: 1.4 s → 0.5 s).
 
 # 2.19.0
 
