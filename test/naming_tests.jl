@@ -132,6 +132,31 @@ let
 end
 
 
+@testset "savename nested structs" begin
+    struct X
+        x1::Int
+        x2::String
+    end
+
+    struct Y
+        y1::Int
+    end
+
+    struct Z
+        x::X
+        y::Y
+    end
+
+    DrWatson.default_allowed(::Z) = (X, Y)
+    DrWatson.default_expand(::Z) = ["x", "y"]
+
+    x = X(1, "abc")
+    y = Y(4)
+    z = Z(x, y)
+    @test savename(z) == "x=(x1=1,x2=abc)_y=(y1=4)"
+end
+
+
 # Dedicated Macro tests
 @testset "Macro Tests" begin
     x = 3; y = 5.0; z = 42;

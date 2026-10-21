@@ -116,7 +116,8 @@ function savename(prefix::String, c, suffix::String;
         t = typeof(val)
         if any(x -> (t <: x), allowedtypes)
             if label ∈ expand
-                isempty(val) && continue
+                # the catch block handles types that do not implement `isempty` (e.g., user defined types)
+                (try isempty(val) catch; false end) && continue
                 sname = savename(val; connector=",", digits=digits, sigdigits=sigdigits, equals = equals)
                 isempty(sname) && continue
                 entry = label*equals*'('*sname*')'
