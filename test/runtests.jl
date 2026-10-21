@@ -8,4 +8,5 @@ using DrWatson, Test
     @testset "Produce or Save" begin include("savefiles_tests.jl"); end
     @testset "Collect Results" begin include("update_results_tests.jl"); end
     @testset "Parameter Customization" begin include("customize_savename.jl"); end
+    @testset "Simulations and Metadata" begin include("simulation_metadata.jl"); end
 end

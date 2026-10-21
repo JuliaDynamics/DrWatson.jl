@@ -53,6 +53,12 @@ include("dict_list.jl")
 # Result collection; methods are defined in the DataFrames extension
 include("result_collection.jl")
 
+# Functionality for managing multiple output files, or files with too
+# many parameters, and metadata (previously DrWatsonSim)
+
+include("metadata.jl")
+include("simulation.jl")
+
 # Update messages
 using Scratch
 const env_var = "DRWATSON_UPDATE_MSG"
