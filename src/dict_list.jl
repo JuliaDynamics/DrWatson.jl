@@ -251,7 +251,7 @@ on `ex` the number of options for a particular key varies.
 
 Within `ex` it is possible to extract values of the dictionary passed to
 [`dict_list`](@ref) by a shorthand notation where only the key must be
-provided.  For example `ex = :(:N == 1)` is tranformed in the call
+provided.  For example `ex = :(:N == 1)` is transformed in the call
 `dict_list(d)` to an expression analogous to `:(d[:N] == 1)` by using the
 function `lookup_candidate`.  This is supported for `Symbol` and `String` keys.
 

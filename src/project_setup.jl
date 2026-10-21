@@ -251,7 +251,7 @@ The new project remains activated for you to immediately add packages.
   serve as the documentation, hence this feature is `false` by default.
 * `template = DrWatson.DEFAULT_TEMPLATE` : A template containing the folder structure
   of the project. It should be a vector containing strings (folders) or pairs of `String
-  => Vector{String}`, containg a folder and subfolders (this can be nested further). Example:
+  => Vector{String}`, containing a folder and subfolders (this can be nested further). Example:
   ```julia
   DEFAULT_TEMPLATE = [
     "_research",
