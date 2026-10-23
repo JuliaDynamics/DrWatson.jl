@@ -326,6 +326,14 @@ end
     _, file = produce_or_load(f, simulation, path; filename)
     @test basename(file) == "Prefix x=1 y=2.jld2"
 
+    # Check that connector is allowed and fulled properly:
+    _, file = produce_or_load(f, simulation, path; connector = '|')
+    @test basename(file) == "Prefix|x=1|y=2.jld2"
+    _, file = produce_or_load(f, simulation, path; connector = '%', filename = "test")
+    @test basename(file) == "Prefix%test.jld2"
+    _, file = produce_or_load(f, simulation, path; connector = '-', filename = _ -> "test")
+    @test basename(file) == "Prefix-test.jld2"
+
     rm(path; recursive = true, force = true)
 end
 
