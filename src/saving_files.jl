@@ -44,8 +44,9 @@ end
   The keyword `filename` could also be a `String` directly,
   possibly extracted from `config` before calling `produce_or_load`,
   in which case `name = filename`.
-* `suffix = "jld2", prefix = default_prefix(config)` : If not empty, added to `name`
-  as `name = prefix*'_'*name*'.'*suffix` (i.e., like in [`savename`](@ref)).
+* `suffix = "jld2", prefix = default_prefix(config), connector = '_'` :
+  If not empty, added to `name` as
+  `name = prefix * connector * name * '.' * suffix` (i.e., like in [`savename`](@ref)).
 
 ### Saving
 * `tag::Bool = DrWatson.readenv("DRWATSON_TAG", istaggable(suffix))` : Save the file
@@ -64,6 +65,7 @@ end
 """
 function produce_or_load(f::Function, config, path::String="";
     suffix="jld2", prefix=default_prefix(config),
+    connector="_",
     tag::Bool=readenv("DRWATSON_TAG", istaggable(suffix)),
     gitpath=projectdir(), loadfile=true,
     storepatch::Bool=readenv("DRWATSON_STOREPATCH", false),
@@ -82,13 +84,13 @@ function produce_or_load(f::Function, config, path::String="";
     end
     # Prepare absolute file name
     if filename === nothing
-        filename = config -> savename(prefix, config, suffix; kwargs...)
+        filename = config -> savename(prefix, config, suffix; connector, kwargs...)
         name = filename(config)
     elseif filename isa AbstractString
-        name = append_prefix_suffix(filename, prefix, suffix)
+        name = append_prefix_suffix(filename, prefix, suffix; connector)
     else #if filename isa Function
         name = string(filename(config))
-        name = append_prefix_suffix(name, prefix, suffix)
+        name = append_prefix_suffix(name, prefix, suffix; connector)
     end
     file = joinpath(path, name)
     # Run the remaining logic on whether to produce or load
@@ -130,7 +132,7 @@ produce_or_load(c, f::Function; kwargs...) = produce_or_load(f, c; kwargs...)
 produce_or_load(path::String, c, f::Function; kwargs...) = produce_or_load(f, c, path; kwargs...)
 produce_or_load(f::Function, path::String, c; kwargs...) = produce_or_load(f, c, path; kwargs...)
 
-function append_prefix_suffix(name, prefix, suffix)
+function append_prefix_suffix(name, prefix, suffix; connector='_')
     if isempty(name)
         if isempty(suffix)
             return prefix
@@ -138,10 +140,10 @@ function append_prefix_suffix(name, prefix, suffix)
             return prefix * '.' * suffix
         end
     end
-    if prefix != ""
-        name = prefix * '_' * name
+    if prefix != "" && !startswith(name, prefix)
+        name = prefix * connector * name
     end
-    if suffix != ""
+    if suffix != "" && !endswith(name, suffix)
         name *= '.' * suffix
     end
     return name
