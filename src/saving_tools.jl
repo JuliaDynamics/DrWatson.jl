@@ -1,4 +1,4 @@
-export gitdescribe, isdirty, current_commit, tag!, @tag!
+export gitdescribe, isdirty, tag!, @tag!
 export struct2dict, struct2ntuple
 export istaggable
 
