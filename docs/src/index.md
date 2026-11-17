@@ -101,7 +101,11 @@ or use the DOI directly:
 
 [![DOI](https://joss.theoj.org/papers/10.21105/joss.02673/status.svg)](https://doi.org/10.21105/joss.02673)
 
-## Other useful packages
+## Other useful related packages
+
+### Data processing workflows 
+* <https://github.com/krcools/Makeitso.jl>
+* <https://github.com/arnold-c/Targets.jl>
 
 ### Simulation related
 * <https://github.com/baggepinnen/Hyperopt.jl>
